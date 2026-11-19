@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
 from collections.abc import Awaitable
-from pydantic import AnyUrl, Field, SecretStr, validator, root_validator  # pylint: disable=no-name-in-module
+from pydantic import AnyUrl, Field, SecretStr, validator, model_validator  # pylint: disable=no-name-in-module
 
 import demistomock as demisto
 
@@ -148,9 +148,10 @@ Argument Validation Models and Command Functions
 For each command, define a Pydantic model that inherits from `ContentBaseModel` to parse, validate, and clean command
 arguments. Then implement the corresponding command function that uses the validated arguments.
 
-NOTE: Pydantic v1 is in use. Due to how Python modules are loaded in the XSOAR runtime,
-`@validator` and `@root_validator` decorators must be declared with `allow_reuse=True`, and the
-decorated function must be a `@classmethod`.
+NOTE: Pydantic v2 is in use. Due to how Python modules are loaded in the XSOAR runtime,
+`@validator` decorators must be declared with `allow_reuse=True`, and the decorated function must be
+a `@classmethod`. For validation across multiple fields, use `@model_validator(mode="after")`: it runs
+on the validated model instance (`self`) and must return `self`.
 
 Examples:
     @validator("argument", pre=True, allow_reuse=True)
@@ -158,10 +159,9 @@ Examples:
     def validate_argument(cls, v):
         return str(v)
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def validate_model(cls, values):
-        return values
+    @model_validator(mode="after")
+    def validate_model(self):
+        return self
 
 Command functions perform the mapping between inputs and outputs to the Client class functions inputs and outputs. As a
 best practice, they should not contain calls to `demisto.args()`, `demisto.results()`, `return_error`, and
@@ -406,7 +406,7 @@ class HelloWorldParams(BaseParams):
     @classmethod
     def clean_url(cls, v):  # pylint: disable=no-self-argument
         """Remove trailing forward slash from the 'URL' parameter"""
-        return v.rstrip("/")
+        return str(v).rstrip("/")
 
 
 # endregion
@@ -463,7 +463,7 @@ class HelloWorldClient(ContentClient):
         # Initialize parent ContentClient
         auth_handler = HelloWorldAuthHandler(params.api_key)
         super().__init__(
-            base_url=params.url,
+            base_url=str(params.url),
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
@@ -1530,15 +1530,14 @@ class HelloworldAlertListArgs(ContentBaseModel):
     limit: int = 10
     severity: HelloWorldSeverity | None = None
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def check_alert_id_or_severity(cls, values: dict):  # pylint: disable=no-self-argument
-        has_alert_id = bool(values.get("alert_id"))
-        has_severity = bool(values.get("severity"))
+    @model_validator(mode="after")
+    def check_alert_id_or_severity(self):
+        has_alert_id = bool(self.alert_id)
+        has_severity = bool(self.severity)
 
         if not (has_alert_id ^ has_severity):
             raise ValueError("Either 'alert_id' or 'severity' arguments need to be provided.")
-        return values
+        return self
 
 
 def alert_list_command(client: HelloWorldClient, args: HelloworldAlertListArgs) -> CommandResults:
