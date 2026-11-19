@@ -28,4 +28,4 @@ runas: DBotWeakRole
 tests:
 - AbuseIPDB PopulateIndicators Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.15.14069087
