@@ -18,13 +18,13 @@ from test_data.http_responses import (
 
 UNEXPECTED_RESPONSE_FORMAT = "Unexpected response format"
 
-ERROR_SINGLE_CONNECT = "Error in Single Connect API call"
+ERROR_KRON_PAM = "Error in Kron PAM API call"
 
 ARGS_SEARCH_SAPM_WITH_SECRET_NAME = {"secret_name": "account7"}
 
 ARGS_GET_SAPM_USER_INFO = {"device_ip": "123141"}
 
-ARGS_SHOW_PASSWORD = {"password_expiration_in_minute": 30, "sapm_db_id": 642365, "comment": "reason for password request"}
+ARGS_SHOW_PASSWORD = {"password_expiration_in_minute": 30, "vault_db_id": 642365, "comment": "reason for password request"}
 
 EMPTY_DICT = {}
 
@@ -70,7 +70,7 @@ def test_search_sapm_account_commands(search_command, args, invalid_response_typ
 
     with raises(Exception, match=UNEXPECTED_RESPONSE_FORMAT):
         search_command(client, **args)
-    with raises(Exception, match=ERROR_SINGLE_CONNECT):
+    with raises(Exception, match=ERROR_KRON_PAM):
         search_command(client, **args)
 
 
@@ -94,7 +94,7 @@ def test_single_connect_commands(command, args, http_response, invalid_response_
 
     with raises(Exception, match=UNEXPECTED_RESPONSE_FORMAT):
         command(client, **args)
-    with raises(Exception, match=ERROR_SINGLE_CONNECT):
+    with raises(Exception, match=ERROR_KRON_PAM):
         command(client, **args)
 
 

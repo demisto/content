@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This version updates the integration to the current Kron PAM product name (formerly Single Connect), and Shared Account Password Management (SAPM) is now called Password Vault. The integration commands have been renamed accordingly, with no change in functionality. To keep your playbooks working, update them to the new command names:\n- ***single-connect-sapm-account-list-all*** is now ***kron-pam-vault-account-list-all***\n- ***single-connect-sapm-account-show-password*** is now ***kron-pam-vault-account-show-password*** (the *sapm_db_id* argument is now *vault_db_id*)\n- ***single-connect-device-list-sapm-accounts*** is now ***kron-pam-device-list-vault-accounts***\n- ***single-connect-sapm-account-search-with-secret-name*** is now ***kron-pam-vault-account-search-with-secret-name***\n\nCommand results are now written to **KronPAM.VaultAccount** instead of **SingleConnect.SapmAccount**."
+}

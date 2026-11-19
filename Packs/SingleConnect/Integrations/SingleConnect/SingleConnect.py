@@ -8,6 +8,13 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
+DEPRECATED_COMMANDS = {
+    "single-connect-sapm-account-list-all": "kron-pam-vault-account-list-all",
+    "single-connect-sapm-account-show-password": "kron-pam-vault-account-show-password",
+    "single-connect-device-list-sapm-accounts": "kron-pam-device-list-vault-accounts",
+    "single-connect-sapm-account-search-with-secret-name": "kron-pam-vault-account-search-with-secret-name",
+}
+
 """ CLIENT CLASS """
 
 
@@ -73,14 +80,14 @@ def test_module(client: Client) -> str:
         try:
             search_results = response.get("searchResults")
         except Exception as e:
-            raise Exception(f"Error in Single Connect API call: {e}")
+            raise Exception(f"Error in Kron PAM API call: {e}")
         if search_results:
             if len(search_results) > 0:
                 sapm_account = search_results[0]
                 if not sapm_account.get("dbId"):
-                    raise Exception("SAPM Accounts from Single Connect are missing mandatory fields: dbId")
+                    raise Exception("Password Vault accounts from Kron PAM are missing mandatory fields: dbId")
             else:
-                return "There are no SAPM Accounts but connection is ok"
+                return "There are no Password Vault accounts but connection is ok"
             return "ok"
         else:
             raise Exception("Unexpected response format")
@@ -96,9 +103,9 @@ def list_all_sapm_accounts_command(client: Client) -> CommandResults:
     try:
         result = response.get("searchResults")
     except Exception as e:
-        raise Exception(f"Error in Single Connect API call: {e}")
+        raise Exception(f"Error in Kron PAM API call: {e}")
     if result is not None:
-        return CommandResults(outputs_prefix="SingleConnect.SapmAccount", outputs_key_field="dbId", outputs=result)
+        return CommandResults(outputs_prefix="KronPAM.VaultAccount", outputs_key_field="dbId", outputs=result)
     else:
         raise Exception("Unexpected response format")
 
@@ -108,20 +115,20 @@ def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> Co
     try:
         result = response.get("searchResults")
     except Exception as e:
-        raise Exception(f"Error in Single Connect API call: {e}")
+        raise Exception(f"Error in Kron PAM API call: {e}")
 
     if result is not None:
-        return CommandResults(outputs_prefix="SingleConnect.SapmAccount", outputs_key_field="dbId", outputs=result)
+        return CommandResults(outputs_prefix="KronPAM.VaultAccount", outputs_key_field="dbId", outputs=result)
     else:
         raise Exception("Unexpected response format")
 
 
-def show_password_command(client: Client, password_expiration_in_minute=int, sapm_db_id=int, comment=str) -> CommandResults:
-    response = client.show_password(password_expiration_in_minute, sapm_db_id, comment)
+def show_password_command(client: Client, password_expiration_in_minute=int, vault_db_id=int, comment=str) -> CommandResults:
+    response = client.show_password(password_expiration_in_minute, vault_db_id, comment)
     if isinstance(response, str):
-        raise Exception(f"Error in Single Connect API call: {response}")
+        raise Exception(f"Error in Kron PAM API call: {response}")
     if isinstance(response, dict) and len(response) > 0:
-        return CommandResults(outputs_prefix="SingleConnect.SapmAccount", outputs=response)
+        return CommandResults(outputs_prefix="KronPAM.VaultAccount", outputs=response)
     else:
         raise Exception("Unexpected response format")
 
@@ -129,9 +136,9 @@ def show_password_command(client: Client, password_expiration_in_minute=int, sap
 def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults:
     response = client.get_sapm_user_info(device_ip)
     if isinstance(response, str):
-        raise Exception(f"Error in Single Connect API call: {response}")
+        raise Exception(f"Error in Kron PAM API call: {response}")
     if isinstance(response, list):
-        return CommandResults(outputs_prefix="SingleConnect.SapmAccount", outputs_key_field="dbId", outputs=response)
+        return CommandResults(outputs_prefix="KronPAM.VaultAccount", outputs_key_field="dbId", outputs=response)
     else:
         raise Exception("Unexpected response format")
 
@@ -161,17 +168,20 @@ def main() -> None:  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == "single-connect-sapm-account-list-all":
+        elif command == "kron-pam-vault-account-list-all":
             return_results(list_all_sapm_accounts_command(client))
 
-        elif command == "single-connect-sapm-account-show-password":
+        elif command == "kron-pam-vault-account-show-password":
             return_results(show_password_command(client, **args))
 
-        elif command == "single-connect-device-list-sapm-accounts":
+        elif command == "kron-pam-device-list-vault-accounts":
             return_results(get_sapm_user_info_command(client, **args))
 
-        elif command == "single-connect-sapm-account-search-with-secret-name":
+        elif command == "kron-pam-vault-account-search-with-secret-name":
             return_results(search_sapm_with_secret_name_command(client, **args))
+
+        elif command in DEPRECATED_COMMANDS:
+            raise DemistoException(f"{command} command is deprecated. Use {DEPRECATED_COMMANDS[command]} instead.")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {e!s}")
@@ -179,7 +189,7 @@ def main() -> None:  # pragma: no cover
         try:
             client.logout()
         except Exception as err:
-            demisto.info(f"Single Connect error: {err!s}")
+            demisto.info(f"Kron PAM error: {err!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
