@@ -48,6 +48,14 @@ configuration:
   section: Connect
   additionalinfo: (Deprecated) Required for local(EPM) authentication only. This parameter is deprecated and no longer used.
   advanced: true
+- name: disable_usage_reporting
+  display: Disable usage reporting
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration does not send usage events (command executed, integration version) to Palo Alto Networks.
 description: Use the CyberArk EPM integration to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM SOC Response
 name: CyberArkEPMSOCResponse
