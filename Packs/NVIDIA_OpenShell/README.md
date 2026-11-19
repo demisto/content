@@ -1,10 +1,6 @@
-<p align="center">
-<img alt="NVIDIA OpenShell content pack for Cortex" src="doc_files/NVIDIA_OpenShell_banner.png"/>
-</p>
+![NVIDIA OpenShell content pack for Cortex](doc_files/NVIDIA_OpenShell_banner.png)
 
-<p align="center">
-<b>Stop</b> an agent &nbsp;·&nbsp; <b>Block</b> one host &nbsp;·&nbsp; <b>Cut</b> its credentials &nbsp;·&nbsp; <b>Investigate</b> what it did
-</p>
+**Stop** an agent · **Block** one host · **Cut** its credentials · **Investigate** what it did
 
 ---
 
@@ -36,12 +32,12 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | Step | Goal | Commands | Agent keeps running | Reversible |
 | :---: | --- | --- | :---: | :---: |
 | 1 | Investigate | `openshell-sandbox-logs`, `openshell-policy-get`, `openshell-policy-history`, `openshell-provider-list` | Yes | n/a |
-| 2 | Narrow | `openshell-egress-block-host`, `openshell-policy-endpoint-remove`, `openshell-policy-binary-remove` | Yes | Yes <sup>1</sup> |
-| 3 | Cut | `openshell-policy-rule-remove`, `openshell-provider-detach` | Yes | Rule: yes <sup>1</sup><br/>Provider: **no** |
+| 2 | Narrow | `openshell-egress-block-host`, `openshell-policy-endpoint-remove`, `openshell-policy-binary-remove` | Yes | Yes¹ |
+| 3 | Cut | `openshell-policy-rule-remove`, `openshell-provider-detach` | Yes | Rule: yes¹, provider: **no** |
 | 4 | Pause | `openshell-sandbox-stop`, `openshell-sandbox-suspend` | No | Yes, with `start` / `resume` |
 | 5 | Remove | `openshell-sandbox-delete` | No | **No** |
 
-<sup>1</sup> Policy changes create a new revision. Restore access by adding the entry back in OpenShell. `openshell-policy-history` shows what changed and why.
+¹ Policy changes create a new revision. Restore access by adding the entry back in OpenShell. `openshell-policy-history` shows what changed and why.
 
 ## What's in the pack
 
@@ -49,8 +45,7 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | --- | --- | --- |
 | Integration | **NVIDIA OpenShell** | 17 commands for sandbox lifecycle, network policy, credential providers and logs. |
 
-<details>
-<summary><b>All 17 integration commands</b></summary>
+### All 17 integration commands
 
 | Area | Command | What it does |
 | --- | --- | --- |
@@ -72,8 +67,6 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | Credentials | `openshell-provider-list` | Lists the credential providers attached to a sandbox. |
 | Credentials | `openshell-provider-detach` | Detaches a credential provider. Needs `confirm=yes`. |
 
-</details>
-
 ## Try it in the war room
 
 Narrow first. This removes one destination and leaves the agent running:
@@ -88,8 +81,7 @@ If the agent keeps misbehaving, stop it. Its identity and workspace are kept for
 !openshell-sandbox-stop name=research-agent-7
 ```
 
-> [!NOTE]
-> `openshell-egress-block-host` removes exact entries only. If a wildcard entry such as `*.example.com` still allows the host, the command lists it under `OpenShell.EgressBlock.WildcardMatches`. Remove that rule with `openshell-policy-rule-remove`, or stop the sandbox.
+> **Note:** `openshell-egress-block-host` removes exact entries only. If a wildcard entry such as `*.example.com` still allows the host, the command lists it under `OpenShell.EgressBlock.WildcardMatches`. Remove that rule with `openshell-policy-rule-remove`, or stop the sandbox.
 
 ## Before you start
 
@@ -99,22 +91,15 @@ If the agent keeps misbehaving, stop it. Its identity and workspace are kept for
 | Cortex engine | An engine that can reach the gateway host and port. The gateway is usually private, so the integration cannot run without an engine. |
 | Credentials | Mutual TLS files (`ca.crt`, `tls.crt`, `tls.key`) from the OpenShell CLI configuration, usually `~/.config/openshell/gateways/<gateway>/mtls/`, **or** an OIDC bearer token. |
 
-<details>
-<summary><b>Gateway listens on localhost only?</b></summary>
+### Gateway listens on localhost only?
 
 Install the engine on the gateway host and run integration containers with host networking, then use `127.0.0.1:<port>` as the endpoint. Inside a Cortex container, `localhost` otherwise points at the container itself.
 
-</details>
-
-<details>
-<summary><b>Using OIDC instead of mutual TLS</b></summary>
+### Using OIDC instead of mutual TLS
 
 Paste the access token in **OIDC bearer token**. The integration does not refresh it, so use a long-lived token and update the instance before the token expires. If the gateway certificate is signed by a public CA, leave **Gateway CA certificate** empty and the system trust store is used.
 
-</details>
-
-> [!WARNING]
-> `openshell-sandbox-delete` and `openshell-provider-detach` cannot be undone. Both require `confirm=yes`. Prefer `openshell-sandbox-stop` during an investigation, so the sandbox can be examined and started again.
+> **Warning:** `openshell-sandbox-delete` and `openshell-provider-detach` cannot be undone. Both require `confirm=yes`. Prefer `openshell-sandbox-stop` during an investigation, so the sandbox can be examined and started again.
 
 ## Known limitations
 
