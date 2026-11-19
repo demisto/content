@@ -31,6 +31,130 @@
         "created_at": {
             "type": "string",
             "is_array": false
+        },
+        "organization_uuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "deleted_user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "deleted_user_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "role_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "role_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "group_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "group_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "principal_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "principal_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "claude_file_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "claude_project_document_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "filename": {
+            "type": "string",
+            "is_array": false
+        },
+        "claude_chat_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "claude_project_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "claude_artifact_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "environment_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "session_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "mcp_server_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "mcp_server_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "auth_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "mfa_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "provider": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
