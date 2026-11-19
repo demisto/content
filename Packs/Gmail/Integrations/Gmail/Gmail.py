@@ -179,9 +179,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     """
     if not delegated_user or delegated_user == "me":
         delegated_user = ADMIN_EMAIL
-    scopes = SCOPES
-    if additional_scopes is not None:
-        scopes += additional_scopes
+    scopes = SCOPES + (additional_scopes or [])
 
     json_acct_info = json.loads(PRIVATE_KEY_CONTENT)  # type: ignore
     credentials = service_account.Credentials.from_service_account_info(json_acct_info)
@@ -1120,9 +1118,6 @@ def get_autoreply(user_id):
         "gmail",
         "v1",
         additional_scopes=[
-            "https://mail.google.com",
-            "https://www.googleapis.com/auth/gmail.modify",
-            "https://www.googleapis.com/auth/gmail.readonly",
             "https://www.googleapis.com/auth/gmail.settings.basic",
         ],
         delegated_user=user_id,
@@ -2615,9 +2610,6 @@ def forwarding_address_get(user_id: str, forwarding_email: str) -> dict:
         "gmail",
         "v1",
         [
-            "https://www.googleapis.com/auth/gmail.readonly",
-            "https://www.googleapis.com/auth/gmail.modify",
-            "https://mail.google.com/",
             "https://www.googleapis.com/auth/gmail.settings.basic",
         ],
         delegated_user=user_id,
@@ -2691,9 +2683,6 @@ def forwarding_address_list(user_id: str) -> dict:
         "v1",
         [
             "https://www.googleapis.com/auth/gmail.settings.basic",
-            "https://mail.google.com/",
-            "https://www.googleapis.com/auth/gmail.modify",
-            "https://www.googleapis.com/auth/gmail.readonly",
         ],
         delegated_user=user_id,
     )
