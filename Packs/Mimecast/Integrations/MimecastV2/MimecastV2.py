@@ -2098,7 +2098,8 @@ def get_log_type_fetch_time(last_run: dict, time_key: str, default_fetch_date_ti
     Returns:
         Formatted date time string in Mimecast format (YYYY-MM-DDTHH:MM:SS+0000)
     """
-    last_fetch = last_run.get(time_key)
+    # While a paginated cycle is in progress, keep querying with the start time the cycle began with
+    last_fetch = last_run.get(f"{time_key}_for_next_page") or last_run.get(time_key)
     if last_fetch:
         fetch_time = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
         return fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
@@ -2289,17 +2290,20 @@ def fetch_log_type(
         new_last_run[dedup_key] = dedup_messages
         demisto.debug(f"{log_type}: Saving {len(dedup_messages)} dedup messages")
 
+    # Always persist the latest incident time seen so far, including while paginating. Some endpoints (e.g. held
+    # messages) return the newest entries first, so the newest timestamp is only seen on the first page of a cycle;
+    # dropping it during pagination made the cycle end with the timestamp of the oldest entries (XSUP-81480).
+    if last_fetch_log_type:
+        new_last_run[time_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
+
     if next_page:
         # During pagination, save the next page token and the original query time
         demisto.debug(f"{log_type}: Pagination active - saving next_page token and original_query_time={original_query_time}")
         new_last_run[next_page_key] = next_page
         new_last_run[time_for_next_page_key] = original_query_time.isoformat().split(".")[0] + "Z"
-        demisto.debug(f"{log_type}: NOT updating main time_key during pagination")
     else:
-        # Pagination complete - update the time with the latest incident time
-        demisto.debug(f"{log_type}: Pagination complete - updating time_key to latest incident time={last_fetch_log_type}")
-        if last_fetch_log_type:
-            new_last_run[time_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
+        # Pagination complete - time_key already holds the latest incident time
+        demisto.debug(f"{log_type}: Pagination complete - time_key is the latest incident time={last_fetch_log_type}")
         # Remove pagination keys from last_run as they are no longer relevant
         demisto.debug(f"{log_type}: Removing pagination keys from last_run")
         new_last_run.pop(next_page_key, None)
