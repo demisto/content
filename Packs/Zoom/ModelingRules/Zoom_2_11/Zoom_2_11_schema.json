@@ -1,48 +1,60 @@
 {
     "zoom_zoom_raw": {
+        "dataset_description": "Zoom is a cloud-based video communications platform for virtual meetings, chat and screen sharing.",
         "time": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The time the Zoom user activity or admin operation took place, in ISO 8601 format (UTC)."
         },
         "operator": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The email address of the Zoom account user who performed the admin operation."
         },
         "category_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The category of the Zoom admin operation."
         },
         "operation_detail": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The description of the Zoom admin operation."
         },
         "action": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The action the operator performed on the Zoom account object in the admin operation."
         },
         "email": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The email address of the Zoom user who initiated the sign-in or sign-out activity."
         },
         "type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of account access activity the Zoom user performed."
         },
         "ip_address": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The source IPv4 address the Zoom user signed in or out from."
         },
         "client_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of Zoom client or platform the user signed in or out from."
         },
         "version": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The version of the Zoom client the user signed in or out from."
         },
         "event_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The event type of the Zoom record."
         }
     }
 }

@@ -1,80 +1,105 @@
 {
-   "aruba_central_raw":{
+   "aruba_central_raw": {
+      "dataset_description": "Aruba Central is a cloud-based HPE Aruba Networking platform for managing and monitoring network infrastructure.",
       "gid": {
-         "type":"int",
-         "is_array":false
+         "type": "int",
+         "is_array": false,
+         "field_description": "The ID of the Aruba Central device group associated with the audited action."
       },
       "classification": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The category of the audited action recorded in Aruba Central."
       },
       "description": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The message describing the Aruba Central audited action or networking event."
       },
       "id": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The ID of the audit record in Aruba Central."
       },
       "ip_addr": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The IP address from which the audited action in Aruba Central was performed."
       },
       "target": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The serial number of the device the Aruba Central audited action was performed on."
       },
       "user": {
-         "type":"string",
-         "is_array":false
-      },      
+         "type": "string",
+         "is_array": false,
+         "field_description": "The user who performed the audited action in Aruba Central."
+      },
       "event_type": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The event type of the Aruba Central record."
       },
       "event_uuid": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The unique ID of the networking event within Aruba Central."
       },
       "level": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The severity level Aruba Central assigns to the networking event."
       },
       "client_mac": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The MAC address of the client device involved in the networking event."
       },
       "group_name": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The Aruba Central configuration group of the reporting network device."
       },
       "hostname": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The host name of the network device that reported the event to Aruba Central."
       },
       "bssid": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The BSSID of the access point radio involved in the wireless networking event."
       },
       "device_mac": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The MAC address of the network device that reported the event to Aruba Central."
       },
       "device_serial": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The serial number of the network device that reported the event to Aruba Central."
       },
       "device_type": {
-         "type":"string",
-         "is_array":false
+         "type": "string",
+         "is_array": false,
+         "field_description": "The type of device involved in the Aruba Central event."
       },
       "ts": {
-         "type":"int",
-         "is_array":false
+         "type": "int",
+         "is_array": false,
+         "field_description": "The time the audited action was recorded in Aruba Central, in epoch seconds."
       },
       "timestamp": {
-         "type":"int",
-         "is_array":false
+         "type": "int",
+         "is_array": false,
+         "field_description": "The time the networking event occurred in Aruba Central, in epoch milliseconds."
+      },
+      "_time": {
+         "type": "string",
+         "is_array": false,
+         "field_description": "The event timestamp."
       }
    }
 }

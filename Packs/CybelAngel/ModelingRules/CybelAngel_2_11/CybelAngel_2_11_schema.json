@@ -1,148 +1,185 @@
 {
     "cybelangel_platform_raw": {
+        "dataset_description": "CybelAngel is an external attack surface management platform that detects exposed assets, leaked credentials and malicious domains.",
         "id": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The identifier of the CybelAngel report or report comment."
         },
         "report_content": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The full content of the CybelAngel report, in Markdown format."
         },
         "abstract": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "A short summary of the findings in the CybelAngel report."
         },
         "category": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The threat category CybelAngel assigns to the report."
         },
         "incident_id": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The identifier of the CybelAngel incident the report is associated with."
         },
         "ip": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The IP addresses of the exposed asset related to the report, separated by semicolons."
         },
         "liveness": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The reachability state of the exposed asset."
         },
         "machine_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the machine associated with the CybelAngel report."
         },
         "malware_location": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The location of the malware on the infected machine."
         },
         "malware_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the malware associated with the leaked credentials."
         },
         "port": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The target port of the exposed asset reported by CybelAngel."
         },
         "report_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of report CybelAngel generated for the detected exposure."
         },
         "risks": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The risks CybelAngel identified for the report."
         },
         "severity": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The numeric severity level of the CybelAngel report."
         },
         "threat": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The asset or domain identified as the threat in the CybelAngel report."
         },
-        "title":{
+        "title": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the threat reported in the CybelAngel report."
         },
         "city": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The city where the exposed asset in the CybelAngel report is located."
         },
         "location": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The geographic location of the exposed asset in the CybelAngel report."
         },
         "hostnames": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The list of hostnames associated with the exposed asset in the CybelAngel report."
         },
         "tags": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The list of tags attached to the CybelAngel report."
         },
         "asset_urls": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The list of URLs of the assets affected by the CybelAngel report."
         },
         "report_id": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The identifier of the CybelAngel report being mirrored."
         },
         "domain": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The domain monitored in the domain watchlist or associated with the leaked credential."
         },
         "status": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The current status of the CybelAngel report, watched domain, or leaked credential."
         },
         "registrant_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the registrant of the monitored domain, from WHOIS data."
         },
         "registrant_organisation": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The organization that registered the monitored domain, from WHOIS data."
         },
         "mx": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The mail exchange (MX) records of the monitored domain."
         },
         "ns": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name server (NS) records of the monitored domain."
         },
         "abuse_email": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The abuse contact email address related to the reported asset."
         },
         "country": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The country associated with the monitored domain."
         },
         "ip_address": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The IP address associated with the leaked credential."
         },
         "alert_ids": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The list of CybelAngel alert IDs related to the leaked credential."
         },
         "email": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The email address of the credential found leaked in the credential watchlist."
         },
         "user_machine_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The host name of the machine where the leaked credential was found."
         },
         "user_session": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The session identifier of the user associated with the leaked credential."
         },
         "SOURCE_LOG_TYPE": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The event type of the CybelAngel record."
         }
     }
 }

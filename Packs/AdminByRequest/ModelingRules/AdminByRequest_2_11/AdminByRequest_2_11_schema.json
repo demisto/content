@@ -1,80 +1,100 @@
 {
-    "admin_by_request_raw": {
-      "application": {
-        "type": "string",
-        "is_array": false
-      },
-      "computer": {
-        "type": "string",
-        "is_array": false
-      },
-      "auditLogURL": {
-        "type": "string",
-        "is_array": false
-      },
-      "source_log_type": {
-        "type": "string",
-        "is_array": false
-      },
-      "type": {
-        "type": "string",
-        "is_array": false
-      },
-      "user": {
-        "type": "string",
-        "is_array": false
-      },
-      "computerName": {
-        "type": "string",
-        "is_array": false
-      },
-      "eventLevel": {
-        "type": "string",
-        "is_array": false
-      },
-      "additionalData": {
-        "type": "string",
-        "is_array": false
-      },
-      "userAccount": {
-        "type": "string",
-        "is_array": false
-      },
-      "userName": {
-        "type": "string",
-        "is_array": false
-      },
-      "reason": {
-        "type": "string",
-        "is_array": false
-      },
-      "eventText": {
-        "type": "string",
-        "is_array": false
-      },
-      "auditlogLink": {
-        "type": "string",
-        "is_array": false
-      },
-      "approvedBy": {
-        "type": "string",
-        "is_array": false
-      },
-      "approvedByEmail": {
-        "type": "string",
-        "is_array": false
-      },
-      "deniedBy": {
-        "type": "string",
-        "is_array": false
-      },
-      "deniedByEmail": {
-        "type": "string",
-        "is_array": false
-      },
-      "deniedReason": {
-        "type": "string",
-        "is_array": false
-      }
+  "admin_by_request_raw": {
+    "dataset_description": "Admin By Request is a privileged access management (PAM) solution that grants users temporary local admin rights.",
+    "application": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The application involved in the Admin By Request event."
+    },
+    "computer": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The computer the elevation request was made from."
+    },
+    "auditLogURL": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The URL of the Admin By Request audit log entry related to the event."
+    },
+    "source_log_type": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The event type of the Admin By Request record."
+    },
+    "type": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The type of elevation request made in Admin By Request."
+    },
+    "user": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The user associated with the elevation request."
+    },
+    "computerName": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The name of the computer on which the Admin By Request event occurred."
+    },
+    "eventLevel": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The numeric severity level of the Admin By Request event."
+    },
+    "additionalData": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "Additional details that Admin By Request provides about the event."
+    },
+    "userAccount": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The account name of the user associated with the Admin By Request event."
+    },
+    "userName": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The user name of the user who initiated the Admin By Request event."
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The reason the user gave when requesting elevated admin rights."
+    },
+    "eventText": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The message text describing the Admin By Request event."
+    },
+    "auditlogLink": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The link to the Admin By Request portal audit log entry for the request."
+    },
+    "approvedBy": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The name of the user who approved the elevation request."
+    },
+    "approvedByEmail": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The email address of the user who approved the elevation request."
+    },
+    "deniedBy": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The name of the user who denied the elevation request."
+    },
+    "deniedByEmail": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The email address of the user who denied the elevation request."
+    },
+    "deniedReason": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The reason given for denying the elevation request."
     }
-}    
+  }
+}
