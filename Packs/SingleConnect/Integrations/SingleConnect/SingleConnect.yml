@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-provider: Vectra AI
+provider: Krontech
 commonfields:
   id: SingleConnect
   version: -1
@@ -22,12 +22,12 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Single Connect is a PAM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Single Connect provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
-display: Single Connect
+description: Kron PAM is a PAM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Kron PAM provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
+display: Kron PAM
 name: SingleConnect
 script:
   commands:
-  - description: List all the accounts in the SAPM.
+  - description: Deprecated. Use kron-pam-vault-account-list-all instead.
     name: single-connect-sapm-account-list-all
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -102,6 +102,7 @@ script:
     - contextPath: SingleConnect.SapmAccount.groupFullPath
       description: The full path of the SAPM group that the account is under.
       type: String
+    deprecated: true
   - arguments:
     - description: Password expiration time of account.
       name: password_expiration_in_minute
@@ -112,7 +113,7 @@ script:
     - description: Leave a comment explaining why the password is accessed.
       name: comment
       required: true
-    description: Get the password for a specific SAPM account.
+    description: Deprecated. Use kron-pam-vault-account-show-password instead.
     name: single-connect-sapm-account-show-password
     outputs:
     - contextPath: SingleConnect.SapmAccount.passwordPart
@@ -124,11 +125,12 @@ script:
     - contextPath: SingleConnect.SapmAccount.secretNotes
       description: Secret description defined for the account.
       type: String
+    deprecated: true
   - arguments:
     - description: Full or partial IP address of device.
       name: device_ip
       required: true
-    description: List all the SAPM accounts on a specific device.
+    description: Deprecated. Use kron-pam-device-list-vault-accounts instead.
     name: single-connect-device-list-sapm-accounts
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -191,11 +193,12 @@ script:
     - contextPath: SingleConnect.SapmAccount.updatedAt
       description: The time the account was last edited.
       type: Date
+    deprecated: true
   - arguments:
     - description: Full or partial account name of the SAPM account.
       name: secret_name
       required: true
-    description: List the accounts with given secretName.
+    description: Deprecated. Use kron-pam-vault-account-search-with-secret-name instead.
     name: single-connect-sapm-account-search-with-secret-name
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -269,6 +272,250 @@ script:
       type: String
     - contextPath: SingleConnect.SapmAccount.groupFullPath
       description: The full path of the SAPM group that the account is under.
+      type: String
+    deprecated: true
+  - description: List all the accounts in the Password Vault.
+    name: kron-pam-vault-account-list-all
+    outputs:
+    - contextPath: KronPAM.VaultAccount.dbId
+      description: ID of Password Vault Account.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.device.name
+      description: The name of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.device.accessProtocol
+      description: Protocol accessed on the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.device.managementIp
+      description: IP Address of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretName
+      description: Name of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.config.name
+      description: Configuration name where the account is managed in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.changePeriod
+      description: Password change period of the account in the Password Vault.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.username
+      description: Username of the account on the device.
+      type: String
+    - contextPath: KronPAM.VaultAccount.description
+      description: Description of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.lastChangeTime
+      description: Last time the account password was changed.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.nextChangeTime
+      description: Time for next password change of account password.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.passwordSeenStatus
+      description: Password seen status of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.validationStatus
+      description: Password validity status of account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.permissions.userGroupId
+      description: ID of the user group that has access to the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.permissions.permission
+      description: Access permission level of the user group that has access to the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.managers.eid
+      description: Manager user group ID that approves the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.parentSapmGroup.name
+      description: The name of the Password Vault group the account is under.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretType
+      description: Type of account to be managed.
+      type: String
+    - contextPath: KronPAM.VaultAccount.owner
+      description: Owner of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.createdAt
+      description: Creation time of Account.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.updatedAt
+      description: The time the account was last edited.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.approvalRequired
+      description: Approval requirement of account.
+      type: Boolean
+    - contextPath: KronPAM.VaultAccount.privateType
+      description: The status of the account being private to account owner.
+      type: String
+    - contextPath: KronPAM.VaultAccount.groupFullPath
+      description: The full path of the Password Vault group that the account is under.
+      type: String
+  - arguments:
+    - description: Password expiration time of account.
+      name: password_expiration_in_minute
+      required: true
+    - description: ID of Password Vault account in the database (can be retrieved from kron-pam-vault-account-list-all or kron-pam-vault-account-search-with-secret-name commands' output).
+      name: vault_db_id
+      required: true
+    - description: Leave a comment explaining why the password is accessed.
+      name: comment
+      required: true
+    description: Get the password for a specific Password Vault account.
+    name: kron-pam-vault-account-show-password
+    outputs:
+    - contextPath: KronPAM.VaultAccount.passwordPart
+      description: All or Part of the Password.
+      type: String
+    - contextPath: KronPAM.VaultAccount.password
+      description: Account password.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretNotes
+      description: Secret description defined for the account.
+      type: String
+  - arguments:
+    - description: Full or partial IP address of device.
+      name: device_ip
+      required: true
+    description: List all the Password Vault accounts on a specific device.
+    name: kron-pam-device-list-vault-accounts
+    outputs:
+    - contextPath: KronPAM.VaultAccount.dbId
+      description: ID of Password Vault Account.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.configName
+      description: Configuration name where the account is managed in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.username
+      description: Username of the account on the device.
+      type: String
+    - contextPath: KronPAM.VaultAccount.description
+      description: Description of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.nextChangeTime
+      description: Time for next password change of account password.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.lastChangeTime
+      description: Last time the account password was changed.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.passwordSeenStatus
+      description: Password seen status of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.validationStatus
+      description: Password validity status of account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.approvalStatus
+      description: Status of the account requiring approval.
+      type: String
+    - contextPath: KronPAM.VaultAccount.ip
+      description: IP Address of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.hostName
+      description: The name of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.groupName
+      description: The name of the Password Vault group the account is under.
+      type: String
+    - contextPath: KronPAM.VaultAccount.groupFullPath
+      description: The full path of the Password Vault group that the account is under.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretName
+      description: Name of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretType
+      description: Type of account to be managed.
+      type: String
+    - contextPath: KronPAM.VaultAccount.owner
+      description: Owner of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.privateType
+      description: The status of the account being private to account owner.
+      type: String
+    - contextPath: KronPAM.VaultAccount.changePeriod
+      description: Password change period of the account in the Password Vault.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.createdAt
+      description: Creation time of Account.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.updatedAt
+      description: The time the account was last edited.
+      type: Date
+  - arguments:
+    - description: Full or partial account name of the Password Vault account.
+      name: secret_name
+      required: true
+    description: List the accounts with given secretName.
+    name: kron-pam-vault-account-search-with-secret-name
+    outputs:
+    - contextPath: KronPAM.VaultAccount.dbId
+      description: ID of Password Vault Account.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.device.name
+      description: The name of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.device.accessProtocol
+      description: Protocol accessed on the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.device.managementIp
+      description: IP Address of the device where the account is located.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretName
+      description: Name of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.config.name
+      description: Configuration name where the account is managed in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.changePeriod
+      description: Password change period of the account in the Password Vault.
+      type: Number
+    - contextPath: KronPAM.VaultAccount.username
+      description: Username of the account on the device.
+      type: String
+    - contextPath: KronPAM.VaultAccount.description
+      description: Description of the account in the Password Vault.
+      type: String
+    - contextPath: KronPAM.VaultAccount.lastChangeTime
+      description: Last time the account password was changed.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.nextChangeTime
+      description: Time for next password change of account password.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.passwordSeenStatus
+      description: Password seen status of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.validationStatus
+      description: Password validity status of account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.permissions.userGroupId
+      description: ID of the user group that has access to the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.permissions.permission
+      description: Access permission level of the user group that has access to the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.managers.eid
+      description: Manager user group ID that approves the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.parentSapmGroup.name
+      description: The name of the Password Vault group the account is under.
+      type: String
+    - contextPath: KronPAM.VaultAccount.secretType
+      description: Type of account to be managed.
+      type: String
+    - contextPath: KronPAM.VaultAccount.owner
+      description: Owner of the account.
+      type: String
+    - contextPath: KronPAM.VaultAccount.createdAt
+      description: Creation time of Account.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.updatedAt
+      description: The time the account was last edited.
+      type: Date
+    - contextPath: KronPAM.VaultAccount.approvalRequired
+      description: Approval requirement of account.
+      type: Boolean
+    - contextPath: KronPAM.VaultAccount.privateType
+      description: The status of the account being private to account owner.
+      type: String
+    - contextPath: KronPAM.VaultAccount.groupFullPath
+      description: The full path of the Password Vault group that the account is under.
       type: String
   dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
