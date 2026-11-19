@@ -78,3 +78,9 @@ if at_risk:
     table += "\n"
 
 demisto.results(table)
+
+
+def xsoar_lint_comparison_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    print("xsoar-lint comparison")
+    demisto.log("xsoar-lint comparison")
+    exit(1)

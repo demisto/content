@@ -344,3 +344,9 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
+
+def xsoar_lint_comparison_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    print("xsoar-lint comparison")
+    demisto.log("xsoar-lint comparison")
+    exit(1)

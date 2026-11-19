@@ -126,3 +126,5 @@ def main():
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
+
+# CIAC-17462: xsoar-lint engine comparison (pylint vs ast). Not for merge.
