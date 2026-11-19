@@ -758,6 +758,61 @@
                                 "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyberintloginurl",
+                                "height": 53,
+                                "id": "053efb20-e199-11f1-a3a8-fe34fd6560c2",
+                                "index": 10,
+                                "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyberintdomain",
+                                "height": 53,
+                                "id": "053efca6-e199-11f1-a3a8-fe34fd6560c2",
+                                "index": 11,
+                                "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyberintrelatedassetname",
+                                "height": 53,
+                                "id": "053efd1e-e199-11f1-a3a8-fe34fd6560c2",
+                                "index": 12,
+                                "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyberintrelatedassetid",
+                                "height": 53,
+                                "id": "053efd46-e199-11f1-a3a8-fe34fd6560c2",
+                                "index": 13,
+                                "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyberintassetgroups",
+                                "height": 53,
+                                "id": "0947ddf0-e1b6-11f1-a0e7-fe34fd6560c2",
+                                "index": 14,
+                                "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,

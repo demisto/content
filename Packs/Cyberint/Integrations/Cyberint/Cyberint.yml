@@ -118,6 +118,14 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cyberint.
   section: Collect
+- display: Fetch Asset Groups
+  name: fetch_asset_groups
+  type: 8
+  defaultvalue: 'true'
+  required: false
+  additionalinfo: When selected, each fetched alert is enriched with the asset groups of its related assets. This makes one extra API request per alert.
+  section: Collect
+  advanced: true
 - display: Fetch Types
   name: fetch_type
   type: 16

@@ -1,0 +1,30 @@
+{
+    "id": "incident_cyberintrelatedassetname",
+    "version": -1,
+    "modified": "2026-11-16T12:00:00.000000000+02:00",
+    "name": "Cyberint Related Asset Name",
+    "ownerOnly": false,
+    "cliName": "cyberintrelatedassetname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cyberint Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
