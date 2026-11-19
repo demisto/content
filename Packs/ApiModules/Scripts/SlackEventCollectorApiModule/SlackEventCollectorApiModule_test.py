@@ -1424,26 +1424,9 @@ def test_main_fetch_events_does_not_persist_when_send_fails(mocker):
     assert "XSIAM unavailable" in return_error.call_args.args[0]
 
 
-PASSTHROUGH_ENVELOPE = {
-    "type": "passthrough",
-    "passthrough": {"parameters": {"bot_token": "xoxb-1", "app_token": "xapp-1", "user_token": "xoxp-ucp"}},
-}
-
-
-@pytest.fixture
-def ucp_passthrough(mocker):
-    """
-    Puts the module on the UCP passthrough path: UCP enabled, but no BaseClient-applied auth.
-    """
-    mocker.patch.object(SlackEventCollector, "should_use_ucp_auth", return_value=False)
-    mocker.patch.object(SlackEventCollector, "is_ucp_enabled", return_value=True)
-    return mocker.patch.object(SlackEventCollector, "get_ucp_credentials", return_value=PASSTHROUGH_ENVELOPE)
-
-
 class TestBuildClient:
     def test_legacy_path_sets_bearer_header_from_user_token(self, mocker):
         mocker.patch.object(SlackEventCollector, "should_use_ucp_auth", return_value=False)
-        mocker.patch.object(SlackEventCollector, "is_ucp_enabled", return_value=False)
         client = SlackEventCollector.build_client(
             {"url": "https://api.slack.com/audit/v1/", "user_token": {"password": "xoxp-1"}}
         )
@@ -1452,7 +1435,6 @@ class TestBuildClient:
 
     def test_legacy_path_without_token_raises(self, mocker):
         mocker.patch.object(SlackEventCollector, "should_use_ucp_auth", return_value=False)
-        mocker.patch.object(SlackEventCollector, "is_ucp_enabled", return_value=False)
         with pytest.raises(DemistoException, match="User Token must be provided"):
             SlackEventCollector.build_client({"url": "https://api.slack.com/audit/v1/"})
 
@@ -1468,26 +1450,3 @@ class TestBuildClient:
         ctx = SlackEventCollector.UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
         client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "xoxp-ucp"}}, ctx)
         assert ctx.headers["Authorization"] == "Bearer xoxp-ucp"
-
-    def test_ucp_passthrough_sets_bearer_header_from_envelope_user_token(self, ucp_passthrough):
-        client = SlackEventCollector.build_client({"user_token": {"password": "legacy-ignored"}})
-        assert client._headers["Authorization"] == "Bearer xoxp-ucp"
-        assert ucp_passthrough.call_count == 1
-
-    def test_ucp_passthrough_without_user_token_raises(self, ucp_passthrough):
-        ucp_passthrough.return_value = {"type": "passthrough", "passthrough": {"parameters": {"bot_token": "x"}}}
-        with pytest.raises(DemistoException, match="User Token must be provided"):
-            SlackEventCollector.build_client({})
-
-
-class TestGetUcpPassthroughUserToken:
-    def test_returns_user_token_from_parameters(self, ucp_passthrough):
-        assert SlackEventCollector.get_ucp_passthrough_user_token("m") == "xoxp-ucp"
-
-    def test_reads_flat_passthrough_envelope(self, ucp_passthrough):
-        ucp_passthrough.return_value = {"type": "passthrough", "passthrough": {"user_token": "xoxp-flat"}}
-        assert SlackEventCollector.get_ucp_passthrough_user_token("m") == "xoxp-flat"
-
-    def test_non_passthrough_envelope_returns_empty(self, ucp_passthrough):
-        ucp_passthrough.return_value = {"type": "api_key", "api_key": {"key": "k"}}
-        assert SlackEventCollector.get_ucp_passthrough_user_token("m") == ""
