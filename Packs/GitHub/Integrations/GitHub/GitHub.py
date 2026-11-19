@@ -1601,23 +1601,11 @@ def get_file_content_from_repo():
 
 
 def get_url_hosts(base_url: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Returns the hosts that file URLs may use for the configured GitHub server.
+    """Returns the (web hosts, raw hosts) that file URLs may use for the configured server.
 
-    The hosts are derived from the integration's "Server URL" (the API URL), so a file URL can only point at the
-    server the integration is configured for. The first host of each tuple is the primary one, used in error messages.
-
-    The Enterprise layouts below are assumptions based on GitHub's documented URL conventions and have not been
-    verified against a real Enterprise instance:
-    - GitHub.com (https://api.github.com): web hosts github.com and www.github.com, raw host raw.githubusercontent.com.
-    - GitHub Enterprise Server (https://<host>/api/v3): web host <host>, raw host raw.<host>.
-    - GitHub Enterprise Cloud with data residency (https://api.<subdomain>.ghe.com): web host <subdomain>.ghe.com, raw host
-      raw.<subdomain>.ghe.com.
-
-    Args:
-        base_url: The configured Server URL (the API URL).
-
-    Returns:
-        A tuple of (web hosts, raw hosts).
+    Derived from the Server URL: github.com (api.github.com) uses github.com, www.github.com and
+    raw.githubusercontent.com. Any other host is treated as GitHub Enterprise: <host> for web and raw.<host> for raw.
+    The Enterprise layouts are assumptions and have not been verified against a real Enterprise instance.
     """
     api_host = (urllib.parse.urlparse(base_url).hostname or "").lower()
     if api_host == "api.github.com":
@@ -1628,29 +1616,14 @@ def get_url_hosts(base_url: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
 
 
 def parse_github_file_url(url: str, base_url: str) -> tuple[str, str, str, str]:
-    """Extracts the owner, repository, ref (branch/tag/commit) and path from a GitHub file or folder URL.
+    """Parses a GitHub file URL into (owner, repo, ref, path).
 
-    The path of the URL is split on "/" into segments, which are matched by position against one of two layouts:
-    - Web URL: https://<web host>/<owner>/<repo>/blob|tree/<ref>/<path>.
-    - Raw URL: https://<raw host>/<owner>/<repo>/<ref>/<path>.
-
-    Which hosts are accepted depends on the configured Server URL (see `get_url_hosts`). So with github.com the accepted
-    hosts are github.com, www.github.com and raw.githubusercontent.com, while with GitHub Enterprise only the Enterprise
-    web host and its raw host are accepted. A URL of any other host is rejected.
-
-    Only the host and the layout are validated. The scheme, query string and fragment are ignored, and the owner, repo,
-    ref and path are not validated. The ref is taken as the single segment after blob/tree (or after the repo for raw
-    URLs), so a ref that contains slashes, such as `feature/x`, is not supported.
-
-    Args:
-        url: A file or folder URL of the configured GitHub server.
-        base_url: The configured Server URL (the API URL), used to tell which hosts are accepted.
-
-    Returns:
-        A tuple of (owner, repository, ref, path). The path is empty when the URL points at the repository root.
+    Only the host and the layout are checked. Accepted layouts are https://<web host>/<owner>/<repo>/blob/<ref>/<path>
+    and https://<raw host>/<owner>/<repo>/<ref>/<path>, with hosts from `get_url_hosts`. The query string and fragment
+    are ignored. The ref is a single path segment, so refs containing "/" are not supported.
 
     Raises:
-        ValueError: If the host is not one of the configured server's hosts, or the URL does not follow a supported layout.
+        ValueError: If the host is not one of the configured server's hosts or the layout is not supported.
     """
     web_hosts, raw_hosts = get_url_hosts(base_url)
     parsed_url = urllib.parse.urlparse(url.strip())
@@ -1685,8 +1658,9 @@ def get_repo_contents(owner: str, repo: str, path: str, ref: str) -> Any:
 def get_file_bytes(owner: str, repo: str, file_metadata: dict, ref: str) -> bytes:
     """Returns the file bytes.
 
-    GitHub includes the base64 content in the metadata of files up to 1 MB. For larger files the raw bytes are
-    downloaded with a second request, since http_request decodes its response as UTF-8 and cannot carry binary data.
+    GitHub inlines base64 content only for files up to 1 MB. Larger files are downloaded raw with a second request,
+    because http_request decodes responses as UTF-8 and cannot return binary data.
+    https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content
     """
     inline_content = file_metadata.get("content")
     if inline_content and file_metadata.get("encoding") == "base64":
@@ -1722,10 +1696,10 @@ def validate_file_size(file_name: str, size_bytes: int | None) -> None:
 
 
 def build_file_content(owner: str, repo: str, file_metadata: dict, ref: str, url: str) -> dict:
-    """Downloads a file and returns it in the unified FileContent format. Raises a ValueError if it cannot be returned.
+    """Returns the file in the FileContent format. Raises a ValueError if the file cannot be returned.
 
-    Text files are returned inline (utf-8, errors replaced). Binary files are base64-encoded and the Type is
-    suffixed with ';base64'.
+    Text files are decoded as utf-8 (errors replaced). Binary files are base64-encoded and their Type gets a
+    ';base64' suffix.
     """
     file_name = file_metadata.get("name", "")
     extension = os.path.splitext(file_name.lower())[1]
@@ -1754,11 +1728,9 @@ def build_file_content(owner: str, repo: str, file_metadata: dict, ref: str, url
 
 
 def build_folder_entry_file_content(owner: str, repo: str, folder_entry: dict, ref: str, url: str) -> dict | None:
-    """Builds the FileContent of one entry of a folder listing, or returns None if the entry should be skipped.
+    """Builds the FileContent of a folder entry, or returns None if the entry is skipped.
 
-    Sub-folders and any file that cannot be returned (unapproved format, oversized, no reported size, failed download)
-    are skipped silently, so that one such entry does not fail the whole folder. Unlike `build_file_content`, this
-    function never raises for such an entry.
+    Sub-folders and files that cannot be returned are skipped instead of failing the whole folder.
     """
     file_name = folder_entry.get("name", "")
     if folder_entry.get("type") != "file":
@@ -1772,10 +1744,9 @@ def build_folder_entry_file_content(owner: str, repo: str, folder_entry: dict, r
 
 
 def get_file_content_command() -> None:
-    """get-file-content: retrieves a file (or the supported files of a folder) by GitHub URL in the generic FileContent format.
+    """get-file-content: returns the file at a GitHub URL in the FileContent format.
 
-    A file URL returns one FileContent object and raises a clear error if the file cannot be returned. A folder URL returns
-    a list with one object per supported file directly in the folder, skipping the entries that cannot be returned.
+    A folder URL is not supported and raises a ValueError. The URL must point to a single approved file.
     """
     url = demisto.args().get("url", "")
     owner, repo, ref, path = parse_github_file_url(url, BASE_URL)
