@@ -134,6 +134,13 @@ configuration:
   type: 8
   section: Collect
   required: false
+- name: eventFetchInterval
+  display: Events Fetch Interval
+  defaultvalue: '1'
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch Event Collector
 name: ElasticsearchEventCollector
