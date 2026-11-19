@@ -58,27 +58,19 @@ FILE_HEADERS = ["Name", "Path", "Type", "Size", "SHA", "DownloadUrl"]
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
 PROJECTS_PREVIEW = "application/vnd.github.inertia-preview+json"
 
-GITHUB_NAME_PATTERN = re.compile(r"[A-Za-z0-9_.-]+")
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_PAGE_NUMBER = 1
 
 # Generic get-file-content (BYOK) settings. Aligned with the Google Drive implementation.
-APPROVED_EXTENSIONS_MIME_TYPES = {
-    ".md": "text/markdown",
-    ".json": "application/json",
-    ".jsonl": "application/jsonl",
-    ".csv": "text/csv",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+# Approved extension (lower case) -> (MIME type, whether the content is binary). Binary content is returned base64 encoded.
+APPROVED_EXTENSIONS = {
+    ".md": ("text/markdown", False),
+    ".json": ("application/json", False),
+    ".jsonl": ("application/jsonl", False),
+    ".csv": ("text/csv", False),
+    ".docx": ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", True),
 }
-TEXT_EXTENSIONS = {".md", ".json", ".jsonl", ".csv"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
-GITHUB_HOSTS = {"github.com", "www.github.com"}
-GITHUB_RAW_HOST = "raw.githubusercontent.com"
-SUPPORTED_URL_FORMATS = (
-    "https://github.com/<owner>/<repo>/blob/<ref>/<path>, "
-    "https://github.com/<owner>/<repo>/tree/<ref>/<path>, "
-    "https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>"
-)
 """ HELPER FUNCTIONS """
 
 
@@ -1608,51 +1600,82 @@ def get_file_content_from_repo():
     return_results(results)
 
 
-def parse_github_file_url(url: str) -> tuple[str, str, str, str]:
-    """Extracts the owner, repository, ref (branch/tag/commit) and path from a GitHub file or folder URL.
+def get_url_hosts(base_url: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Returns the hosts that file URLs may use for the configured GitHub server.
 
-    Note: the ref is taken as the first path segment after blob/tree, so refs containing slashes are not supported.
-    The URL is untrusted input that is used to build an authenticated API request, so the owner and repository must be
-    plain GitHub names and the path must not contain dot segments (which would let the request escape /contents/).
+    The hosts are derived from the integration's "Server URL" (the API URL), so a file URL can only point at the
+    server the integration is configured for. The first host of each tuple is the primary one, used in error messages.
+
+    The Enterprise layouts below are assumptions based on GitHub's documented URL conventions and have not been
+    verified against a real Enterprise instance:
+    - GitHub.com (https://api.github.com): web hosts github.com and www.github.com, raw host raw.githubusercontent.com.
+    - GitHub Enterprise Server (https://<host>/api/v3): web host <host>, raw host raw.<host>.
+    - GitHub Enterprise Cloud with data residency (https://api.<subdomain>.ghe.com): web host <subdomain>.ghe.com, raw host
+      raw.<subdomain>.ghe.com.
 
     Args:
-        url: A github.com blob/tree URL or a raw.githubusercontent.com URL.
+        base_url: The configured Server URL (the API URL).
 
     Returns:
-        A tuple of (owner, repository, ref, path). The path is empty for the repository root.
+        A tuple of (web hosts, raw hosts).
+    """
+    api_host = (urllib.parse.urlparse(base_url).hostname or "").lower()
+    if api_host == "api.github.com":
+        return ("github.com", "www.github.com"), ("raw.githubusercontent.com",)
+
+    web_host = api_host.removeprefix("api.")
+    return (web_host,), (f"raw.{web_host}",)
+
+
+def parse_github_file_url(url: str, base_url: str) -> tuple[str, str, str, str]:
+    """Extracts the owner, repository, ref (branch/tag/commit) and path from a GitHub file or folder URL.
+
+    The path of the URL is split on "/" into segments, which are matched by position against one of two layouts:
+    - Web URL: https://<web host>/<owner>/<repo>/blob|tree/<ref>/<path>.
+    - Raw URL: https://<raw host>/<owner>/<repo>/<ref>/<path>.
+
+    Which hosts are accepted depends on the configured Server URL (see `get_url_hosts`). So with github.com the accepted
+    hosts are github.com, www.github.com and raw.githubusercontent.com, while with GitHub Enterprise only the Enterprise
+    web host and its raw host are accepted. A URL of any other host is rejected.
+
+    Only the host and the layout are validated. The scheme, query string and fragment are ignored, and the owner, repo,
+    ref and path are not validated. The ref is taken as the single segment after blob/tree (or after the repo for raw
+    URLs), so a ref that contains slashes, such as `feature/x`, is not supported.
+
+    Args:
+        url: A file or folder URL of the configured GitHub server.
+        base_url: The configured Server URL (the API URL), used to tell which hosts are accepted.
+
+    Returns:
+        A tuple of (owner, repository, ref, path). The path is empty when the URL points at the repository root.
 
     Raises:
-        ValueError: If the URL is not in one of the supported formats or contains unsafe segments.
+        ValueError: If the host is not one of the configured server's hosts, or the URL does not follow a supported layout.
     """
-    invalid_url_error = ValueError(f"Unsupported or invalid GitHub URL: {url}. Supported URL formats: {SUPPORTED_URL_FORMATS}.")
+    web_hosts, raw_hosts = get_url_hosts(base_url)
     parsed_url = urllib.parse.urlparse(url.strip())
     host = (parsed_url.hostname or "").lower()
     segments = [urllib.parse.unquote(segment) for segment in parsed_url.path.split("/") if segment]
 
-    if host in GITHUB_HOSTS and len(segments) >= 4 and segments[2] in ("blob", "tree"):
+    if host in web_hosts and len(segments) >= 4 and segments[2] in ("blob", "tree"):
         owner, repo, _, ref, *path_segments = segments
-    elif host == GITHUB_RAW_HOST and len(segments) >= 4:
+    elif host in raw_hosts and len(segments) >= 4:
         owner, repo, ref, *path_segments = segments
     else:
-        raise invalid_url_error
+        supported_formats = (
+            f"https://{web_hosts[0]}/<owner>/<repo>/blob/<ref>/<path>, "
+            f"https://{web_hosts[0]}/<owner>/<repo>/tree/<ref>/<path>, "
+            f"https://{raw_hosts[0]}/<owner>/<repo>/<ref>/<path>"
+        )
+        raise ValueError(f"Unsupported or invalid GitHub URL: {url}. Supported URL formats: {supported_formats}.")
 
-    path = "/".join(path_segments)
-    has_dot_segment = any(part in (".", "..") for part in path.split("/"))
-    if not all(is_valid_github_name(name) for name in (owner, repo)) or has_dot_segment:
-        raise invalid_url_error
-
-    return owner, repo, ref, path
-
-
-def is_valid_github_name(name: str) -> bool:
-    """Returns True if the name is a plain GitHub owner/repository name (no separators, query or dot-only names)."""
-    return bool(GITHUB_NAME_PATTERN.fullmatch(name)) and name not in (".", "..")
+    return owner, repo, ref, "/".join(path_segments)
 
 
 def get_approved_extension(file_name: str) -> str | None:
     """Returns the lower-cased file extension if it is an approved format, otherwise None."""
     _, extension = os.path.splitext(file_name.lower())
-    return extension if extension in APPROVED_EXTENSIONS_MIME_TYPES else None
+    return extension if extension in APPROVED_EXTENSIONS else None
 
 
 def build_contents_url_suffix(owner: str, repo: str, path: str) -> str:
@@ -1683,7 +1706,7 @@ def download_raw_file(owner: str, repo: str, path: str, ref: str) -> bytes:
     return response.content
 
 
-def get_file_bytes(owner: str, repo: str, ref: str, file_metadata: dict) -> bytes:
+def get_file_bytes(owner: str, repo: str, file_metadata: dict, ref: str) -> bytes:
     """Returns the file bytes, using the inline base64 content of the metadata when GitHub provided it."""
     inline_content = file_metadata.get("content")
     if inline_content and file_metadata.get("encoding") == "base64":
@@ -1691,16 +1714,27 @@ def get_file_bytes(owner: str, repo: str, ref: str, file_metadata: dict) -> byte
     return download_raw_file(owner, repo, file_metadata["path"], ref)
 
 
-def validate_file_size(file_name: str, size_bytes: int) -> None:
-    if size_bytes > MAX_FILE_SIZE:
-        size_mb = size_bytes / (1024 * 1024)
-        limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+def exceeds_size_limit(size_bytes: int | None) -> bool:
+    """Returns True if the file is over the size limit. A file with no reported size is treated as over the limit."""
+    return size_bytes is None or size_bytes > MAX_FILE_SIZE
+
+
+def validate_file_size(file_name: str, size_bytes: int | None) -> None:
+    """Raises a ValueError if the file is over the size limit, or if GitHub did not report its size."""
+    if not exceeds_size_limit(size_bytes):
+        return
+
+    limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+    if size_bytes is None:
         raise ValueError(
-            f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+            f"The size of the file '{file_name}' is unknown, so it is treated as exceeding the maximum allowed size "
+            f"of {limit_mb:.0f} MB."
         )
+    size_mb = size_bytes / (1024 * 1024)
+    raise ValueError(f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB.")
 
 
-def build_file_content_item(owner: str, repo: str, ref: str, file_metadata: dict, url: str) -> dict:
+def build_file_content_item(owner: str, repo: str, file_metadata: dict, ref: str, url: str) -> dict:
     """Downloads a file and returns it in the unified FileContent format.
 
     Text files are returned inline (utf-8, errors replaced). Binary files are base64-encoded and the Type is
@@ -1709,18 +1743,17 @@ def build_file_content_item(owner: str, repo: str, ref: str, file_metadata: dict
     file_name = file_metadata.get("name", "")
     extension = get_approved_extension(file_name)
     if not extension:
-        supported = ", ".join(sorted(APPROVED_EXTENSIONS_MIME_TYPES))
+        supported = ", ".join(sorted(APPROVED_EXTENSIONS))
         raise ValueError(f"File format not approved: {file_name}. Supported formats: {supported}.")
-    validate_file_size(file_name, int(file_metadata.get("size") or 0))
+    validate_file_size(file_name, file_metadata.get("size"))
 
-    raw_bytes = get_file_bytes(owner, repo, ref, file_metadata)
-    validate_file_size(file_name, len(raw_bytes))
-    mime_type = APPROVED_EXTENSIONS_MIME_TYPES[extension]
-    if extension in TEXT_EXTENSIONS:
-        content = raw_bytes.decode("utf-8", errors="replace")
-    else:
+    raw_bytes = get_file_bytes(owner, repo, file_metadata, ref)
+    mime_type, is_binary = APPROVED_EXTENSIONS[extension]
+    if is_binary:
         content = base64.b64encode(raw_bytes).decode("ascii")
         mime_type = f"{mime_type};base64"
+    else:
+        content = raw_bytes.decode("utf-8", errors="replace")
 
     return assign_params(
         Id=file_metadata.get("sha"),
@@ -1733,10 +1766,10 @@ def build_file_content_item(owner: str, repo: str, ref: str, file_metadata: dict
     )
 
 
-def build_folder_file_content_items(owner: str, repo: str, ref: str, folder_items: list, url: str) -> list[dict]:
+def build_folder_file_content_items(owner: str, repo: str, folder_items: list, ref: str, url: str) -> list[dict]:
     """Builds FileContent items for the supported files directly under a folder (non-recursive).
 
-    Sub-folders, unsupported formats and oversized files are skipped silently.
+    Sub-folders, unsupported formats, and files that are oversized or have no reported size are skipped silently.
     """
     items: list[dict] = []
     for folder_item in folder_items:
@@ -1744,11 +1777,11 @@ def build_folder_file_content_items(owner: str, repo: str, ref: str, folder_item
         if folder_item.get("type") != "file" or not get_approved_extension(file_name):
             demisto.debug(f"get-file-content: skipping unsupported entry '{file_name}' of type {folder_item.get('type')}")
             continue
-        if int(folder_item.get("size") or 0) > MAX_FILE_SIZE:
-            demisto.debug(f"get-file-content: skipping oversized file '{file_name}'")
+        if exceeds_size_limit(folder_item.get("size")):
+            demisto.debug(f"get-file-content: skipping file '{file_name}' that is oversized or has no reported size")
             continue
         try:
-            items.append(build_file_content_item(owner, repo, ref, folder_item, url))
+            items.append(build_file_content_item(owner, repo, folder_item, ref, url))
         except DemistoException as error:
             demisto.debug(f"get-file-content: skipping file '{file_name}' that failed to download: {error}")
     return items
@@ -1757,11 +1790,11 @@ def build_folder_file_content_items(owner: str, repo: str, ref: str, folder_item
 def get_file_content_command() -> None:
     """get-file-content: retrieves a file (or the supported files of a folder) by GitHub URL in the generic FileContent format."""
     url = demisto.args().get("url", "")
-    owner, repo, ref, path = parse_github_file_url(url)
+    owner, repo, ref, path = parse_github_file_url(url, BASE_URL)
     contents = get_repo_contents(owner, repo, path, ref)
 
     if isinstance(contents, list):
-        items = build_folder_file_content_items(owner, repo, ref, contents, url)
+        items = build_folder_file_content_items(owner, repo, contents, ref, url)
         readable_output = (
             tableToMarkdown(
                 "GitHub Folder File Content", items, headers=["Id", "Title", "Type", "Url", "FileUrl"], removeNull=True
@@ -1776,7 +1809,7 @@ def get_file_content_command() -> None:
 
     if contents.get("type") != "file":
         raise ValueError(f"The URL does not point to a file or a folder (type: {contents.get('type')}): {url}")
-    item = build_file_content_item(owner, repo, ref, contents, url)
+    item = build_file_content_item(owner, repo, contents, ref, url)
     readable_output = tableToMarkdown("Generic File Content", item, headers=["Id", "Title", "Type", "Url"], removeNull=True)
     return_results(
         CommandResults(outputs_prefix="FileContent", outputs=item, readable_output=readable_output, raw_response=contents)

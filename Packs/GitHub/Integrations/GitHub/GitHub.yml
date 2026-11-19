@@ -7575,7 +7575,7 @@ script:
     hidden: true
     description: Retrieves a file from GitHub by its URL and returns it in a generic unified format under the FileContent context key. When the URL points to a folder, returns a list with one item per supported file directly in the folder (non-recursive). Supported formats are .md, .json, .jsonl, .csv and .docx, up to 5 MB. Text files are returned inline, binary files are base64-encoded and the Type is suffixed with ';base64'.
     arguments:
-    - description: 'A GitHub file or folder URL. Supported formats are https://github.com/<owner>/<repo>/blob/<ref>/<path>, https://github.com/<owner>/<repo>/tree/<ref>/<path> and https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>. Max file size: 5 MB.'
+    - description: 'The GitHub file or folder URL. Supported formats are https://github.com/<owner>/<repo>/blob/<ref>/<path> and https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>. For GitHub Enterprise, use the web host of the configured Server URL instead (for example, https://<host>/<owner>/<repo>/blob/<ref>/<path>). Max file size: 5 MB.'
       name: url
       prettyname: The GitHub file URL
       required: true
