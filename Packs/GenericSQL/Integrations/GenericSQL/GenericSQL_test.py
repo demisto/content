@@ -3,6 +3,7 @@ from typing import Any
 
 import oracledb
 import demistomock as demisto
+import psycopg
 import pyodbc
 import pytest
 import sqlalchemy
@@ -965,3 +966,40 @@ def test_create_api_metrics(mocker, response, result):
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get("Contents") == "Metrics reported successfully."
     assert metric_results.get("APIExecutionMetrics") == result
+
+
+def test_convert_dialect_to_module_postgres_uses_psycopg_driver():
+    """
+    Given:
+        - The PostgreSQL dialect.
+    When:
+        - Converting the dialect to the SQLAlchemy driver name.
+    Then:
+        - The psycopg (v3) driver is set explicitly.
+    """
+    assert Client._convert_dialect_to_module("PostgreSQL") == "postgresql+psycopg"
+
+
+@pytest.mark.parametrize(
+    "dialect, ssl_connect, expected_connect_args",
+    [
+        pytest.param("PostgreSQL", False, {"cursor_factory": psycopg.ClientCursor}, id="PostgreSQL"),
+        pytest.param(
+            "PostgreSQL", True, {"cursor_factory": psycopg.ClientCursor, "sslmode": "require"}, id="PostgreSQL with SSL"
+        ),
+        pytest.param("MySQL", False, {}, id="MySQL"),
+    ],
+)
+def test_create_engine_connect_args(mocker, dialect: str, ssl_connect: bool, expected_connect_args: dict):
+    """
+    Given:
+        - A PostgreSQL or MySQL instance, with or without SSL.
+    When:
+        - Creating the engine.
+    Then:
+        - PostgreSQL uses psycopg's ClientCursor (client-side binding, like psycopg2), and keeps sslmode when SSL is set.
+        - Other dialects do not get a cursor factory.
+    """
+    mock_create_engine = mocker.patch.object(sqlalchemy, "create_engine")
+    Client(dialect, "host", "username", "password", "5432", "db", "", ssl_connect)
+    assert mock_create_engine.call_args.kwargs["connect_args"] == expected_connect_args
