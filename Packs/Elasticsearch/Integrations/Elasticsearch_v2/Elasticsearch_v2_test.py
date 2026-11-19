@@ -417,60 +417,39 @@ MOCK_INDEX_RESPONSE = {
 }
 
 MOCK_GET_FROM_INDEX_RESPONSE = {
-  "_index": "my-index-000001",
-  "_id": "0",
-  "_version": 1,
-  "_seq_no": 0,
-  "_primary_term": 1,
-  "found": True,
-  "_source": {
-    "@timestamp": "2099-11-15T14:12:12",
-    "http": {
-      "request": {
-        "method": "get"
-      },
-      "response": {
-        "status_code": 200,
-        "bytes": 1070000
-      },
-      "version": "1.1"
+    "_index": "my-index-000001",
+    "_id": "0",
+    "_version": 1,
+    "_seq_no": 0,
+    "_primary_term": 1,
+    "found": True,
+    "_source": {
+        "@timestamp": "2099-11-15T14:12:12",
+        "http": {"request": {"method": "get"}, "response": {"status_code": 200, "bytes": 1070000}, "version": "1.1"},
+        "source": {"ip": "127.0.0.1"},
+        "message": "GET /search HTTP/1.1 200 1070000",
+        "user": {"id": "kimchy"},
     },
-    "source": {
-      "ip": "127.0.0.1"
-    },
-    "message": "GET /search HTTP/1.1 200 1070000",
-    "user": {
-      "id": "kimchy"
-    }
-  }
 }
 
 MOCK_DELETE_FROM_INDEX_RESPONSE = {
-  "_shards": {
-    "total": 2,
-    "failed": 0,
-    "successful": 2
-  },
-  "_index": "my-index-000001",
-  "_id": "1",
-  "_version": 2,
-  "_primary_term": 1,
-  "_seq_no": 5,
-  "result": "deleted"
+    "_shards": {"total": 2, "failed": 0, "successful": 2},
+    "_index": "my-index-000001",
+    "_id": "1",
+    "_version": 2,
+    "_primary_term": 1,
+    "_seq_no": 5,
+    "result": "deleted",
 }
 
 MOCK_UPDATE_IN_INDEX_RESPONSE = {
-   "_shards": {
-        "total": 0,
-        "successful": 0,
-        "failed": 0
-   },
-   "_index": "test",
-   "_id": "1",
-   "_version": 2,
-   "_primary_term": 1,
-   "_seq_no": 1,
-   "result": "noop"
+    "_shards": {"total": 0, "successful": 0, "failed": 0},
+    "_index": "test",
+    "_id": "1",
+    "_version": 2,
+    "_primary_term": 1,
+    "_seq_no": 1,
+    "result": "noop",
 }
 
 MOCK_INDICES_STATISTICS_RESPONSE = {
@@ -1306,6 +1285,7 @@ def test_index_document_command(mocker):
     assert command_result.raw_response == MOCK_INDEX_RESPONSE
     assert command_result.outputs_key_field == "id"
 
+
 def test_delete_document_command(mocker):
     """
     Given
@@ -1338,6 +1318,7 @@ def test_delete_document_command(mocker):
     assert command_result.raw_response == MOCK_DELETE_FROM_INDEX_RESPONSE
     assert command_result.outputs_key_field == "id"
 
+
 def test_get_document_command(mocker):
     """
     Given
@@ -1369,7 +1350,8 @@ def test_get_document_command(mocker):
     assert command_result.outputs_prefix == "Elasticsearch.Document"
     assert command_result.raw_response == MOCK_GET_FROM_INDEX_RESPONSE
     assert command_result.outputs_key_field == "id"
-    
+
+
 def test_get_multiple_documents_command(mocker):
     """
     Given
@@ -1383,14 +1365,19 @@ def test_get_multiple_documents_command(mocker):
     """
     import Elasticsearch_v2
 
-    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "mget", return_value=[MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE])
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, "mget", return_value=[MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE]
+    )
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
-    command_result = Elasticsearch_v2.get_multiple_documents_command({"index": "my-index-000001", "body": "{'docs': [{'_id': '1'},{'_id': '2'}]}"}, "")
+    command_result = Elasticsearch_v2.get_multiple_documents_command(
+        {"index": "my-index-000001", "body": "{'docs': [{'_id': '1'},{'_id': '2'}]}"}, ""
+    )
 
     assert command_result.outputs == [MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE]
     assert command_result.readable_output == "Retrieved 2 documents"
     assert command_result.outputs_prefix == "Elasticsearch.Documents"
-    
+
+
 def test_update_document_command(mocker):
     """
     Given
@@ -1413,15 +1400,14 @@ def test_update_document_command(mocker):
         "version": MOCK_UPDATE_IN_INDEX_RESPONSE.get("_version", ""),
         "result": MOCK_UPDATE_IN_INDEX_RESPONSE.get("result", ""),
     }
-    expected_human_readable = (
-        "### Updated document\n|ID|Index name|Version|Result|\n|---|---|---|---|\n| 1 | test | 2 | noop |\n"
-    )
+    expected_human_readable = "### Updated document\n|ID|Index name|Version|Result|\n|---|---|---|---|\n| 1 | test | 2 | noop |\n"
 
     assert command_result.outputs == expected_index_context
     assert command_result.readable_output == expected_human_readable
     assert command_result.outputs_prefix == "Elasticsearch.UpdatedDocument"
     assert command_result.raw_response == MOCK_UPDATE_IN_INDEX_RESPONSE
     assert command_result.outputs_key_field == "id"
+
 
 def test_get_value_by_dot_notation():
     """
@@ -2705,97 +2691,66 @@ class TestEsKibanaCaseFileAttachCommand:
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_file_attach_command({"case_id": "case-id-1"}, {})
 
+
 MOCK_CASE_SETTINGS = {
-  "closure_type": "close-by-user",
-  "connector": {
-    "fields": None,
-    "id": "5e656730-e1ca-11ec-be9b-9b1838238ee6",
-    "name": "my-jira-connector",
-    "type": ".jira"
-  },
-  "created_at": "2024-07-01T17:07:17.767Z",
-  "created_by": {
-    "email": "null,",
-    "full_name": None,
-    "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0",
-    "username": "elastic"
-  },
-  "customFields": [
-    {
-      "defaultValue": "My custom field default value.",
-      "key": "d312efda-ec2b-42ec-9e2c-84981795c581",
-      "label": "my-text-field",
-      "type": "text",
-      "required": False
-    }
-  ],
-  "error": None,
-  "extractObservables": True,
-  "id": "4a97a440-e1cd-11ec-be9b-9b1838238ee6",
-  "mappings": [
-    {
-      "action_type": "overwrite",
-      "source": "title",
-      "target": "summary"
+    "closure_type": "close-by-user",
+    "connector": {"fields": None, "id": "5e656730-e1ca-11ec-be9b-9b1838238ee6", "name": "my-jira-connector", "type": ".jira"},
+    "created_at": "2024-07-01T17:07:17.767Z",
+    "created_by": {
+        "email": "null,",
+        "full_name": None,
+        "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0",
+        "username": "elastic",
     },
-    {
-      "action_type": "overwrite",
-      "source": "description",
-      "target": "description"
-    },
-    {
-      "action_type": "append",
-      "source": "comments",
-      "target": "comments"
-    },
-    {
-      "action_type": "overwrite",
-      "source": "tags",
-      "target": "labels"
-    }
-  ],
-  "owner": "cases",
-  "templates": [
-    {
-      "caseFields": {
-        "assignees": [
-          {
-            "uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0"
-          }
-        ],
-        "category": "Default-category",
-        "customFields": [
-          {
+    "customFields": [
+        {
+            "defaultValue": "My custom field default value.",
             "key": "d312efda-ec2b-42ec-9e2c-84981795c581",
+            "label": "my-text-field",
             "type": "text",
-            "value": "A text field value for the template."
-          }
-        ],
-        "description": "A default description for cases.",
-        "tags": [
-          "Default case tag"
-        ],
-        "title": "Default case title"
-      },
-      "description": "A description of the template.",
-      "key": "505932fe-ee3a-4960-a661-c781b5acdb05",
-      "name": "template-1",
-      "tags": [
-        "Template tag 1"
-      ]
-    }
-  ],
-  "updated_at": None,
-  "updated_by": None,
-  "version": "WzIwNzMsMV0=",
-  "workflowTags": [
-    "soc-triage"
-  ]
+            "required": False,
+        }
+    ],
+    "error": None,
+    "extractObservables": True,
+    "id": "4a97a440-e1cd-11ec-be9b-9b1838238ee6",
+    "mappings": [
+        {"action_type": "overwrite", "source": "title", "target": "summary"},
+        {"action_type": "overwrite", "source": "description", "target": "description"},
+        {"action_type": "append", "source": "comments", "target": "comments"},
+        {"action_type": "overwrite", "source": "tags", "target": "labels"},
+    ],
+    "owner": "cases",
+    "templates": [
+        {
+            "caseFields": {
+                "assignees": [{"uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0"}],
+                "category": "Default-category",
+                "customFields": [
+                    {
+                        "key": "d312efda-ec2b-42ec-9e2c-84981795c581",
+                        "type": "text",
+                        "value": "A text field value for the template.",
+                    }
+                ],
+                "description": "A default description for cases.",
+                "tags": ["Default case tag"],
+                "title": "Default case title",
+            },
+            "description": "A description of the template.",
+            "key": "505932fe-ee3a-4960-a661-c781b5acdb05",
+            "name": "template-1",
+            "tags": ["Template tag 1"],
+        }
+    ],
+    "updated_at": None,
+    "updated_by": None,
+    "version": "WzIwNzMsMV0=",
+    "workflowTags": ["soc-triage"],
 }
 
 
 class TestEsKibanaCaseSettingsCreateCommand:
-
     def test_create_case_settings_from_scalars(self, mocker):
         import Elasticsearch_v2
 
@@ -2861,8 +2816,14 @@ class TestEsKibanaCaseSettingsCreateCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_CASE_SETTINGS)
 
-        body = {"closure_type": "close-by-user", "connector": {"fields": None, "id": "none", "name": "none", "type": ".none"}, "owner": "cases"}
-        Elasticsearch_v2.es_kibana_case_settings_create_command({"body": json.dumps(body), "closure_type": "close-by-pushing"}, {})
+        body = {
+            "closure_type": "close-by-user",
+            "connector": {"fields": None, "id": "none", "name": "none", "type": ".none"},
+            "owner": "cases",
+        }
+        Elasticsearch_v2.es_kibana_case_settings_create_command(
+            {"body": json.dumps(body), "closure_type": "close-by-pushing"}, {}
+        )
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
@@ -2873,14 +2834,14 @@ class TestEsKibanaCaseSettingsCreateCommand:
         from CommonServerPython import DemistoException
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_CASE_SETTINGS)
-        
+
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_settings_create_command({}, {})
 
         mock_request.assert_not_called()
 
-class TestEsKibanaCaseSettingsUpdateCommand:
 
+class TestEsKibanaCaseSettingsUpdateCommand:
     def test_update_case_settings_from_scalars(self, mocker):
         import Elasticsearch_v2
 
@@ -2893,7 +2854,7 @@ class TestEsKibanaCaseSettingsUpdateCommand:
                 "connector_id": "none",
                 "connector_name": "none",
                 "connector_type": ".none",
-                "version": "WzI2LDNd"
+                "version": "WzI2LDNd",
             },
             {},
         )
@@ -2917,7 +2878,9 @@ class TestEsKibanaCaseSettingsUpdateCommand:
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_CASE_SETTINGS)
 
         with pytest.raises(DemistoException):
-            Elasticsearch_v2.es_kibana_case_settings_update_command({"configuration_id": "configuration-1", "closure_type": "close-by-user"}, {})
+            Elasticsearch_v2.es_kibana_case_settings_update_command(
+                {"configuration_id": "configuration-1", "closure_type": "close-by-user"}, {}
+            )
 
         mock_request.assert_not_called()
 
@@ -2931,6 +2894,7 @@ class TestEsKibanaCaseSettingsUpdateCommand:
             Elasticsearch_v2.es_kibana_case_settings_update_command({"closure_type": "close-by-user"}, {})
 
         mock_request.assert_not_called()
+
 
 MOCK_CASE_ACTIVITY_ACTIONS = {
     "page": 1,
@@ -3027,44 +2991,42 @@ class TestEsKibanaCaseActivityFindCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_activity_find_command({}, {})
-            
+
+
 MOCK_CASE_COMMENTS = {
-  "comments": [
-    {
-      "comment": "A new comment",
-      "created_at": "2023-10-07T19:32:13.104Z",
-      "created_by": {
-        "email": None,
-        "full_name": None,
-        "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0",
-        "username": "elastic"
-      },
-      "id": "8048b460-fe2b-11ec-b15d-779a7c8bbcc3",
-      "owner": "cases",
-      "pushed_at": None,
-      "pushed_by": None,
-      "type": "user",
-      "updated_at": None,
-      "updated_by": None,
-      "version": "WzIzLDFd"
-    }
-  ],
-  "page": 1,
-  "per_page": 10,
-  "total": 1
+    "comments": [
+        {
+            "comment": "A new comment",
+            "created_at": "2023-10-07T19:32:13.104Z",
+            "created_by": {
+                "email": None,
+                "full_name": None,
+                "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0",
+                "username": "elastic",
+            },
+            "id": "8048b460-fe2b-11ec-b15d-779a7c8bbcc3",
+            "owner": "cases",
+            "pushed_at": None,
+            "pushed_by": None,
+            "type": "user",
+            "updated_at": None,
+            "updated_by": None,
+            "version": "WzIzLDFd",
+        }
+    ],
+    "page": 1,
+    "per_page": 10,
+    "total": 1,
 }
 
 
 class TestEsKibanaCaseCommentFindCommand:
-
     def test_find_case_comments_success(self, mocker):
         import Elasticsearch_v2
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_CASE_COMMENTS)
 
-        result = Elasticsearch_v2.es_kibana_case_comment_find_command(
-            {"case_id": "case-id-1", "page": "1", "size": "10"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_case_comment_find_command({"case_id": "case-id-1", "page": "1", "size": "10"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "GET"
@@ -3083,15 +3045,17 @@ class TestEsKibanaCaseCommentFindCommand:
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_comment_find_command({"search": "bob"}, {})
 
-class TestEsKibanaCaseCommentGetCommand:
 
+class TestEsKibanaCaseCommentGetCommand:
     def test_get_case_comment_success(self, mocker):
         import Elasticsearch_v2
 
         single_comment = MOCK_CASE_COMMENTS["comments"][0]
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=single_comment)
 
-        result = Elasticsearch_v2.es_kibana_case_comment_get_command({"case_id": "case-id-1", "comment_id": "8048b460-fe2b-11ec-b15d-779a7c8bbcc3"}, {})
+        result = Elasticsearch_v2.es_kibana_case_comment_get_command(
+            {"case_id": "case-id-1", "comment_id": "8048b460-fe2b-11ec-b15d-779a7c8bbcc3"}, {}
+        )
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "GET"
@@ -3128,25 +3092,23 @@ class TestEsKibanaCaseCommentGetCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_comment_get_command({"case_id": "case-id-1"}, {})
-            
+
+
 MOCK_CASE_CONNECTORS = [
-  {
-    "actionTypeId": ".jira",
-    "config": {
-      "apiUrl": "https://elastic.atlassian.net/",
-      "projectKey": "ES"
-    },
-    "id": "61787f53-4eee-4741-8df6-8fe84fa616f7",
-    "isDeprecated": False,
-    "isMissingSecrets": False,
-    "isPreconfigured": False,
-    "name": "my-Jira",
-    "referencedByCount": 0
-  }
+    {
+        "actionTypeId": ".jira",
+        "config": {"apiUrl": "https://elastic.atlassian.net/", "projectKey": "ES"},
+        "id": "61787f53-4eee-4741-8df6-8fe84fa616f7",
+        "isDeprecated": False,
+        "isMissingSecrets": False,
+        "isPreconfigured": False,
+        "name": "my-Jira",
+        "referencedByCount": 0,
+    }
 ]
 
-class TestEsKibanaCaseConnectorsFindCommand:
 
+class TestEsKibanaCaseConnectorsFindCommand:
     def test_find_case_connectors_success(self, mocker):
         import Elasticsearch_v2
 
@@ -3173,23 +3135,20 @@ class TestEsKibanaCaseConnectorsFindCommand:
         assert result.outputs_prefix == "Elasticsearch.Kibana.CaseConnector"
         assert ".jira" not in result.readable_output
         assert "**No entries.**" in result.readable_output
-        
-MOCK_CASE_CREATORS = [
-  {
-    "email": None,
-    "full_name": None,
-    "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0",
-    "username": "elastic"
-  },
-  {
-    "email": "jdoe@example.com",
-    "full_name": "Jane Doe",
-    "profile_uid": "u_0wpfV1MqYDaXzLtRVY-gLMrddKDEmfz51Fszhj7hWC8_0",
-    "username": "jdoe"
-  }
-]
-class TestEsKibanaCaseCreatorsGetCommand:
 
+
+MOCK_CASE_CREATORS = [
+    {"email": None, "full_name": None, "profile_uid": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0", "username": "elastic"},
+    {
+        "email": "jdoe@example.com",
+        "full_name": "Jane Doe",
+        "profile_uid": "u_0wpfV1MqYDaXzLtRVY-gLMrddKDEmfz51Fszhj7hWC8_0",
+        "username": "jdoe",
+    },
+]
+
+
+class TestEsKibanaCaseCreatorsGetCommand:
     def test_get_case_creators_success(self, mocker):
         import Elasticsearch_v2
 
@@ -3216,23 +3175,20 @@ class TestEsKibanaCaseCreatorsGetCommand:
         assert result.outputs_prefix == "Elasticsearch.Kibana.CaseCreators"
         assert "**No entries.**" in result.readable_output
 
+
 MOCK_KIBANA_CASES = [
-  {
-    "createdAt": "2020-02-19T23:06:33.798Z",
-    "description": "Investigating suspicious activity",
-    "id": "06116b80-e1c3-11ec-be9b-9b1838238ee6",
-    "status": "open",
-    "title": "security_case",
-    "totals": {
-      "alerts": 1,
-      "events": 0,
-      "userComments": 0
+    {
+        "createdAt": "2020-02-19T23:06:33.798Z",
+        "description": "Investigating suspicious activity",
+        "id": "06116b80-e1c3-11ec-be9b-9b1838238ee6",
+        "status": "open",
+        "title": "security_case",
+        "totals": {"alerts": 1, "events": 0, "userComments": 0},
     }
-  }
 ]
 
-class TestEsKibanaCaseByAlertGetCommand:
 
+class TestEsKibanaCaseByAlertGetCommand:
     def test_get_case_by_alert_single_case(self, mocker):
         import Elasticsearch_v2
 
@@ -3265,6 +3221,7 @@ class TestEsKibanaCaseByAlertGetCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_case_by_alert_get_command({}, {})
+
 
 MOCK_ALERTING_HEALTH_RESPONSE = {
     "is_sufficiently_secure": True,
@@ -3550,8 +3507,8 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
 
-class TestEsKibanaAlertsIndexCreateCommand:
 
+class TestEsKibanaAlertsIndexCreateCommand:
     def test_create_success(self, mocker):
         import Elasticsearch_v2
 
@@ -3564,8 +3521,9 @@ class TestEsKibanaAlertsIndexCreateCommand:
         assert call_args[0][1] == "/api/detection_engine/index"
         assert result.readable_output == "Creation acknowledged"
         assert not result.outputs
-class TestEsKibanaAlertsIndexDeleteCommand:
 
+
+class TestEsKibanaAlertsIndexDeleteCommand:
     def test_delete_success(self, mocker):
         import Elasticsearch_v2
 
@@ -3578,6 +3536,7 @@ class TestEsKibanaAlertsIndexDeleteCommand:
         assert call_args[0][1] == "/api/detection_engine/index"
         assert result.readable_output == "Deletion acknowledged"
         assert not result.outputs
+
 
 class TestEsKibanaEndpointIsolateCommand:
     """Tests for es_kibana_endpoint_isolate_command."""
@@ -4250,19 +4209,20 @@ class TestEsKibanaValueListsListCommand:
         assert call_args[0][1] == "/api/lists/_find"
         assert result.outputs == [MOCK_VALUE_LIST]
 
-class TestEsKibanaValueListsDeleteCommand:
 
+class TestEsKibanaValueListsDeleteCommand:
     def test_list_deletion_by_id(self, mocker):
         import Elasticsearch_v2
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
 
-        result = Elasticsearch_v2.es_kibana_delete_value_list_command({"value_list_id": "value-list-id-1"}, {})
+        result = Elasticsearch_v2.es_kibana_value_list_delete_command({"value_list_id": "value-list-id-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "DELETE"
         assert call_args[0][1] == "/api/lists"
         assert result.readable_output == "The value list item value-list-id-1 has been successfully deleted."
+
 
 class TestEsKibanaValueListItemGetCommand:
     """Tests for es_kibana_value_list_item_get_command."""

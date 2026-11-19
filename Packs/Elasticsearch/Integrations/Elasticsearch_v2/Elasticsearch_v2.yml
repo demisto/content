@@ -647,7 +647,7 @@ script:
     arguments:
     - name: index_name
       required: true
-      description: The name of the index from which to delete.
+      description: The name of the index in which to update.
     - name: id
       required: true
       description: The ID of the document to be updated.
@@ -1469,6 +1469,7 @@ script:
     - name: body
       description: The case settings object as a JSON object. If provided, the other arguments won't be considered. Only the provided fields are updated.
     - name: version
+      required: true
       description: The version of the connector. To retrieve the version value, use the get configuration API.
     - name: closure_type
       auto: PREDEFINED
@@ -1785,6 +1786,11 @@ script:
       type: Number
   - name: es-kibana-alerts-index-create
     description: Creates a Kibana alerts index.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+  - name: es-kibana-alerts-index-get
+    description: Retrieve all Kibana alerts indices.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
@@ -2831,13 +2837,14 @@ script:
     - contextPath: Elasticsearch.Kibana.ValueList.created_at
       description: The creation date of the value list.
       type: Date
-  - name: es-kibana-delete-value-list
+  - name: es-kibana-value-list-delete
     description: Delete a value list using the list ID.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: value_list_id
       description: Value list identifier to delete, including all of its list items.
+      required: true
     - name: delete_references
       description: Determines whether exception items referencing this value list should be deleted.
     - name: ignore_references

@@ -1736,7 +1736,9 @@ def search_esql_command(args, proxies):
         raw_response=res.body,
     )
 
+
 """DOCUMENT commands"""
+
 
 def index_document(args, proxies):
     """
@@ -1764,6 +1766,7 @@ def index_document(args, proxies):
 
     demisto.debug(f"Index document response: {response}")
     return response
+
 
 def index_document_command(args, proxies):
     resp = index_document(args, proxies)
@@ -1793,6 +1796,7 @@ def index_document_command(args, proxies):
         outputs_key_field="id",
     )
     return result
+
 
 def delete_document_command(args, proxies):
     index = args.get("index_name")
@@ -1828,6 +1832,7 @@ def delete_document_command(args, proxies):
     )
     return result
 
+
 def get_document_command(args, proxies):
     index = args.get("index_name")
     doc_id = args.get("id", "")
@@ -1862,6 +1867,7 @@ def get_document_command(args, proxies):
     )
     return result
 
+
 def get_multiple_documents_command(args, proxies):
     index = args.get("index_name")
     body = args.get("body")
@@ -1871,14 +1877,20 @@ def get_multiple_documents_command(args, proxies):
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         resp = resp.body
+        
+    if "docs" in resp:
+        readable = f"Retrieved {len(resp['docs'])} documents"
+    else:
+        readable = "No docs element found in response"
 
     result = CommandResults(
-        readable_output=f"Retrieved {len(resp)} documents",
+        readable_output=readable,
         outputs_prefix="Elasticsearch.Documents",
         outputs=resp,
         outputs_key_field="id",
     )
     return result
+
 
 def update_document_command(args, proxies):
     index = args.get("index_name")
@@ -1913,6 +1925,7 @@ def update_document_command(args, proxies):
         outputs_key_field="id",
     )
     return result
+
 
 def get_indices_statistics(client):
     """
@@ -1970,6 +1983,7 @@ def get_indices_statistics_command(args, proxies):
         raw_response=raw_indices_data,
     )
     return result
+
 
 """KIBANA CASE MANAGEMENT COMMANDS (es-kibana-case-*)"""
 
@@ -2432,7 +2446,8 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def build_case_settings_body(args: Dict[str, Any]) -> Dict[str, Any]:
     body = args.get("body")
     if body is not None:
@@ -2442,7 +2457,7 @@ def build_case_settings_body(args: Dict[str, Any]) -> Dict[str, Any]:
     if args.get("closure_type") is not None:
         body["closure_type"] = args["closure_type"]
 
-    connector = {}
+    connector = {"fields": None}
     connector_field_map = {"connector_id": "id", "connector_name": "name", "connector_type": "type"}
     for arg_name, field_name in connector_field_map.items():
         if args.get(arg_name) is not None:
@@ -2451,17 +2466,17 @@ def build_case_settings_body(args: Dict[str, Any]) -> Dict[str, Any]:
         connector_fields = args["connector_fields"]
         connector["fields"] = json.loads(connector_fields) if isinstance(connector_fields, str) else connector_fields
     if connector:
-        connector.setdefault("fields", None)
         body["connector"] = connector
 
     if args.get("custom_fields") is not None:
         custom_fields = args["custom_fields"]
         body["customFields"] = json.loads(custom_fields) if isinstance(custom_fields, str) else custom_fields
-        
+
     if args.get("extract_observables") is not None:
         body["extractObservables"] = args["extract_observables"]
 
     return body
+
 
 def build_case_settings_hr(response: Any) -> Dict[str, Any]:
     """Builds the human-readable rows for a Kibana case settings response."""
@@ -2479,6 +2494,7 @@ def build_case_settings_hr(response: Any) -> Dict[str, Any]:
         "Custom fields": custom_field_keys,
         "Created at": response.get("created_at"),
     }
+
 
 def es_kibana_case_settings_create_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
@@ -2499,6 +2515,7 @@ def es_kibana_case_settings_create_command(args: Dict[str, Any], proxies) -> Com
         outputs=response,
         raw_response=response,
     )
+
 
 def case_activity_to_hr(action: Dict[str, Any]) -> Dict[str, Any]:
     return {
@@ -2546,7 +2563,8 @@ def es_kibana_case_activity_find_command(args: Dict[str, Any], proxies) -> Comma
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def case_comment_to_hr(comment: Dict[str, Any]) -> Dict[str, Any]:
     """Builds the human-readable row for a single Kibana case comment or alert."""
     return {
@@ -2594,7 +2612,8 @@ def es_kibana_case_comment_find_command(args: Dict[str, Any], proxies) -> Comman
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def es_kibana_case_comment_get_command(args: Dict[str, Any], proxies) -> CommandResults:
     case_id = args.get("case_id")
     if not case_id:
@@ -2623,7 +2642,8 @@ def es_kibana_case_comment_get_command(args: Dict[str, Any], proxies) -> Command
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def case_connector_to_hr(connector: Dict[str, Any]) -> Dict[str, Any]:
     """Builds the human-readable row for a single Kibana case connector."""
     return {
@@ -2637,9 +2657,7 @@ def case_connector_to_hr(connector: Dict[str, Any]) -> Dict[str, Any]:
 def es_kibana_case_connectors_find_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
 
-    response = kibana_http_request(
-        "GET", "/api/cases/configure/connectors/_find", space_id=space_id, proxies=proxies
-    )
+    response = kibana_http_request("GET", "/api/cases/configure/connectors/_find", space_id=space_id, proxies=proxies)
     connectors = response if isinstance(response, list) else []
 
     hr_rows = [case_connector_to_hr(connector) for connector in connectors]
@@ -2656,7 +2674,8 @@ def es_kibana_case_connectors_find_command(args: Dict[str, Any], proxies) -> Com
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def es_kibana_case_creators_get_command(args: Dict[str, Any], proxies) -> CommandResults:
     params: Dict[str, Any] = {}
     if args.get("owner") is not None:
@@ -2677,7 +2696,8 @@ def es_kibana_case_creators_get_command(args: Dict[str, Any], proxies) -> Comman
         outputs=creators,
         raw_response=response,
     )
-    
+
+
 def es_kibana_case_by_alert_get_command(args: Dict[str, Any], proxies) -> CommandResults:
     alert_id = args.get("alert_id")
     if not alert_id:
@@ -2705,7 +2725,8 @@ def es_kibana_case_by_alert_get_command(args: Dict[str, Any], proxies) -> Comman
         outputs_key_field="id",
         raw_response=response,
     )
-    
+
+
 def es_kibana_case_settings_update_command(args: Dict[str, Any], proxies) -> CommandResults:
     configuration_id = args.get("configuration_id")
     if not configuration_id:
@@ -2730,7 +2751,6 @@ def es_kibana_case_settings_update_command(args: Dict[str, Any], proxies) -> Com
         outputs=response,
         raw_response=response,
     )
-
 
 
 """KIBANA ALERTING / RULES FRAMEWORK COMMANDS (es-kibana-alerting-*, es-kibana-rule-*, es-kibana-detection-*)"""
@@ -3016,15 +3036,9 @@ def es_kibana_detection_alert_status_set_command(args: Dict[str, Any], proxies) 
         raw_response=response,
     )
 
-def es_kibana_alerts_index_delete_command(args: Dict[str, Any], proxies) -> CommandResults:
-    space_id = args.get("space_id")
 
-    response = kibana_http_request("DELETE", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
-    result = "Deletion acknowledged" if isinstance(response, dict) and response["acknowledged"] else "Deletion NOT acknowledged"
+"""Kibana INDEX commands"""
 
-    return CommandResults(readable_output=result)
-
-"""INDEX commands"""
 
 def es_kibana_alerts_index_create_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
@@ -3034,10 +3048,23 @@ def es_kibana_alerts_index_create_command(args: Dict[str, Any], proxies) -> Comm
 
     return CommandResults(readable_output=result)
 
-def es_kibana_get_all_indeces_command(args: Dict[str, Any], proxies) -> CommandResults:
 
+def es_kibana_get_all_indeces_command(args: Dict[str, Any], proxies) -> CommandResults:
+    space_id = args.get("space_id")
+    
     response = kibana_http_request("GET", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
-    result = "Creation acknowledged" if isinstance(response, dict) and response["acknowledged"] else "Creation NOT acknowledged"
+
+    return CommandResults(
+        outputs_prefix="Elasticsearch.Kibana.Index",
+        outputs=response,
+        raw_response=response,
+    )
+
+def es_kibana_alerts_index_delete_command(args: Dict[str, Any], proxies) -> CommandResults:
+    space_id = args.get("space_id")
+
+    response = kibana_http_request("DELETE", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
+    result = "Deletion acknowledged" if isinstance(response, dict) and response["acknowledged"] else "Deletion NOT acknowledged"
 
     return CommandResults(readable_output=result)
 
@@ -3762,10 +3789,11 @@ def es_kibana_value_lists_list_command(args: Dict[str, Any], proxies) -> Command
         outputs_key_field="id",
         raw_response=response,
     )
-    
-def es_kibana_delete_value_list_command(args: Dict[str, Any], proxies) -> CommandResults:
+
+
+def es_kibana_value_list_delete_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
-    
+
     params: Dict[str, Any] = {}
     param_arg_map = {
         "value_list_id": "id",
@@ -3777,7 +3805,7 @@ def es_kibana_delete_value_list_command(args: Dict[str, Any], proxies) -> Comman
             params[param_name] = args[arg_name]
 
     kibana_http_request("DELETE", "/api/lists", space_id=space_id, params=params, proxies=proxies)
-    
+
     return CommandResults(readable_output=f"The value list item {params['id']} has been successfully deleted.")
 
 
@@ -4953,6 +4981,8 @@ def main():  # pragma: no cover
             return_results(es_kibana_detection_alert_status_set_command(args, proxies))
         elif demisto.command() == "es-kibana-alerts-index-create":
             return_results(es_kibana_alerts_index_create_command(args, proxies))
+        elif demisto.command() == "es-kibana-alerts-index-get":
+            return_results(es_kibana_get_all_indeces_command(args, proxies))
         elif demisto.command() == "es-kibana-alerts-index-delete":
             return_results(es_kibana_alerts_index_delete_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-execute-command":
@@ -4993,8 +5023,8 @@ def main():  # pragma: no cover
             return_results(es_kibana_exception_list_item_delete_command(args, proxies))
         elif demisto.command() == "es-kibana-value-lists-list":
             return_results(es_kibana_value_lists_list_command(args, proxies))
-        elif demisto.command() == "es-kibana-delete-value-list":
-            return_results(es_kibana_delete_value_list_command(args, proxies))
+        elif demisto.command() == "es-kibana-value-list-delete":
+            return_results(es_kibana_value_list_delete_command(args, proxies))
         elif demisto.command() == "es-kibana-value-list-item-get":
             return_results(es_kibana_value_list_item_get_command(args, proxies))
         elif demisto.command() == "es-kibana-value-list-item-create":
