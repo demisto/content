@@ -1663,9 +1663,7 @@ def parse_github_file_url(url: str, base_url: str) -> tuple[str, str, str, str]:
         owner, repo, ref, *path_segments = segments
     else:
         supported_formats = (
-            f"https://{web_hosts[0]}/<owner>/<repo>/blob/<ref>/<path>, "
-            f"https://{web_hosts[0]}/<owner>/<repo>/tree/<ref>/<path>, "
-            f"https://{raw_hosts[0]}/<owner>/<repo>/<ref>/<path>"
+            f"https://{web_hosts[0]}/<owner>/<repo>/blob/<ref>/<path>, " f"https://{raw_hosts[0]}/<owner>/<repo>/<ref>/<path>"
         )
         raise ValueError(f"Unsupported or invalid GitHub URL: {url}. Supported URL formats: {supported_formats}.")
 
@@ -1690,52 +1688,47 @@ def get_repo_contents(owner: str, repo: str, path: str, ref: str) -> Any:
     )
 
 
-def download_raw_file(owner: str, repo: str, path: str, ref: str) -> bytes:
-    """Downloads the raw bytes of a file using the GitHub contents API (supports files larger than 1MB)."""
-    url_suffix = build_contents_url_suffix(owner, repo, path)
+def get_file_bytes(owner: str, repo: str, file_metadata: dict, ref: str) -> bytes:
+    """Returns the file bytes.
+
+    GitHub includes the base64 content in the metadata of files up to 1 MB. For larger files the raw bytes are
+    downloaded with a second request, since http_request decodes its response as UTF-8 and cannot carry binary data.
+    """
+    inline_content = file_metadata.get("content")
+    if inline_content and file_metadata.get("encoding") == "base64":
+        return base64.b64decode(inline_content)
+
     response = requests.get(
-        BASE_URL + url_suffix,
+        BASE_URL + build_contents_url_suffix(owner, repo, file_metadata["path"]),
         params={"ref": ref} if ref else None,
         headers={**HEADERS, "Accept": "application/vnd.github.raw+json"},
         verify=USE_SSL,
     )
     if response.status_code >= 400:
         raise DemistoException(
-            f"Failed to download file '{path}' from GitHub [{response.status_code}] {response.reason}. {response.text}"
+            f"Failed to download file '{file_metadata['path']}' from GitHub [{response.status_code}] {response.reason}. "
+            f"{response.text}"
         )
     return response.content
 
 
-def get_file_bytes(owner: str, repo: str, file_metadata: dict, ref: str) -> bytes:
-    """Returns the file bytes, using the inline base64 content of the metadata when GitHub provided it."""
-    inline_content = file_metadata.get("content")
-    if inline_content and file_metadata.get("encoding") == "base64":
-        return base64.b64decode(inline_content)
-    return download_raw_file(owner, repo, file_metadata["path"], ref)
-
-
-def exceeds_size_limit(size_bytes: int | None) -> bool:
-    """Returns True if the file is over the size limit. A file with no reported size is treated as over the limit."""
-    return size_bytes is None or size_bytes > MAX_FILE_SIZE
-
-
 def validate_file_size(file_name: str, size_bytes: int | None) -> None:
     """Raises a ValueError if the file is over the size limit, or if GitHub did not report its size."""
-    if not exceeds_size_limit(size_bytes):
-        return
-
     limit_mb = MAX_FILE_SIZE / (1024 * 1024)
     if size_bytes is None:
         raise ValueError(
             f"The size of the file '{file_name}' is unknown, so it is treated as exceeding the maximum allowed size "
             f"of {limit_mb:.0f} MB."
         )
-    size_mb = size_bytes / (1024 * 1024)
-    raise ValueError(f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB.")
+    if size_bytes > MAX_FILE_SIZE:
+        size_mb = size_bytes / (1024 * 1024)
+        raise ValueError(
+            f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+        )
 
 
-def build_file_content_item(owner: str, repo: str, file_metadata: dict, ref: str, url: str) -> dict:
-    """Downloads a file and returns it in the unified FileContent format.
+def build_file_content(owner: str, repo: str, file_metadata: dict, ref: str, url: str) -> dict:
+    """Downloads a file and returns it in the unified FileContent format. Raises a ValueError if it cannot be returned.
 
     Text files are returned inline (utf-8, errors replaced). Binary files are base64-encoded and the Type is
     suffixed with ';base64'.
@@ -1766,53 +1759,52 @@ def build_file_content_item(owner: str, repo: str, file_metadata: dict, ref: str
     )
 
 
-def build_folder_file_content_items(owner: str, repo: str, folder_items: list, ref: str, url: str) -> list[dict]:
-    """Builds FileContent items for the supported files directly under a folder (non-recursive).
+def build_folder_entry_file_content(owner: str, repo: str, folder_entry: dict, ref: str, url: str) -> dict | None:
+    """Builds the FileContent of one entry of a folder listing, or returns None if the entry should be skipped.
 
-    Sub-folders, unsupported formats, and files that are oversized or have no reported size are skipped silently.
+    Sub-folders and any file that cannot be returned (unapproved format, oversized, no reported size, failed download)
+    are skipped silently, so that one such entry does not fail the whole folder. Unlike `build_file_content`, this
+    function never raises for such an entry.
     """
-    items: list[dict] = []
-    for folder_item in folder_items:
-        file_name = folder_item.get("name", "")
-        if folder_item.get("type") != "file" or not get_approved_extension(file_name):
-            demisto.debug(f"get-file-content: skipping unsupported entry '{file_name}' of type {folder_item.get('type')}")
-            continue
-        if exceeds_size_limit(folder_item.get("size")):
-            demisto.debug(f"get-file-content: skipping file '{file_name}' that is oversized or has no reported size")
-            continue
-        try:
-            items.append(build_file_content_item(owner, repo, folder_item, ref, url))
-        except DemistoException as error:
-            demisto.debug(f"get-file-content: skipping file '{file_name}' that failed to download: {error}")
-    return items
+    file_name = folder_entry.get("name", "")
+    if folder_entry.get("type") != "file":
+        demisto.debug(f"get-file-content: skipping '{file_name}' of type {folder_entry.get('type')}")
+        return None
+    try:
+        return build_file_content(owner, repo, folder_entry, ref, url)
+    except (ValueError, DemistoException) as error:
+        demisto.debug(f"get-file-content: skipping file '{file_name}': {error}")
+        return None
 
 
 def get_file_content_command() -> None:
-    """get-file-content: retrieves a file (or the supported files of a folder) by GitHub URL in the generic FileContent format."""
+    """get-file-content: retrieves a file (or the supported files of a folder) by GitHub URL in the generic FileContent format.
+
+    A file URL returns one FileContent object and raises a clear error if the file cannot be returned. A folder URL returns
+    a list with one object per supported file directly in the folder, skipping the entries that cannot be returned.
+    """
     url = demisto.args().get("url", "")
     owner, repo, ref, path = parse_github_file_url(url, BASE_URL)
     contents = get_repo_contents(owner, repo, path, ref)
 
     if isinstance(contents, list):
-        items = build_folder_file_content_items(owner, repo, contents, ref, url)
-        readable_output = (
-            tableToMarkdown(
-                "GitHub Folder File Content", items, headers=["Id", "Title", "Type", "Url", "FileUrl"], removeNull=True
-            )
-            if items
-            else "No supported files were found in the folder."
-        )
-        return_results(
-            CommandResults(outputs_prefix="FileContent", outputs=items, readable_output=readable_output, raw_response=contents)
-        )
-        return
+        items = [item for entry in contents if (item := build_folder_entry_file_content(owner, repo, entry, ref, url))]
+        outputs: dict | list[dict] = items
+        empty_message = "No supported files were found in the folder."
+    else:
+        if contents.get("type") != "file":
+            raise ValueError(f"The URL does not point to a file or a folder (type: {contents.get('type')}): {url}")
+        items = [build_file_content(owner, repo, contents, ref, url)]
+        outputs = items[0]
+        empty_message = ""
 
-    if contents.get("type") != "file":
-        raise ValueError(f"The URL does not point to a file or a folder (type: {contents.get('type')}): {url}")
-    item = build_file_content_item(owner, repo, contents, ref, url)
-    readable_output = tableToMarkdown("Generic File Content", item, headers=["Id", "Title", "Type", "Url"], removeNull=True)
+    readable_output = (
+        tableToMarkdown("GitHub File Content", items, headers=["Id", "Title", "Type", "Url", "FileUrl"], removeNull=True)
+        if items
+        else empty_message
+    )
     return_results(
-        CommandResults(outputs_prefix="FileContent", outputs=item, readable_output=readable_output, raw_response=contents)
+        CommandResults(outputs_prefix="FileContent", outputs=outputs, readable_output=readable_output, raw_response=contents)
     )
 
 

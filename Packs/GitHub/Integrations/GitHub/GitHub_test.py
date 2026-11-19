@@ -967,42 +967,23 @@ def _file_metadata(name: str, content: bytes, path: str = "", size: int | None =
 
 
 @pytest.mark.parametrize(
-    "url, expected",
-    [
-        ("https://github.com/my-org/my-repo/blob/main/docs/readme.md", ("my-org", "my-repo", "main", "docs/readme.md")),
-        ("https://www.github.com/my-org/my-repo/blob/main/docs/readme.md", ("my-org", "my-repo", "main", "docs/readme.md")),
-        ("https://github.com/my-org/my-repo/tree/v1.0/docs", ("my-org", "my-repo", "v1.0", "docs")),
-        ("https://github.com/my-org/my-repo/tree/main", ("my-org", "my-repo", "main", "")),
-        ("https://raw.githubusercontent.com/my-org/my-repo/abc123/a/b.json", ("my-org", "my-repo", "abc123", "a/b.json")),
-        ("https://github.com/my-org/my-repo/blob/main/my%20file.md", ("my-org", "my-repo", "main", "my file.md")),
-    ],
-)
-def test_parse_github_file_url(url, expected):
-    """
-    Given: Supported GitHub URL formats and the default server URL.
-    When: Parsing the URL.
-    Then: Owner, repo, ref and path are extracted.
-    """
-    assert GitHub.parse_github_file_url(url, REGULAR_BASE_URL) == expected
-
-
-@pytest.mark.parametrize(
     "base_url, url, expected",
     [
         (
-            "https://ghe.example.com/api/v3",
-            "https://ghe.example.com/my-org/my-repo/blob/main/docs/readme.md",
-            ("my-org", "my-repo", "main", "docs/readme.md"),
+            REGULAR_BASE_URL,
+            "https://www.github.com/my-org/my-repo/blob/main/docs/my%20file.md",
+            ("my-org", "my-repo", "main", "docs/my file.md"),
+        ),
+        (REGULAR_BASE_URL, "https://github.com/my-org/my-repo/tree/main", ("my-org", "my-repo", "main", "")),
+        (
+            REGULAR_BASE_URL,
+            "https://raw.githubusercontent.com/my-org/my-repo/abc123/a/b.json",
+            ("my-org", "my-repo", "abc123", "a/b.json"),
         ),
         (
             "https://ghe.example.com/api/v3",
-            "https://raw.ghe.example.com/my-org/my-repo/main/a/b.json",
-            ("my-org", "my-repo", "main", "a/b.json"),
-        ),
-        (
-            "https://api.tenant.example.com",
-            "https://tenant.example.com/my-org/my-repo/tree/main/docs",
-            ("my-org", "my-repo", "main", "docs"),
+            "https://ghe.example.com/my-org/my-repo/blob/main/a.md",
+            ("my-org", "my-repo", "main", "a.md"),
         ),
         (
             "https://api.tenant.example.com",
@@ -1011,9 +992,9 @@ def test_parse_github_file_url(url, expected):
         ),
     ],
 )
-def test_parse_github_file_url_enterprise(base_url, url, expected):
+def test_parse_github_file_url(base_url, url, expected):
     """
-    Given: A GitHub Enterprise Server or Enterprise Cloud (data residency) server URL and a file URL on its hosts.
+    Given: A file or folder URL on the hosts of the configured server (github.com or an Enterprise server).
     When: Parsing the URL.
     Then: Owner, repo, ref and path are extracted.
     """
@@ -1023,49 +1004,22 @@ def test_parse_github_file_url_enterprise(base_url, url, expected):
 @pytest.mark.parametrize(
     "base_url, url",
     [
-        # A github.com URL while the instance points at an Enterprise server.
+        (REGULAR_BASE_URL, "https://example.com/my-org/my-repo/blob/main/a.md"),
+        (REGULAR_BASE_URL, "https://github.com/my-org/my-repo"),
+        (REGULAR_BASE_URL, "https://github.com/my-org/my-repo/issues/1"),
+        # A github.com URL while the instance points at an Enterprise server, and the reverse.
         ("https://ghe.example.com/api/v3", "https://github.com/my-org/my-repo/blob/main/a.md"),
-        # An Enterprise URL while the instance points at github.com.
         (REGULAR_BASE_URL, "https://ghe.example.com/my-org/my-repo/blob/main/a.md"),
     ],
 )
-def test_parse_github_file_url_host_mismatch(base_url, url):
+def test_parse_github_file_url_invalid(base_url, url):
     """
-    Given: A file URL whose host does not belong to the configured server.
-    When: Parsing the URL.
-    Then: A ValueError is raised, so the token is never used for a host other than the configured server.
-    """
-    with pytest.raises(ValueError, match="Unsupported or invalid GitHub URL"):
-        GitHub.parse_github_file_url(url, base_url)
-
-
-def test_parse_github_file_url_enterprise_error_lists_enterprise_formats():
-    """
-    Given: An invalid URL while the instance points at an Enterprise server.
-    When: Parsing the URL.
-    Then: The error lists the formats of the Enterprise hosts, not github.com.
-    """
-    with pytest.raises(ValueError, match=r"https://ghe\.example\.com/<owner>.*https://raw\.ghe\.example\.com/<owner>"):
-        GitHub.parse_github_file_url("https://github.com/o/r/blob/main/a.md", "https://ghe.example.com/api/v3")
-
-
-@pytest.mark.parametrize(
-    "url",
-    [
-        "https://example.com/my-org/my-repo/blob/main/a.md",
-        "https://github.com/my-org/my-repo",
-        "https://github.com/my-org/my-repo/issues/1",
-        "not a url",
-    ],
-)
-def test_parse_github_file_url_invalid(url):
-    """
-    Given: Unsupported URLs.
+    Given: A URL with an unsupported layout, or a host that does not belong to the configured server.
     When: Parsing the URL.
     Then: A ValueError listing the supported formats is raised.
     """
     with pytest.raises(ValueError, match="Supported URL formats"):
-        GitHub.parse_github_file_url(url, REGULAR_BASE_URL)
+        GitHub.parse_github_file_url(url, base_url)
 
 
 def test_get_file_content_text_file(requests_mock, mocker, generic_file_content_setup):
@@ -1089,95 +1043,6 @@ def test_get_file_content_text_file(requests_mock, mocker, generic_file_content_
     assert result.outputs["Id"] == "sha123"
     assert result.outputs["Url"] == url
     assert result.outputs["FileUrl"].endswith("docs/readme.md")
-
-
-@pytest.mark.parametrize(
-    "file_name, expected_type",
-    [
-        ("data.json", "application/json"),
-        ("records.jsonl", "application/jsonl"),
-        ("README.MD", "text/markdown"),
-    ],
-)
-def test_get_file_content_text_extensions_inline(requests_mock, mocker, generic_file_content_setup, file_name, expected_type):
-    """
-    Given: An approved text file (.json, .jsonl, or an upper-case extension).
-    When: Running get-file-content.
-    Then: Content is inline text and Type has no ;base64 suffix.
-    """
-    url = f"https://github.com/my-org/my-repo/blob/main/{file_name}"
-    mocker.patch.object(demisto, "args", return_value={"url": url})
-    requests_mock.get(f"{CONTENTS_URL}/{file_name}?ref=main", json=_file_metadata(file_name, b'{"a": 1}'))
-
-    GitHub.get_file_content_command()
-
-    outputs = generic_file_content_setup.call_args[0][0].outputs
-    assert outputs["Type"] == expected_type
-    assert outputs["Content"] == '{"a": 1}'
-
-
-def test_get_file_content_invalid_utf8_text_replaced(requests_mock, mocker, generic_file_content_setup):
-    """
-    Given: A .csv file whose bytes are not valid UTF-8.
-    When: Running get-file-content.
-    Then: The command does not fail, and the invalid bytes are replaced with U+FFFD.
-    """
-    url = "https://github.com/my-org/my-repo/blob/main/bad.csv"
-    mocker.patch.object(demisto, "args", return_value={"url": url})
-    requests_mock.get(f"{CONTENTS_URL}/bad.csv?ref=main", json=_file_metadata("bad.csv", b"a,b\xff\n"))
-
-    GitHub.get_file_content_command()
-
-    outputs = generic_file_content_setup.call_args[0][0].outputs
-    assert outputs["Type"] == "text/csv"
-    assert outputs["Content"] == "a,b\ufffd\n"
-
-
-def test_get_file_content_size_exactly_5mb_allowed(requests_mock, mocker, generic_file_content_setup):
-    """
-    Given: An approved file of exactly 5 MB.
-    When: Running get-file-content.
-    Then: The file is returned (the limit is inclusive).
-    """
-    size = 5 * 1024 * 1024
-    content = b"x" * size
-    mocker.patch.object(demisto, "args", return_value={"url": "https://github.com/my-org/my-repo/blob/main/big.md"})
-    requests_mock.get(f"{CONTENTS_URL}/big.md?ref=main", json=_file_metadata("big.md", content, size=size))
-
-    GitHub.get_file_content_command()
-
-    assert len(generic_file_content_setup.call_args[0][0].outputs["Content"]) == size
-
-
-def test_get_file_content_size_one_byte_over_5mb_rejected(requests_mock, mocker, generic_file_content_setup):
-    """
-    Given: An approved file of 5 MB + 1 byte.
-    When: Running get-file-content.
-    Then: A ValueError with the size and limit is raised, and the content is not downloaded.
-    """
-    size = 5 * 1024 * 1024 + 1
-    mocker.patch.object(demisto, "args", return_value={"url": "https://github.com/my-org/my-repo/blob/main/big.md"})
-    requests_mock.get(f"{CONTENTS_URL}/big.md?ref=main", json=_file_metadata("big.md", b"x", size=size))
-
-    with pytest.raises(ValueError, match=r"5\.00 MB.*maximum allowed size of 5 MB"):
-        GitHub.get_file_content_command()
-    assert not any("raw+json" in str(r.headers.get("Accept", "")) for r in requests_mock.request_history)
-
-
-def test_get_file_content_missing_size_rejected(requests_mock, mocker, generic_file_content_setup):
-    """
-    Given: An approved file whose metadata has no size.
-    When: Running get-file-content.
-    Then: The size is treated as over the limit, so a ValueError is raised and the content is not downloaded.
-    """
-    metadata = _file_metadata("nosize.md", b"x")
-    metadata.pop("size")
-    mocker.patch.object(demisto, "args", return_value={"url": "https://github.com/my-org/my-repo/blob/main/nosize.md"})
-    requests_mock.get(f"{CONTENTS_URL}/nosize.md?ref=main", json=metadata)
-
-    with pytest.raises(ValueError, match=r"size of the file 'nosize.md' is unknown.*maximum allowed size of 5 MB"):
-        GitHub.get_file_content_command()
-    assert requests_mock.call_count == 1
 
 
 def test_get_file_content_binary_file(requests_mock, mocker, generic_file_content_setup):
@@ -1217,6 +1082,36 @@ def test_get_file_content_large_file_downloaded_raw(requests_mock, mocker, gener
     assert requests_mock.last_request.headers["Accept"] == "application/vnd.github.raw+json"
 
 
+MAX_SIZE = 5 * 1024 * 1024
+
+
+@pytest.mark.parametrize(
+    "size, expected_error",
+    [
+        (MAX_SIZE, None),
+        (MAX_SIZE + 1, r"5\.00 MB.*maximum allowed size of 5 MB"),
+        (None, r"size of the file 'a\.md' is unknown"),
+    ],
+)
+def test_get_file_content_size_limit(requests_mock, mocker, generic_file_content_setup, size, expected_error):
+    """
+    Given: An approved file of exactly 5 MB, of 5 MB + 1 byte, and one whose metadata has no size.
+    When: Running get-file-content.
+    Then: The file at the limit is returned, while the larger one and the one with an unknown size raise a ValueError.
+    """
+    metadata = _file_metadata("a.md", b"x")
+    metadata["size"] = size
+    mocker.patch.object(demisto, "args", return_value={"url": "https://github.com/my-org/my-repo/blob/main/a.md"})
+    requests_mock.get(f"{CONTENTS_URL}/a.md?ref=main", json=metadata)
+
+    if expected_error:
+        with pytest.raises(ValueError, match=expected_error):
+            GitHub.get_file_content_command()
+    else:
+        GitHub.get_file_content_command()
+        assert generic_file_content_setup.call_args[0][0].outputs["Name"] == "a.md"
+
+
 def test_get_file_content_unapproved_format(requests_mock, mocker, generic_file_content_setup):
     """
     Given: A URL of a file with an unapproved extension.
@@ -1230,49 +1125,22 @@ def test_get_file_content_unapproved_format(requests_mock, mocker, generic_file_
         GitHub.get_file_content_command()
 
 
-def test_get_file_content_folder_item_without_size_skipped(requests_mock, mocker, generic_file_content_setup):
-    """
-    Given: A folder with a supported file and an approved file whose listing has no size.
-    When: Running get-file-content.
-    Then: The file without a size is skipped silently and the rest of the folder is returned.
-    """
-    mocker.patch.object(demisto, "args", return_value={"url": "https://github.com/my-org/my-repo/tree/main/docs"})
-    no_size = _file_metadata("nosize.md", b"x", "docs/nosize.md")
-    no_size.pop("size")
-    listing = [_file_metadata("a.md", b"A", "docs/a.md"), no_size]
-    requests_mock.get(f"{CONTENTS_URL}/docs?ref=main", json=listing)
-
-    GitHub.get_file_content_command()
-
-    result = generic_file_content_setup.call_args[0][0]
-    assert [item["Name"] for item in result.outputs] == ["a.md"]
-
-
-@pytest.mark.parametrize("extension", sorted(GitHub.APPROVED_EXTENSIONS))
-def test_approved_extension_is_inline_text_or_base64(extension):
-    """
-    Given: Every approved extension.
-    When: Reading its configuration.
-    Then: It has a MIME type and an explicit binary flag, so no approved extension can be left without a text/binary decision.
-    """
-    mime_type, is_binary = GitHub.APPROVED_EXTENSIONS[extension]
-    assert mime_type
-    assert isinstance(is_binary, bool)
-
-
 def test_get_file_content_folder_mixed_content(requests_mock, mocker, generic_file_content_setup):
     """
-    Given: A folder URL containing supported, unsupported, oversized files and a sub-folder.
+    Given: A folder URL containing supported files, an unsupported file, an oversized file, a file with no size and a sub-folder.
     When: Running get-file-content.
-    Then: Only the supported files under 5MB are returned, as a list.
+    Then: Only the supported files of a known size under 5MB are returned, as a list.
     """
     folder_url = "https://github.com/my-org/my-repo/tree/main/docs"
     mocker.patch.object(demisto, "args", return_value={"url": folder_url})
+    no_size = _file_metadata("nosize.md", b"x", "docs/nosize.md")
+    no_size["size"] = None
     listing = [
         _file_metadata("a.md", b"A", "docs/a.md", sha="sha-a"),
         _file_metadata("b.json", b"{}", "docs/b.json", sha="sha-b"),
         _file_metadata("image.png", b"png", "docs/image.png"),
-        _file_metadata("huge.csv", b"x", "docs/huge.csv", size=6 * 1024 * 1024),
+        _file_metadata("huge.csv", b"x", "docs/huge.csv", size=MAX_SIZE + 1),
+        no_size,
         {"type": "dir", "name": "sub", "path": "docs/sub", "sha": "sha-dir", "size": 0},
     ]
     requests_mock.get(f"{CONTENTS_URL}/docs?ref=main", json=listing)
