@@ -1,0 +1,28 @@
+{
+    "name": "Cisco Webex",
+    "description": "Collect Webex admin audit, security audit and compliance events, automate Webex messaging, rooms and memberships, and ingest Webex service domains and IP ranges as indicators. Used by the Cisco Webex unified connector.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.15.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-11-19T00:00:00Z",
+    "categories": [
+        "Messaging and Conferencing"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Webex",
+        "Cisco Spark"
+    ],
+    "githubUser": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
