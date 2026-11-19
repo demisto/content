@@ -10,6 +10,7 @@ from CommonServerPython import *  # noqa: F401
 from resilient.co3 import SimpleClient
 
 """ IMPORTS """
+# Configure basic logging for the resilient library.
 logging.basicConfig()
 
 # disable insecure warnings
