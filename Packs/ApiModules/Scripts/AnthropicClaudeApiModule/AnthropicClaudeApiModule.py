@@ -3,18 +3,22 @@
 This module owns **everything** — the LLM (Messages API) client, the Compliance API
 client, all prompts, every command handler, the event collector, param parsing, and
 the full dispatch (``run_anthropic_claude_integration``). Both integrations in the
-content repository are reduced to a MicrosoftGraphFilesStandardConnector-style shim:
+content repository are thin shims that just call the dispatcher:
 
-- ``AnthropicClaude`` (parent pack) — full integration, exposes every command and
-  both API-key params.
-- ``AnthropicClaudeStandardConnector`` (satellite pack) — narrow integration wired
-  to the Anthropic Claude connector, YAML surfaces only the two delete commands and
-  the Compliance Access Key param.
+- ``AnthropicClaude`` (legacy pack) — classic XSOAR integration; credentials come from
+  ``demisto.params()``.
+- ``AnthropicClaudeStandardConnector`` (standard pack) — fronted by the ``claude``
+  ConnectUs connector; credentials are brokered per request by UCP.
 
-The two integration ``.py`` files are byte-for-byte identical shims that just call
-``run_anthropic_claude_integration()``. The YAML files (params + commands surface)
-are the only difference between the two integrations — the YAML is the enforcement
-boundary.
+On the UCP path the connector exposes two typed ``api_key`` profiles, so each client
+pins its own profile through ``_resolve_ucp_capability``:
+
+- ``AnthropicClient`` (Messages API key) → sub-capability ``UcpIds.MODEL_SUB_CAPABILITY``.
+- ``ComplianceClient`` (Compliance Access Key) → ``log-collection`` for ``fetch-events``,
+  otherwise sub-capability ``UcpIds.COMPLIANCE_SUB_CAPABILITY``.
+
+Both clients override ``_apply_ucp_api_key`` because Anthropic requires the
+``x-api-key`` header rather than ``Authorization: Bearer``.
 """
 
 import demistomock as demisto  # noqa: F401
@@ -60,6 +64,19 @@ class Config:
     # Documentation links surfaced in user-facing error messages.
     COMPLIANCE_KEY_DOCS = "https://platform.claude.com/docs/en/manage-claude/compliance-api-access"
     API_KEY_DOCS = "https://console.anthropic.com/keys"
+
+
+class UcpIds:
+    """ConnectUs manifest ids the Python binds to at runtime (``claude`` connector).
+
+    These strings MUST equal the ids in the connector's ``capabilities.yaml``; no validator
+    checks this binding.
+    """
+
+    AUTOMATION_CAPABILITY = "automation-and-remediation"
+    COMPLIANCE_SUB_CAPABILITY = "automation-and-remediation_compliance"
+    MODEL_SUB_CAPABILITY = "automation-and-remediation_model"
+    LOG_COLLECTION_CAPABILITY = "log-collection"
 
 
 class ApiPaths:
@@ -180,17 +197,72 @@ Please ensure the tone is appropriate for communication within a cybersecurity c
 """ CLIENT CLASSES """
 
 
+def get_ucp_connection_profiles() -> list[dict[str, Any]]:
+    """Returns the connector's connection profiles, or an empty list outside UCP."""
+    try:
+        return (demisto.unifiedConnectorMetadata() or {}).get("connectionProfiles") or []
+    except Exception as e:  # pragma: no cover - defensive; the server never raises here
+        demisto.debug(f"[UCP][AnthropicClaudeApiModule.py] could not read connection profiles: {e}")
+        return []
+
+
+def ucp_has_sub_capability(sub_capability: str) -> bool:
+    """True when a configured connection profile serves the given sub-capability."""
+    return any(sub_capability in (profile.get("sub_capabilities") or []) for profile in get_ucp_connection_profiles())
+
+
+def ucp_has_capability(capability: str) -> bool:
+    """True when a configured connection profile serves the given capability."""
+    return capability in get_configured_ucp_capabilities()
+
+
+def apply_x_api_key(credentials: dict, ctx: "UcpRequestContext") -> None:
+    """Writes the UCP-brokered key to the ``x-api-key`` header Anthropic requires.
+
+    The profiles use ``type: api_key`` with ``metadata.auth.parameter: api_key``, which the CSP
+    aliases to the envelope key ``key`` (flat or nested under ``api_key``). Raises
+    :class:`UcpException` on an empty key so the dispatcher surfaces the generic UCP auth error.
+    """
+    api_key_data = credentials.get("api_key", credentials)
+    key = api_key_data.get("key", "") if isinstance(api_key_data, dict) else ""
+    if not key:
+        demisto.error("[UCP][AnthropicClaudeApiModule.py] API key is empty in UCP credentials")
+        raise UcpException
+    ctx.headers["x-api-key"] = key
+
+
 class AnthropicClient(BaseClient):
-    """Client for the Anthropic LLM Messages API — authenticates with the LLM API Key."""
+    """Client for the Anthropic LLM Messages API — authenticates with the Messages API Key."""
 
     MESSAGES_ENDPOINT = "v1/messages"
 
-    def __init__(self, url: str, api_key: str, model: str, proxy: bool, verify: bool):
+    def __init__(self, url: str, api_key: str | None, model: str | None, proxy: bool, verify: bool):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
 
         self.api_key = api_key
         self.model = model
-        self.headers = {"x-api-key": self.api_key, "anthropic-version": ANTHROPIC_VERSION, "Content-Type": "application/json"}
+        self.headers = {"anthropic-version": ANTHROPIC_VERSION, "Content-Type": "application/json"}
+        # Legacy XSOAR path only; on the UCP path _apply_ucp_api_key writes the header per request.
+        if not should_use_ucp_auth():
+            self.headers["x-api-key"] = self.api_key  # type: ignore[assignment]
+
+    def _resolve_ucp_capability(self) -> tuple[str, str | None]:
+        """Pins the Messages API key profile (model-commands sub-capability).
+
+        Raises instead of returning an absent sub-capability: ``get_ucp_method_unique_id`` would
+        otherwise fall back to any ``automation-and-remediation`` profile — the Compliance Access
+        Key — and send it to ``/v1/messages``.
+        """
+        if not ucp_has_sub_capability(UcpIds.MODEL_SUB_CAPABILITY):
+            raise DemistoException(
+                "Claude model commands are not enabled on this connector. Enable the 'Claude model commands' "
+                "option of Automation and Remediation and enter a Messages API Key."
+            )
+        return UcpIds.AUTOMATION_CAPABILITY, UcpIds.MODEL_SUB_CAPABILITY
+
+    def _apply_ucp_api_key(self, credentials: dict, ctx: "UcpRequestContext") -> None:
+        """Anthropic rejects Bearer auth; write ``x-api-key`` instead."""
+        apply_x_api_key(credentials, ctx)
 
     def get_messages(self, chat_context: List[dict[str, str]], completion_params: dict[str, str | None]) -> dict[str, Any]:
         """Gets the response to a messages request using the Anthropic API."""
@@ -242,31 +314,37 @@ class ComplianceClient(BaseClient):
     ``headers=`` argument on ``_http_request``.
     """
 
-    def __init__(self, url: str, api_key: str, proxy: bool, verify: bool):
+    def __init__(self, url: str, api_key: str | None, proxy: bool, verify: bool):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
         self.api_key = api_key
-        # Legacy XSOAR path: header is set here and forwarded on every request.
-        # On the UCP path api_key will be None (the profile supplies the credential via
-        # _apply_ucp_api_key below); the header written here is superseded by the UCP context.
-        self.headers = {"accept": "application/json", "x-api-key": self.api_key}
+        self.headers = {"accept": "application/json"}
+        # Legacy XSOAR path only; on the UCP path _apply_ucp_api_key writes the header per request.
+        if not should_use_ucp_auth():
+            self.headers["x-api-key"] = self.api_key  # type: ignore[assignment]
+
+    def _resolve_ucp_capability(self) -> tuple[str, str | None]:
+        """Pins the Compliance Access Key profile.
+
+        ``fetch-events`` binds to Log Collection. Everything else (commands, test-module) binds to
+        the compliance-actions sub-capability, falling back to Log Collection when only collection
+        is configured — never to the model-commands profile, which carries a different key. When
+        neither is configured it raises, because ``get_ucp_method_unique_id`` would otherwise fall
+        back to the model profile and send the Messages API key to the Compliance API.
+        """
+        if demisto.command() == "fetch-events" and ucp_has_capability(UcpIds.LOG_COLLECTION_CAPABILITY):
+            return UcpIds.LOG_COLLECTION_CAPABILITY, None
+        if ucp_has_sub_capability(UcpIds.COMPLIANCE_SUB_CAPABILITY):
+            return UcpIds.AUTOMATION_CAPABILITY, UcpIds.COMPLIANCE_SUB_CAPABILITY
+        if ucp_has_capability(UcpIds.LOG_COLLECTION_CAPABILITY):
+            return UcpIds.LOG_COLLECTION_CAPABILITY, None
+        raise DemistoException(
+            "Compliance actions are not enabled on this connector. Enable the 'Compliance actions' option of "
+            "Automation and Remediation, or Log Collection, and enter a Compliance Access Key."
+        )
 
     def _apply_ucp_api_key(self, credentials: dict, ctx: "UcpRequestContext") -> None:
-        """Override the default ``Authorization: Bearer …`` placement.
-
-        The Anthropic Compliance API rejects Bearer auth; it requires ``x-api-key: {key}``. The
-        ConnectUs profile has ``type: api_key`` and ``metadata.auth.parameter: api_key``, which the
-        CSP aliases to the envelope key ``key``. This override reads that key and writes the correct
-        header, matching the flat-form pattern documented on :class:`BaseClient` in CommonServerPython.
-
-        Raises :class:`UcpException` if the key is missing so the dispatcher surfaces the generic UCP
-        authentication error rather than sending a request with an empty header.
-        """
-        api_key_data = credentials.get("api_key", credentials)
-        key = api_key_data.get("key", "")
-        if not key:
-            demisto.error("[UCP][AnthropicClaudeApiModule.py] API key is empty in UCP credentials")
-            raise UcpException
-        ctx.headers["x-api-key"] = key
+        """Anthropic rejects Bearer auth; write ``x-api-key`` (plus a JSON ``accept``) instead."""
+        apply_x_api_key(credentials, ctx)
         # accept header is always safe to add; harmless if the caller already set it.
         ctx.headers.setdefault("accept", "application/json")
 
@@ -567,7 +645,7 @@ def module_test_llm(client: AnthropicClient, params: dict) -> str:
     try:
         chat_message = {"role": "user", "content": "test"}
         completion_params = {
-            ArgAndParamNames.MAX_TOKENS: int(params.get(ArgAndParamNames.MAX_TOKENS, "").replace(",", "") or 1024),
+            ArgAndParamNames.MAX_TOKENS: int(str(params.get(ArgAndParamNames.MAX_TOKENS) or "").replace(",", "") or 1024),
             ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
             ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
         }
@@ -687,6 +765,7 @@ def fetch_events_with_pagination(
     last_run: dict[str, Any],
     max_events: int,
     activity_types: list[str] | None,
+    first_fetch: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Fetch Activity Feed events incrementally using cursor pagination.
 
@@ -708,8 +787,9 @@ def fetch_events_with_pagination(
         created_at_gt: str | None = previous_newest
         created_at_gte: str | None = None
     else:
-        # No stored state: default to a one-minute lookback and let next_run advance the cursor.
-        lookback_dt = arg_to_datetime(Config.DEFAULT_FETCH_LOOKBACK)
+        # No stored state: start from the configured first-fetch time (lets a migrating customer set the
+        # cutover point), else the default one-minute lookback; next_run advances the cursor afterwards.
+        lookback_dt = arg_to_datetime(first_fetch or Config.DEFAULT_FETCH_LOOKBACK, arg_name="first_fetch")
         created_at_gte = lookback_dt.strftime(DATE_FORMAT) if lookback_dt else None
         created_at_gt = None
 
@@ -762,8 +842,9 @@ def fetch_events_command(client: ComplianceClient, params: dict[str, Any]) -> No
     last_run = demisto.getLastRun() or {}
     max_events = arg_to_number(params.get("max_events_per_fetch")) or Config.DEFAULT_MAX_EVENTS_PER_FETCH
     activity_types = argToList(params.get("activity_types")) or None
+    first_fetch = params.get("first_fetch") or None
 
-    events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types)
+    events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types, first_fetch)
 
     if events:
         add_time_to_events(events)
@@ -1168,27 +1249,42 @@ def module_test_compliance(client: ComplianceClient) -> str:
 """ MAIN FUNCTION """
 
 
+def ucp_test_targets() -> tuple[bool, bool]:
+    """On the UCP path, which credentials does this instance carry? Returns ``(model, compliance)``.
+
+    A profile is only present in ``connectionProfiles`` when the customer selected a capability
+    that uses it, so verification never tests (or fails on) a key the customer was not asked for.
+    """
+    test_model = ucp_has_sub_capability(UcpIds.MODEL_SUB_CAPABILITY)
+    test_compliance = ucp_has_sub_capability(UcpIds.COMPLIANCE_SUB_CAPABILITY) or ucp_has_capability(
+        UcpIds.LOG_COLLECTION_CAPABILITY
+    )
+    return test_model, test_compliance
+
+
 def run_anthropic_claude_integration() -> None:
     """Full integration entry point — parses params and dispatches every command.
 
-    This function is called verbatim by both integration shims (``AnthropicClaude`` and
-    ``AnthropicClaudeStandardConnector``). The YAML files are the enforcement boundary: the
-    satellite YAML only surfaces the two delete commands and the ``compliance_apikey`` param,
-    so the LLM branches of this dispatcher are unreachable there even though the code exists.
+    Called verbatim by both integration shims (``AnthropicClaude`` and
+    ``AnthropicClaudeStandardConnector``). On the legacy path the keys come from
+    ``demisto.params()``; on the UCP path (``should_use_ucp_auth()``) they are brokered per request
+    and every legacy key check below is skipped.
     """
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    use_ucp = should_use_ucp_auth()
 
-    api_key = params.get("apikey", {}).get("password")
+    # Under ConnectUs unfilled fields arrive as None, not "" / {} — read every param None-safely.
+    api_key = (params.get("apikey") or {}).get("password")
     # If a model name was provided within the free text box, it will override the selected one from the model selection box.
     # The provided model will be tested for compatability within the test module.
-    model = params.get("model-freetext") if params.get("model-freetext") else params.get("model-select")
-    compliance_api_key = params.get("compliance_apikey", {}).get("password")
+    model = params.get("model-freetext") or params.get("model-select")
+    compliance_api_key = (params.get("compliance_apikey") or {}).get("password")
 
-    url = params.get("url", "https://api.anthropic.com/")
+    url = params.get("url") or "https://api.anthropic.com/"
     verify = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    proxy = bool(params.get("proxy", False))
 
     # Compliance commands whose org_uuid argument falls back to the instance Organization UUID parameter.
     org_scoped_commands = {
@@ -1221,22 +1317,27 @@ def run_anthropic_claude_integration() -> None:
     try:
         if command == "test-module":
             # Validate whichever credentials are configured (a customer may configure either or both).
-            # Each test is labeled so a failure clearly indicates which key is invalid.
-            # On the satellite integration only compliance_apikey is exposed in the YAML, so only the
-            # compliance branch runs; the LLM branch is unreachable there.
+            # Each test is labeled so a failure clearly indicates which key is invalid. Both checks are
+            # read-only: a one-token Messages call and a single-item Activity Feed page.
+            ucp_test_model, ucp_test_compliance = ucp_test_targets() if use_ucp else (False, False)
             results: list[str] = []
-            if api_key:
+            if ucp_test_model or api_key:
                 try:
                     llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
                     results.append(module_test_llm(client=llm_client, params=params))
                 except Exception as e:
                     raise DemistoException(f"API Key (LLM) validation failed: {e}") from e
-            if compliance_api_key or should_use_ucp_auth():
+            if ucp_test_compliance or compliance_api_key:
                 try:
                     compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
                     results.append(module_test_compliance(client=compliance_client))
                 except Exception as e:
                     raise DemistoException(f"Compliance Access Key validation failed: {e}") from e
+            if not results and use_ucp:
+                raise DemistoException(
+                    "No Claude credentials to test. Enable 'Compliance actions' or 'Claude model commands' under "
+                    "Automation and Remediation, or Log Collection, on the Claude connector."
+                )
             if not results:
                 raise DemistoException(
                     "No credentials configured. Set the 'API Key' for LLM commands and/or the "
@@ -1247,12 +1348,14 @@ def run_anthropic_claude_integration() -> None:
             return_results(failure or "ok")
 
         elif command == "fetch-events":
-            ensure_compliance_key(compliance_api_key)
+            if not use_ucp:
+                ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             fetch_events_command(client=compliance_client, params=params)
 
         elif command == "claude-get-events":
-            ensure_compliance_key(compliance_api_key)
+            if not use_ucp:
+                ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             events, results_obj = get_events_command(client=compliance_client, args=args)
             # get_events_command already set _time on each event, so just push when requested.
@@ -1261,21 +1364,21 @@ def run_anthropic_claude_integration() -> None:
             return_results(results_obj)
 
         elif command in org_scoped_commands:
-            ensure_compliance_key(compliance_api_key)
+            if not use_ucp:
+                ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(org_scoped_commands[command](compliance_client, args, params))
 
         elif command in compliance_commands:
-            # UCP path: credential is supplied by the connector profile via _apply_ucp_api_key(),
-            # not by demisto.params(). Only the two delete commands are exposed on the satellite
-            # YAML — the rest of compliance_commands are only reachable on the legacy XSOAR path.
-            if not should_use_ucp_auth():
+            # UCP path: the credential is supplied by the connector profile via _apply_ucp_api_key().
+            if not use_ucp:
                 ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(compliance_commands[command](compliance_client, args))
 
         elif command in llm_commands:
-            ensure_api_key(api_key)
+            if not use_ucp:
+                ensure_api_key(api_key)
             llm_args = dict(args)
             llm_args.update({key: value for key, value in params.items() if key not in llm_args and value is not None})
             llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
