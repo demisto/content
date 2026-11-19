@@ -32,6 +32,8 @@ from ZscalerZIdentity import (
     ip_command,
     domain_command,
     SUSPICIOUS_CATEGORIES,
+    DEFAULT_BASE_URL,
+    build_api_base_url,
 )
 from CommonServerPython import DemistoException, Common, CommandResults
 
@@ -576,7 +578,7 @@ class TestCategoryCommands:
             "ipRanges": [],
         }
         unrelated_err = DemistoException(
-            "The request failed with error 400.\nMessage: " '{"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}'
+            'The request failed with error 400.\nMessage: {"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}'
         )
         api_request_mock = mocker.patch.object(
             mock_client,
@@ -590,6 +592,166 @@ class TestCategoryCommands:
             )
         # Only 2 calls: GET + 1 failed PUT. No retry.
         assert api_request_mock.call_count == 2
+
+    def test_update_preserves_existing_category_fields(self, mock_client, mocker):
+        """
+        Given: A category in Zscaler that already has dbCategorizedUrls, keywords,
+            keywordsRetainingParentCategory, ipRangesRetainingParentCategory, and description.
+        When: zia_category_update_command is called with only url and action=ADD_TO_LIST.
+        Then: The PUT payload preserves all existing fields from the GET response
+            instead of omitting and wiping them.
+        """
+        current_cat = {
+            "id": "CUSTOM_36",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": ["existing.com"],
+            "ipRanges": ["1.2.3.4/32"],
+            "dbCategorizedUrls": [".wgfnv.es", "api.connect-webex.com"],
+            "keywords": ["kw1"],
+            "keywordsRetainingParentCategory": ["parent_kw1"],
+            "ipRangesRetainingParentCategory": ["10.0.0.1/32"],
+            "description": "Production Block Category",
+        }
+        api_request_mock = mocker.patch.object(mock_client, "api_request", side_effect=[current_cat, None])
+        zia_category_update_command(
+            mock_client,
+            {"category_id": "CUSTOM_36", "url": "block.shark.com", "action": "ADD_TO_LIST"},
+        )
+        put_call = api_request_mock.call_args_list[1]
+        payload = put_call.kwargs.get("data") or put_call.args[2]
+        assert payload["urls"] == ["existing.com", "block.shark.com"]
+        assert payload["ipRanges"] == ["1.2.3.4/32"]
+        assert payload["dbCategorizedUrls"] == [".wgfnv.es", "api.connect-webex.com"]
+        assert payload["keywords"] == ["kw1"]
+        assert payload["keywordsRetainingParentCategory"] == ["parent_kw1"]
+        assert payload["ipRangesRetainingParentCategory"] == ["10.0.0.1/32"]
+        assert payload["description"] == "Production Block Category"
+
+    @pytest.mark.parametrize(
+        "action,expected_db_urls,expected_keywords",
+        [
+            ("ADD_TO_LIST", ["retain1.com", "retain2.com", "retain3.com"], ["kw1", "kw2"]),
+            ("REMOVE_FROM_LIST", ["retain1.com"], ["kw1"]),
+            ("OVERWRITE", ["retain2.com", "retain3.com"], ["kw2"]),
+        ],
+    )
+    def test_update_merges_optional_list_fields_by_action(self, mock_client, mocker, action, expected_db_urls, expected_keywords):
+        """
+        Given: A category with existing dbCategorizedUrls and keywords.
+        When: zia_category_update_command is called with db_categorized_urls and keywords
+            for ADD_TO_LIST, REMOVE_FROM_LIST, or OVERWRITE.
+        Then: The action is applied to dbCategorizedUrls and keywords consistently.
+        """
+        current_cat = {
+            "id": "CUSTOM_36",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": ["existing.com"],
+            "ipRanges": [],
+            "dbCategorizedUrls": ["retain1.com", "retain2.com"],
+            "keywords": ["kw1", "kw2"],
+        }
+        api_request_mock = mocker.patch.object(mock_client, "api_request", side_effect=[current_cat, None])
+        zia_category_update_command(
+            mock_client,
+            {
+                "category_id": "CUSTOM_36",
+                "url": "existing.com",
+                "db_categorized_urls": "retain2.com,retain3.com",
+                "keywords": "kw2",
+                "action": action,
+            },
+        )
+        put_call = api_request_mock.call_args_list[1]
+        payload = put_call.kwargs.get("data") or put_call.args[2]
+        assert payload["dbCategorizedUrls"] == expected_db_urls
+        assert payload["keywords"] == expected_keywords
+
+    def test_update_with_only_db_categorized_urls_succeeds(self, mock_client, mocker):
+        """
+        Given: A category with existing urls and dbCategorizedUrls.
+        When: zia_category_update_command is called with db_categorized_urls only (no url or ip).
+        Then: The command succeeds, preserves urls, and updates dbCategorizedUrls.
+        """
+        current_cat = {
+            "id": "CUSTOM_36",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": ["existing.com"],
+            "ipRanges": [],
+            "dbCategorizedUrls": ["retain1.com"],
+        }
+        api_request_mock = mocker.patch.object(mock_client, "api_request", side_effect=[current_cat, None])
+        result = zia_category_update_command(
+            mock_client,
+            {
+                "category_id": "CUSTOM_36",
+                "db_categorized_urls": "block.shark.com",
+                "action": "ADD_TO_LIST",
+            },
+        )
+        assert "successfully updated" in result.readable_output
+        put_call = api_request_mock.call_args_list[1]
+        payload = put_call.kwargs.get("data") or put_call.args[2]
+        assert payload["urls"] == ["existing.com"]
+        assert payload["dbCategorizedUrls"] == ["retain1.com", "block.shark.com"]
+
+    def test_update_retries_and_sanitizes_db_categorized_urls_and_double_encoded_entities(self, mock_client, mocker):
+        """
+        Given: A category whose urls and dbCategorizedUrls contain single and double
+            HTML-encoded entities, and Zscaler rejects the first PUT with
+            INVALID_INPUT_ARGUMENT "URLs must not contain HTML content".
+        When: zia_category_update_command is called.
+        Then: The retry decodes HTML entities in both urls and dbCategorizedUrls.
+        """
+        current_cat = {
+            "id": "CUSTOM_52",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": [".docs.google.com/uc?export=download&amp;amp;amp;id=1"],
+            "ipRanges": [],
+            "dbCategorizedUrls": [".drive.google.com/uc?export=download&amp;id=2"],
+        }
+        html_err = DemistoException(
+            "The request failed with error 400.\nMessage: "
+            '{"code":"INVALID_INPUT_ARGUMENT","message":"URLs must not contain HTML content"}'
+        )
+        api_request_mock = mocker.patch.object(
+            mock_client,
+            "api_request",
+            side_effect=[current_cat, html_err, None],
+        )
+        zia_category_update_command(
+            mock_client,
+            {"category_id": "CUSTOM_52", "url": "arunkumar1.com", "action": "ADD_TO_LIST"},
+        )
+        assert api_request_mock.call_count == 3
+        retry_call = api_request_mock.call_args_list[2]
+        retry_payload = retry_call.kwargs.get("data") or retry_call.args[2]
+        assert retry_payload["urls"] == [
+            ".docs.google.com/uc?export=download&id=1",
+            "arunkumar1.com",
+        ]
+        assert retry_payload["dbCategorizedUrls"] == [
+            ".drive.google.com/uc?export=download&id=2",
+        ]
+
+    def test_update_invalid_action_raises(self, mock_client):
+        """
+        Given: An unsupported action value.
+        When: zia_category_update_command is called.
+        Then: A DemistoException is raised indicating valid actions.
+        """
+        with pytest.raises(DemistoException, match="Invalid action"):
+            zia_category_update_command(
+                mock_client,
+                {"category_id": "CUSTOM_52", "url": "example.com", "action": "INVALID"},
+            )
 
 
 class TestUrlSanitization:
@@ -1395,3 +1557,77 @@ class TestErrorHandler:
         cleared_ctx = mock_set_ctx.call_args[0][0]
         assert "access_token" not in cleared_ctx
         assert "token_expires_at" not in cleared_ctx
+
+
+# ---- Unit tests: configurable base URL (XSUP-79151) ----
+
+
+class TestBuildApiBaseUrl:
+    def test_empty_value_falls_back_to_default(self):
+        """
+        Given: No base URL configured (empty string).
+        When: build_api_base_url is called.
+        Then: The previous hardcoded base URL is returned.
+        """
+        assert build_api_base_url("") == "https://api.zsapi.net/zia/api/v1"
+
+    def test_full_base_url_is_kept(self):
+        """
+        Given: A full base URL that already ends with /zia/api/v1.
+        When: build_api_base_url is called.
+        Then: It is returned as is.
+        """
+        assert build_api_base_url("https://api.example.com/zia/api/v1") == "https://api.example.com/zia/api/v1"
+
+    def test_host_only_gets_zia_path_appended(self):
+        """
+        Given: Only a host, without the /zia/api/v1 path.
+        When: build_api_base_url is called.
+        Then: The ZIA API path is appended.
+        """
+        assert build_api_base_url("https://api.example.com") == "https://api.example.com/zia/api/v1"
+
+    def test_trailing_slash_and_whitespace_are_stripped(self):
+        """
+        Given: A base URL with surrounding whitespace and a trailing slash.
+        When: build_api_base_url is called.
+        Then: The result contains no trailing slash or whitespace.
+        """
+        assert build_api_base_url("  https://api.example.com/zia/api/v1/  ") == "https://api.example.com/zia/api/v1"
+
+    def test_missing_scheme_defaults_to_https(self):
+        """
+        Given: A base URL without a scheme.
+        When: build_api_base_url is called.
+        Then: https:// is prepended.
+        """
+        assert build_api_base_url("api.example.com/zia/api/v1") == "https://api.example.com/zia/api/v1"
+
+
+class TestClientBaseUrl:
+    def test_client_defaults_to_previous_base_url(self, mock_client):
+        """
+        Given: A Client created without a base_url argument.
+        When: Its base URL is inspected.
+        Then: The previous hardcoded base URL is used, preserving existing behavior.
+        """
+        assert mock_client._base_url == DEFAULT_BASE_URL
+
+    def test_client_uses_configured_base_url(self):
+        """
+        Given: A Client created with a custom base URL.
+        When: Its base URL is inspected.
+        Then: The custom base URL is used instead of the default.
+        """
+        client = Client(
+            server_url="www.testdomain.zslogin.net",
+            client_id="test_client_id",
+            client_secret="test_client_secret",
+            verify=False,
+            proxy=False,
+            reliability="C - Fairly reliable",
+            auto_activate=True,
+            suspicious_categories=list(SUSPICIOUS_CATEGORIES),
+            base_url="https://api.example.com/zia/api/v1",
+        )
+        assert client._base_url == "https://api.example.com/zia/api/v1"

@@ -12,12 +12,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Varonis DSP Incident
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
@@ -25,6 +31,9 @@ configuration:
   type: 19
   advanced: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The FQDN/IP the integration should connect to
   name: url
   required: true
@@ -52,12 +61,18 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 1 week
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: severity
@@ -68,12 +83,18 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Varonis threat model name
   additionalinfo: Comma-separated list of threat model names of alerts to fetch
   name: threat_model
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: Open
   display: Varonis alert status
   name: status
@@ -84,6 +105,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Streamline alerts and related forensic information from Varonis DSP.
 display: Varonis Data Security Platform
 name: VaronisDataSecurityPlatform
@@ -396,7 +420,7 @@ script:
     - contextPath: Varonis.Pagination.PageSize
       description: Number of records on the page.
       type: Number
-  dockerimage: demisto/ntlm:1.0.0.12701738
+  dockerimage: demisto/ntlm:1.0.0.14169403
   isfetch: true
   runonce: false
   script: '-'

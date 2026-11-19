@@ -137,5 +137,9 @@
             "type": "singleSelect",
             "name": "Bmc Status Reason"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

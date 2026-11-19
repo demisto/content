@@ -1051,10 +1051,15 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
 def test_module(params: dict) -> str:
     """
     Integration test module.
+
+    If the long-running ports are already bound (e.g. the instance's long-running server is live),
+    a healthy running instance is verified instead of re-binding the ports. The health probe uses
+    GET "/" through nginx, which is not a registered TAXII2 route, so Flask answers a cheap 404
+    without running any authentication, indicator search or state change.
     """
     if not params.get("longRunningPort"):
         params["longRunningPort"] = "1111"
-    run_long_running(params, is_test=True)
+    test_long_running_with_running_instance_check(params)
     return "ok"
 
 

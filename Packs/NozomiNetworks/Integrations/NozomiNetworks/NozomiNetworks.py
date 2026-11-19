@@ -101,9 +101,45 @@ def get_client():
     return Client()
 
 
-def parse_incident(i, roles=None):
+MAX_INCIDENT_NAME_LENGTH = 76
+TRUNCATION_SUFFIX = "..."
+INCIDENT_NAME_PLACEHOLDER = re.compile(r"\{(\w+)\}")
+
+
+def custom_incident_name_pattern(params):
+    return (params.get("customIncidentNamePattern") or "").strip()
+
+
+def sanitize_incident_name(name):
+    # drop HTML angle brackets, replace control characters and newlines, collapse repeated whitespace
+    return re.sub(r"\s+", " ", re.sub(r"[\x00-\x1f\x7f]", " ", re.sub(r"[<>]", "", name))).strip()
+
+
+def build_custom_incident_name(alert, pattern):
+    """Renders the pattern replacing {field} with the alert values. Missing or empty fields are rendered as empty strings."""
+
+    def replace(match):
+        value = alert.get(match.group(1))
+        return sanitize_incident_name(str(value)) if value is not None else ""
+
+    rendered = INCIDENT_NAME_PLACEHOLDER.sub(replace, pattern.replace("{{", "\x01").replace("}}", "\x02"))
+    name = sanitize_incident_name(rendered.replace("\x01", "{").replace("\x02", "}"))
+    if len(name) <= MAX_INCIDENT_NAME_LENGTH:
+        return name
+    return name[: MAX_INCIDENT_NAME_LENGTH - len(TRUNCATION_SUFFIX)].rstrip() + TRUNCATION_SUFFIX
+
+
+def incident_name(alert, pattern=""):
+    default_name = f"{alert['name']}_{alert['id']}"
+    if not pattern:
+        return default_name
+    # an empty or whitespace-only result falls back to the default name
+    return build_custom_incident_name(alert, pattern) or default_name
+
+
+def parse_incident(i, roles=None, name_pattern=None):
     incident = {
-        "name": f"{i['name']}_{i['id']}",
+        "name": incident_name(i, name_pattern),
         "occurred": datetime.fromtimestamp(i["record_created_at"] / 1000, timezone.utc).isoformat(),  # noqa: UP017
         "severity": parse_severity(i),
         "rawJSON": json.dumps(clean_null_terms(i)),
@@ -218,7 +254,7 @@ def default_incident_roles():
     return argToList(demisto.params().get("defaultIncidentRole"))
 
 
-def incidents(st, last_run, risk, also_n2os_incidents, client):
+def incidents(st, last_run, risk, also_n2os_incidents, client, name_pattern=""):
     def get_incident_name(i):
         return i["name"]
 
@@ -236,7 +272,7 @@ def incidents(st, last_run, risk, also_n2os_incidents, client):
         return [], lft
 
     roles = default_incident_roles()
-    parsed_incidents = [parse_incident(i, roles) for i in ibtt]
+    parsed_incidents = [parse_incident(i, roles, name_pattern) for i in ibtt]
     parsed_incidents.sort(key=get_incident_name)
 
     return parsed_incidents, lft
@@ -326,7 +362,9 @@ def fetch_incidents(client, st=None, last_run=None, risk=None, fetch_also_n2os_i
     risk = risk or demisto.params().get("riskFrom", None)
     fetch_also_n2os_incidents = fetch_also_n2os_incidents or demisto.params().get("fecthAlsoIncidents", False)
 
-    demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client)
+    name_pattern = custom_incident_name_pattern(demisto.params())
+
+    demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client, name_pattern)
 
     if not test_mode:
         next_page = build_next_page(last_run.get("page", 1), len(demisto_incidents))
