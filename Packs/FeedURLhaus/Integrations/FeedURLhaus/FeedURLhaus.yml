@@ -85,7 +85,7 @@ configuration:
   section: Collect
   defaultvalue: '60'
   required: false
-  additionalinfo: abuse.ch regenerates the URLhaus dump every 5 minutes. The minimum is 5 minutes; instances set lower must be raised to 5 or more after upgrading.
+  additionalinfo: The abuse.ch URLhaus export dump is regenerated every 5 minutes. The minimum interval is 5 minutes; instances configured with a lower value must be updated to 5 or more after upgrading.
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8

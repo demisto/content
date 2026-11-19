@@ -4,19 +4,24 @@ For more information, visit: https://urlhaus.abuse.ch/
 Fetch indicators from URLhaus api
 =======
 
-Fetch indicators from the URLhaus API. The integration downloads the abuse.ch v2 export of online URLs (`https://urlhaus-api.abuse.ch/v2/files/exports/<Auth-Key>/online.csv`).
+Fetch indicators from the URLhaus API.
 
-| **Parameter**        | **Description**                                                                            | **Required** |
-|----------------------|--------------------------------------------------------------------------------------------|--------------|
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
 | Auth Key | The abuse.ch Auth-Key used to download the URLhaus export. | True |
-| Fetches indicators   | Check tofetch indicators                                                                   | True         |
-| Indicator Reputation | The type of reputation for the indicator                                                   | True         |
-| Traffic Light Protocol Color               | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. | True         |
-| Indicator Expiration Method              | The indicator expiration method                                                            | True         |
-| Source Reliability             | The reliability of the feed                                                                | True         |
-| Feed Fetch Interval    | The time interval to fetch indicators from the api. abuse.ch regenerates the URLhaus dump every 5 minutes. The minimum is 5 minutes; instances set lower must be raised to 5 or more after upgrading. | False        |
-| Trust any certificate    | Weather or not to trust any certificate                                                    | True         |
-| Use system proxy settings   | If you want to use proxy for the integration                                               | True         |
+| Tags | Supports CSV values. | False |
+|  |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Fetch indicators |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+|  |  | False |
+| Feed Fetch Interval | The abuse.ch URLhaus export dump is regenerated every 5 minutes. The minimum interval is 5 minutes; instances configured with a lower value must be updated to 5 or more after upgrading. | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
 
 #### Create an Auth Key for abuse.ch
 >
