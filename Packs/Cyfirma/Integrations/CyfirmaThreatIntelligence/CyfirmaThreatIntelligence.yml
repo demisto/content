@@ -1,0 +1,366 @@
+name: Cyfirma Threat Intelligence
+display: CYFIRMA Threat Intelligence
+description: CYFIRMA is an AI-powered Preemptive External Threat Landscape Management platform that enables organizations to predict, identify, and prevent cyber threats by gaining visibility into external exposure and adversary intent. By transforming threat intelligence into predictive insights and actionable risk intelligence, CYFIRMA helps organizations reduce cyber risk, protect critical digital assets, and move from reactive defence to proactive threat prevention.
+category: Data Enrichment & Threat Intelligence
+provider: CYFIRMA
+sectionorder:
+  - Connect
+  - Collect
+commonfields:
+  id: Cyfirma Threat Intelligence
+  version: -1
+configuration:
+- defaultvalue: https://api.cyfirma.com
+  display: API URL (e.g. https://api.cyfirma.com)
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  name: api_key
+  type: 9
+  required: true
+  hiddenusername: true
+  display: ''
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch threat intelligence feeds
+  name: feed
+  required: false
+  type: 8
+- display: Fetch tailored indicator feeds
+  name: fetchTailoredIndicators
+  required: false
+  type: 8
+  defaultvalue: 'true'
+- display: Fetch tailored Vulnerability feeds
+  name: fetchTailoredVulnerability
+  required: false
+  type: 8
+  defaultvalue: 'true'
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Tags for the feeds
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: 15 days
+  display: How much time before the first fetch to retrieve feeds for tailored indicators and vulnerabilities. (e.g. 30 days)
+  name: first_fetch
+  options:
+  - 1 day
+  - 3 days
+  - 7 days
+  - 15 days
+  - 30 days
+  - 60 days
+  required: false
+  type: 15
+  hidden: false
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+script:
+  feed: true
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.8428455
+commands:
+  - name: cyfirma-ip-get
+    description: Retrieves IP indicators from CYFIRMA.
+    outputs:
+    - contextPath: Cyfirma.Indicator.value
+      description: The indicator value (IP, domain, URL, file hash, etc.).
+      type: String
+    - contextPath: Cyfirma.Indicator.type
+      description: The indicator type, or Unknown if it could not be determined.
+      type: String
+    - contextPath: Cyfirma.Indicator.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Indicator.role
+      description: The role of the indicator (e.g. C2, Malware, Phishing)
+      type: String
+    - contextPath: Cyfirma.Indicator.threat_actor
+      description: Threat actor(s) associated with the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.vendors
+      description: Security vendor detections for the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.action
+      description: Security vendor detections for the indicator.
+      type: String
+
+  - name: cyfirma-domain-get
+    description: Retrieves domain indicators from CYFIRMA.
+    outputs:
+    - contextPath: Cyfirma.Indicator.value
+      description: The indicator value (IP, domain, URL, file hash, etc.).
+      type: String
+    - contextPath: Cyfirma.Indicator.type
+      description: The indicator type, or Unknown if it could not be determined.
+      type: String
+    - contextPath: Cyfirma.Indicator.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Indicator.role
+      description: The role of the indicator (e.g. C2, Malware, Phishing)
+      type: String
+    - contextPath: Cyfirma.Indicator.threat_actor
+      description: Threat actor(s) associated with the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.vendors
+      description: Security vendor detections for the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.action
+      description: Security vendor detections for the indicator.
+      type: String
+
+  - name: cyfirma-url-get
+    description: Retrieves URL indicators from CYFIRMA.
+    outputs:
+    - contextPath: Cyfirma.Indicator.value
+      description: The indicator value (IP, domain, URL, file hash, etc.).
+      type: String
+    - contextPath: Cyfirma.Indicator.type
+      description: The indicator type, or Unknown if it could not be determined.
+      type: String
+    - contextPath: Cyfirma.Indicator.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Indicator.role
+      description: The role of the indicator (e.g. C2, Malware, Phishing)
+      type: String
+    - contextPath: Cyfirma.Indicator.threat_actor
+      description: Threat actor(s) associated with the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.vendors
+      description: Security vendor detections for the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.action
+      description: Security vendor detections for the indicator.
+      type: String
+
+  - name: cyfirma-file-get
+    description: Retrieves file hash indicators from CYFIRMA.
+    outputs:
+    - contextPath: Cyfirma.Indicator.value
+      description: The indicator value (IP, domain, URL, file hash, etc.).
+      type: String
+    - contextPath: Cyfirma.Indicator.type
+      description: The indicator type, or Unknown if it could not be determined.
+      type: String
+    - contextPath: Cyfirma.Indicator.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Indicator.role
+      description: The role of the indicator (e.g. C2, Malware, Phishing)
+      type: String
+    - contextPath: Cyfirma.Indicator.threat_actor
+      description: Threat actor(s) associated with the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.vendors
+      description: Security vendor detections for the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.action
+      description: Security vendor detections for the indicator.
+      type: String
+
+  - name: cyfirma-ioc-search-get
+    description: Searches CYFIRMA for an indicator by value.
+    arguments:
+    - name: value
+      required: true
+      description: The indicator value to search for (IP, domain, URL, file hash, etc.).
+    outputs:
+    - contextPath: Cyfirma.Indicator.value
+      description: The indicator value (IP, domain, URL, file hash, etc.).
+      type: String
+    - contextPath: Cyfirma.Indicator.type
+      description: The indicator type, or Unknown if it could not be determined.
+      type: String
+    - contextPath: Cyfirma.Indicator.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Indicator.role
+      description: The role of the indicator (e.g. C2, Malware, Phishing)
+      type: String
+    - contextPath: Cyfirma.Indicator.threat_actor
+      description: Threat actor(s) associated with the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.vendors
+      description: Security vendor detections for the indicator.
+      type: Unknown
+    - contextPath: Cyfirma.Indicator.action
+      description: Security vendor detections for the indicator.
+      type: String
+
+  - name: cyfirma-threat-actor-search-get
+    description: Searches CYFIRMA for a threat actor by name.
+    arguments:
+    - name: value
+      required: true
+      description: The threat actor name to search for.
+    outputs:
+    - contextPath: Cyfirma.ThreatActor.value
+      description: The threat actor name.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.type
+      description: The object type (ThreatActor).
+      type: String
+    - contextPath: Cyfirma.ThreatActor.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.ThreatActor.origin_of_country
+      description: Country of origin of the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.target_countries
+      description: Countries targeted by the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.motivation
+      description: Motivation of the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.target_technologies
+      description: Technologies targeted by the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.target_industries
+      description: Industries targeted by the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.associated_malware
+      description: Malware associated with the threat actor.
+      type: String
+    - contextPath: Cyfirma.ThreatActor.associated_campaigns
+      description: Campaigns associated with the threat actor.
+      type: String
+
+  - name: cyfirma-malware-search-get
+    description: Searches CYFIRMA for malware by name.
+    arguments:
+    - name: value
+      required: true
+      description: The malware name to search for.
+    outputs:
+    - contextPath: Cyfirma.Malware.value
+      description: The malware name.
+      type: String
+    - contextPath: Cyfirma.Malware.type
+      description: The object type (Malware).
+      type: String
+    - contextPath: Cyfirma.Malware.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Malware.target_technologies
+      description: Technologies targeted by the malware.
+      type: String
+    - contextPath: Cyfirma.Malware.target_industries
+      description: Industries targeted by the malware.
+      type: String
+    - contextPath: Cyfirma.Malware.target_countries
+      description: Countries targeted by the malware.
+      type: String
+    - contextPath: Cyfirma.Malware.country
+      description: Country associated with the malware.
+      type: String
+    - contextPath: Cyfirma.Malware.threat_actors
+      description: Threat actors associated with the malware.
+      type: String
+
+  - name: cyfirma-vulnerability-search-get
+    description: Searches CYFIRMA for a vulnerability by CVE ID.
+    arguments:
+    - name: value
+      required: true
+      description: The CVE ID to search for, for example CVE-2024-12345.
+    outputs:
+    - contextPath: Cyfirma.Vulnerability.value
+      description: The CVE ID.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.type
+      description: The object type (CVE).
+      type: String
+    - contextPath: Cyfirma.Vulnerability.score
+      description: The XSOAR score derived from confidence (1 - Benign, 2 - Suspicious, 3 - Malicious).
+      type: Number
+    - contextPath: Cyfirma.Vulnerability.confidence
+      description: The confidence value (0-100) of the vulnerability.
+      type: Number
+    - contextPath: Cyfirma.Vulnerability.cvss_version
+      description: The CVSS version.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.cvss_base_score
+      description: The CVSS base score.
+      type: Number
+    - contextPath: Cyfirma.Vulnerability.cvss_vector
+      description: The CVSS vector string.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.impact_score
+      description: The CVSS impact score.
+      type: Number
+    - contextPath: Cyfirma.Vulnerability.exploitability_score
+      description: The CVSS exploitability score.
+      type: Number
+    - contextPath: Cyfirma.Vulnerability.attack_vector
+      description: The CVSS attack vector.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.attack_complexity
+      description: The CVSS attack complexity.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.privileges_required
+      description: The CVSS privileges required.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.user_interaction
+      description: The CVSS user interaction requirement.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.scope
+      description: The CVSS scope.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.confidentiality_impact
+      description: The CVSS confidentiality impact.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.integrity_impact
+      description: The CVSS integrity impact.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.availability_impact
+      description: The CVSS availability impact.
+      type: String
+    - contextPath: Cyfirma.Vulnerability.vendors
+      description: Vendors affected by the vulnerability.
+      type: Unknown
+  
+fromversion: 6.9.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
