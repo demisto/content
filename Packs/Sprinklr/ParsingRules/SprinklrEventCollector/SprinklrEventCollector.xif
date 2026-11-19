@@ -1,0 +1,17 @@
+[INGEST:vendor="Sprinklr", product="Sprinklr", target_dataset="sprinklr_sprinklr_raw", no_hit=keep]
+alter _time = to_timestamp(to_integer(coalesce(publishedDate, createdDate)), "millis"),
+      sprinklr_post_id = to_string(postId),
+      sprinklr_message_id = to_string(messageId),
+      sprinklr_account_id = to_string(accountId),
+      sprinklr_author_id = to_string(authorId),
+      sprinklr_client_id = to_string(clientId),
+      sprinklr_message_type = to_string(messageType),
+      sprinklr_channel = to_string(channelType),
+      sprinklr_account_type = to_string(accountType),
+      sprinklr_status = to_string(status),
+      sprinklr_status_id = to_string(statusID),
+      sprinklr_permalink = to_string(permalink),
+      sprinklr_deleted = to_string(deleted),
+      sprinklr_created_date = to_string(createdDate),
+      sprinklr_schedule_date = to_string(scheduleDate),
+      sprinklr_published_date = to_string(publishedDate);
