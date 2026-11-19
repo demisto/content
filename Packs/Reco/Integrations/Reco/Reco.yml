@@ -1279,7 +1279,7 @@ script:
     - description: 'An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com".'
       name: filters
       required: false
-    - description: The maximum number of alerts to return (1-5000).
+    - description: The maximum number of alerts to return.
       name: limit
       required: false
       defaultValue: '50'
@@ -1370,7 +1370,7 @@ script:
     - description: 'An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com".'
       name: filters
       required: false
-    - description: The maximum number of alerts to return (1-500). Every alert is enriched with its full details, one API call each.
+    - description: The maximum number of alerts to return. Every alert is enriched with its full details, one API call each, so large values are slow and may reach the command timeout.
       name: limit
       required: false
       defaultValue: '50'

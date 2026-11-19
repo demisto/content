@@ -2,11 +2,14 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import json
+import re
 import time
+import traceback
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import dateutil.parser
 
+from collections.abc import Callable
 from typing import Any
 
 ENTRY_TYPE_USER = "ENTRY_TYPE_USER"
@@ -95,8 +98,7 @@ EXTERNAL_STATUS_FALLBACK_CODES = (403, 404)
 ENTITY_LABEL_TYPES: list[str] = ["account", "app", "identity", "posture", "saas-to-saas", "ip-address", "ai-agent", "device"]
 
 LIST_ALERTS_DEFAULT_LIMIT = 50
-LIST_ALERTS_MAX_LIMIT = 5000
-FETCH_ALERTS_MAX_LIMIT = 500  # reco-fetch-alerts enriches every alert with one detail call each
+FETCH_ALERTS_PAGE_SIZE = 500  # reco-fetch-alerts enriches every alert with one detail call each, so it works in pages
 
 
 @dataclass
@@ -206,7 +208,7 @@ def parse_date_param(value: str | None, name: str, include_whole_day: bool = Fal
     parsed = dateparser.parse(str(value), settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
     if not parsed:
         raise ValueError(f"Could not parse '{name}' value '{value}' as a date.")
-    parsed = parsed.astimezone(timezone.utc)
+    parsed = parsed.astimezone(UTC)
     if include_whole_day and DATE_ONLY_PATTERN.match(str(value).strip()):
         parsed += timedelta(days=1)
     return parsed
@@ -460,6 +462,7 @@ class RecoClient(BaseClient):
             )
         except Exception as e:
             demisto.error(f"change_alert_status error: {str(e)}")
+            demisto.debug(traceback.format_exc())
             raise
 
     def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
@@ -496,6 +499,7 @@ class RecoClient(BaseClient):
             return self._external_api_post(endpoint, body)
         except Exception as e:
             demisto.error(f"{endpoint} error: {str(e)}")
+            demisto.debug(traceback.format_exc())
             raise
 
     def add_entity_label(
@@ -530,6 +534,7 @@ class RecoClient(BaseClient):
             return response.get("alert", {})
         except Exception as e:
             demisto.error(f"update_alert_severity error: {str(e)}")
+            demisto.debug(traceback.format_exc())
             raise
 
     def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
@@ -1292,9 +1297,7 @@ def get_fetch_filters(params: dict[str, Any]) -> dict[str, Any]:
     fetch-incidents and test-module both call this and pass the result straight through, so the
     Test button always exercises exactly the query that fetch will send.
     """
-    after = parse_date_param(params.get("after"), "after")
-    if not after and (first_fetch := params.get("first_fetch")):
-        after = dateparser.parse(first_fetch) or None
+    after = parse_date_param(params.get("after"), "after") or parse_date_param(params.get("first_fetch"), "first_fetch")
     return {
         # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
         "risk_levels": parse_minimum_risk_level(params.get("risk_level")),
@@ -1649,11 +1652,11 @@ def _alert_query_from_args(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _parse_limit(args: dict[str, Any], maximum: int) -> int:
+def _parse_limit(args: dict[str, Any]) -> int:
     raw_limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit = LIST_ALERTS_DEFAULT_LIMIT if raw_limit is None else int(raw_limit)
-    if limit < 1 or limit > maximum:
-        raise ValueError(f"limit must be between 1 and {maximum}.")
+    if limit < 1:
+        raise ValueError("limit must be a positive number.")
     return limit
 
 
@@ -1674,6 +1677,29 @@ def _alerts_to_command_results(title: str, alerts: list[dict[str, Any]]) -> Comm
     )
 
 
+def _collect_alert_pages(
+    fetch_page: Callable[[int, int], tuple[list[dict[str, Any]], int]], limit: int, max_page_size: int
+) -> list[dict[str, Any]]:
+    """Collect up to `limit` alerts by paging. fetch_page(page_size, offset) returns (alerts, raw page size).
+
+    A new alert arriving between pages shifts the offsets, so an alert is never returned twice, and paging
+    stops on a short page or a page with nothing new.
+    """
+    alerts: list[dict[str, Any]] = []
+    seen_ids: set[str | None] = set()
+    offset = 0
+    while len(alerts) < limit:
+        page_size = min(max_page_size, limit - len(alerts))
+        page, raw_page_size = fetch_page(page_size, offset)
+        offset += raw_page_size
+        new_alerts = [alert for alert in page if alert.get("id") not in seen_ids]
+        seen_ids.update(alert.get("id") for alert in new_alerts)
+        alerts.extend(new_alerts)
+        if raw_page_size < page_size or not new_alerts:
+            break
+    return alerts
+
+
 def list_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
     """List alert summaries for an analyst-defined window and filters. One list call per page, no per-alert detail calls.
 
@@ -1681,22 +1707,14 @@ def list_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> Comman
     cannot move the production fetch cursor.
     """
     query = _alert_query_from_args(args)
-    limit = _parse_limit(args, LIST_ALERTS_MAX_LIMIT)
+    limit = _parse_limit(args)
     sort_order = _parse_sort_order(args, default="descending")
 
-    alerts: list[dict[str, Any]] = []
-    seen_ids: set[str | None] = set()
-    offset = 0
-    while len(alerts) < limit:
-        page_size = min(PAGE_SIZE, limit - len(alerts))
+    def fetch_page(page_size: int, offset: int) -> tuple[list[dict[str, Any]], int]:
         page = reco_client.get_alerts(**query, limit=page_size, start_index=offset, sort_order=sort_order)
-        offset += len(page)
-        # A new alert arriving between pages shifts the offsets; never return the same alert twice.
-        new_alerts = [alert for alert in page if alert.get("id") not in seen_ids]
-        seen_ids.update(alert.get("id") for alert in new_alerts)
-        alerts.extend(new_alerts)
-        if len(page) < page_size or not new_alerts:
-            break
+        return page, len(page)
+
+    alerts = _collect_alert_pages(fetch_page, limit, PAGE_SIZE)
     return _alerts_to_command_results("Reco Alerts", alerts)
 
 
@@ -1708,10 +1726,13 @@ def fetch_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> Comma
     reads or writes the fetch-incidents last-run.
     """
     query = _alert_query_from_args(args)
-    limit = _parse_limit(args, FETCH_ALERTS_MAX_LIMIT)
+    limit = _parse_limit(args)
     sort_order = _parse_sort_order(args, default="ascending")
 
-    alerts, _raw_page_size = get_alerts(reco_client, limit=limit, sort_order=sort_order, **query)
+    def fetch_page(page_size: int, offset: int) -> tuple[list[dict[str, Any]], int]:
+        return get_alerts(reco_client, limit=page_size, start_index=offset, sort_order=sort_order, **query)
+
+    alerts = _collect_alert_pages(fetch_page, limit, FETCH_ALERTS_PAGE_SIZE)
     return _alerts_to_command_results("Reco Alerts (detailed)", alerts)
 
 
@@ -1751,15 +1772,21 @@ def _validated_entity_type(entity_type: str) -> str:
 def add_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
     """Add an existing catalog label to an entity."""
     entity_type = _validated_entity_type(args["entity_type"])
-    reco_client.add_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
-    return CommandResults(readable_output=f"Label '{args['label_name']}' added to {entity_type} {args['entity_id']}")
+    response = reco_client.add_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(
+        readable_output=f"Label '{args['label_name']}' added to {entity_type} {args['entity_id']}",
+        raw_response=response,
+    )
 
 
 def remove_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
     """Remove a label from an entity."""
     entity_type = _validated_entity_type(args["entity_type"])
-    reco_client.remove_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
-    return CommandResults(readable_output=f"Label '{args['label_name']}' removed from {entity_type} {args['entity_id']}")
+    response = reco_client.remove_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(
+        readable_output=f"Label '{args['label_name']}' removed from {entity_type} {args['entity_id']}",
+        raw_response=response,
+    )
 
 
 # --- New command functions (external API) ---

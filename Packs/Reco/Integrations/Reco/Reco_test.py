@@ -9,6 +9,7 @@ import demistomock as demisto
 import pytest
 import datetime
 import os
+import re
 import yaml
 import Reco
 from urllib.parse import parse_qs, urlparse
@@ -1338,6 +1339,21 @@ def test_get_fetch_filters_parses_before_and_after_parameters() -> None:
     assert filters["after"].strftime("%Y-%m-%d") == "2026-11-01"  # explicit `after` wins over first_fetch
 
 
+def test_get_fetch_filters_parses_first_fetch_as_utc() -> None:
+    after = get_fetch_filters({"first_fetch": "3 days"})["after"]
+
+    assert after.tzinfo is not None
+    assert after.utcoffset() == datetime.timedelta(0)
+    assert (
+        datetime.timedelta(days=2, hours=23) < datetime.datetime.now(datetime.UTC) - after < datetime.timedelta(days=3, hours=1)
+    )
+
+
+def test_get_fetch_filters_rejects_an_unparsable_first_fetch() -> None:
+    with pytest.raises(ValueError, match="Could not parse 'first_fetch'"):
+        get_fetch_filters({"first_fetch": "garbage"})
+
+
 def test_get_fetch_filters_rejects_unparsable_dates() -> None:
     with pytest.raises(ValueError, match="Could not parse 'before'"):
         get_fetch_filters({"before": "garbage"})
@@ -1434,6 +1450,16 @@ def test_list_alerts_command_drops_duplicates_when_pages_shift(requests_mock, re
     assert requests_mock.request_history[1].qs["startindex"] == ["1000"]
 
 
+def test_list_alerts_command_has_no_upper_limit(requests_mock, reco_client: RecoClient) -> None:
+    pages = [build_alerts_list_response([f"p{n}-{i}" for i in range(1000)]) for n in range(6)]
+    requests_mock.get(ALERTS_LIST_URL, [{"json": page} for page in pages] + [{"json": build_alerts_list_response(["last"])}])
+
+    result = list_alerts_command(reco_client, {"limit": "6001"})
+
+    assert len(result.outputs) == 6001
+    assert len(requests_mock.request_history) == 7
+
+
 def test_list_alerts_command_stops_on_a_short_page(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response(["a", "b"]))
 
@@ -1446,8 +1472,7 @@ def test_list_alerts_command_stops_on_a_short_page(requests_mock, reco_client: R
 @pytest.mark.parametrize(
     "args, message",
     [
-        ({"limit": "0"}, "limit must be between"),
-        ({"limit": "5001"}, "limit must be between"),
+        ({"limit": "0"}, "limit must be a positive number"),
         ({"risk_level": "SEVERE"}, "Unknown risk level"),
         ({"status": "preview"}, "Unknown alert status"),
         ({"after": "garbage"}, "Could not parse 'after'"),
@@ -1481,9 +1506,21 @@ def test_fetch_alerts_command_returns_enriched_alerts(requests_mock, reco_client
     assert result.outputs[0]["policyViolations"][0]["jsonData"] == {"id": "91bef1de"}
 
 
-def test_fetch_alerts_command_caps_limit_at_500(requests_mock, reco_client: RecoClient) -> None:
-    with pytest.raises(ValueError, match="limit must be between 1 and 500"):
-        fetch_alerts_command(reco_client, {"limit": "501"})
+def test_fetch_alerts_command_has_no_upper_limit_and_enriches_in_pages(requests_mock, reco_client: RecoClient) -> None:
+    """A limit above one page is served by paging (500 alerts per list call), not rejected."""
+    page_1 = build_alerts_list_response([f"a{i}" for i in range(500)])
+    page_2 = build_alerts_list_response(["b0", "b1"])
+    requests_mock.get(ALERTS_LIST_URL, [{"json": page_1}, {"json": page_2}])
+    requests_mock.get(
+        re.compile(r".*/external-api/alert-details/.*"),
+        json=lambda request, context: build_alert_detail(request.path.rsplit("/", 1)[1], "d", 30, "2026-10-05T00:00:00Z"),
+    )
+
+    result = fetch_alerts_command(reco_client, {"limit": "502"})
+
+    list_calls = [r for r in requests_mock.request_history if r.path.endswith("/alerts/list")]
+    assert [(c.qs["startindex"], c.qs["count"]) for c in list_calls] == [(["0"], ["500"]), (["500"], ["2"])]
+    assert len(result.outputs) == 502
 
 
 def test_get_alert_command_returns_alert_with_parsed_violations(requests_mock, reco_client: RecoClient) -> None:
@@ -1578,6 +1615,7 @@ def test_add_entity_label_command(requests_mock, reco_client: RecoClient) -> Non
         "instanceId": "i1",
     }
     assert "added" in result.readable_output
+    assert result.raw_response == {}
 
 
 def test_remove_entity_label_command(requests_mock, reco_client: RecoClient) -> None:
@@ -1587,6 +1625,7 @@ def test_remove_entity_label_command(requests_mock, reco_client: RecoClient) -> 
 
     assert json.loads(requests_mock.last_request.text) == {"entityId": "e1", "entityType": "identity", "labelName": "VIP"}
     assert "removed" in result.readable_output
+    assert result.raw_response == {}
 
 
 @pytest.mark.parametrize("command", [add_entity_label_command, remove_entity_label_command])
