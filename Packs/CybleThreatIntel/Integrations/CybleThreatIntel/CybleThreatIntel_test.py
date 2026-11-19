@@ -428,7 +428,7 @@ def test_fetch_iocs_sends_filters():
 
     body = client._http_request.call_args.kwargs["json_data"]
     assert body["iocType"] == "URL"
-    assert body["riskRating"] == {"lte": 50}
+    assert body["riskRating"] == {"gte": 0, "lte": 50}
     assert body["page"] == 2
 
 

@@ -125,6 +125,8 @@ def build_ioc_filters(params: dict) -> dict:
     if risk_min is not None:
         risk_rating["gte"] = risk_min
     if risk_max is not None:
+        # The API rejects lte without gte, so a max-only filter starts at 0.
+        risk_rating["gte"] = risk_rating.get("gte", 0)
         risk_rating["lte"] = risk_max
     if risk_rating:
         filters["riskRating"] = risk_rating
