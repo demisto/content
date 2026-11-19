@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 import urllib3
 
-# disable insecure warnings
+# disable insecure warnings (xsoar-lint syntax-compat test: Python 3.12 image, valid code)
 urllib3.disable_warnings()
 
 """ GLOBAL VARS """

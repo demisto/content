@@ -1,3 +1,4 @@
+# xsoar-lint syntax-compat test: Python 3.11 image, valid code
 # fix for: https://github.com/vertica/vertica-python/issues/296
 # (we need this for running in non-root where getpass will fail as uid doesn't map to a user name)
 import getpass

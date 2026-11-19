@@ -7,6 +7,9 @@ from CommonServerUserPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# xsoar-lint syntax-compat test: PEP 695 type alias, valid only on Python 3.12+
+type WhoisRecord = dict[str, Any]
+
 """ GLOBALS/PARAMS """
 # Parameters received from the user
 PARAMS = demisto.params()
