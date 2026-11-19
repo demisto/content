@@ -77,6 +77,64 @@
 				}
 			}
 		},
+		"RF Code Repository": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"External Link": {
+					"simple": "https://app.recordedfuture.com/portal/alerts/${id}"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Dark Web Brand": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"External Link": {
+					"simple": "https://app.recordedfuture.com/portal/alerts/${id}"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
 		"RF Data Leakage on Code Repo Playbook Alert": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
@@ -422,6 +480,93 @@
 				}
 			}
 		},
+		"RF Identity Exposure": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"External Link": {
+					"simple": "https://app.recordedfuture.com/portal/alerts/${id}"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Social Media Impersonation": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"External Link": {
+					"simple": "https://app.recordedfuture.com/portal/alerts/${id}"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Malicious Sites": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"External Link": {
+					"simple": "https://app.recordedfuture.com/portal/alerts/${id}"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
 		"RF Playbook Alert": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
@@ -683,6 +828,55 @@
 				},
 				"RF Lifecycle Stage": {
 					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
 				},
 				"RF Markdown": {
 					"simple": "markdown"

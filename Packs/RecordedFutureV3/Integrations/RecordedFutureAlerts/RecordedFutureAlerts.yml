@@ -117,6 +117,10 @@ configuration:
   - code_repo_leakage
   - third_party_risk
   - geopolitics_facility
+  - dark_web
+  - identity_novel_exposures
+  - malicious_sites
+  - socmed_impersonation
   required: false
   section: Collect
 - display: 'Playbook Alerts: Statuses to fetch'
@@ -338,6 +342,10 @@ script:
             - code_repo_leakage
             - third_party_risk
             - geopolitics_facility
+            - dark_web
+            - identity_novel_exposures
+            - malicious_sites
+            - socmed_impersonation
         - name: playbook_alert_priorities
           description: Comma-separated Playbook Alert priorities (ex. 'Informational,Moderate,High'). Only applied to Playbook Alert search.
           isArray: true
@@ -397,7 +405,7 @@ script:
           description: Alert type (classic-alert / playbook-alert).
           type: string
         - contextPath: RecordedFutureAlerts.Alert.subtype
-          description: Alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility).
+          description: The alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility / dark_web / identity_novel_exposures / malicious_sites / socmed_impersonation).
           type: string
         - contextPath: RecordedFutureAlerts.Alert.status
           description: Status of the alert.

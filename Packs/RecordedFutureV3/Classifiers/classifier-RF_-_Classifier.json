@@ -5,10 +5,14 @@
 	"id": "RF - Classifier",
 	"keyTypeMap": {
 		"classic-alert": "RF Classic Alert",
-		"code_repo_leakage": "RF Data Leakage on Code Repo Playbook Alert",
+		"code_repo_leakage": "RF Code Repository",
 		"cyber_vulnerability": "RF Vulnerability Playbook Alert",
+		"dark_web": "RF Dark Web Brand",
 		"domain_abuse": "RF Domain Abuse Playbook Alert",
 		"geopolitics_facility": "RF Facility Risk Playbook Alert",
+		"identity_novel_exposures": "RF Identity Exposure",
+		"malicious_sites": "RF Malicious Sites",
+		"socmed_impersonation": "RF Social Media Impersonation",
 		"third_party_risk": "RF Third-Party Cyber Playbook Alert"
 	},
 	"name": "RF - Classifier",
