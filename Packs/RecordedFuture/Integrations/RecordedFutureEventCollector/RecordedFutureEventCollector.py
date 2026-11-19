@@ -43,35 +43,21 @@ class Client(BaseClient):
         return self._call(url_suffix="/alert/search", params=params)
 
 
-""" COMMAND FUNCTIONS """
+""" HELPER FUNCTIONS """
 
 
-def test_module(client: Client):
-    """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+def get_triggered(event: dict) -> str:
+    """Get the 'triggered' value from an event without milliseconds (and without the "Z") since the API ignores them.
 
     Args:
-        client (Client): RecordedFuture client to use.
+        event (dict): The event from API.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: the "triggered" value, in TRIGGERED_FORMAT.
     """
-
-    try:
-        client.test_connection()
-        return_results("ok")
-    except Exception as err:
-        message = str(err)
-        try:
-            error = json.loads(str(err).split("\n")[1])
-            if "fail" in error.get("result", {}).get("status", ""):
-                message = error.get("result", {})["message"]
-        except Exception:
-            message = f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
-        raise DemistoException(f"Failed due to - {message}")
+    if event:
+        return event.get("log", {}).get("triggered", "").split(".")[0].removesuffix("Z")
+    return ""
 
 
 def parse_limit(value: Any, default: int) -> int:
@@ -106,6 +92,121 @@ def to_triggered_format(value: datetime | None) -> str:
     if value.tzinfo:
         value = value.astimezone(timezone.utc)
     return value.strftime(TRIGGERED_FORMAT)
+
+
+def dedupe_and_sort(alerts: list[dict], end: str = "") -> list[dict]:
+    """Returns the alerts sorted oldest first, without duplicate IDs, and (if given) only those triggered up to `end`.
+
+    Args:
+        alerts (list): The raw alerts.
+        end (str): Optional inclusive upper bound, in TRIGGERED_FORMAT.
+
+    Returns:
+        list: The unique alerts, oldest first.
+    """
+    unique_alerts: list[dict] = []
+    seen_ids: set = set()
+    for alert in sorted(alerts, key=get_triggered):
+        if end and get_triggered(alert) > end:
+            continue
+        if (alert_id := alert.get("id")) not in seen_ids:
+            seen_ids.add(alert_id)
+            unique_alerts.append(alert)
+    return unique_alerts
+
+
+def iter_alert_pages(client: Client, params: dict) -> Iterator[tuple[list[dict], dict]]:
+    """Yields /alert/search pages using `from` offset paging with a fixed page size, until a short page.
+
+    The page size is always PAGE_SIZE (the API's hard cap) so `from` always advances in whole pages.
+    With direction=desc each page holds the next-oldest alerts, so paging moves forward in time.
+    The caller decides when to stop early (by breaking out of the loop).
+
+    Args:
+        client (Client): RecordedFuture client to use.
+        params (dict): The search params (without limit / from).
+
+    Yields:
+        tuple: (the alerts in the page, the full API response).
+    """
+    offset = 0
+    while True:
+        response = client.get_alerts({**params, "limit": PAGE_SIZE, "from": offset})
+        page = response.get("data") or []
+        demisto.debug(f"Fetched {len(page)} alerts (from={offset}, limit={PAGE_SIZE}).")
+        yield page, response
+        if len(page) < PAGE_SIZE:
+            return
+        offset += PAGE_SIZE
+
+
+def fetch_alert_pages(client: Client, last_run: str, max_fetch: int) -> list[dict]:
+    """Fetch the oldest alerts triggered at or after `last_run`, paging with `from` until `max_fetch` is reached.
+
+    With direction=desc the API returns the *oldest* alerts after the start time (displayed newest-first),
+    so paging with `from` moves forward in time and new alerts arriving between pages do not shift the offsets.
+    Note: this ordering is not documented by Recorded Future. It was observed against the live API
+    (direction=asc returns the *newest* alerts after the start time instead). If it ever changes, alerts may be skipped.
+    The page size is always PAGE_SIZE (never shrunk for the last page) so `from` always advances in whole pages;
+    the caller trims the result to `max_fetch`.
+
+    Args:
+        client (Client): RecordedFuture client to use.
+        last_run (str): The start time (inclusive) to fetch from.
+        max_fetch (int): The number of alerts to collect before stopping.
+
+    Returns:
+        list: The raw alerts returned by the API (may contain duplicates across pages, and up to
+              PAGE_SIZE - 1 alerts more than `max_fetch`).
+    """
+    alerts: list[dict] = []
+    params = {"triggered": f"[{last_run},]", "orderby": "triggered", "direction": "desc"}
+    for page, _ in iter_alert_pages(client, params):
+        alerts.extend(page)
+        if len(alerts) >= max_fetch:
+            break
+    return alerts
+
+
+def add_time_key_to_events(events: list = None):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list, the events to add the time key to.
+    """
+    for event in events or []:
+        event["_time"] = demisto.get(event, "log.triggered")
+
+
+""" COMMAND FUNCTIONS """
+
+
+def test_module(client: Client):
+    """
+    Tests API connectivity and authentication'
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
+    Raises exceptions if something goes wrong.
+
+    Args:
+        client (Client): RecordedFuture client to use.
+
+    Returns:
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+    """
+
+    try:
+        client.test_connection()
+        return_results("ok")
+    except Exception as err:
+        message = str(err)
+        try:
+            error = json.loads(str(err).split("\n")[1])
+            if "fail" in error.get("result", {}).get("status", ""):
+                message = error.get("result", {})["message"]
+        except Exception:
+            message = f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
+        raise DemistoException(f"Failed due to - {message}")
 
 
 def get_events(client: Client, args: dict) -> list:
@@ -169,94 +270,6 @@ def get_events(client: Client, args: dict) -> list:
     return events
 
 
-def dedupe_and_sort(alerts: list[dict], end: str = "") -> list[dict]:
-    """Returns the alerts sorted oldest first, without duplicate IDs, and (if given) only those triggered up to `end`.
-
-    Args:
-        alerts (list): The raw alerts.
-        end (str): Optional inclusive upper bound, in TRIGGERED_FORMAT.
-
-    Returns:
-        list: The unique alerts, oldest first.
-    """
-    unique_alerts: list[dict] = []
-    seen_ids: set = set()
-    for alert in sorted(alerts, key=get_triggered):
-        if end and get_triggered(alert) > end:
-            continue
-        if (alert_id := alert.get("id")) not in seen_ids:
-            seen_ids.add(alert_id)
-            unique_alerts.append(alert)
-    return unique_alerts
-
-
-def iter_alert_pages(client: Client, params: dict) -> Iterator[tuple[list[dict], dict]]:
-    """Yields /alert/search pages using `from` offset paging with a fixed page size, until a short page.
-
-    The page size is always PAGE_SIZE (the API's hard cap) so `from` always advances in whole pages.
-    With direction=desc each page holds the next-oldest alerts, so paging moves forward in time.
-    The caller decides when to stop early (by breaking out of the loop).
-
-    Args:
-        client (Client): RecordedFuture client to use.
-        params (dict): The search params (without limit / from).
-
-    Yields:
-        tuple: (the alerts in the page, the full API response).
-    """
-    offset = 0
-    while True:
-        response = client.get_alerts({**params, "limit": PAGE_SIZE, "from": offset})
-        page = response.get("data") or []
-        demisto.debug(f"Fetched {len(page)} alerts (from={offset}, limit={PAGE_SIZE}).")
-        yield page, response
-        if len(page) < PAGE_SIZE:
-            return
-        offset += PAGE_SIZE
-
-
-def get_triggered(event: dict) -> str:
-    """Get the 'triggered' value from an event without milliseconds (and without the "Z") since the API ignores them.
-
-    Args:
-        event (dict): The event from API.
-
-    Returns:
-        str: the "triggered" value, in TRIGGERED_FORMAT.
-    """
-    if event:
-        return event.get("log", {}).get("triggered", "").split(".")[0].removesuffix("Z")
-    return ""
-
-
-def fetch_alert_pages(client: Client, last_run: str, max_fetch: int) -> list[dict]:
-    """Fetch the oldest alerts triggered at or after `last_run`, paging with `from` until `max_fetch` is reached.
-
-    With direction=desc the API returns the *oldest* alerts after the start time (displayed newest-first),
-    so paging with `from` moves forward in time and new alerts arriving between pages do not shift the offsets.
-    Note: this ordering is not documented by Recorded Future. It was observed against the live API
-    (direction=asc returns the *newest* alerts after the start time instead). If it ever changes, alerts may be skipped.
-    The page size is always PAGE_SIZE (never shrunk for the last page) so `from` always advances in whole pages;
-    the caller trims the result to `max_fetch`.
-
-    Args:
-        client (Client): RecordedFuture client to use.
-        last_run (str): The start time (inclusive) to fetch from.
-        max_fetch (int): The number of alerts to collect before stopping.
-
-    Returns:
-        list: The raw alerts returned by the API (may contain duplicates across pages, and up to
-              PAGE_SIZE - 1 alerts more than `max_fetch`).
-    """
-    alerts: list[dict] = []
-    params = {"triggered": f"[{last_run},]", "orderby": "triggered", "direction": "desc"}
-    for page, _ in iter_alert_pages(client, params):
-        alerts.extend(page)
-        if len(alerts) >= max_fetch:
-            break
-    return alerts
-
-
 def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     """
     Args:
@@ -302,19 +315,6 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
 
     demisto.debug(f"Fetched {len(alerts)} alerts, kept {len(kept)}, {len(events)} new. Next run time: {next_run_time}.")
     return events, {"last_run_time": next_run_time, "last_run_ids": list(next_run_ids)}
-
-
-""" HELPER FUNCTIONS """
-
-
-def add_time_key_to_events(events: list = None):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: list, the events to add the time key to.
-    """
-    for event in events or []:
-        event["_time"] = demisto.get(event, "log.triggered")
 
 
 """ MAIN FUNCTION """
