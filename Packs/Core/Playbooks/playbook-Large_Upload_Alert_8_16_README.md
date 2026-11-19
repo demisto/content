@@ -28,10 +28,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Endpoint Investigation Plan
 * Search and Compare Process Executions - Generic
 
-### Integrations
-
-* CortexCoreIR
-
 ### Scripts
 
 * DBotFindSimilarIncidents

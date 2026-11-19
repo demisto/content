@@ -29,10 +29,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Get entity alerts by MITRE tactics
 * Okta - User Investigation
 
-### Integrations
-
-* CortexCoreIR
-
 ### Scripts
 
 * Set

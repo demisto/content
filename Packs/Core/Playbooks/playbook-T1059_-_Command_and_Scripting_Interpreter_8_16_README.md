@@ -48,11 +48,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Ticket Management - Generic
 * Endpoint Investigation Plan
 
-### Integrations
-
-* CortexCoreIR
-* Cortex Core - IR
-
 ### Scripts
 
 This playbook does not use any scripts.

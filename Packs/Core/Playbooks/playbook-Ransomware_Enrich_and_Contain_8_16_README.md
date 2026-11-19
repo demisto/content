@@ -17,11 +17,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * WildFire - Detonate file v2
 * Containment Plan
 
-### Integrations
-
-* CoreIOCs
-* CortexCoreIR
-
 ### Scripts
 
 * isError
