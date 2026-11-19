@@ -16,13 +16,6 @@ configuration:
   section: Connect
   required: false
 - display: ''
-  displaypassword: User Token
-  name: user_token
-  type: 9
-  hiddenusername: true
-  section: Connect
-  required: false
-- display: ''
   name: app_token
   type: 9
   section: Connect
@@ -459,14 +452,6 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  - arguments:
-    - description: The user id of the user.
-      name: user_id
-      required: true
-    description: Reset user session token in Slack.
-    name: slack-user-session-reset
-    compliantpolicies:
-    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter

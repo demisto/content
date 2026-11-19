@@ -17,6 +17,7 @@ INPUT_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:custom:1.0:user"
 SLACK_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:enterprise:1.0"
 SLACK_SCIM_CORE_SCHEMA_KEY = "urn:scim:schemas:core:1.0"
 SCIM_BASE_URL = "https://api.slack.com/scim/v1/"
+SESSION_RESET_URL = "https://slack.com/api/admin.users.session.reset"
 
 """CLIENT CLASSES"""
 
@@ -84,6 +85,18 @@ class Client(BaseClient):
     def enable_user(self, user_id):
         user_data = {"active": True}
         return self.update_user(user_id, user_data)
+
+    def reset_user_session(self, user_id: str) -> dict:
+        """
+        Wipes all valid sessions of a user on all devices (Slack Web API, not SCIM).
+
+        Requires an Enterprise organization user token with the `admin.users:write` scope. The
+        Web API reports failures in the body (`ok: false`) with HTTP 200.
+        """
+        res = self._http_request(method="POST", full_url=SESSION_RESET_URL, json_data={"user_id": user_id})
+        if not res.get("ok"):
+            raise DemistoException(f"Failed to reset the session of user {user_id}: {res.get('error', res)}")
+        return res
 
     def get_app_fields(self):
         app_fields = {}
@@ -466,6 +479,18 @@ def update_group_command(client, args):
     )
 
 
+def user_session_reset_command(client: Client, args: dict) -> CommandResults:
+    """
+    slack-user-session-reset: wipes all valid sessions of a user on all devices.
+
+    Served by the Slack IAM (Standard Connector) integration, whose org-level user token is the one
+    that may hold `admin.users:write`. The legacy SlackV3 integration keeps its own implementation.
+    """
+    user_id = args["user_id"]
+    client.reset_user_session(user_id)
+    return CommandResults(readable_output=f"The session was reset successfully to the user {user_id}.")
+
+
 def build_headers(params: dict) -> dict:
     """
     Builds the SCIM request headers for both execution paths.
@@ -570,6 +595,12 @@ def run_slack_iam_integration() -> None:  # pragma: no cover
 
     elif command == "iam-delete-group":
         return_results(delete_group_command(group_client, args))
+
+    elif command == "slack-user-session-reset":
+        try:
+            return_results(user_session_reset_command(client, args))
+        except Exception as e:
+            return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 from IAMApiModule import *  # noqa: E402

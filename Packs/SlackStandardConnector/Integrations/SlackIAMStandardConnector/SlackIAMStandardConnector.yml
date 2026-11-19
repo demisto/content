@@ -365,6 +365,14 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
+  - arguments:
+    - description: The ID of the Slack user whose sessions to reset.
+      name: user_id
+      required: true
+    description: Wipes all valid sessions of a user on all devices. Requires an Enterprise organization user token with the admin.users:write scope.
+    name: slack-user-session-reset
+    compliantpolicies:
+    - User Soft Remediation
   dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   script: '-'

@@ -1,5 +1,13 @@
+import pytest
 from IAMApiModule import *
-from SlackIAMApiModule import SCIM_BASE_URL, Client, build_headers, get_mapping_fields
+from SlackIAMApiModule import (
+    SCIM_BASE_URL,
+    SESSION_RESET_URL,
+    Client,
+    build_headers,
+    get_mapping_fields,
+    user_session_reset_command,
+)
 
 APP_USER_OUTPUT = {
     "schemas": ["urn:scim:schemas:core:1.0"],
@@ -307,3 +315,23 @@ class TestBuildHeaders:
         ctx = UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
         client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "xoxp-ucp"}}, ctx)
         assert ctx.headers["Authorization"] == "Bearer xoxp-ucp"
+
+
+@pytest.fixture
+def scim_client() -> Client:
+    return Client(base_url=SCIM_BASE_URL, verify=False, proxy=False, headers={"Authorization": "Bearer xoxp-1"})
+
+
+class TestUserSessionResetCommand:
+    def test_posts_user_id_and_returns_success_message(self, scim_client, requests_mock):
+        mock = requests_mock.post(SESSION_RESET_URL, json={"ok": True})
+        result = user_session_reset_command(scim_client, {"user_id": "W123"})
+        assert result.readable_output == "The session was reset successfully to the user W123."
+        assert mock.call_count == 1
+        assert mock.last_request.json() == {"user_id": "W123"}
+        assert mock.last_request.headers["Authorization"] == "Bearer xoxp-1"
+
+    def test_slack_error_in_body_raises(self, scim_client, requests_mock):
+        requests_mock.post(SESSION_RESET_URL, json={"ok": False, "error": "missing_scope"})
+        with pytest.raises(DemistoException, match="missing_scope"):
+            user_session_reset_command(scim_client, {"user_id": "W123"})
