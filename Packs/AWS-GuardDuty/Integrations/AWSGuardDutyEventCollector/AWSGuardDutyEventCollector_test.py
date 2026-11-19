@@ -1,17 +1,28 @@
 import copy
+import threading
 from contextlib import nullcontext as does_not_raise
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from unittest.mock import call
 
 import demistomock as demisto
 import pytest
 from AWSGuardDutyEventCollector import (
+    PRIVATELINK_WITH_ALL_REGIONS_ERROR,
     STALE_BOUNDARY_MARGIN,
     _cursor_second,
     _event_updated_at,
     _normalize_last_ids_entry,
+    all_regions_test_module,
+    run_all_regions_command,
+    discover_enabled_regions,
+    get_enabled_regions,
     get_events,
+    get_events_all_regions,
+    is_all_regions,
+    sync_regions_command,
+    validate_all_regions_params,
 )
+from CommonServerPython import DemistoException
 from CommonServerPython import arg_to_datetime
 from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
@@ -2245,3 +2256,345 @@ def test_current_boundary_within_margin_stays_pinned(mocker):
     assert events == [], "The already-seen boundary finding must never be re-ingested."
     assert new_collect_from == {"det1": cursor_str}, "A current boundary must stay pinned."
     assert new_last_ids == {"det1": ["finding_seen"]}, "A pinned boundary must preserve its seen ids."
+
+
+# ---------------------------------------------------------------------------
+# Multi-region ("all") support - CIAC-18750
+# ---------------------------------------------------------------------------
+
+
+class FakeRegionClient:
+    """A GuardDuty client for one region: optional detector, findings, or an error on every call."""
+
+    def __init__(self, detector_ids=(), findings=(), error=None):
+        self.detector_ids = list(detector_ids)
+        self.findings = list(findings)
+        self.error = error
+
+    def list_detectors(self, **kwargs):
+        if self.error:
+            raise self.error
+        return {"DetectorIds": self.detector_ids}
+
+    def list_findings(self, **kwargs):
+        return {"FindingIds": [finding["Id"] for finding in self.findings]}
+
+    def get_findings(self, DetectorId, FindingIds):
+        return {"Findings": [finding for finding in self.findings if finding["Id"] in FindingIds]}
+
+
+class FakeEC2Client:
+    def __init__(self, regions=None, error=None):
+        self.regions = regions or []
+        self.error = error
+        self.calls = 0
+
+    def describe_regions(self):
+        self.calls += 1
+        if self.error:
+            raise self.error
+        return {"Regions": self.regions}
+
+
+class FakeAWSClient:
+    """Stands in for AWSApiModule.AWSClient: aws_session returns the client for the requested service/region."""
+
+    def __init__(self, region_clients=None, ec2_client=None):
+        self.region_clients = region_clients or {}
+        self.ec2_client = ec2_client
+
+    def aws_session(self, service, region=None, **kwargs):
+        return self.ec2_client if service == "ec2" else self.region_clients[region]
+
+
+def make_finding(finding_id, updated_at="2022-08-16T07:22:39.893Z"):
+    return update_finding_id(copy.deepcopy(FINDING), finding_id, updated_at)
+
+
+@pytest.mark.parametrize("region, expected", [("all", True), ("ALL", True), (" All ", True), ("us-east-1", False), (None, False)])
+def test_is_all_regions(region, expected):
+    assert is_all_regions(region) is expected
+
+
+def test_validate_all_regions_params_rejects_privatelink_with_all():
+    """
+    Given: AWS Default Region = all and a PrivateLink service URL.
+    When:  validating the parameters.
+    Then:  the documented error is raised; other combinations pass.
+    """
+    with pytest.raises(DemistoException, match="PrivateLink service URL can't be used with region 'all'"):
+        validate_all_regions_params("all", "https://vpce.example.com")
+    assert "rely on private DNS" in PRIVATELINK_WITH_ALL_REGIONS_ERROR
+    validate_all_regions_params("all", None)
+    validate_all_regions_params("us-east-1", "https://vpce.example.com")
+
+
+def test_discover_enabled_regions_filters_by_opt_in_status():
+    ec2 = FakeEC2Client(
+        regions=[
+            {"RegionName": "us-east-1", "OptInStatus": "opt-in-not-required"},
+            {"RegionName": "eu-south-1", "OptInStatus": "opted-in"},
+            {"RegionName": "af-south-1", "OptInStatus": "not-opted-in"},
+        ]
+    )
+    assert discover_enabled_regions(ec2, "us-east-1") == ["eu-south-1", "us-east-1"]
+
+
+def test_discover_enabled_regions_failure_names_permission():
+    ec2 = FakeEC2Client(error=Exception("AccessDenied"))
+    with pytest.raises(DemistoException, match="ec2:DescribeRegions.*Region For Region Discovery"):
+        discover_enabled_regions(ec2, "us-east-1")
+
+
+@pytest.mark.parametrize(
+    "cache_age, force_refresh, expect_discovery",
+    [(timedelta(hours=1), False, False), (timedelta(hours=25), False, True), (timedelta(hours=1), True, True)],
+)
+def test_get_enabled_regions_caches_for_24_hours(mocker, cache_age, force_refresh, expect_discovery):
+    """
+    Given: regions cached in the integration context `cache_age` ago.
+    When:  getting the enabled regions.
+    Then:  DescribeRegions is called only when the cache is older than 24h or a refresh is forced.
+    """
+    cached_at = (datetime.now(UTC) - cache_age).isoformat()
+    mocker.patch(
+        "AWSGuardDutyEventCollector.get_integration_context",
+        return_value={"regions": ["us-east-1"], "regions_updated_at": cached_at},
+    )
+    set_context = mocker.patch("AWSGuardDutyEventCollector.set_integration_context")
+    ec2 = FakeEC2Client(regions=[{"RegionName": "eu-north-1", "OptInStatus": "opt-in-not-required"}])
+
+    regions = get_enabled_regions(FakeAWSClient(ec2_client=ec2), "us-east-1", force_refresh=force_refresh)
+
+    assert ec2.calls == int(expect_discovery)
+    assert regions == (["eu-north-1"] if expect_discovery else ["us-east-1"])
+    assert set_context.called is expect_discovery
+
+
+def test_get_events_all_regions_collects_every_region_and_keeps_state_per_detector():
+    """
+    Given: two regions with a detector each, one region without a detector, and prior progress for
+           us-east-1's detector (carried over from a single-region instance).
+    When:  fetching with region 'all'.
+    Then:  events from both detectors are returned, each detector has its own cursor, the prior
+           progress was used, and the region without a detector is skipped silently.
+    """
+    client = FakeAWSClient(
+        region_clients={
+            "us-east-1": FakeRegionClient(["det-use1"], [make_finding("f1", "2022-08-16T07:22:39.893Z")]),
+            "eu-north-1": FakeRegionClient(["det-eun1"], [make_finding("f2", "2022-08-17T07:22:39.893Z")]),
+            "ap-south-1": FakeRegionClient([]),
+        }
+    )
+    prior_collect_from = {"det-use1": "2022-08-15T00:00:00.000Z", "det-unrelated": "2022-01-01T00:00:00.000Z"}
+
+    events, last_ids, collect_from, next_region = get_events_all_regions(
+        aws_client=client,
+        regions=["ap-south-1", "eu-north-1", "us-east-1"],
+        collect_from=prior_collect_from,
+        collect_from_default=datetime(2022, 8, 1),
+        last_ids={},
+        severity="Low",
+        limit=10,
+    )
+
+    assert sorted(ev["Id"] for ev in events) == ["f1", "f2"]
+    assert collect_from["det-use1"] == "2022-08-16T07:22:39.893Z"
+    assert collect_from["det-eun1"] == "2022-08-17T07:22:39.893Z"
+    assert collect_from["det-unrelated"] == "2022-01-01T00:00:00.000Z"
+    assert last_ids == {"det-use1": ["f1"], "det-eun1": ["f2"]}
+    assert next_region is None
+    assert prior_collect_from == {"det-use1": "2022-08-15T00:00:00.000Z", "det-unrelated": "2022-01-01T00:00:00.000Z"}
+
+
+def test_get_events_all_regions_skips_failed_region(mocker):
+    """
+    Given: one region that fails and one healthy region.
+    When:  fetching with region 'all'.
+    Then:  the healthy region's events are returned and the failure is logged with the region name.
+    """
+    error_log = mocker.patch.object(demisto, "error")
+    client = FakeAWSClient(
+        region_clients={
+            "us-east-1": FakeRegionClient(error=Exception("AccessDenied")),
+            "eu-north-1": FakeRegionClient(["det-eun1"], [make_finding("f2")]),
+        }
+    )
+    events, _, _, _ = get_events_all_regions(client, ["us-east-1", "eu-north-1"], {}, datetime(2022, 8, 1), {}, "Low")
+
+    assert [ev["Id"] for ev in events] == ["f2"]
+    assert "us-east-1" in error_log.call_args[0][0]
+    assert "AccessDenied" in error_log.call_args[0][0]
+
+
+def test_get_events_all_regions_every_region_fails(mocker):
+    mocker.patch.object(demisto, "error")
+    client = FakeAWSClient(
+        region_clients={
+            "us-east-1": FakeRegionClient(error=Exception("AccessDenied")),
+            "eu-north-1": FakeRegionClient(error=Exception("Unreachable")),
+        }
+    )
+    with pytest.raises(DemistoException, match="every region") as e:
+        get_events_all_regions(client, ["us-east-1", "eu-north-1"], {}, datetime(2022, 8, 1), {}, "Low")
+    assert "us-east-1: AccessDenied" in str(e.value)
+    assert "eu-north-1: Unreachable" in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "region_clients",
+    [
+        pytest.param({"us-east-1": FakeRegionClient([]), "eu-north-1": FakeRegionClient([])}, id="no detectors"),
+        pytest.param(
+            {"us-east-1": FakeRegionClient(error=Exception("AccessDenied")), "eu-north-1": FakeRegionClient([])},
+            id="some failed, rest without detectors",
+        ),
+    ],
+)
+def test_get_events_all_regions_succeeds_with_zero_events(mocker, region_clients):
+    mocker.patch.object(demisto, "error")
+    events, _, _, _ = get_events_all_regions(
+        FakeAWSClient(region_clients), ["us-east-1", "eu-north-1"], {}, datetime(2022, 8, 1), {}, "Low"
+    )
+    assert events == []
+
+
+def test_get_events_all_regions_time_budget_resumes_from_pending_region():
+    """
+    Given: a zero time budget and a previous cycle that stopped before eu-north-1.
+    When:  fetching with region 'all'.
+    Then:  the cycle starts at eu-north-1, processes only it, and reports the next pending region.
+    """
+    client = FakeAWSClient(
+        region_clients={
+            "ap-south-1": FakeRegionClient([]),
+            "eu-north-1": FakeRegionClient(["det-eun1"], [make_finding("f2")]),
+            "us-east-1": FakeRegionClient([]),
+        }
+    )
+    events, _, _, next_region = get_events_all_regions(
+        client,
+        ["ap-south-1", "eu-north-1", "us-east-1"],
+        {},
+        datetime(2022, 8, 1),
+        {},
+        "Low",
+        next_region="eu-north-1",
+        time_budget=timedelta(0),
+    )
+    assert [ev["Id"] for ev in events] == ["f2"]
+    assert next_region == "us-east-1"
+
+
+def test_get_events_all_regions_fetches_regions_concurrently():
+    """
+    Given: two regions whose list_detectors calls both wait on a 2-party barrier.
+    When:  fetching with region 'all'.
+    Then:  both regions finish, which is only possible if they ran at the same time
+           (run one after another, the barrier would time out and both regions would fail).
+    """
+    barrier = threading.Barrier(2, timeout=5)
+
+    class BarrierRegionClient(FakeRegionClient):
+        def list_detectors(self, **kwargs):
+            barrier.wait()
+            return super().list_detectors(**kwargs)
+
+    client = FakeAWSClient(
+        region_clients={
+            "us-east-1": BarrierRegionClient(["det-use1"], [make_finding("f1")]),
+            "eu-north-1": BarrierRegionClient(["det-eun1"], [make_finding("f2")]),
+        }
+    )
+    events, last_ids, _, _ = get_events_all_regions(client, ["us-east-1", "eu-north-1"], {}, datetime(2022, 8, 1), {}, "Low")
+
+    assert sorted(ev["Id"] for ev in events) == ["f1", "f2"]
+    assert last_ids == {"det-use1": ["f1"], "det-eun1": ["f2"]}
+
+
+def test_all_regions_test_module_passes_when_one_region_succeeds():
+    client = FakeAWSClient(
+        region_clients={
+            "us-east-1": FakeRegionClient(error=Exception("AccessDenied")),
+            "eu-north-1": FakeRegionClient(["det-eun1"], [make_finding("f2")]),
+        }
+    )
+    assert all_regions_test_module(client, ["us-east-1", "eu-north-1"], datetime(2022, 8, 1), "Low") == "ok"
+
+
+def test_all_regions_test_module_fails_when_every_region_fails():
+    client = FakeAWSClient(region_clients={"us-east-1": FakeRegionClient(error=Exception("AccessDenied"))})
+    with pytest.raises(DemistoException, match="us-east-1: AccessDenied"):
+        all_regions_test_module(client, ["us-east-1"], datetime(2022, 8, 1), "Low")
+
+
+def test_sync_regions_command_marks_new_regions(mocker):
+    """
+    Given: us-east-1 cached, and DescribeRegions now also returns eu-north-1.
+    When:  running aws-gd-sync-regions.
+    Then:  discovery runs regardless of the cache age and eu-north-1 is marked as new.
+    """
+    mocker.patch(
+        "AWSGuardDutyEventCollector.get_integration_context",
+        return_value={"regions": ["us-east-1"], "regions_updated_at": datetime.now(UTC).isoformat()},
+    )
+    mocker.patch("AWSGuardDutyEventCollector.set_integration_context")
+    ec2 = FakeEC2Client(
+        regions=[
+            {"RegionName": "us-east-1", "OptInStatus": "opt-in-not-required"},
+            {"RegionName": "eu-north-1", "OptInStatus": "opt-in-not-required"},
+        ]
+    )
+    result = sync_regions_command(FakeAWSClient(ec2_client=ec2), "us-east-1")
+
+    assert ec2.calls == 1
+    assert result.raw_response == ["eu-north-1", "us-east-1"]
+    assert "| eu-north-1 | true |" in result.readable_output
+    assert "| us-east-1 | false |" in result.readable_output
+
+
+def test_all_regions_test_module_fails_when_no_regions():
+    with pytest.raises(DemistoException, match="no enabled regions"):
+        all_regions_test_module(FakeAWSClient(), [], datetime(2022, 8, 1), "Low")
+
+
+def test_run_all_regions_fetch_events_persists_state_and_resume_point(mocker):
+    """
+    Given: a last run with progress for one detector and a resume point (next_region).
+    When:  running fetch-events with region 'all'.
+    Then:  the events from every region are sent, and the last run keeps each detector's progress
+           and the region to resume from.
+    """
+    mocker.patch("AWSGuardDutyEventCollector.get_integration_context", return_value={})
+    mocker.patch("AWSGuardDutyEventCollector.set_integration_context")
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"collect_from": {"det-old": "2022-01-01T00:00:00.000Z"}, "last_ids": {}, "next_region": "us-east-1"},
+    )
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    send_events = mocker.patch("AWSGuardDutyEventCollector.send_events_to_xsiam")
+    get_all = mocker.patch(
+        "AWSGuardDutyEventCollector.get_events_all_regions",
+        return_value=(
+            [{"Id": "f1"}],
+            {"det-use1": ["f1"]},
+            {"det-old": "2022-01-01T00:00:00.000Z", "det-use1": "ts"},
+            "eu-north-1",
+        ),
+    )
+    ec2 = FakeEC2Client(regions=[{"RegionName": "us-east-1", "OptInStatus": "opt-in-not-required"}])
+
+    run_all_regions_command("fetch-events", FakeAWSClient(ec2_client=ec2), "us-east-1", datetime(2022, 8, 1), "Low", 1000, False)
+
+    assert get_all.call_args.kwargs["next_region"] == "us-east-1"
+    assert get_all.call_args.kwargs["regions"] == ["us-east-1"]
+    assert get_all.call_args.kwargs["limit"] == 1000
+    send_events.assert_called_once_with([{"Id": "f1"}], "aws", "guardduty")
+    set_last_run.assert_called_once_with(
+        {
+            "collect_from": {"det-old": "2022-01-01T00:00:00.000Z", "det-use1": "ts"},
+            "last_ids": {"det-use1": ["f1"]},
+            "next_region": "eu-north-1",
+        }
+    )
