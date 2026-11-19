@@ -1,3 +1,4 @@
+import gzip
 import json
 
 import demistomock as demisto
@@ -1696,7 +1697,9 @@ def test_send_data_to_xsiam_with_retry_resends_the_identical_request(mocker, req
     )
 
     first_request, retried_request = requests_mock.request_history
-    assert retried_request.body == first_request.body
+    # Compare the decompressed payload: the gzip header embeds a compression timestamp (MTIME)
+    # that can differ by a second between attempts, while the data XSIAM reads is identical.
+    assert gzip.decompress(retried_request.body) == gzip.decompress(first_request.body)
     assert retried_request.headers["snapshot-id"] == first_request.headers["snapshot-id"]
     assert retried_request.headers["total-items-count"] == first_request.headers["total-items-count"] == "1"
 
