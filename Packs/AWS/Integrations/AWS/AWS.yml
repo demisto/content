@@ -21114,7 +21114,8 @@ script:
       description: Whether the monitoring dashboard is enabled for the firewall.
       type: Boolean
   - name: aws-cli
-    description: "Executes an AWS CLI command against the specified AWS account and region and returns the JSON response. The required IAM permissions depend on the executed CLI command."
+    description: "Executes an AWS CLI command against the specified AWS account and region and returns the JSON response. The command runs with the IAM permissions granted to the CSPM Remediation and Automation modules."
+    # hidden: true
     arguments:
     - name: cli_command
       description: 'The AWS CLI command to execute. For example: aws s3api list-buckets.'
