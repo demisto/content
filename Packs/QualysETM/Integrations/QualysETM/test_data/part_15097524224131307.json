@@ -1,0 +1,22 @@
+{
+    "findings": [
+        {
+            "findingId": "100002",
+            "vendorName": "Wiz",
+            "type": "MISCONFIGURATION",
+            "severity": 4,
+            "truRiskScore": 70,
+            "title": "Sample Misconfiguration Finding",
+            "cveIds": [],
+            "status": "ACTIVE",
+            "firstFound": "2026-09-25T11:30:00Z",
+            "lastFound": "2026-10-01T09:00:00Z",
+            "asset": {
+                "assetId": "200002",
+                "name": "sample-host-02",
+                "ipAddress": "10.0.0.2",
+                "operatingSystem": "Windows Server 2022"
+            }
+        }
+    ]
+}
