@@ -137,7 +137,7 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-- additionalinfo: 'An advanced Reco SCIM v2 filter expression, combined with all of the filters above using AND. Use it for OR / NOT logic and any other alert field the Reco API can filter on, e.g. actors co "@example.com" or description co "Former Employees". Do not use the SCIM "in" operator on alerts; use "eq" clauses joined with "or".'
+- additionalinfo: 'An advanced Reco SCIM v2 filter expression, combined with all of the filters above using AND. Use it for OR / NOT logic and any other alert field the Reco API can filter on, e.g. actors co "@example.com" or description co "Former Employees". Some older Reco versions reject the SCIM "in" operator on severity and status; if you get an error, use "eq" clauses joined with "or".'
   display: Advanced filter (SCIM)
   name: custom_filter
   type: 0

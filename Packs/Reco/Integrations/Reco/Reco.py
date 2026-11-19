@@ -141,7 +141,7 @@ def build_alerts_scim_filter(
     filter_parts: list[str] = [f'status ne "{ALERT_STATUS_PREFIX}PREVIEW"']
 
     if risk_levels:
-        # `eq` clauses joined with `or` - the External API rejects the SCIM `in` operator (HTTP 500).
+        # `eq` clauses joined with `or` work on every Reco version; older ones reject the SCIM `in` operator (HTTP 500).
         filter_parts.append(_scim_or_group([f"severity eq {_scim_quote(r)}" for r in risk_levels]))
     if options.statuses:
         filter_parts.append(_scim_or_group([f"status eq {_scim_quote(s)}" for s in options.statuses]))

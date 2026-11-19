@@ -30,7 +30,7 @@ The *SaaS application/platform*, *Alert status*, *Include labels*, *Exclude labe
 
 Use *Advanced filter (SCIM)* for anything else, for example `actors co "@example.com" or description co "Former Employees"`. The Test button sends exactly the query that fetch-incidents sends, so an invalid filter fails at configuration time.
 
-**Limitations:** the Reco alerts API does not currently expose a policy ID, policy type, or issue type field on alerts, so alerts cannot be filtered on those at the source. To approximate, use *Include labels* (labels are assigned to policies in Reco) or an *Advanced filter* on `description`, which holds the policy name for policy-based alerts. Do not use the SCIM `in` operator on alerts; use `eq` clauses joined with `or`.
+**Limitations:** the Reco alerts API does not currently expose a policy ID, policy type, or issue type field on alerts, so alerts cannot be filtered on those at the source. To approximate, use *Include labels* (labels are assigned to policies in Reco) or an *Advanced filter* on `description`, which holds the policy name for policy-based alerts. Some older Reco versions reject the SCIM `in` operator on severity and status; if you get an error, use `eq` clauses joined with `or`.
 
 ### Retrieving alerts on demand
 
