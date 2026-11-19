@@ -270,6 +270,7 @@ CYBLE_IOC_TYPE_MAP = {
     "mutex": FeedIndicatorType.MUTEX,
     "asn": FeedIndicatorType.AS,
     "as": FeedIndicatorType.AS,
+    "wallet-address": "Cryptocurrency Address",
 }
 
 

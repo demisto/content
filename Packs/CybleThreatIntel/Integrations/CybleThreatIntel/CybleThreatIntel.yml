@@ -162,6 +162,7 @@ configuration:
       - 'IPv4'
       - 'IPv6'
       - 'URL'
+      - 'Wallet-Address'
   - display: Confidence Rating
     name: confidence_ratings
     type: 16

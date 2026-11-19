@@ -307,7 +307,7 @@ def test_fetch_indicators_saves_checkpoint_per_page(mock_demisto, mock_set_last_
         ("FileHash-MD5", "d41d8cd98f00b204e9800998ecf8427e", "File"),
         ("FileHash-SHA256", "a" * 64, "File"),
         ("Email", "user@example.com", "Email"),
-        ("Wallet-Address", "0xabc", None),
+        ("Wallet-Address", "0xabc", "Cryptocurrency Address"),
         ("", "8.8.8.8", "IP"),  # fall back to value detection
     ],
 )
@@ -317,7 +317,7 @@ def test_map_cyble_ioc_type(raw_type, value, expected):
 
 def test_build_indicator_from_ioc_skips_empty_and_unknown():
     assert build_indicator_from_ioc({"ioc": "", "ioc_type": "IPv4"}) is None
-    assert build_indicator_from_ioc({"ioc": "x", "ioc_type": "Wallet-Address"}) is None
+    assert build_indicator_from_ioc({"ioc": "x", "ioc_type": "Unknown-Type"}) is None
     indicator = build_indicator_from_ioc({"ioc": "example.com", "ioc_type": "Domain", "risk_score": 80})
     assert indicator is not None
     assert indicator["type"] == "Domain"

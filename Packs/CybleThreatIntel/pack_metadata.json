@@ -20,6 +20,10 @@
         "CommonScripts": {
             "mandatory": false,
             "display_name": "Common Scripts"
+        },
+        "Cryptocurrency": {
+            "mandatory": false,
+            "display_name": "Cryptocurrency"
         }
     },
     "marketplaces": [
