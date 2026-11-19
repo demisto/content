@@ -1,0 +1,13 @@
+{
+  "sampleReportId": 412839,
+  "totals": {"MALICIOUS": 2, "SUSPICIOUS": 1},
+  "sources": [{"source": "BEHAVIOR", "status": "OK"}],
+  "indicators": [
+    {"id": 1, "source": "BEHAVIOR", "analysisType": "DYN_ANALYSIS", "key": "inet", "level": "MALICIOUS",
+     "title": "Connects to a known bad host", "count": 3, "objectsTotal": 2,
+     "objects": [{"kind": "VALUE", "name": "evil.example.com"}, {"kind": "VALUE", "name": "203.0.113.5"}],
+     "attack": ["T1071"]},
+    {"id": 2, "source": "STATIC", "analysisType": "STAT_ANALYSIS", "key": "packer", "level": "SUSPICIOUS",
+     "title": "Packed executable", "count": 1, "objectsTotal": 0, "objects": [], "attack": []}
+  ]
+}

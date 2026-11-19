@@ -1,0 +1,31 @@
+{
+    "id": "indicator_tlabscore",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Score",
+    "ownerOnly": false,
+    "description": "Sandbox score from 0 to 100. Absent when the analysis produced no score.",
+    "cliName": "tlabscore",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "File"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

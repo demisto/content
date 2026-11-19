@@ -1,0 +1,18 @@
+{
+  "totalElements": 1,
+  "last": true,
+  "content": [
+    {
+      "sampleReportId": 500000,
+      "sampleReportType": "MAIN",
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": false,
+      "sampleScore": -1.0,
+      "verdict": "UNKNOWN",
+      "uploadedFilename": "",
+      "createTime": 1774520000000,
+      "updateTime": 1774520000000,
+      "file": {"hashSha256": "4444444444444444444444444444444444444444444444444444444444444444"}
+    }
+  ]
+}

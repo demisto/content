@@ -1,0 +1,41 @@
+{
+    "id": "incident_tlabscorelevel",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Score Level",
+    "ownerOnly": false,
+    "description": "Raw ScoreLevel exactly as the server returned it, before canonicalisation.",
+    "cliName": "tlabscorelevel",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "tLab Anti-APT Verdict"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0",
+    "selectValues": [
+        "",
+        "UNKNOWN",
+        "SUSPICIOUS",
+        "MALICIOUS",
+        "OK",
+        "CLEAN",
+        "WHITELIST"
+    ],
+    "openEnded": false
+}

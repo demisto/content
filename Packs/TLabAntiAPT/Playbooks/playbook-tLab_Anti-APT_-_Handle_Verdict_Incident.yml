@@ -1,0 +1,380 @@
+id: tLab Anti-APT - Handle Verdict Incident
+version: -1
+name: tLab Anti-APT - Handle Verdict Incident
+description: 'Triage playbook for a tLab Anti-APT Verdict incident.
+
+
+  Pulls the detail the fetch did not carry, then splits on the verdict: benign analyses close themselves, malicious and suspicious ones stay open for an analyst with the evidence already in context.
+
+
+  Runs for incidents created by either delivery half. The tLab Delivery Mode field records which one made the incident, and the playbook does not care.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 431f634d-a9d6-5b88-89ea-6278184150a7
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 431f634d-a9d6-5b88-89ea-6278184150a7
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: deb874fd-9082-5566-a085-268c54b1b397
+    type: title
+    task:
+      name: tLab Anti-APT - Handle Verdict Incident
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: deb874fd-9082-5566-a085-268c54b1b397
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: b07d4af3-866b-5e13-8d82-71317913060d
+    type: condition
+    task:
+      name: Is there a sample report to enrich?
+      description: An incident without a report id was not created by this pack, or was created before the field existed. Enriching it would fail on every task.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: b07d4af3-866b-5e13-8d82-71317913060d
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SampleReportId
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 7559c2d5-9f32-5725-b70f-ea741641bc03
+    type: regular
+    task:
+      name: Get the full report
+      description: The fetch carries a summary. This is the whole report, including the analysis tree and the stages that ran.
+      script: TLabAntiAPTSandbox|||tlab-get-report
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: 7559c2d5-9f32-5725-b70f-ea741641bc03
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      sample_report_id:
+        complex:
+          root: inputs.SampleReportId
+          filters: []
+          transformers: []
+    nexttasks:
+      '#none#':
+      - '4'
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: 0e7577aa-29a1-5b78-a562-d13fae32c5eb
+    type: regular
+    task:
+      name: Get the threat indicators
+      description: Behavioral, static, YARA and antivirus findings, so the analyst has the evidence in context rather than in a browser tab.
+      script: TLabAntiAPTSandbox|||tlab-get-threat-indicators
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: 0e7577aa-29a1-5b78-a562-d13fae32c5eb
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      sample_report_id:
+        complex:
+          root: inputs.SampleReportId
+          filters: []
+          transformers: []
+    nexttasks:
+      '#none#':
+      - '5'
+    continueonerror: true
+  '5':
+    id: '5'
+    taskid: 4a7dc128-e9e4-5d68-b523-2bd4aa05e519
+    type: condition
+    task:
+      name: What is the verdict?
+      description: WHITELIST is an analyst's manual decision on the tLab side and is never recalculated, so it is treated as benign here without argument.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 4a7dc128-e9e4-5d68-b523-2bd4aa05e519
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: malicious
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: tlabverdict
+            iscontext: true
+          right:
+            value:
+              simple: MALWARE,SUSPICIOUS
+    - label: benign
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: tlabverdict
+            iscontext: true
+          right:
+            value:
+              simple: OK,CLEAN,WHITELIST
+    nexttasks:
+      '#default#':
+      - '9'
+      malicious:
+      - '6'
+      benign:
+      - '7'
+  '6':
+    id: '6'
+    taskid: 2d4297f4-dd0e-5975-83a7-6789ff305edb
+    type: title
+    task:
+      name: Malicious - left for the analyst
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 2d4297f4-dd0e-5975-83a7-6789ff305edb
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '9'
+  '7':
+    id: '7'
+    taskid: 52d5a192-f232-521b-8581-9ef9f5ccc574
+    type: condition
+    task:
+      name: Should benign incidents close themselves?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 52d5a192-f232-521b-8581-9ef9f5ccc574
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1310\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseBenign
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '8'
+  '8':
+    id: '8'
+    taskid: 18c7104d-69e3-5b72-8397-8b537c64e6ec
+    type: regular
+    task:
+      name: Close the incident
+      description: 'Closed as a false positive rather than resolved: the sandbox found nothing, which is a statement about the sample and not about the alert that carried it.'
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      id: 18c7104d-69e3-5b72-8397-8b537c64e6ec
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1490\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: id
+          filters: []
+          transformers: []
+      closeReason:
+        simple: False Positive
+      closeNotes:
+        complex:
+          root: incident
+          accessor: tlabverdict
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'tLab Anti-APT analysis found nothing malicious. Verdict: '
+              suffix:
+                value:
+                  simple: .
+    nexttasks:
+      '#none#':
+      - '9'
+  '9':
+    id: '9'
+    taskid: 26d6ae5d-a339-58fc-ba54-c9989ff97a69
+    type: title
+    task:
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 26d6ae5d-a339-58fc-ba54-c9989ff97a69
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1670\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2050,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: SampleReportId
+  value:
+    complex:
+      root: incident
+      accessor: tlabsamplereportid
+      filters: []
+      transformers: []
+  required: false
+  description: Sample report to enrich. Defaults to the incident's own.
+  playbookInputQuery: null
+- key: AutoCloseBenign
+  value:
+    simple: 'true'
+  required: false
+  description: Whether an OK, CLEAN or WHITELIST verdict closes the incident automatically. Turn it off while tuning the verdict filter, so that what would have been closed stays visible.
+  playbookInputQuery: null
+outputs:
+- contextPath: TLabAntiAPT.Report
+  description: The full sample report.
+  type: Unknown
+- contextPath: TLabAntiAPT.ThreatIndicators
+  description: Threat indicators observed during analysis.
+  type: Unknown
+fromversion: 6.0.0
+tags:
+- TIM
+- Malware

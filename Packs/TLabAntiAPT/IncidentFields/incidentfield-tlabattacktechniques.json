@@ -1,0 +1,33 @@
+{
+    "id": "incident_tlabattacktechniques",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab ATT&CK Techniques",
+    "ownerOnly": false,
+    "description": "MITRE ATT&CK technique identifiers observed during analysis.",
+    "cliName": "tlabattacktechniques",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "tLab Anti-APT Verdict"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0",
+    "selectValues": [],
+    "openEnded": true
+}

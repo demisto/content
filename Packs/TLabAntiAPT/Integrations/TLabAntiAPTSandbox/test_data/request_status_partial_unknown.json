@@ -1,0 +1,16 @@
+{
+  "analysisRequestId": 1003,
+  "analysisRequestStatus": "ACCEPTED",
+  "reports": [
+    {
+      "sampleReportId": 500,
+      "sampleReportType": "MAIN",
+      "sampleReportCompleteness": "PARTIALLY_COMPLETE",
+      "sampleScoreExists": false,
+      "sampleScore": -1.0,
+      "verdict": "UNKNOWN",
+      "uploadedFilename": "sample.bin",
+      "file": {"fileVerdict": "UNKNOWN", "hashSha256": "bb"}
+    }
+  ]
+}

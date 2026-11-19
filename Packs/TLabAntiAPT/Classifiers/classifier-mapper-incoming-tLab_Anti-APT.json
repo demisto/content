@@ -1,0 +1,74 @@
+{
+    "description": "Maps tLab Anti-APT sample reports onto the verdict incident fields.",
+    "feed": false,
+    "id": "tLab Anti-APT - Incoming Mapper",
+    "name": "tLab Anti-APT - Incoming Mapper",
+    "type": "mapping-incoming",
+    "defaultIncidentType": "tLab Anti-APT Verdict",
+    "mapping": {
+        "tLab Anti-APT Verdict": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "tLab Dedupe Key": {
+                    "simple": "tlab_dedupe_key"
+                },
+                "tLab Sample Report ID": {
+                    "simple": "tlab_sample_report_id"
+                },
+                "tLab Access Code": {
+                    "simple": "tlab_access_code"
+                },
+                "tLab Verdict": {
+                    "simple": "tlab_verdict"
+                },
+                "tLab Score Level": {
+                    "simple": "tlab_score_level"
+                },
+                "tLab File Verdict": {
+                    "simple": "tlab_file_verdict"
+                },
+                "tLab Score": {
+                    "simple": "tlab_score"
+                },
+                "tLab Completeness": {
+                    "simple": "tlab_completeness"
+                },
+                "tLab Report Type": {
+                    "simple": "tlab_report_type"
+                },
+                "tLab File SHA256": {
+                    "simple": "tlab_file_sha256"
+                },
+                "tLab File Name": {
+                    "simple": "tlab_file_name"
+                },
+                "tLab File Type": {
+                    "simple": "tlab_file_type"
+                },
+                "tLab AV Detected": {
+                    "simple": "tlab_av_detected"
+                },
+                "tLab Malware Family": {
+                    "simple": "tlab_malware_family"
+                },
+                "tLab ATT&CK Techniques": {
+                    "simple": "tlab_attack_techniques"
+                },
+                "tLab Source Type": {
+                    "simple": "tlab_source_type"
+                },
+                "tLab Report URL": {
+                    "simple": "tlab_report_url"
+                },
+                "tLab Delivery Mode": {
+                    "simple": "tlab_delivery_mode"
+                },
+                "occurred": {
+                    "simple": "tlab_create_time"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

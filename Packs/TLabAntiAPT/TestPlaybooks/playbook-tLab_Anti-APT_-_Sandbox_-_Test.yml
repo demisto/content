@@ -1,0 +1,200 @@
+id: tLab Anti-APT - Sandbox - Test
+version: -1
+name: tLab Anti-APT - Sandbox - Test
+description: 'Smoke test for the tLab Anti-APT Sandbox integration.
+
+
+  Deliberately submits nothing. A test that needs a malware sample needs one in the test environment too, and a build that fails for want of a sample teaches nobody anything. This exercises connectivity,
+  authentication and the command surface, which is what breaks in practice.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 45f4feaa-d00d-5592-99b3-bce4b9994f95
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 45f4feaa-d00d-5592-99b3-bce4b9994f95
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: f810f458-2982-5d98-a950-d398210731c1
+    type: title
+    task:
+      name: tLab Anti-APT - Sandbox - Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: f810f458-2982-5d98-a950-d398210731c1
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: be0dac04-b011-5cf0-80b9-bc1313567ce6
+    type: regular
+    task:
+      name: List analysis environment presets
+      description: Reachable, authenticated, and the account may read the analysis configuration.
+      script: TLabAntiAPTSandbox|||tlab-list-env-presets
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: be0dac04-b011-5cf0-80b9-bc1313567ce6
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      scope:
+        simple: global
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 851f9186-835a-55e8-8159-f252f936915d
+    type: condition
+    task:
+      name: Did presets come back?
+      description: An empty list means the credential authenticated but cannot read, which is the failure mode this pack sees most often.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 851f9186-835a-55e8-8159-f252f936915d
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TLabAntiAPT.EnvPreset
+                accessor: Name
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '4'
+  '4':
+    id: '4'
+    taskid: c71fa137-2a84-5579-b839-fe5bebbfb1c8
+    type: regular
+    task:
+      name: List submission sources
+      description: Confirms the source registry is readable, which is where the Cortex XSOAR source key lives.
+      script: TLabAntiAPTSandbox|||tlab-list-sources
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: c71fa137-2a84-5579-b839-fe5bebbfb1c8
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments: {}
+    nexttasks:
+      '#none#':
+      - '5'
+  '5':
+    id: '5'
+    taskid: 0720c593-63da-5ee9-8b31-8aa5d059858b
+    type: title
+    task:
+      name: Passed
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 0720c593-63da-5ee9-8b31-8aa5d059858b
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 572010d1-3e9d-50be-8d80-fd96ecfecdbd
+    type: title
+    task:
+      name: Failed - the instance authenticated but returned nothing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 572010d1-3e9d-50be-8d80-fd96ecfecdbd
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1510,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 6.0.0

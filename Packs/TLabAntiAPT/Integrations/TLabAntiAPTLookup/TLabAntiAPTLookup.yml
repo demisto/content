@@ -1,0 +1,330 @@
+name: TLabAntiAPTLookup
+display: tLab Anti-APT Lookup
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TLabAntiAPTLookup
+  version: -1
+description: Look up file reputation and past analyses in tLab Anti-APT without submitting anything.
+fromversion: 6.0.0
+configuration:
+- name: url
+  display: Server URL
+  additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
+  defaultvalue: https://tlab.example.com/api
+  type: 0
+  required: true
+- name: auth_url
+  display: Auth server URL (tlab-auth)
+  additionalinfo: Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://<Server URL host>:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://<host>/api, which is the sandbox API itself.
+  type: 0
+  required: false
+- name: auth_mode
+  display: Authentication mode
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
+  defaultvalue: tLab account (tlab-auth)
+  type: 15
+  required: true
+  options:
+  - tLab account (tlab-auth)
+  - Source key (Bearer)
+  - Username and password
+  - Internal token (localhost only)
+- name: credentials
+  display: Credentials
+  displaypassword: Password / source key / internal token
+  additionalinfo: 'Login and password of a tLab account (tLab account mode). This integration only reads, so it can use a restricted account: the user role is sufficient. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing.'
+  type: 9
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
+- name: client_name
+  display: Client name
+  additionalinfo: Sent as the X-Client header.
+  defaultvalue: xsoar
+  type: 0
+  required: false
+- name: reliability
+  display: Source reliability
+  additionalinfo: Reliability attached to every DBotScore this integration produces.
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- name: completeness
+  display: Report completeness to consider
+  additionalinfo: Only reports with these completeness values are used for reputation. Defaults to COMPLETE so a partial analysis does not produce a verdict.
+  defaultvalue: COMPLETE
+  type: 16
+  required: false
+  options: [COMPLETE, PARTIALLY_COMPLETE, EMPTY]
+- name: lookup_limit
+  display: Reports per hash
+  additionalinfo: How many past analyses to return per hash. The newest is used for the verdict.
+  defaultvalue: '1'
+  type: 0
+  required: false
+- name: unknown_is_benign
+  display: Treat an unknown verdict as benign
+  additionalinfo: Off by default. "tLab has no record" is not the same statement as "this file is benign", and a Good score would suppress other vendors' findings.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: score_threshold_suspicious
+  display: Suspicious score threshold
+  additionalinfo: Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: score_threshold_malicious
+  display: Malicious score threshold
+  additionalinfo: Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default.
+  defaultvalue: '85'
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.15.14069087
+  isfetch: false
+  longRunning: false
+  runonce: false
+  commands:
+  - name: file
+    description: Return the tLab Anti-APT reputation of one or more file hashes. Accepts full MD5, SHA1 or SHA256 hashes.
+    arguments:
+    - name: file
+      description: Comma-separated list of full file hashes. Partial hashes are skipped, because the server matches hash filters by prefix and a short value would match unrelated samples.
+      required: true
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: TLabAntiAPT.File.HashSha256
+      description: SHA256 of the file as recorded by tLab Anti-APT.
+      type: String
+    - contextPath: TLabAntiAPT.File.Verdict
+      description: Canonical verdict - MALWARE, SUSPICIOUS, OK, CLEAN, WHITELIST or UNKNOWN.
+      type: String
+    - contextPath: TLabAntiAPT.File.ScoreLevel
+      description: Raw ScoreLevel value as returned by the server, where MALICIOUS means MALWARE.
+      type: String
+    - contextPath: TLabAntiAPT.File.FileVerdict
+      description: Verdict set manually in tLab for this file. Absent while nobody has set it; not the analysis result, which is in Verdict.
+      type: String
+    - contextPath: TLabAntiAPT.File.Score
+      description: Sample score of the analysis used for the verdict.
+      type: Number
+    - contextPath: TLabAntiAPT.File.SampleReportId
+      description: Report the verdict was taken from.
+      type: Number
+    - contextPath: TLabAntiAPT.File.AnalyzedAt
+      description: The date when the sample was analyzed in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: TLabAntiAPT.File.Found
+      description: Whether tLab Anti-APT has an analysis for this hash.
+      type: Boolean
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 of the file.
+      type: String
+    - contextPath: File.Name
+      description: Name the file was analyzed under.
+      type: String
+    - contextPath: File.Size
+      description: Size of the file in bytes.
+      type: Number
+    - contextPath: File.Type
+      description: File type as detected by tLab Anti-APT.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: Vendor that decided the file is malicious.
+      type: String
+  - name: tlab-file-scan-result
+    description: Return past tLab Anti-APT analyses of a hash, with more detail than the reputation command.
+    arguments:
+    - name: hash
+      description: Full MD5, SHA1 or SHA256 hash.
+      required: true
+    - name: hash_type
+      description: Hash type. Detected from the value when omitted.
+      auto: PREDEFINED
+      predefined: [md5, sha1, sha256]
+    - name: limit
+      description: Maximum number of analyses to return, newest first.
+      defaultValue: '1'
+    outputs:
+    - contextPath: TLabAntiAPT.ScanResult.SampleReportId
+      description: Report ID in tLab Anti-APT.
+      type: Number
+    - contextPath: TLabAntiAPT.ScanResult.Verdict
+      description: Canonical verdict.
+      type: String
+    - contextPath: TLabAntiAPT.ScanResult.Score
+      description: Sample score.
+      type: Number
+    - contextPath: TLabAntiAPT.ScanResult.Found
+      description: Whether any analysis exists for the hash.
+      type: Boolean
+  - name: tlab-file-info
+    description: Return stored metadata and the analyst verdict for a file, without any analysis context.
+    arguments:
+    - name: sha256
+      description: Full 64-character SHA256 hash.
+      required: true
+    outputs:
+    - contextPath: TLabAntiAPT.FileInfo.FileVerdict
+      description: Verdict set manually in tLab for this file. Absent while nobody has set it; not the analysis result, which is in Verdict.
+      type: String
+    - contextPath: TLabAntiAPT.FileInfo.FileType
+      description: File type as detected by tLab Anti-APT.
+      type: String
+    - contextPath: TLabAntiAPT.FileInfo.Signed
+      description: Whether the file carries a digital signature.
+      type: Boolean
+  - name: tlab-search-reports
+    description: Search past analyses. Note that verdict, score, source and root filters are applied only for accounts with the admin or developer role; a lower role has them discarded without an error.
+    arguments:
+    - name: date_from
+      description: Start of the creation-time range, for example 2026-09-01 or 2026-09-01T00:00:00Z.
+    - name: date_to
+      description: End of the creation-time range.
+    - name: completeness
+      description: Report completeness values to include.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [COMPLETE, PARTIALLY_COMPLETE, EMPTY]
+    - name: status
+      description: Report status values to include.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [ACTIVE, DELETED]
+    - name: file_verdict
+      description: Filter by stored file verdict. Requires the admin or developer role.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [UNKNOWN, SUSPICIOUS, MALWARE, OK, WHITELIST]
+    - name: score_level
+      description: Filter by score level. Requires the admin or developer role.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [UNKNOWN, SUSPICIOUS, MALICIOUS, OK, CLEAN, WHITELIST]
+    - name: file_type
+      description: Filter by file type.
+      isArray: true
+    - name: source_id
+      description: Filter by submission source ID. Requires the admin or developer role.
+      isArray: true
+    - name: tags
+      description: Filter by analysis tags.
+      isArray: true
+    - name: indicators
+      description: Filter by indicator codes. Use tlab-list-indicator-codes to discover them.
+      isArray: true
+    - name: root_only
+      description: Whether to return only root reports. Requires the admin or developer role.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: min_report_id
+      description: Return reports with an ID greater than or equal to this value. Requires the admin or developer role.
+    - name: min_score
+      description: Minimum sample score. Requires the admin or developer role.
+    - name: file_name
+      description: Filter by uploaded file name. Requires the admin or developer role.
+    - name: file_hash_sha256
+      description: Filter by SHA256. Matched by prefix on the server.
+    - name: file_hash_sha1
+      description: Filter by SHA1. Matched by prefix on the server.
+    - name: sort
+      description: 'Sort key. Allowed fields: reportTime, updateTime, sampleReportId, sampleScore, size. Note that createTime is not valid and is silently ignored by the server, so it is rejected here.'
+      defaultValue: sampleReportId,desc
+    - name: page
+      description: Zero-based page number.
+      defaultValue: '0'
+    - name: limit
+      description: Maximum number of reports to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: TLabAntiAPT.Report.SampleReportId
+      description: Report ID in tLab Anti-APT.
+      type: Number
+    - contextPath: TLabAntiAPT.Report.Verdict
+      description: Canonical verdict.
+      type: String
+    - contextPath: TLabAntiAPT.Report.Score
+      description: Sample score.
+      type: Number
+    - contextPath: TLabAntiAPT.Report.HashSha256
+      description: SHA256 of the analyzed sample.
+      type: String
+  - name: tlab-hash-search
+    description: Find stored files whose hash starts with the given prefix.
+    arguments:
+    - name: hash_type
+      description: Which hash to search.
+      required: true
+      auto: PREDEFINED
+      predefined: [md5, sha1, sha256]
+    - name: hash_part
+      description: Hash prefix, at least 3 characters.
+      required: true
+    outputs:
+    - contextPath: TLabAntiAPT.HashSearch.HashValue
+      description: Matching hash value.
+      type: String
+    - contextPath: TLabAntiAPT.HashSearch.FileVerdict
+      description: Verdict set manually in tLab for this file. Absent while nobody has set it; not the analysis result, which is in Verdict.
+      type: String
+  - name: tlab-list-indicator-codes
+    description: List the indicator code catalog, usable with the indicators filter of tlab-search-reports.
+    arguments:
+    - name: analysis_type
+      description: Return only codes belonging to this analysis type.
+      auto: PREDEFINED
+      predefined: [STAT_ANALYSIS, DYN_ANALYSIS, AV_ANALYSIS, CODE_ANALYSIS]
+    outputs:
+    - contextPath: TLabAntiAPT.IndicatorCode.Code
+      description: Numeric indicator code.
+      type: Number
+    - contextPath: TLabAntiAPT.IndicatorCode.Name
+      description: Indicator name.
+      type: String
+    - contextPath: TLabAntiAPT.IndicatorCode.AnalysisType
+      description: Analysis type the code belongs to.
+      type: String
+tests:
+- tLab Anti-APT - Lookup - Test

@@ -1,0 +1,12 @@
+{
+  "sampleReportId": 412839,
+  "catalogVersion": "14.1",
+  "totals": {"techniques": 2, "tactics": 2},
+  "tactics": [{"id": "TA0011", "name": "Command and Control"}],
+  "techniques": [
+    {"id": "T1071", "name": "Application Layer Protocol", "url": "https://attack.mitre.org/techniques/T1071/",
+     "level": "MALICIOUS", "tactics": ["TA0011"], "primarySource": "BEHAVIOR", "staticOnly": false},
+    {"id": "T1027.002", "name": "Software Packing", "url": "https://attack.mitre.org/techniques/T1027/002/",
+     "level": "SUSPICIOUS", "tactics": ["TA0005"], "primarySource": "STATIC", "staticOnly": true}
+  ]
+}
