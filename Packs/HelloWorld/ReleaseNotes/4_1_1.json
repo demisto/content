@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "HW-N1: The ***helloworld-alert-list*** output path was changed."
+}

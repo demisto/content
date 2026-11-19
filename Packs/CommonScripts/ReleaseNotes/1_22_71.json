@@ -1,0 +1,5 @@
+{
+    "breakingChanges": true,
+    "marketplaces": ["platform"],
+    "breakingChangesNotes": "CS-PLATFORM-BC should appear on platform."
+}

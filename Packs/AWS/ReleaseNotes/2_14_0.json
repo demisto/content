@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The ***aws-s3-bucket-policy-put*** command now requires the *confirm_remove_self_bucket_access* argument. Playbooks that call this command must be updated."
+}
