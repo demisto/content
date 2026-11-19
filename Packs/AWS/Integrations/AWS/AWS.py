@@ -1295,6 +1295,7 @@ class AWSServices(str, Enum):
     CloudWatchLogs = "logs"
     NetworkFirewall = "network-firewall"
     STS = "sts"
+    ElasticBeanstalk = "elasticbeanstalk"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -7493,6 +7494,119 @@ class ELB:
         return "\n\n".join(sections)
 
 
+class ElasticBeanstalk:
+    service = AWSServices.ElasticBeanstalk
+    ENVIRONMENTS_HR_HEADERS = [
+        "EnvironmentName",
+        "EnvironmentId",
+        "ApplicationName",
+        "CNAME",
+        "EndpointURL",
+        "Status",
+        "Health",
+        "DateCreated",
+    ]
+
+    @staticmethod
+    def _build_describe_environments_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Builds the kwargs for the DescribeEnvironments API call, including pagination.
+
+        Args:
+            args (Dict[str, Any]): Command arguments.
+
+        Returns:
+            Dict[str, Any]: The DescribeEnvironments kwargs without empty values.
+        """
+        kwargs: Dict[str, Any] = {
+            "ApplicationName": args.get("application_name"),
+            "VersionLabel": args.get("version_label"),
+            "EnvironmentIds": argToList(args.get("environment_ids")),
+            "EnvironmentNames": argToList(args.get("environment_names")),
+            "IncludeDeleted": arg_to_bool_or_none(args.get("include_deleted")),
+            "IncludedDeletedBackTo": validate_iso8601_date(args.get("included_deleted_back_to")),
+        }
+        limit = args.get("limit")
+        pagination_args = {**args, "limit": DEFAULT_LIMIT_VALUE if limit in (None, "") else limit}
+        kwargs.update(
+            build_pagination_kwargs(
+                pagination_args,
+                minimum_limit=1,
+                max_limit=1000,
+                next_token_name="NextToken",
+                limit_name="MaxRecords",
+            )
+        )
+        remove_nulls_from_dictionary(kwargs)
+        return kwargs
+
+    @staticmethod
+    def _format_environments_hr(title: str, environments: list[dict], next_token: str | None = None) -> str:
+        """
+        Formats Elastic Beanstalk environments as a markdown table.
+
+        Args:
+            title (str): The table title.
+            environments (list[dict]): The serialized environment descriptions.
+            next_token (str | None): The pagination token, if more results are available.
+
+        Returns:
+            str: The human-readable output.
+        """
+        metadata = f"EnvironmentsNextToken: {escape(next_token)}" if next_token else ""
+        return tableToMarkdown(
+            title,
+            environments,
+            headers=ElasticBeanstalk.ENVIRONMENTS_HR_HEADERS,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata,
+        )
+
+    @staticmethod
+    def describe_environments_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns descriptions for existing AWS Elastic Beanstalk environments.
+
+        Args:
+            client (BotoClient): The boto3 client for Elastic Beanstalk service.
+            args (Dict[str, Any]): Command arguments including optional filters (application name, version label,
+                environment IDs/names, deleted environments) and pagination (limit, next_token).
+
+        Returns:
+            CommandResults: The environments descriptions and the next token for pagination.
+        """
+        kwargs = ElasticBeanstalk._build_describe_environments_kwargs(args)
+        print_debug_logs(
+            client,
+            f"Describing Elastic Beanstalk environments with kwargs keys: {list(kwargs.keys())} "
+            f"and {kwargs.get('MaxRecords')=}, {bool(kwargs.get('NextToken'))=}",
+        )
+        response = client.describe_environments(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        environments = serialized_response.get("Environments", [])
+        if not environments:
+            return CommandResults(readable_output="No Elastic Beanstalk environments were found.")
+        next_token = serialized_response.get("NextToken")
+
+        outputs = {
+            "AWS.ElasticBeanstalk.Environments(val.EnvironmentId && val.EnvironmentId == obj.EnvironmentId)": environments,
+            "AWS.ElasticBeanstalk(true)": {"EnvironmentsNextToken": next_token},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=ElasticBeanstalk._format_environments_hr(
+                "AWS Elastic Beanstalk Environments", environments, next_token
+            ),
+            raw_response=serialized_response,
+        )
+
+
 class Lambda:
     service = AWSServices.LAMBDA
 
@@ -11644,6 +11758,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
+    "aws-elasticbeanstalk-environments-describe": ElasticBeanstalk.describe_environments_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -11854,6 +11969,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UntagResource",
     "network-firewall:DescribeLoggingConfiguration",
     "network-firewall:UpdateLoggingConfiguration",
+    "elasticbeanstalk:DescribeEnvironments",
 ]
 
 COMMAND_SERVICE_MAP = {

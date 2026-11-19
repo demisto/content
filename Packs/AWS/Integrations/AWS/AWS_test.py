@@ -6198,6 +6198,225 @@ def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
     handle_client.assert_called_once_with(err)
 
 
+EB_ENVIRONMENT_RESPONSE = {
+    "EnvironmentName": "my-env",
+    "EnvironmentId": "e-abc123",
+    "EnvironmentArn": "arn:aws:elasticbeanstalk:us-east-1:123456789012:environment/my-app/my-env",
+    "ApplicationName": "my-app",
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.1.0 running Node.js 20",
+    "CNAME": "my-prefix.us-east-1.elasticbeanstalk.com",
+    "DateCreated": datetime(2024, 1, 15, 10, 30, 0),
+    "DateUpdated": datetime(2024, 1, 15, 10, 31, 0),
+    "Status": "Launching",
+    "Health": "Grey",
+    "Tier": {"Name": "WebServer", "Type": "Standard", "Version": "1.0"},
+}
+
+
+def test_elasticbeanstalk_describe_environments_filters_and_pagination(mocker):
+    """
+    Given: All filter args, a limit above the maximum and a next token.
+    When: describe_environments_command is called and boto returns HTTP 200 with a NextToken.
+    Then: boto is called with the mapped filters, MaxRecords capped at 1000, and the NextToken reaches the context.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [EB_ENVIRONMENT_RESPONSE],
+        "NextToken": "next-123",
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {
+        "application_name": "my-app",
+        "version_label": "v1",
+        "environment_ids": "e-abc123,e-def456",
+        "environment_names": "my-env",
+        "include_deleted": "true",
+        "included_deleted_back_to": "2024-01-01T00:00:00Z",
+        "limit": "5000",
+        "next_token": "prev-token",
+    }
+
+    result = ElasticBeanstalk.describe_environments_command(mock_client, args)
+
+    mock_client.describe_environments.assert_called_once_with(
+        ApplicationName="my-app",
+        VersionLabel="v1",
+        EnvironmentIds=["e-abc123", "e-def456"],
+        EnvironmentNames=["my-env"],
+        IncludeDeleted=True,
+        IncludedDeletedBackTo="2024-01-01T00:00:00Z",
+        MaxRecords=1000,
+        NextToken="prev-token",
+    )
+    environments = result.outputs[
+        "AWS.ElasticBeanstalk.Environments(val.EnvironmentId && val.EnvironmentId == obj.EnvironmentId)"
+    ]
+    assert environments[0]["EnvironmentId"] == "e-abc123"
+    assert environments[0]["DateCreated"] == "2024-01-15T10:30:00"
+    assert result.outputs["AWS.ElasticBeanstalk(true)"]["EnvironmentsNextToken"] == "next-123"
+    assert "EnvironmentsNextToken: next-123" in result.readable_output
+
+
+def test_elasticbeanstalk_describe_environments_empty(mocker):
+    """
+    Given: No args.
+    When: describe_environments_command is called and boto returns no environments.
+    Then: The default limit is sent once, and only the "not found" message is returned without outputs or raw response.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [],
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    result = ElasticBeanstalk.describe_environments_command(mock_client, {})
+
+    mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
+    assert result.outputs is None
+    assert result.raw_response is None
+    assert result.readable_output == "No Elastic Beanstalk environments were found."
+
+
+def test_elasticbeanstalk_describe_environments_empty_limit_uses_default(mocker):
+    """
+    Given: An empty-string limit argument.
+    When: describe_environments_command is called.
+    Then: The default limit of 50 is sent as MaxRecords.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [],
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    ElasticBeanstalk.describe_environments_command(mock_client, {"limit": ""})
+
+    mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_include_deleted_false():
+    """
+    Given: include_deleted="false".
+    When: _build_describe_environments_kwargs is called.
+    Then: IncludeDeleted stays False (it is not removed as an empty value) and the default limit is used.
+    """
+    from AWS import ElasticBeanstalk
+
+    kwargs = ElasticBeanstalk._build_describe_environments_kwargs({"include_deleted": "false"})
+
+    assert kwargs == {"IncludeDeleted": False, "MaxRecords": 50}
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_limit_validation():
+    """
+    Given: limit="0", and separately limit="" .
+    When: _build_describe_environments_kwargs is called.
+    Then: limit="0" raises a ValueError, while limit="" falls back to MaxRecords == 50.
+    """
+    from AWS import ElasticBeanstalk
+
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        ElasticBeanstalk._build_describe_environments_kwargs({"limit": "0"})
+
+    assert ElasticBeanstalk._build_describe_environments_kwargs({"limit": ""})["MaxRecords"] == 50
+
+
+def test_elasticbeanstalk_format_environments_hr_next_token_placement():
+    """
+    Given: A list of environments, with and without a next token.
+    When: _format_environments_hr is called.
+    Then: The token is shown above the table when present, and is absent otherwise.
+    """
+    from AWS import ElasticBeanstalk
+
+    with_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}], "tok-1")
+    without_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}])
+
+    assert "EnvironmentsNextToken: tok-1" in with_token
+    assert with_token.index("EnvironmentsNextToken: tok-1") < with_token.index("e-abc123")
+    assert "EnvironmentsNextToken" not in without_token
+
+
+def test_elasticbeanstalk_describe_environments_invalid_date(mocker):
+    """
+    Given: An included_deleted_back_to value that is not in AWS UTC format.
+    When: describe_environments_command is called.
+    Then: A DemistoException is raised and the API is not called.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        ElasticBeanstalk.describe_environments_command(mock_client, {"included_deleted_back_to": "2024-01-01"})
+
+    mock_client.describe_environments.assert_not_called()
+
+
+def test_elasticbeanstalk_describe_environments_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status.
+    When: describe_environments_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response and account ID.
+    """
+    from AWS import ElasticBeanstalk, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.describe_environments.return_value = resp
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.print_debug_logs")
+
+    ElasticBeanstalk.describe_environments_command(mock_client, {"account_id": "123456789012"})
+
+    handle_resp.assert_called_once_with(resp, "123456789012")
+
+
+def test_elasticbeanstalk_describe_environments_client_error_propagates(mocker):
+    """
+    Given: client.describe_environments raises ClientError.
+    When: describe_environments_command is called.
+    Then: The ClientError propagates so main() handles it through AWSErrorHandler.handle_client_error.
+    """
+    from AWS import ElasticBeanstalk
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "DescribeEnvironments",
+    )
+    mock_client.describe_environments.side_effect = err
+    mocker.patch("AWS.print_debug_logs")
+
+    with pytest.raises(ClientError):
+        ElasticBeanstalk.describe_environments_command(mock_client, {})
+
+
+def test_elasticbeanstalk_wiring():
+    """
+    Given: The AWS integration module.
+    When: Resolving the Elastic Beanstalk service and commands.
+    Then: AWSServices("elasticbeanstalk") resolves, both commands are mapped and their IAM actions are registered.
+    """
+    from AWS import AWSServices, ElasticBeanstalk, COMMANDS_MAPPING, REQUIRED_ACTIONS
+
+    assert AWSServices("elasticbeanstalk") is AWSServices.ElasticBeanstalk
+    assert ElasticBeanstalk.service is AWSServices.ElasticBeanstalk
+    assert COMMANDS_MAPPING["aws-elasticbeanstalk-environments-describe"] is ElasticBeanstalk.describe_environments_command
+    assert "elasticbeanstalk:DescribeEnvironments" in REQUIRED_ACTIONS
+
+
 def test_get_bucket_website_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and a valid bucket name.
