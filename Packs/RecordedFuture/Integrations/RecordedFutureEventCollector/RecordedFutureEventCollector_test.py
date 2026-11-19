@@ -121,6 +121,94 @@ def test_get_events_window_larger_than_limit(mocker):
     assert "more than 10 (stopped at the limit)" in mock_results.call_args[0][0].readable_output
 
 
+def test_get_events_end_time_requires_start_time(mocker):
+    """
+    Given: end_time without start_time.
+    When: Running recorded-future-get-events.
+    Then: An error is raised and no API call is made (end_time is applied by paging forward from start_time).
+    """
+    from RecordedFutureEventCollector import Client, get_events
+
+    mocker.patch("RecordedFutureEventCollector.return_results")
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", json={"data": []})
+        with pytest.raises(ValueError, match="end_time requires start_time"):
+            get_events(Client(BASE_URL), {"end_time": "2026-11-10T10:00:00Z"})
+
+    assert mock_request.call_count == 0
+
+
+def test_get_events_time_zone_offset(mocker):
+    """
+    Given: start_time and end_time with a +02:00 offset.
+    When: Running recorded-future-get-events.
+    Then: The times are converted to UTC before they are sent to the API / applied.
+    """
+    from RecordedFutureEventCollector import Client, get_events
+
+    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", **make_page([make_alert("a", "2026-11-09T22:30:00.000Z")]))
+        events = get_events(
+            Client(BASE_URL), {"start_time": "2026-11-10T00:00:00+02:00", "end_time": "2026-11-10T01:00:00+02:00"}
+        )
+
+    assert mock_request.last_request.qs["triggered"][0].upper() == "[2026-11-09T22:00:00,]"
+    assert [event["id"] for event in events] == ["a"]
+    assert "[2026-11-09T22:00:00, 2026-11-09T23:00:00]" in mock_results.call_args[0][0].readable_output
+
+
+@pytest.mark.parametrize("limit", [-1, -5])
+def test_get_events_invalid_limit(mocker, limit):
+    """
+    Given: A negative limit.
+    When: Running recorded-future-get-events.
+    Then: An error is raised instead of silently dropping alerts.
+    """
+    from RecordedFutureEventCollector import Client, get_events
+
+    mocker.patch("RecordedFutureEventCollector.return_results")
+    with pytest.raises(ValueError, match="limit must be a positive number"):
+        get_events(Client(BASE_URL), {"limit": limit})
+
+
+@pytest.mark.parametrize("limit", [-1, -5])
+def test_fetch_events_invalid_limit(mocker, limit):
+    """
+    Given: A negative fetch limit.
+    When: Fetching.
+    Then: An error is raised and no API call is made.
+    """
+    from RecordedFutureEventCollector import Client, fetch_events, demisto
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", json={"data": []})
+        with pytest.raises(ValueError, match="limit must be a positive number"):
+            fetch_events(Client(BASE_URL), limit=limit, last_run="2026-11-10T10:00:00")
+
+    assert mock_request.call_count == 0
+
+
+@pytest.mark.parametrize(
+    "triggered, expected",
+    [
+        ("2026-11-10T10:00:05.123Z", "2026-11-10T10:00:05"),
+        ("2026-11-10T10:00:05Z", "2026-11-10T10:00:05"),
+        ("2026-11-10T10:00:05", "2026-11-10T10:00:05"),
+    ],
+)
+def test_get_triggered(triggered, expected):
+    """
+    Given: A triggered value with or without milliseconds and "Z".
+    When: Getting the triggered value.
+    Then: It is returned in TRIGGERED_FORMAT (second precision, no "Z").
+    """
+    from RecordedFutureEventCollector import get_triggered
+
+    assert get_triggered(make_alert("a", triggered)) == expected
+
+
 @freeze_time("2023-12-24T01:02:03.000Z")
 def test_fetch_events(mocker):
     from RecordedFutureEventCollector import Client, fetch_events, demisto
@@ -271,6 +359,26 @@ def test_fetch_events_stuck_guard(mocker):
 
     assert len(events) == 2
     assert next_run["last_run_time"] == "2026-11-10T10:00:06"
+
+
+def test_fetch_events_stuck_guard_with_saved_ids(mocker):
+    """
+    Given: The previous fetch saved IDs at the cursor second, and the limit is reached with alerts from that second only.
+    When: Fetching.
+    Then: Previously sent alerts are filtered out, the cursor moves forward by one second, and it is logged.
+    """
+    from RecordedFutureEventCollector import Client, fetch_events, demisto
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run_ids": ["s-0"]})
+    mock_info = mocker.patch.object(demisto, "info")
+    alerts = [make_alert(f"s-{i}", "2026-11-10T10:00:05.000Z") for i in range(3)]
+    with requests_mock.Mocker() as m:
+        m.get(f"{BASE_URL}/alert/search", **make_page(alerts))
+        events, next_run = fetch_events(Client(BASE_URL), limit=3, last_run="2026-11-10T10:00:05")
+
+    assert [event["id"] for event in events] == ["s-1", "s-2"]
+    assert next_run["last_run_time"] == "2026-11-10T10:00:06"
+    assert "Moving the cursor forward by one second" in mock_info.call_args[0][0]
 
 
 def test_fetch_events_limit_capped(mocker):

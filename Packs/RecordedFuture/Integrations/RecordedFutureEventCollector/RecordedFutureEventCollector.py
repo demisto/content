@@ -74,14 +74,48 @@ def test_module(client: Client):
         raise DemistoException(f"Failed due to - {message}")
 
 
+def parse_limit(value: Any, default: int) -> int:
+    """Parses a limit argument: `default` when empty or 0 (as before), capped at MAX_FETCH, and negative values raise.
+
+    Args:
+        value (Any): The raw limit value.
+        default (int): The value to use when the limit is not set.
+
+    Returns:
+        int: The limit.
+    """
+    limit = arg_to_number(value, arg_name="limit")
+    if not limit:
+        return default
+    if limit < 1:
+        raise ValueError(f"limit must be a positive number, got {limit}.")
+    return min(limit, MAX_FETCH)
+
+
+def to_triggered_format(value: datetime | None) -> str:
+    """Formats a datetime as a UTC TRIGGERED_FORMAT string (naive values are treated as UTC).
+
+    Args:
+        value (datetime | None): The datetime to format.
+
+    Returns:
+        str: The formatted time, or "" when no value is given.
+    """
+    if not value:
+        return ""
+    if value.tzinfo:
+        value = value.astimezone(timezone.utc)
+    return value.strftime(TRIGGERED_FORMAT)
+
+
 def get_events(client: Client, args: dict) -> list:
     """Retrieves events using the RecordedFuture API (recorded-future-get-events).
 
-    Debug / verification aid (XSUP-80326): start_time and end_time let you compare the number of alerts in a time
-    window with the number of unique alerts in the dataset.
+    Debug / verification aid: start_time and end_time let you compare the number of alerts in a time window
+    with the number of unique alerts in the dataset.
     - The API only honours an open start filter (triggered=[start,]). It silently ignores closed ranges and end-only
       filters (it falls back to its default ~7-day window), so end_time is NOT sent to the API. Instead we page
-      until we pass end_time and drop newer alerts here.
+      until we pass end_time and drop newer alerts here. Because of that, end_time requires start_time.
     - The API's counts.total is the number of alerts triggered from start_time up to NOW, not up to end_time.
 
     Args:
@@ -91,11 +125,11 @@ def get_events(client: Client, args: dict) -> list:
     Returns:
         list: The events in the time window (oldest first), up to `limit`.
     """
-    limit = min(arg_to_number(args.get("limit"), arg_name="limit") or 10, MAX_FETCH)
-    start_dt = arg_to_datetime(args.get("start_time"), arg_name="start_time")
-    end_dt = arg_to_datetime(args.get("end_time"), arg_name="end_time")
-    start = start_dt.strftime(TRIGGERED_FORMAT) if start_dt else ""
-    end = end_dt.strftime(TRIGGERED_FORMAT) if end_dt else ""
+    limit = parse_limit(args.get("limit"), default=10)
+    start = to_triggered_format(arg_to_datetime(args.get("start_time"), arg_name="start_time"))
+    end = to_triggered_format(arg_to_datetime(args.get("end_time"), arg_name="end_time"))
+    if end and not start:
+        raise ValueError("end_time requires start_time.")
 
     params: dict[str, Any] = {"orderby": "triggered", "direction": "desc"}
     if start:
@@ -182,16 +216,16 @@ def iter_alert_pages(client: Client, params: dict) -> Iterator[tuple[list[dict],
 
 
 def get_triggered(event: dict) -> str:
-    """Get the 'triggered' value from an event without milliseconds since the API ignores them.
+    """Get the 'triggered' value from an event without milliseconds (and without the "Z") since the API ignores them.
 
     Args:
         event (dict): The event from API.
 
     Returns:
-        str: the "triggered" value.
+        str: the "triggered" value, in TRIGGERED_FORMAT.
     """
     if event:
-        return event.get("log", {}).get("triggered", "").split(".")[0]
+        return event.get("log", {}).get("triggered", "").split(".")[0].removesuffix("Z")
     return ""
 
 
@@ -200,6 +234,8 @@ def fetch_alert_pages(client: Client, last_run: str, max_fetch: int) -> list[dic
 
     With direction=desc the API returns the *oldest* alerts after the start time (displayed newest-first),
     so paging with `from` moves forward in time and new alerts arriving between pages do not shift the offsets.
+    Note: this ordering is not documented by Recorded Future. It was observed against the live API
+    (direction=asc returns the *newest* alerts after the start time instead). If it ever changes, alerts may be skipped.
     The page size is always PAGE_SIZE (never shrunk for the last page) so `from` always advances in whole pages;
     the caller trims the result to `max_fetch`.
 
@@ -233,7 +269,7 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
         dict: The lastRun object to save for next run (empty if nothing was fetched).
     """
     last_run = str(kwargs.get("last_run"))
-    max_fetch = min(arg_to_number(kwargs.get("limit")) or MAX_FETCH, MAX_FETCH)
+    max_fetch = parse_limit(kwargs.get("limit"), default=MAX_FETCH)
     last_run_ids = set(demisto.getLastRun().get("last_run_ids") or [])
 
     alerts = fetch_alert_pages(client, last_run, max_fetch)
@@ -253,7 +289,12 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
 
     # In case all kept alerts were triggered at the same second and the limit was reached,
     # move the cursor forward, otherwise the fetch will get stuck at this second forever.
+    # Any alerts beyond max_fetch in this second are skipped, so log it.
     if len(kept) >= max_fetch and get_triggered(kept[0]) == next_run_time:
+        demisto.info(
+            f"All {len(kept)} kept alerts were triggered at {next_run_time} and the limit ({max_fetch}) was reached. "
+            "Moving the cursor forward by one second, alerts beyond the limit in this second are skipped."
+        )
         next_run_time = (datetime.strptime(next_run_time, TRIGGERED_FORMAT) + timedelta(seconds=1)).strftime(TRIGGERED_FORMAT)
 
     # Remove alerts already sent in the previous round (same trigger second as the previous cursor).
