@@ -1,0 +1,25 @@
+category: Utilities
+commonfields:
+  id: TCTExcludedNoConnector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+description: Test integration with no connector that opts out of tight coupling (CIAC-18570).
+display: TCT Excluded No Connector
+name: TCTExcludedNoConnector
+excludefromtightlycoupled: true
+script:
+  commands:
+  - name: tct-excluded-no-connector-ping
+    description: Returns pong.
+    arguments: []
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.10.0
+tests:
+- No tests
