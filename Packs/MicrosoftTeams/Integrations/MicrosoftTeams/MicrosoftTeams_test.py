@@ -4536,7 +4536,7 @@ def test_resolve_user_id_for_proactive_message_by_display_name(mocker, requests_
     """
     from MicrosoftTeams import resolve_user_id_for_proactive_message
 
-    display_name = "Jane Smith"
+    display_name = "jane Test"
     user_id = "resolved-user-id-67890"
 
     requests_mock.get(
