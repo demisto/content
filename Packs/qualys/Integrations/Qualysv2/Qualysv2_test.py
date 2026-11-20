@@ -4303,6 +4303,99 @@ def test_iter_committable_host_batches_next_page_follows_last_host_with_no_detec
     assert is_full_batch is True
 
 
+@pytest.mark.parametrize(
+    "detections_per_host, expected_batches",
+    [
+        pytest.param([1, 1, 1, 1], [(["0", "1", "2"], True), (["3"], False)], id="closed_by_host_count"),
+        pytest.param([2, 2, 2], [(["0", "1"], True), (["2"], False)], id="closed_before_going_over_rows"),
+        pytest.param([2, 3, 1], [(["0", "1"], True), (["2"], False)], id="closed_on_reaching_rows"),
+        pytest.param([1, 10, 1], [(["0"], True), (["1"], True), (["2"], False)], id="host_over_rows_alone"),
+        pytest.param([0, 0, 0, 0, 0, 0], [(["0", "1", "2"], True), (["3", "4", "5"], True)], id="no_detections_one_row"),
+        pytest.param([], [], id="no_hosts"),
+    ],
+)
+def test_iter_host_batches(detections_per_host: list[int], expected_batches: list[tuple]):
+    """
+    Given:
+        - Hosts with the given detection counts, with at most 3 hosts and 5 rows per batch.
+    When:
+        - Grouping them with iter_host_batches.
+    Then:
+        - A batch closes at 3 hosts, on reaching 5 rows, or before a host that would take it over 5 rows.
+        - A host is never split: a host with more than 5 detections is a batch of its own.
+        - A host without detections counts as one row.
+        - Only the last batch, closed by the end of the hosts, has closed_by_limit=False.
+    """
+    hosts = [_make_host(str(host_id), count) for host_id, count in enumerate(detections_per_host)]
+
+    batches = list(Qualysv2.iter_host_batches(iter(hosts), max_hosts=3, max_rows=5))
+
+    assert [([host["ID"] for host in batch], closed_by_limit) for batch, closed_by_limit in batches] == expected_batches
+
+
+@pytest.mark.parametrize(
+    "host, expected_detections",
+    [
+        pytest.param({"DETECTION_LIST": {"DETECTION": [{"QID": "1"}, {"QID": "2"}]}}, [{"QID": "1"}, {"QID": "2"}], id="list"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {"QID": "1"}}}, [{"QID": "1"}], id="single_detection_as_dict"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {}}}, [{}], id="empty_detection"),
+        pytest.param({"DETECTION_LIST": None}, [{}], id="empty_detection_list"),
+        pytest.param({}, [{}], id="no_detection_list"),
+    ],
+)
+def test_get_host_detections(host: dict, expected_detections: list[dict]):
+    """
+    Given:
+        - A host with detections parsed as a list, a single dict, or with no detections.
+    When:
+        - Calling get_host_detections.
+    Then:
+        - The detections are returned as a list, and a host without detections yields a single empty detection.
+    """
+    assert Qualysv2.get_host_detections(host) == expected_detections
+
+
+def test_iter_host_batches_single_detection_as_dict():
+    """
+    Given:
+        - A host whose single detection is parsed as a dict rather than a list, with at most 1 row per batch.
+    When:
+        - Grouping it with iter_host_batches.
+    Then:
+        - The host counts as one row, so the next host starts a new batch.
+    """
+    host_with_dict_detection = {"ID": "1", "DETECTION_LIST": {"DETECTION": {"QID": "1"}}}
+
+    batches = list(Qualysv2.iter_host_batches(iter([host_with_dict_detection, _make_host("2", 1)]), max_hosts=3, max_rows=1))
+
+    assert [[host["ID"] for host in batch] for batch, _ in batches] == [["1"], ["2"]]
+
+
+def test_iter_committable_host_batches_closed_by_detections(mocker: MockerFixture):
+    """
+    Given:
+        - Hosts with 2, 2, 1 and 1 detections, with a commit batch of up to 10 hosts and 3 detections.
+    When:
+        - Iterating iter_committable_host_batches.
+    Then:
+        - Batches close on the detections limit, before the hosts limit, without splitting a host.
+        - Each batch closed by the limit is committable, with next_page set to its last host ID + 1.
+        - The last batch, closed by the end of the page, is the remainder (next_page=None, is_full_batch=False).
+    """
+    hosts = [_make_host("100", 2), _make_host("200", 2), _make_host("300", 1), _make_host("400", 1)]
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 10)
+    mocker.patch("Qualysv2.ASSETS_COMMIT_DETECTIONS_BATCH_SIZE", 3)
+
+    batches = list(Qualysv2.iter_committable_host_batches(Mock(), {}))
+
+    assert [([row["ID"] for row in rows], next_page, is_full) for rows, next_page, is_full in batches] == [
+        (["100", "100"], "101", True),
+        (["200", "200", "300"], "301", True),
+        (["400"], None, False),
+    ]
+
+
 def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: MockerFixture, client: Client):
     """
     Given:
