@@ -25,13 +25,15 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ],
     "caseInsensitive": false,
     "cliName": "gibadmiraltycode",
     "closeForm": false,
     "content": true,
-    "description": "The Admiralty System or NATO System is a method for evaluating collected items of intelligence. It consists of a two-character notation, evaluating the reliability of the source and the assessed level of confidence on the information.",
+    "description": "The Admiralty System or NATO System is a method for evaluating collected items of intelligence. It consists of a two-character notation, evaluating the reliability of the source and the assessed level of confidence in the information.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -78,6 +80,8 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ]
 }

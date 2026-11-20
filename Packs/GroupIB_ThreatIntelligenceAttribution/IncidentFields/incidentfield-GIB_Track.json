@@ -7,7 +7,7 @@
     "cliName": "gibtrack",
     "closeForm": false,
     "content": true,
-    "description": "Track information from the masked card record in Group-IB",
+    "description": "Magnetic stripe track data of the card, when the record carries it.",
     "editForm": true,
     "group": 0,
     "hidden": false,

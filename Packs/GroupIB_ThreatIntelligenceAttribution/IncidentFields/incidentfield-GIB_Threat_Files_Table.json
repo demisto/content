@@ -1,0 +1,96 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibthreatfilestable",
+    "closeForm": true,
+    "content": true,
+    "description": "The files attached to the threat report: name, MIME type, size and SHA-256.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibthreatfilestable",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Threat Files Table",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "columns": [
+        {
+            "displayName": "Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "MIME",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "mime",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Size",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "size",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 150
+        },
+        {
+            "displayName": "SHA-256",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hash",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "propagationLabels": [
+        "all"
+    ]
+}

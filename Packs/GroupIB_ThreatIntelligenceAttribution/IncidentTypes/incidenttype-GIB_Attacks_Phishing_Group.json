@@ -10,8 +10,10 @@
         "fieldCliNameToExtractSettings": {
             "gibrelatedindicatorsdata": {
                 "extractAsIsIndicatorTypeId": "",
-                "extractIndicatorTypesIDs": [],
-                "isExtractingAllIndicatorTypes": true
+                "extractIndicatorTypesIDs": [
+                    "URL"
+                ],
+                "isExtractingAllIndicatorTypes": false
             }
         },
         "mode": "Specific"

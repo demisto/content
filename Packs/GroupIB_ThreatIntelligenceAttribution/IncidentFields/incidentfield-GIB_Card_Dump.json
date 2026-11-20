@@ -7,7 +7,7 @@
     "cliName": "gibcarddump",
     "closeForm": false,
     "content": true,
-    "description": "Dump value of the card",
+    "description": "Dump value of the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,

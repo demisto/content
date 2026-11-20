@@ -1,0 +1,31 @@
+{
+    "associatedTypes": [
+        "GIB Suspicious Payment Detail",
+        "Cryptocurrency Address"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibspdtype",
+    "closeForm": false,
+    "content": true,
+    "description": "Payment identifier type: Cryptocurrency Wallet, Bank Account Number, Mobile Number, Bank Card, IBAN, Email, QR Payment String or Unknown. The value of a Bank Card is the full card number, unmasked.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibspdtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB SPD Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

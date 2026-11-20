@@ -29,7 +29,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -136,7 +136,7 @@
                         "type": "sources",
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 16
                     },
                     {
                         "displayType": "ROW",
@@ -167,11 +167,11 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 5
+                        "y": 13
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 10,
                         "hideName": false,
                         "i": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                         "items": [
@@ -227,13 +227,134 @@
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibmalwarename",
+                                "height": 22,
+                                "id": "1cc1110a-c2aa-4806-8792-c78e73a3808b",
+                                "index": 5,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibthreatactorname",
+                                "height": 22,
+                                "id": "90e5ed6a-5c61-48f9-b58e-1bbdfb6040e2",
+                                "index": 6,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibthreatactorid",
+                                "height": 22,
+                                "id": "183e0919-3573-49d1-bfbf-bf8904cd896e",
+                                "index": 7,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibthreatactorisapt",
+                                "height": 22,
+                                "id": "c19bb12c-c44d-4090-9f17-2973693ed496",
+                                "index": 8,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibseverity",
+                                "height": 22,
+                                "id": "a6e898b8-3f70-4adb-8e5d-18f481114583",
+                                "index": 9,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibreliability",
+                                "height": 22,
+                                "id": "2d419521-b81f-4e4b-bb92-1ea4b3694c46",
+                                "index": 10,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibcredibility",
+                                "height": 22,
+                                "id": "0d9ce821-7db4-43f7-9720-a0b288ef03f1",
+                                "index": 11,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibadmiraltycode",
+                                "height": 22,
+                                "id": "bc8a763f-89ba-4423-8c49-8a25b536720a",
+                                "index": 12,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseenbysource",
+                                "height": 22,
+                                "id": "88a38e98-fb1c-45a7-bf1c-a6c058fe6e9a",
+                                "index": 13,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseenbysource",
+                                "height": 22,
+                                "id": "c7ec9320-7662-4f36-ae24-3ef90f1f2efd",
+                                "index": 14,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "11bb78b1-4f4b-4801-a915-870b55ddb1bc",
+                                "index": 15,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB",
+                        "name": "Information from Group-IB",
                         "static": false,
                         "w": 2,
                         "x": 0,

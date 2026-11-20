@@ -149,6 +149,45 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "displayName": "Date Detected",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "datedetected",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Source Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourcetype",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Source Link",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourcelink",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,

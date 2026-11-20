@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#B5651D",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB Compromised Access",
+    "layout": "GIB Compromised Access Layout",
+    "locked": false,
+    "name": "GIB Compromised Access",
+    "onChangeRepAlg": 0,
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}

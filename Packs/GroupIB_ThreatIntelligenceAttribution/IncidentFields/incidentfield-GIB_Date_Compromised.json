@@ -3,7 +3,8 @@
     "associatedTypes": [
         "GIB Compromised Card",
         "GIB Compromised Masked Card",
-        "GIB Compromised Account"
+        "GIB Compromised Account",
+        "GIB Compromised Access"
     ],
     "caseInsensitive": false,
     "cliName": "gibdatecompromised",
@@ -33,6 +34,7 @@
     "systemAssociatedTypes": [
         "GIB Compromised Card",
         "GIB Compromised Masked Card",
-        "GIB Compromised Account"
+        "GIB Compromised Account",
+        "GIB Compromised Access"
     ]
 }

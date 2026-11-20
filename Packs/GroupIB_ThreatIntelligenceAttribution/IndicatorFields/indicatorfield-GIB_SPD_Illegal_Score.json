@@ -1,0 +1,31 @@
+{
+    "associatedTypes": [
+        "GIB Suspicious Payment Detail",
+        "Cryptocurrency Address"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibspdillegalscore",
+    "closeForm": false,
+    "content": true,
+    "description": "Group-IB illegal score of the payment identifier (0-100).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibspdillegalscore",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB SPD Illegal Score",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

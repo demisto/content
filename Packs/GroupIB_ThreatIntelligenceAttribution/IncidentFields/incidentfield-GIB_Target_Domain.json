@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "GIB Brand Protection Phishing",
-        "GIB Attacks Deface"
+        "GIB Attacks Deface",
+        "GIB Compromised Access"
     ],
     "caseInsensitive": true,
     "cliName": "gibtargetdomain",
@@ -31,6 +32,7 @@
     "openEnded": false,
     "systemAssociatedTypes": [
         "GIB Brand Protection Phishing",
-        "GIB Attacks Deface"
+        "GIB Attacks Deface",
+        "GIB Compromised Access"
     ]
 }

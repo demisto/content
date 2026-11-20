@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB OSI Vulnerability"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibseeninthewild",
+    "closeForm": true,
+    "content": true,
+    "description": "Whether exploitation of the vulnerability was observed in the wild.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibseeninthewild",
+    "isReadOnly": false,
+    "itemVersion": "1.4.2",
+    "locked": false,
+    "name": "GIB Seen In The Wild",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB OSI Vulnerability"
+    ],
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

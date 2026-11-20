@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-open-threats-by-source-type",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Open Threats by Source Type",
+    "dataType": "incidents",
+    "widgetType": "pie",
+    "query": "(type:\"GIB Open Threat\")",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Open Threat\")",
+        "timeFrame": "days",
+        "groupBy": [
+            "gibsource"
+        ]
+    },
+    "size": 3,
+    "description": "Blog articles versus social network posts."
+}

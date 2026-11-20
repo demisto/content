@@ -7,7 +7,7 @@
     "cliName": "gibcardpin",
     "closeForm": false,
     "content": true,
-    "description": "PIN value of the card",
+    "description": "PIN value of the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,

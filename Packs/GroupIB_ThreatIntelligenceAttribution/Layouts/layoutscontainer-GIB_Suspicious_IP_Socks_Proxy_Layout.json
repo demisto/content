@@ -81,100 +81,6 @@
                         "y": 0
                     },
                     {
-                        "h": 2,
-                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Notes",
-                        "static": false,
-                        "type": "notes",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Work Plan",
-                        "static": false,
-                        "type": "workplan",
-                        "w": 1,
-                        "x": 1,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 1,
-                        "x": 1,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Child Incidents",
-                        "static": false,
-                        "type": "childInv",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Team Members",
-                        "static": false,
-                        "type": "team",
-                        "w": 1,
-                        "x": 2,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Indicators",
-                        "query": "",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
                         "displayType": "CARD",
                         "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
@@ -231,7 +137,31 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 9
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -273,43 +203,82 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 22,
-                                "id": "incident-details-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Investigation Data",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 4
+                        "y": 13
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-b7871630-71a9-11ef-8c49-f9d8b5e80cf6",
+                        "i": "caseinfoid-af942e96-0d3f-5b6b-981e-1418a65facf9",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibid",
+                                "height": 26,
+                                "id": "ff1472fd-bfba-503a-b7b8-e315ae191ab5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibsocksproxysource",
+                                "height": 26,
+                                "id": "07f631a9-36ec-5a7c-8a85-62c198a2ede6",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibsource",
+                                "height": 26,
+                                "id": "2909aacd-d162-551c-87cc-32d1e8c096a4",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibportallink",
+                                "height": 26,
+                                "id": "aefaf668-b751-5a18-aaf4-89921a413a56",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibfetchedwithhuntingrules",
+                                "height": 22,
+                                "id": "1e5269aa-fbcb-5eb7-9f9f-9767d6c501dc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Information from Group-IB",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-45d5c236-0b95-5d87-8a6d-0c6b5fcf79f1",
+                        "isVisible": true,
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "gibadmiraltycode",
                                 "height": 22,
-                                "id": "d10397a0-71a9-11ef-8c49-f9d8b5e80cf6",
+                                "id": "486089fa-2d1a-54eb-9f5b-4d0d6b4b6519",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -318,7 +287,7 @@
                                 "endCol": 2,
                                 "fieldId": "gibcredibility",
                                 "height": 22,
-                                "id": "d4876730-71a9-11ef-8c49-f9d8b5e80cf6",
+                                "id": "7efe4987-fa8b-5582-9c36-28b12f6da112",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -327,7 +296,7 @@
                                 "endCol": 2,
                                 "fieldId": "gibreliability",
                                 "height": 22,
-                                "id": "d7649680-71a9-11ef-8c49-f9d8b5e80cf6",
+                                "id": "2a35691b-fd4a-541a-84de-0c683f6bf475",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -336,7 +305,7 @@
                                 "endCol": 2,
                                 "fieldId": "gibseverity",
                                 "height": 22,
-                                "id": "d9e2b5e0-71a9-11ef-8c49-f9d8b5e80cf6",
+                                "id": "6ba2e222-a30a-502c-baec-9db9f78e9c97",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -345,7 +314,7 @@
                                 "endCol": 2,
                                 "fieldId": "gibtlp",
                                 "height": 22,
-                                "id": "d3bcb5c0-ed28-11f0-9509-45873decf476",
+                                "id": "9d8debf6-8b27-5c52-be8f-a1a073b8a0a5",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -357,30 +326,22 @@
                         "name": "Group-IB Evaluation",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-b8235630-71a9-11ef-8c49-f9d8b5e80cf6",
+                        "i": "caseinfoid-e7463db7-6173-557d-973c-80c9be36ee29",
+                        "isVisible": true,
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibid",
-                                "height": 22,
-                                "id": "c3ae5a90-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "gibdatefirstseen",
                                 "height": 22,
-                                "id": "c62219b0-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 1,
+                                "id": "eed4560c-f1e0-5797-a90e-751237f2b48a",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -388,8 +349,8 @@
                                 "endCol": 2,
                                 "fieldId": "gibdatelastseen",
                                 "height": 22,
-                                "id": "c8f20290-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
+                                "id": "91490be3-e8e5-5ae9-9d9b-2445b2fc281a",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -397,26 +358,8 @@
                                 "endCol": 2,
                                 "fieldId": "gibdateofdetection",
                                 "height": 22,
-                                "id": "cb918ca0-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibsocksproxysource",
-                                "height": 22,
-                                "id": "54e38600-861f-11ef-a9d2-eb62a95c9def",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibportallink",
-                                "height": 22,
-                                "id": "ce52cf80-71a9-11ef-8c49-f9d8b5e80cf6",
-                                "index": 5,
+                                "id": "bd6083c6-2d75-5f43-8993-fd3972da8425",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -424,11 +367,186 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Information from Group-IB",
+                        "name": "Group-IB Dates",
                         "static": false,
                         "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-609adea9-43cc-5842-8d1c-a9abc5d85ef4",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibasn",
+                                "height": 22,
+                                "id": "802bc856-25a7-5416-ba83-ec7698055ef7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibcountrycode",
+                                "height": 22,
+                                "id": "d0552ae4-0e1a-524b-8f1d-9ed2c73f3d5a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibcountryname",
+                                "height": 22,
+                                "id": "c59702ee-3cf9-55ac-b26a-1387ed356964",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibprovider",
+                                "height": 22,
+                                "id": "ef1063f1-c2f9-54f9-90b2-3806d44d7dcf",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Group-IB Network",
+                        "static": false,
+                        "w": 2,
                         "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-f331f10b-26ac-5906-a4e3-041f259f02f2",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibrelatedindicatorsdata",
+                                "height": 52,
+                                "id": "281ceabb-c28e-59c5-aa08-7532762845cd",
+                                "index": 0,
+                                "listId": "caseinfoid-f331f10b-26ac-5906-a4e3-041f259f02f2",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "GIB Related Indicators Data",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
                         "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 11
                     }
                 ],
                 "type": "custom"

@@ -1,22 +1,26 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Card",
-        "GIB Compromised Masked Card",
-        "GIB Targeted Malware",
         "GIB Attacks DDOS",
         "GIB Attacks Deface",
         "GIB Attacks Phishing Group",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Cybercriminal Threat",
         "GIB Cybercriminal Threat Actor",
+        "GIB Data Breach",
+        "GIB Malware",
+        "GIB Nation-State Cybercriminals Threat",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Targeted Malware",
+        "GIB Open Threat"
     ],
     "caseInsensitive": false,
     "cliName": "gibthreatactorname",
     "closeForm": false,
     "content": true,
+    "description": "The threat actor the record names, or several comma-separated. On a GIB Data Breach incident it holds the leak's publishers (the record's authors), and on a GIB Attacks Deface incident the defacer's handle; neither is an attribution. On a GIB Compromised Masked Card incident it holds the brand of the shop that lists the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -39,16 +43,19 @@
     "itemVersion": "1.4.2",
     "openEnded": false,
     "systemAssociatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Card",
-        "GIB Compromised Masked Card",
-        "GIB Targeted Malware",
         "GIB Attacks DDOS",
         "GIB Attacks Deface",
         "GIB Attacks Phishing Group",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Cybercriminal Threat",
         "GIB Cybercriminal Threat Actor",
+        "GIB Data Breach",
+        "GIB Malware",
+        "GIB Nation-State Cybercriminals Threat",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Targeted Malware",
+        "GIB Open Threat"
     ]
 }

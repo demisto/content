@@ -1,0 +1,272 @@
+{
+    "id": "Group-IB TI Attacks",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "fromVersion": "6.10.0",
+    "name": "Group-IB TI Attacks",
+    "description": "DDoS, defacement and phishing activity from the attacks/* collections.",
+    "isPredefined": true,
+    "period": {
+        "byFrom": "days",
+        "fromValue": 30
+    },
+    "layout": [
+        {
+            "id": "gib-ti-ddos",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "gib-ti-ddos",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-ddos",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI DDoS Attacks",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Attacks DDOS\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks DDOS\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "DDoS attack incidents."
+            }
+        },
+        {
+            "id": "gib-ti-defaces",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "gib-ti-defaces",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-defaces",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Defacements",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Attacks Deface\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks Deface\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Defacement incidents."
+            }
+        },
+        {
+            "id": "gib-ti-phishing",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "gib-ti-phishing",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-phishing",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Phishing",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Attacks Phishing Group\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks Phishing Group\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Phishing incidents."
+            }
+        },
+        {
+            "id": "gib-ti-phishing-kits",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "gib-ti-phishing-kits",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-phishing-kits",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Phishing Kits",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Attacks Phishing Kit\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks Phishing Kit\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Phishing kit incidents."
+            }
+        },
+        {
+            "id": "gib-ti-attacks-by-type",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "gib-ti-attacks-by-type",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-attacks-by-type",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Attacks by Type",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "type"
+                    ]
+                },
+                "size": 3,
+                "description": "Share of each attack collection."
+            }
+        },
+        {
+            "id": "gib-ti-phishing-by-brand",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "gib-ti-phishing-by-brand",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-phishing-by-brand",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Phishing by Brand",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Attacks Phishing Group\") and gibphishingbrand:* and -gibphishingbrand:\"Index of\" and -gibphishingbrand:\"Not specified\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks Phishing Group\") and gibphishingbrand:* and -gibphishingbrand:\"Index of\" and -gibphishingbrand:\"Not specified\"",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibphishingbrand"
+                    ]
+                },
+                "size": 3,
+                "description": "Brands targeted by phishing."
+            }
+        },
+        {
+            "id": "gib-ti-attacks-by-severity",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "gib-ti-attacks-by-severity",
+            "w": 12,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-attacks-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Attacks by Severity",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Severity of attack incidents."
+            }
+        }
+    ]
+}

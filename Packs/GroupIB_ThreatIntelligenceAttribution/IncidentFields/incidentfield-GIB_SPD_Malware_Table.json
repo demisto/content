@@ -36,7 +36,6 @@
     ],
     "content": true,
     "defaultRows": [
-        {},
         {}
     ],
     "editForm": true,
@@ -55,6 +54,9 @@
     "required": false,
     "sla": 0,
     "system": false,
+    "systemAssociatedTypes": [
+        "GIB SPD"
+    ],
     "threshold": 72,
     "type": "grid",
     "unmapped": false,

@@ -84,6 +84,19 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "displayName": "Update",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "update",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,

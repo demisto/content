@@ -1,29 +1,29 @@
 category: Data Enrichment & Threat Intelligence
-provider: Group IB
+provider: Group-IB
 commonfields:
   id: Group-IB Threat Intelligence & Attribution Feed
   version: -1
 configuration:
-- additionalinfo: The FQDN/IP the integration should connect to.
+- additionalinfo: The Group-IB TI API URL.
   defaultvalue: https://tap.group-ib.com/api/v2/
   display: GIB TI URL
   name: url
   required: true
   type: 0
   section: Connect
-- additionalinfo: The API Key and Username required to authenticate to the service.
+- additionalinfo: The e-mail address you log in to the Group-IB portal with. Enter your API token (Personal token) as the password.
   display: Username
   name: credentials
   required: true
   type: 9
   section: Connect
-- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
+- additionalinfo: Whether to allow connections without verifying the SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   section: Connect
-- additionalinfo: Whether to use XSOAR system proxy settings to connect to the API.
+- additionalinfo: Whether to use Cortex XSOAR system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
@@ -43,8 +43,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
-  defaultvalue: Suspicious
+- additionalinfo: 'Indicators from this integration instance will be marked with this reputation. Leave it empty to give every indicator the verdict of its collection: Bad for threat reports, malware C&C, the IOC collections and vulnerabilities, Suspicious for the others. An ioc/primary indicator is Bad when its own Group-IB risk score is above 0 and Suspicious when the score is 0 or missing. A payment detail with an illegal score of 80 or more is Bad, and a DDoS target (GIB Victim IP) gets no verdict. A selected reputation is applied to every indicator of the instance instead. An instance created before 4.0.0 keeps Suspicious, the former default, which overrides these verdicts; clear the setting to use them.'
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -81,14 +80,14 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: Collections List to include for fetching.
+- additionalinfo: The collections to fetch indicators from. ioc/primary and ioc/common are the same records under two names, ioc/common with fewer fields (no URL, evaluation, tags or source); select one of them.
   display: Indicator collections
   name: indicator_collections
   options:
+  - ioc/primary
+  - ioc/common
   - compromised/account_group
-  - compromised/bank_card_group
-  - compromised/masked_card
-  - compromised/mule
+  - compromised/spd
   - attacks/ddos
   - attacks/deface
   - attacks/phishing_kit
@@ -103,12 +102,12 @@ configuration:
   - suspicious_ip/vpn
   - suspicious_ip/scanner
   - malware/cnc
-  - ioc/common
+  - hi/open_threats
   type: 16
   required: false
   hidden: false
   section: Collect
-- additionalinfo: Date to start fetching indicators from.
+- additionalinfo: Date to start fetching indicators from. Each collection starts at the Group-IB cursor for that date (attacks/ddos and attacks/phishing_kit start from the date itself when no cursor is available). When no cursor is available for that date, any other collection is not read yet and is named in the instance health, and the cursor is requested again on the next fetch. Changing the value restarts every selected collection from the new date; the stored cursors are dropped on the next fetch. The value is recorded from the first fetch on 4.0.0, so an instance upgraded from an older version detects a change only after that fetch. gibti-get-indicators without an id starts from the same date.
   defaultvalue: 3 days
   display: Indicator first fetch
   name: indicators_first_fetch
@@ -116,7 +115,7 @@ configuration:
   required: false
   hidden: false
   section: Collect
-- additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 objects with different amount of indicators). If you face some runtime errors, lower the value.
+- additionalinfo: Number of pages read per collection in each fetch iteration. Each page asks for up to "Limit (items per request)" records, each with zero or more indicators. On suspicious_ip/*, compromised/spd and malware/cnc, a page that one cursor position fills is read again larger, up to 1,000 records; each larger read is one more request and does not count as a further page. Lower the value if a fetch does not finish within the interval.
   defaultvalue: '2'
   display: Number of requests per collection
   section: Collect
@@ -130,13 +129,13 @@ configuration:
   type: 15
   required: false
   hidden: false
-- additionalinfo: Supports CSV values.
+- additionalinfo: Tags added to every indicator of the instance. Supports CSV values.
   display: Tags
   section: Collect
   name: feedTags
   type: 0
   required: false
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. When Use TLP from source is disabled, this value is applied to all indicators. When Use TLP from source is enabled, this value is used only as a fallback when neither the record nor its collection's default (AMBER on ioc/primary and ioc/common) gives one. Leave it empty to give each indicator the TLP of its Group-IB record.
   display: Traffic Light Protocol Color
   name: tlp_color
   section: Collect
@@ -153,14 +152,109 @@ configuration:
   section: Collect
   defaultvalue: 'false'
   required: false
-  additionalinfo: When enabled, each indicator gets its TLP from Group-IB when the source provides it. For ioc/common, TLP defaults to AMBER. The Traffic Light Protocol Color setting is then used only as a fallback when the source has no TLP. When disabled, all indicators use the selected Traffic Light Protocol Color.
+  additionalinfo: When enabled, each indicator takes the TLP of its Group-IB record; a record without one takes AMBER on ioc/primary and ioc/common (an ioc/common record carries no evaluation block) and the Traffic Light Protocol Color elsewhere. A malware/cnc record carries no evaluation block either, so its indicators always take the Traffic Light Protocol Color. When disabled, every indicator takes the Traffic Light Protocol Color; with no color selected, each indicator keeps the TLP of its record whether the setting is on or off. TLP:CLEAR is stored as WHITE, TLP:AMBER+STRICT as AMBER, an unknown name as RED.
 - display: 'Limit (items per request)'
   name: limit
   type: 0
   section: Collect
   defaultvalue: '100'
   required: false
-  additionalinfo: Number of items requested per API page. Larger values reduce API round-trips but may increase response size. Server-side caps may apply.
+  additionalinfo: Number of records requested per API page, for every collection of the instance. Larger values reduce API round-trips but may increase response size. The Group-IB API Limitations documentation lists the recommended limit per collection. Each collection is read in pages no larger than its own page size (apart from the larger re-read below), except ioc/common, which is read in pages of the limit. The suspicious_ip/* collections are read in pages of at most 1,000. On suspicious_ip/*, compromised/spd and malware/cnc, a page that one cursor position fills is read again larger, up to 1,000 records; each larger read is one more request and does not count as a further page against "Number of requests per collection" (see the README's Limit Parameter section).
+- additionalinfo: |-
+    Off by default. Fetch only the records that match your Group-IB hunting rules where the filter is optional and your API user has hunting rules enabled: hi/threat, apt/threat, hi/open_threats, osi/vulnerability, attacks/phishing_kit, attacks/phishing_group and the five suspicious_ip/* collections. A filtered collection with no matching rule returns nothing while this is on, and hi/open_threats without the setting is the whole public feed. compromised/account_group, compromised/spd, osi/git_repository and attacks/ddos are always filtered by the API; ioc/primary, ioc/common, malware/cnc and attacks/deface never are. Toggling the setting restarts every selected collection from "Indicator first fetch". The setting is recorded from the first fetch on 4.0.0, so an instance upgraded from an older version detects a toggle only after that fetch. gibti-get-indicators reads with the setting too, except for a record named by id. The README has the details.
+  display: Hunting Rules
+  name: hunting_rules
+  required: false
+  type: 8
+  defaultvalue: 'false'
+  section: Collect
+- display: Minimum severity
+  name: min_severity
+  section: Collect
+  required: false
+  type: 15
+  defaultvalue: Low
+  options:
+  - Low
+  - Medium
+  - High
+  additionalinfo: 'The lowest Group-IB severity a record needs for its observables to become indicators, for every collection whose records carry a severity. Low (default) reads every record, and a record without a rating counts as Low. A record below the minimum is skipped when it arrives and is not read later. Group-IB rates every record of some collections the same, so Medium or High keeps all or none of them: suspicious_ip/* listings are green, DDoS attacks and defacements orange. ioc/primary, ioc/common and malware/cnc records carry no rating and are not held to it.'
+- display: Skip records older than (days)
+  name: max_record_age_days
+  section: Collect
+  required: false
+  type: 0
+  additionalinfo: 'A record older than this many days at the read is skipped and not read later, by the date that matters for its collection: the last sighting of an IOC, a suspicious IP listing or a C&C, the publication date of a vulnerability, the date a phishing group was detected (the README lists every collection''s date). Group-IB re-sends old records when it updates them, so a read can bring records years old. Empty or 0 (default) keeps every record.'
+- display: Vulnerability types to read
+  name: vulnerability_types
+  section: Collect
+  required: false
+  type: 0
+  additionalinfo: 'Works only for osi/vulnerability. A comma-separated list of record types to read, such as cve, mscve, nessus or redhat; case does not matter. The types are asked of the API as well, and every record is checked when it arrives; only a record whose id is a CVE id becomes an indicator. Empty (default) reads every type.'
+- display: Vulnerability types to skip
+  name: vulnerability_excluded_types
+  section: Collect
+  required: false
+  type: 0
+  additionalinfo: 'Works only for osi/vulnerability. A comma-separated list of record types to skip, such as nessus. A single skip type is also excluded in the API request when Vulnerability types to read is empty; every record is checked when it arrives. Empty (default) skips none.'
+- display: Vulnerabilities with an exploit only
+  name: vulnerability_has_exploit
+  section: Collect
+  required: false
+  type: 8
+  defaultvalue: 'false'
+  additionalinfo: 'Works only for osi/vulnerability. Read only the records with a known exploit: the API is asked for them, and every record is checked when it arrives.'
+- display: Payment detail types to read
+  name: spd_types
+  section: Collect
+  required: false
+  type: 16
+  options:
+  - Cryptocurrency Wallet
+  - Bank Account Number
+  - Mobile Number
+  - Bank Card
+  - IBAN
+  - Email
+  - QR Payment String
+  - Unknown
+  additionalinfo: 'Works only for compromised/spd. The payment detail types to read; empty (default) reads every type. A single selected type is also sent to the API; every record is checked when it arrives.'
+- display: IOC minimum risk score
+  name: ioc_min_risk_score
+  section: Collect
+  required: false
+  type: 0
+  additionalinfo: 'Works only for ioc/primary. The lowest Group-IB risk score (0-100) an IP, domain or URL needs to become an indicator; a file takes its record''s score. An observable without a score passes; the skip_unscored filter in Collection filters drops those. Empty (default) reads every observable.'
+- display: Open threat source types
+  name: open_threats_source_types
+  section: Collect
+  required: false
+  type: 16
+  options:
+  - Blog
+  - Social Network
+  additionalinfo: 'Works only for hi/open_threats. The kinds of public posts to read indicators from; empty (default) reads both. Blog posts are long articles and carry most of the extracted CVEs; social network posts are short messages, with indicators extracted the same way.'
+- display: Collection filters
+  name: collection_filters
+  section: Collect
+  required: false
+  type: 12
+  additionalinfo: 'Every other filter, one per line as collection: filter = value, for example osi/vulnerability: min_cvss = 7 or suspicious_ip/*: excluded_countries = US, DE. The collection is a name or a pattern (suspicious_ip/*, *); the value is a comma-separated list, a number, true, a severity (Low, Medium or High), or addresses or CIDR networks, as the README says for each filter; an empty value removes the filter a setting above set for that collection; a line starting with # is a comment. A line the integration cannot apply fails the instance test and every command, naming the line. The README lists the filters of each collection.'
+- additionalinfo: Every malware family and threat actor a record names becomes a Malware / Threat Actor indicator related to the observable (indicator-of / related-to), apart from a defacer's handle; a GIB Victim IP gets no relationship. The feed creates those objects together with the observables. Disable it to keep the feed to plain observables.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+  defaultvalue: 'true'
+  section: Collect
+- display: Delay between API requests (seconds)
+  name: rate_limit_delay
+  type: 0
+  required: false
+  defaultvalue: "1.2"
+  advanced: true
+  additionalinfo: Minimum number of seconds between consecutive requests to the same collection while a fetch or gibti-get-indicators pages through it (default 1.2; the first request is never delayed; 0 disables the delay). Raise it if the API answers HTTP 429.
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -174,7 +268,7 @@ configuration:
   type: 1
   required: false
   section: Collect
-description: Use Group-IB Threat Intelligence Feed integration to fetch IOCs from various Group-IB collections.
+description: Use the Group-IB Threat Intelligence Feed integration to fetch IOCs from Group-IB collections.
 display: Group-IB Threat Intelligence Feed
 name: Group-IB Threat Intelligence & Attribution Feed
 script:
@@ -184,10 +278,10 @@ script:
       description: GIB Collection to get indicators from.
       name: collection
       predefined:
+      - ioc/primary
+      - ioc/common
       - compromised/account_group
-      - compromised/bank_card_group
-      - compromised/masked_card
-      - compromised/mule
+      - compromised/spd
       - attacks/ddos
       - attacks/deface
       - attacks/phishing_kit
@@ -202,12 +296,12 @@ script:
       - suspicious_ip/vpn
       - suspicious_ip/scanner
       - malware/cnc
-      - ioc/common
+      - hi/open_threats
       required: true
       default: false
       isArray: false
       secret: false
-    - description: Incident Id to get indicators(if set, all the indicators will be provided from particular incident).
+    - description: The id of a record of the collection. When set, the command returns every indicator of that record that the instance filters keep, whatever the limit.
       name: id
       default: false
       isArray: false
@@ -216,7 +310,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: '50'
-      description: Limit of indicators to display in War Room.
+      description: 'Indicators to show (default 50): pages are read until that many indicators are collected, at most 5 pages. With id, every indicator of that record is shown; the value must still be a number from 1 to 50.'
       name: limit
       predefined:
       - '10'
@@ -227,9 +321,51 @@ script:
       isArray: false
       required: false
       secret: false
-    description: Get limited count of indicators for specified collection and get all indicators from particular events by id.
-    name: gibtia-get-indicators
+    description: Show up to "limit" distinct indicators of a collection, read from the "Indicator first fetch" date on with the instance's Hunting Rules, or every indicator of one of its records when id is set. The instance's filters apply to both. A collection without a start cursor for that date, other than attacks/ddos and attacks/phishing_kit, which start from the date itself, fails the command with a message that names it.
+    name: gibti-get-indicators
     deprecated: false
+    execution: false
+  - arguments:
+    - auto: PREDEFINED
+      description: GIB Collection to get indicators from.
+      name: collection
+      predefined:
+      - ioc/primary
+      - ioc/common
+      - compromised/account_group
+      - compromised/spd
+      - attacks/ddos
+      - attacks/deface
+      - attacks/phishing_kit
+      - attacks/phishing_group
+      - hi/threat
+      - apt/threat
+      - osi/vulnerability
+      - osi/git_repository
+      - suspicious_ip/tor_node
+      - suspicious_ip/open_proxy
+      - suspicious_ip/socks_proxy
+      - suspicious_ip/vpn
+      - suspicious_ip/scanner
+      - malware/cnc
+      - hi/open_threats
+      required: true
+    - description: The id of a record of the collection. When set, the command returns every indicator of that record that the instance filters keep, whatever the limit.
+      name: id
+    - auto: PREDEFINED
+      default: true
+      defaultValue: '50'
+      description: 'Indicators to show (default 50): pages are read until that many indicators are collected, at most 5 pages. With id, every indicator of that record is shown; the value must still be a number from 1 to 50.'
+      name: limit
+      predefined:
+      - '10'
+      - '20'
+      - '30'
+      - '40'
+      - '50'
+    description: Deprecated. Use gibti-get-indicators instead.
+    name: gibtia-get-indicators
+    deprecated: true
     execution: false
   dockerimage: demisto/vendors-sdk:1.0.0.14170433
   feed: true

@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibthreatsources",
+    "closeForm": true,
+    "content": true,
+    "description": "The sources the threat report cites.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibthreatsources",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Threat Sources",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

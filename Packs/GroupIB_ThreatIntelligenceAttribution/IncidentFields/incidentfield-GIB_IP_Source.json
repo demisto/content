@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Suspicious IP TOR Node"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibipsource",
+    "closeForm": true,
+    "content": true,
+    "description": "The source Group-IB learned the Tor node from.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibipsource",
+    "isReadOnly": false,
+    "itemVersion": "1.4.2",
+    "locked": false,
+    "name": "GIB IP Source",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Suspicious IP TOR Node"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,7 +1,14 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Attacks Deface"
+        "GIB Attacks Deface",
+        "GIB Attacks Phishing Group",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Suspicious IP Scanner",
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Suspicious IP TOR Node",
+        "GIB Suspicious IP VPN",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibcountryname",
@@ -22,7 +29,14 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "GIB Attacks Deface"
+        "GIB Attacks Deface",
+        "GIB Attacks Phishing Group",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Suspicious IP Scanner",
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Suspicious IP TOR Node",
+        "GIB Suspicious IP VPN",
+        "GIB Open Threat"
     ],
     "threshold": 72,
     "type": "shortText",

@@ -7,6 +7,7 @@
     "cliName": "gibmergedcvss",
     "closeForm": true,
     "content": true,
+    "description": "Group-IB's CVSS score merged across CVSS versions.",
     "editForm": true,
     "group": 0,
     "hidden": false,

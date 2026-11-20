@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibpostdeleteddate",
+    "closeForm": true,
+    "content": true,
+    "description": "When the post was deleted; empty while it is up.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibpostdeleteddate",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Post Deleted Date",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

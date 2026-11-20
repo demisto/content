@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-suspicious-ips-by-type",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Suspicious IPs by Type",
+    "dataType": "incidents",
+    "widgetType": "pie",
+    "query": "(type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\")",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\")",
+        "timeFrame": "days",
+        "groupBy": [
+            "type"
+        ]
+    },
+    "size": 3,
+    "description": "Share of each suspicious IP collection."
+}

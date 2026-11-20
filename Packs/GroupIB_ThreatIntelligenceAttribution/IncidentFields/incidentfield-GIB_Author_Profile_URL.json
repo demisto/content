@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibauthorprofileurl",
+    "closeForm": true,
+    "content": true,
+    "description": "The profile page of the post's author.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibauthorprofileurl",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Author Profile URL",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

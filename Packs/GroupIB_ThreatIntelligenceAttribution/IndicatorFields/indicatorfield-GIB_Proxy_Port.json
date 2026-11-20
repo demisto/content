@@ -1,6 +1,7 @@
 {
     "associatedTypes": [
-        "IP"
+        "IP",
+        "IPv6"
     ],
     "associatedToAll": false,
     "caseInsensitive": true,

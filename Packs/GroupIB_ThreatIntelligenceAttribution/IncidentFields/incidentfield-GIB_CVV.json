@@ -8,7 +8,7 @@
     "cliName": "gibcvv",
     "closeForm": false,
     "content": true,
-    "description": "Compromised card CVV",
+    "description": "Compromised card CVV.",
     "editForm": true,
     "group": 0,
     "hidden": false,

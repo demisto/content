@@ -7,7 +7,7 @@
     "cliName": "gibbasename",
     "closeForm": false,
     "content": true,
-    "description": "Base name of the masked card record in Group-IB",
+    "description": "The name of the dump batch the card came from; records that share it come from one batch.",
     "editForm": true,
     "group": 0,
     "hidden": false,
