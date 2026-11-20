@@ -1,0 +1,762 @@
+id: CertManagerSaaS Certificate Compliance Scan
+version: -1
+name: CertManagerSaaS Certificate Compliance Scan
+description: |-
+  Scans the CyberArk Certificate Manager SaaS inventory for certificates that violate policy: self-signed, weak public key, deprecated signature hash algorithm, or excessive validity period.
+
+  Every rule is a filter over one inventory read, so the whole scan costs one pass rather than one call per rule. The four violation sets are written to separate context keys so a calling playbook can act on each independently.
+
+  Scope limits worth knowing: the upstream page size is capped at 100 and deep pagination is best-effort, so on a large tenant MaxPages is load-bearing and a scan is a sample unless it is raised. The weak-key rule evaluates RSA and DSA key lengths only - elliptic-curve certificates report a curve name instead of a length.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1d0b5c4d-c249-5e4b-aaa0-bcfa058c91ed
+    type: start
+    task:
+      id: 1d0b5c4d-c249-5e4b-aaa0-bcfa058c91ed
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: a0d8f27f-2214-580a-a9ee-430e9bb9e68f
+    type: regular
+    task:
+      id: a0d8f27f-2214-580a-a9ee-430e9bb9e68f
+      version: -1
+      name: Collect the certificate inventory
+      description: Pages the Certificate Manager SaaS inventory. Large tenants need MaxPages raised -
+        the page size is capped at 100 upstream. Skipped when no Certificate Manager SaaS instance is
+        enabled.
+      script: '|||cmsaas-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      status:
+        complex:
+          root: inputs.CertificateStatus
+      limit:
+        complex:
+          root: inputs.MaxCertificates
+      max_pages:
+        complex:
+          root: inputs.MaxPages
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 6959ba37-af57-545b-8e4d-74edda41adfe
+    type: condition
+    task:
+      id: 6959ba37-af57-545b-8e4d-74edda41adfe
+      version: -1
+      name: Did the scan return any certificates?
+      description: An empty inventory is reported rather than being scored as full compliance.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '3'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.Fingerprint
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: cdcdacfd-59cf-57d7-9108-d1bcf6129df7
+    type: title
+    task:
+      id: cdcdacfd-59cf-57d7-9108-d1bcf6129df7
+      version: -1
+      name: Evaluate policy
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 9491e5d8-8df3-50c8-b275-d5d945367599
+    type: regular
+    task:
+      id: 9491e5d8-8df3-50c8-b275-d5d945367599
+      version: -1
+      name: Find self-signed certificates
+      description: A self-signed certificate has no third-party trust anchor and is almost never appropriate
+        on a production endpoint.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.ComplianceScan.SelfSigned
+      value:
+        complex:
+          root: CertManagerSaaS.Certificate
+          filters:
+          - - operator: isEqualString
+              ignorecase: true
+              left:
+                value:
+                  simple: CertManagerSaaS.Certificate.IsSelfSigned
+                iscontext: true
+              right:
+                value:
+                  simple: 'true'
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 0f4a07b6-26e5-5c09-9127-7f75604bf67e
+    type: regular
+    task:
+      id: 0f4a07b6-26e5-5c09-9127-7f75604bf67e
+      version: -1
+      name: Find certificates with weak keys
+      description: Public key length below the configured minimum. Elliptic-curve certificates report
+        a curve rather than a length and are not evaluated by this rule.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.ComplianceScan.WeakKey
+      value:
+        complex:
+          root: CertManagerSaaS.Certificate
+          filters:
+          - - operator: lessThan
+              left:
+                value:
+                  simple: CertManagerSaaS.Certificate.PublicKey.Length
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.MinimumKeySize
+                iscontext: true
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 50a04de0-7f63-5829-b790-150365d9ddf8
+    type: regular
+    task:
+      id: 50a04de0-7f63-5829-b790-150365d9ddf8
+      version: -1
+      name: Find certificates with deprecated signature algorithms
+      description: Signature hash algorithms that are no longer considered collision-resistant.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.ComplianceScan.DeprecatedSignatureAlgorithm
+      value:
+        complex:
+          root: CertManagerSaaS.Certificate
+          filters:
+          - - operator: inList
+              ignorecase: true
+              left:
+                value:
+                  simple: CertManagerSaaS.Certificate.SignatureHashAlgorithm
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.DeprecatedSignatureHashAlgorithms
+                iscontext: true
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: f17f3f5e-41a9-5a65-a07f-0df88cbf0633
+    type: regular
+    task:
+      id: f17f3f5e-41a9-5a65-a07f-0df88cbf0633
+      version: -1
+      name: Find certificates with excessive validity
+      description: Validity periods longer than policy allows. Certificate Manager SaaS reports the validity
+        period in seconds, which is why the threshold is expressed the same way.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.ComplianceScan.ExcessiveValidity
+      value:
+        complex:
+          root: CertManagerSaaS.Certificate
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: CertManagerSaaS.Certificate.ValidityPeriodSeconds
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.MaximumValidityPeriodSeconds
+                iscontext: true
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 30d7541b-841b-5c5c-9fd2-c24c2e560660
+    type: regular
+    task:
+      id: 30d7541b-841b-5c5c-9fd2-c24c2e560660
+      version: -1
+      name: Report that no certificates were scanned
+      description: Distinguishes an empty scan from a clean one.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      value:
+        simple: The Certificate Manager SaaS compliance scan returned no certificates. Check the status
+          filter and the page limit before reading this as a clean result.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: e0ca1540-8c5f-5f5b-9243-22dcabca3cb6
+    type: regular
+    task:
+      id: e0ca1540-8c5f-5f5b-9243-22dcabca3cb6
+      version: -1
+      name: 'Summarize: self-signed certificates'
+      description: Writes the self-signed certificates found by the scan onto the case.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.ComplianceScan.SelfSigned
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Self-signed certificates
+              headers:
+                value:
+                  simple: CommonName,Fingerprint,DaysUntilExpiry,SourceBrand,SourceInstance
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 4874d0e9-5e0a-57c5-b3a1-a31989530399
+    type: title
+    task:
+      id: 4874d0e9-5e0a-57c5-b3a1-a31989530399
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 855,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 6ac94464-803c-4bf0-b58f-e20ca2847dcb
+    type: regular
+    task:
+      id: 6ac94464-803c-4bf0-b58f-e20ca2847dcb
+      version: -1
+      name: Collect the certificate inventory (NGTS)
+      description: 'Pages the Certificate Manager SaaS inventory. Large tenants need MaxPages raised -
+        the page size is capped at 100 upstream. Next-Gen Trust Security variant: skipped when no NGTS
+        instance is enabled. Runs after the Certificate Manager SaaS lookup, so when both tenants hold
+        the same certificate the Next-Gen Trust Security result wins.'
+      script: '|||ngts-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      status:
+        complex:
+          root: inputs.CertificateStatus
+      limit:
+        complex:
+          root: inputs.MaxCertificates
+      max_pages:
+        complex:
+          root: inputs.MaxPages
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 436c88c4-12c5-4013-a7fa-81a1e091a34d
+    type: regular
+    task:
+      id: 436c88c4-12c5-4013-a7fa-81a1e091a34d
+      version: -1
+      name: Clear stale Certificate and scan data
+      description: Deletes certificate and scan results left in the incident by an earlier run, so a rule
+        with no match this time cannot report last run's certificates.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.Certificate,CertManagerSaaS.ComplianceScan
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 0a04a6a9-07a7-4fa2-9d8e-eded89062850
+    type: regular
+    task:
+      id: 0a04a6a9-07a7-4fa2-9d8e-eded89062850
+      version: -1
+      name: 'Summarize: certificates with weak keys'
+      description: Writes the certificates with weak keys found by the scan onto the case.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.ComplianceScan.WeakKey
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Certificates with weak keys
+              headers:
+                value:
+                  simple: CommonName,Fingerprint,DaysUntilExpiry,SourceBrand,SourceInstance,PublicKey
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 982efe44-c7df-4ed3-89d2-fbe634b25c78
+    type: regular
+    task:
+      id: 982efe44-c7df-4ed3-89d2-fbe634b25c78
+      version: -1
+      name: 'Summarize: certificates with deprecated signature algorithms'
+      description: Writes the certificates with deprecated signature algorithms found by the scan onto
+        the case.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.ComplianceScan.DeprecatedSignatureAlgorithm
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Certificates with deprecated signature algorithms
+              headers:
+                value:
+                  simple: CommonName,Fingerprint,DaysUntilExpiry,SourceBrand,SourceInstance,SignatureHashAlgorithm
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: bda5b479-ee5a-46e6-a6c2-fe617f3efa1a
+    type: regular
+    task:
+      id: bda5b479-ee5a-46e6-a6c2-fe617f3efa1a
+      version: -1
+      name: 'Summarize: certificates with excessive validity'
+      description: Writes the certificates with excessive validity found by the scan onto the case.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.ComplianceScan.ExcessiveValidity
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Certificates with excessive validity
+              headers:
+                value:
+                  simple: CommonName,Fingerprint,DaysUntilExpiry,SourceBrand,SourceInstance,ValidityPeriodSeconds
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 1860,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CertificateStatus
+  value:
+    simple: ACTIVE
+  required: false
+  description: Restricts the scan to certificates in this Certificate Manager SaaS status. Leave empty
+    to scan every status.
+  playbookInputQuery: null
+- key: MaxCertificates
+  value:
+    simple: '500'
+  required: false
+  description: Maximum number of certificates to evaluate.
+  playbookInputQuery: null
+- key: MaxPages
+  value:
+    simple: '50'
+  required: false
+  description: Maximum number of 100-certificate pages to scan. The upstream page size is capped at 100,
+    so a large tenant needs this raised.
+  playbookInputQuery: null
+- key: MinimumKeySize
+  value:
+    simple: '2048'
+  required: false
+  description: Minimum acceptable public key length, in bits. Certificates below it are flagged.
+  playbookInputQuery: null
+- key: DeprecatedSignatureHashAlgorithms
+  value:
+    simple: md5,sha1
+  required: false
+  description: Comma-separated signature hash algorithms treated as deprecated.
+  playbookInputQuery: null
+- key: MaximumValidityPeriodSeconds
+  value:
+    simple: '34387200'
+  required: false
+  description: Maximum permitted validity period, in seconds. Certificate Manager SaaS reports validity
+    in seconds and there is no arithmetic available in a filter, so the threshold is given in the same
+    unit. The default of 34387200 is 398 days.
+  playbookInputQuery: null
+outputs:
+- contextPath: CertManagerSaaS.ComplianceScan.SelfSigned
+  description: Certificates that are self-signed.
+  type: unknown
+- contextPath: CertManagerSaaS.ComplianceScan.WeakKey
+  description: Certificates whose public key is shorter than the configured minimum.
+  type: unknown
+- contextPath: CertManagerSaaS.ComplianceScan.DeprecatedSignatureAlgorithm
+  description: Certificates signed with a deprecated signature hash algorithm.
+  type: unknown
+- contextPath: CertManagerSaaS.ComplianceScan.ExcessiveValidity
+  description: Certificates whose validity period exceeds the configured maximum.
+  type: unknown
+tests:
+- CertificateManagerSaaS - Test
+fromversion: 6.10.0

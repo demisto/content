@@ -1,0 +1,36 @@
+{
+  "data": {
+    "searchCertificates": {
+      "totalCount": 1,
+      "pageInfo": { "hasNextPage": false, "endCursor": "Y3Vyc29yOjE=" },
+      "nodes": [
+        {
+          "id": "5c1e8a40-b79e-11f1-aaca-000000000001",
+          "name": "portal.example.com",
+          "fingerprint": "C1D2E3F405162738495A6B7C8D9EAFB0C1D2E3F4",
+          "serialNumber": "5A6B7C8D9E0F",
+          "status": "ACTIVE",
+          "isSelfSigned": false,
+          "isCA": false,
+          "isPublic": false,
+          "origins": ["CERTIFICATE_REQUEST"],
+          "keyUsages": ["digitalSignature", "keyEncipherment"],
+          "signatureAlgorithm": "sha256WithRSAEncryption",
+          "signatureHashAlgorithm": "SHA256",
+          "lastModifiedTime": "2026-09-20T10:00:00Z",
+          "subject": { "dn": "CN=portal.example.com", "commonName": ["portal.example.com"] },
+          "issuer": { "dn": "CN=Example OpenSSL CA", "commonName": ["Example OpenSSL CA"] },
+          "validity": { "from": "2026-09-20T00:00:00Z", "to": "2026-10-10T00:00:00Z", "period": 1728000 },
+          "subjectAlternativeNames": [{ "__typename": "DNSName", "dnsName": "portal.example.com" }],
+          "publicKeyInformation": { "__typename": "RSAKeyInfo", "strength": 2048 },
+          "applications": [],
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] },
+          "cloudInstallations": { "totalCount": 0, "nodes": [] },
+          "revocation": { "status": "SUBMITTED", "reason": "KEY_COMPROMISE", "comment": "case 42" },
+          "workspaceId": "1000000001"
+        }
+      ]
+    }
+  }
+}

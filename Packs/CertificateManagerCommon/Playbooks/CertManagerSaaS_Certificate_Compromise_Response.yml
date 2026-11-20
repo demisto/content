@@ -1,0 +1,1109 @@
+id: CertManagerSaaS Certificate Compromise Response
+version: -1
+name: CertManagerSaaS Certificate Compromise Response
+description: |-
+  Responds to a compromised certificate: resolves it from an indicator, enriches it, asks an analyst to confirm, revokes it and requests a replacement - all recorded on the same case. It also runs on a "CertManagerSaaS Revocation Failed" issue, where it retries a key-compromise revocation that the CA did not complete.
+
+  Revocation is gated behind an explicit analyst decision because it is irreversible and immediately breaks every service still presenting the certificate; the machine installations and TLS endpoints written onto the case before the question is asked are the blast radius the analyst is accepting.
+
+  A certificate that cannot be resolved is never treated as proof of absence: a malformed fingerprint comes back from the API as an ordinary empty result, indistinguishable from a deleted certificate.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1fe9e4f9-dd4e-5829-8bb7-a457c350ae21
+    type: start
+    task:
+      id: 1fe9e4f9-dd4e-5829-8bb7-a457c350ae21
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: e3b95e4a-d33e-55e8-ba68-a07db5809947
+    type: title
+    task:
+      id: e3b95e4a-d33e-55e8-ba68-a07db5809947
+      version: -1
+      name: Identify the certificate
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 70e0fc83-cdeb-56c3-9ff2-66442e1d59cd
+    type: condition
+    task:
+      id: 70e0fc83-cdeb-56c3-9ff2-66442e1d59cd
+      version: -1
+      name: Is the indicator a fingerprint?
+      description: Fingerprint is the natural key in Certificate Manager SaaS - the certificate identifier
+        is not filterable upstream - so a fingerprint gets an exact lookup and anything else falls back
+        to a search.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CertificateFingerprint
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 98ee85e5-4274-55a7-a47d-cf8d9a3bc3d0
+    type: regular
+    task:
+      id: 98ee85e5-4274-55a7-a47d-cf8d9a3bc3d0
+      version: -1
+      name: Get the certificate by fingerprint
+      description: Exact lookup, including machine installations and TLS server endpoints. Skipped when
+        no Certificate Manager SaaS instance is enabled.
+      script: '|||cmsaas-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: inputs.CertificateFingerprint
+      include_machine_details:
+        simple: 'true'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: ba346f62-15bf-58f9-882a-9be2b0ed9330
+    type: regular
+    task:
+      id: ba346f62-15bf-58f9-882a-9be2b0ed9330
+      version: -1
+      name: Search for the certificate by common name
+      description: Fallback path for indicators that are not a fingerprint. Skipped when no Certificate
+        Manager SaaS instance is enabled.
+      script: '|||cmsaas-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      common_name:
+        complex:
+          root: inputs.CertificateCommonName
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 8608eaee-8d75-5599-a76e-eed303a250ce
+    type: condition
+    task:
+      id: 8608eaee-8d75-5599-a76e-eed303a250ce
+      version: -1
+      name: Was a certificate resolved?
+      description: A malformed fingerprint comes back as an ordinary empty result rather than an error,
+        so an empty answer is reported to the analyst instead of being acted on.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '6'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.Fingerprint
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: aeb66eb8-55de-534c-a49c-35b1ba494d54
+    type: regular
+    task:
+      id: aeb66eb8-55de-534c-a49c-35b1ba494d54
+      version: -1
+      name: Enrich the certificate indicator
+      description: Runs the certificate reputation command so the indicator carries a DBot score and the
+        standard certificate fields, which other tools in the investigation can read.
+      script: '|||certificate'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '7'
+      '#none#':
+      - '7'
+    scriptarguments:
+      certificate:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 99e18323-a542-52d6-aac1-bfd33f497422
+    type: regular
+    task:
+      id: 99e18323-a542-52d6-aac1-bfd33f497422
+      version: -1
+      name: Record the certificate on the case
+      description: Writes the resolved certificate onto the case before any destructive action, so the
+        record of what was revoked survives independently of the command result.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      certmanagersaascertificateid:
+        complex:
+          root: CertManagerSaaS.Certificate.ID
+      certmanagersaasfingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      certmanagersaascommonname:
+        complex:
+          root: CertManagerSaaS.Certificate.CommonName
+      certmanagersaasexpirydate:
+        complex:
+          root: CertManagerSaaS.Certificate.ValidTo
+      certmanagersaasissuer:
+        complex:
+          root: CertManagerSaaS.Certificate.IssuerCommonName
+      certmanagersaasowningapplication:
+        complex:
+          root: CertManagerSaaS.Certificate.Applications.Name
+      certmanagersaasowningtsg:
+        complex:
+          root: CertManagerSaaS.Certificate.TSGID
+      certmanagersaasinstallationlocation:
+        complex:
+          root: CertManagerSaaS.Certificate.InstallationLocations
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: ff33b730-07d9-5f5e-b0c4-6c0b103a3b52
+    type: condition
+    task:
+      id: ff33b730-07d9-5f5e-b0c4-6c0b103a3b52
+      version: -1
+      name: Revoke this certificate?
+      description: Revocation is irreversible and breaks every service still presenting the certificate,
+        so an analyst confirms it. The installation list written onto the case in the previous task is
+        the blast radius they are being asked to accept.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      Revoke:
+      - '18'
+      Do not revoke:
+      - '13'
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Revoke this certificate? Revocation cannot be undone, and every machine installation and
+          TLS endpoint recorded on this case will start serving a revoked certificate.
+      methods: []
+      format: ''
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - Revoke
+      - Do not revoke
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 4bc33989-f875-5acd-8d6e-019ee151e731
+    type: regular
+    task:
+      id: 4bc33989-f875-5acd-8d6e-019ee151e731
+      version: -1
+      name: Revoke the certificate
+      description: Revokes the certificate by fingerprint. The revocation comment carries the Cortex case
+        identifier so the action is traceable from the Certificate Manager SaaS side as well.
+      script: '|||cmsaas-certificate-revoke'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '22'
+      '#none#':
+      - '10'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      reason:
+        complex:
+          root: inputs.RevocationReason
+      comment:
+        complex:
+          root: inputs.RevocationComment
+      using:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 9db5bc70-b44a-5a59-9d9c-19a59482fbf2
+    type: regular
+    task:
+      id: 9db5bc70-b44a-5a59-9d9c-19a59482fbf2
+      version: -1
+      name: Record the revocation on the case
+      description: Keeps the revocation result in the same case record.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.Certificate
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Revoked certificate
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 4192f56a-6fee-581d-961f-be70387f2c5b
+    type: condition
+    task:
+      id: 4192f56a-6fee-581d-961f-be70387f2c5b
+      version: -1
+      name: Request a replacement certificate?
+      description: A revoked certificate normally needs replacing in the same case.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '12'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.AutoRequestReplacement
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: c57b7555-2604-542b-8433-9128793dbfd4
+    type: playbook
+    task:
+      id: c57b7555-2604-542b-8433-9128793dbfd4
+      version: -1
+      name: Request a replacement certificate
+      description: Calls the reusable certificate request sub-playbook. Its outputs are shared globally
+        (separatecontext is false) so the replacement request identifier lands in this playbook's context
+        and can be recorded on the case.
+      playbookName: CertManagerSaaS Certificate Request
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      CommonName:
+        complex:
+          root: CertManagerSaaS.Certificate.CommonName
+      SubjectAlternativeNames:
+        complex:
+          root: CertManagerSaaS.Certificate.SubjectAlternativeNames
+      ApplicationID:
+        complex:
+          root: inputs.ApplicationID
+      CertificateIssuingTemplateID:
+        complex:
+          root: inputs.CertificateIssuingTemplateID
+      ExistingCertificateFingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      SourceIntegration:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceBrand
+      SourceInstance:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceInstance
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: ff71da4a-6db7-5382-8a9c-e272ebe31ca7
+    type: regular
+    task:
+      id: ff71da4a-6db7-5382-8a9c-e272ebe31ca7
+      version: -1
+      name: Summarize the response on the case
+      description: Single convergence point, so the case always ends with a statement of what was and
+        was not done.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Replacement certificate request outcome
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 188,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 97d16b26-45fd-52a8-b29d-a7970222764f
+    type: title
+    task:
+      id: 97d16b26-45fd-52a8-b29d-a7970222764f
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 349,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: ad3da7dc-6892-4962-93d2-3ee84188af63
+    type: regular
+    task:
+      id: ad3da7dc-6892-4962-93d2-3ee84188af63
+      version: -1
+      name: Get the certificate by fingerprint (NGTS)
+      description: 'Exact lookup, including machine installations and TLS server endpoints. Next-Gen Trust
+        Security variant: skipped when no NGTS instance is enabled. Runs after the Certificate Manager
+        SaaS lookup, so when both tenants hold the same certificate the Next-Gen Trust Security result
+        wins.'
+      script: '|||ngts-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: inputs.CertificateFingerprint
+      include_machine_details:
+        simple: 'true'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: c820c775-cea9-4bc1-8cb5-5f85b2cf4920
+    type: regular
+    task:
+      id: c820c775-cea9-4bc1-8cb5-5f85b2cf4920
+      version: -1
+      name: Search for the certificate by common name (NGTS)
+      description: 'Fallback path for indicators that are not a fingerprint. Next-Gen Trust Security variant:
+        skipped when no NGTS instance is enabled. Runs after the Certificate Manager SaaS lookup, so when
+        both tenants hold the same certificate the Next-Gen Trust Security result wins.'
+      script: '|||ngts-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      common_name:
+        complex:
+          root: inputs.CertificateCommonName
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: f0cb4cb7-b5cd-421c-a9bd-e9e50f2489f0
+    type: regular
+    task:
+      id: f0cb4cb7-b5cd-421c-a9bd-e9e50f2489f0
+      version: -1
+      name: Revoke the certificate (NGTS)
+      description: Revokes the certificate by fingerprint. The revocation comment carries the Cortex case
+        identifier so the action is traceable from the Certificate Manager SaaS side as well.
+      script: '|||ngts-certificate-revoke'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '22'
+      '#none#':
+      - '10'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      reason:
+        complex:
+          root: inputs.RevocationReason
+      comment:
+        complex:
+          root: inputs.RevocationComment
+      using:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 3a3f1fea-6d4a-4437-9e5a-ea348e1e5427
+    type: condition
+    task:
+      id: 3a3f1fea-6d4a-4437-9e5a-ea348e1e5427
+      version: -1
+      name: Which integration found the certificate?
+      description: Revokes through the integration that returned the certificate, so a certificate held
+        by Next-Gen Trust Security is never sent to a Certificate Manager SaaS tenant, or the reverse.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      Next-Gen Trust Security:
+      - '17'
+      '#default#':
+      - '9'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: Next-Gen Trust Security
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.SourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: NextGenTrustSecurity
+  '19':
+    id: '19'
+    taskid: a93147a2-112f-4444-9bfd-762d1ff6a5b7
+    type: condition
+    task:
+      id: a93147a2-112f-4444-9bfd-762d1ff6a5b7
+      version: -1
+      name: Was exactly one certificate resolved?
+      description: Revocation is irreversible, so it is offered only when the lookup resolved exactly
+        one certificate. Several matches - for example a renewed certificate sharing the common name -
+        must be narrowed to a fingerprint first.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '8'
+      '#default#':
+      - '20'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CertManagerSaaS.Certificate.Fingerprint
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+  '20':
+    id: '20'
+    taskid: 54f9baba-e500-4195-9ef3-7bae2a0125c9
+    type: regular
+    task:
+      id: 54f9baba-e500-4195-9ef3-7bae2a0125c9
+      version: -1
+      name: Report that several certificates matched
+      description: Explains why revocation was not offered.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Print
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      value:
+        simple: Several certificates matched this case, so revocation was not offered. Re-run the playbook
+          with the exact CertificateFingerprint of the certificate to revoke.
+  '21':
+    id: '21'
+    taskid: 82c6229c-63aa-4878-8fad-d69e7c33a95a
+    type: regular
+    task:
+      id: 82c6229c-63aa-4878-8fad-d69e7c33a95a
+      version: -1
+      name: Clear stale Certificate and revoke-error data
+      description: Removes certificate data left in the incident context by an earlier run, so every check
+        and action below sees only this run's lookup.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.Certificate,ErrorEntries
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: fd568936-4ed7-42f4-ad7a-5d4ab8d6993c
+    type: regular
+    task:
+      id: fd568936-4ed7-42f4-ad7a-5d4ab8d6993c
+      version: -1
+      name: Read why the revoke failed
+      description: Collects the error of the failed revoke task, so the case summary can show the reason.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: 146fc8ae-dd18-4eb6-b019-db5a244e2091
+    type: regular
+    task:
+      id: 146fc8ae-dd18-4eb6-b019-db5a244e2091
+      version: -1
+      name: Report the failed revoke on the case
+      description: Writes the revoke failure and its reason into the case summary. No replacement is requested.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      value:
+        complex:
+          root: ErrorEntries
+          transformers:
+          - operator: FirstArrayElement
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "### Revoke failed\nThe certificate was not revoked, and no replacement was\
+                    \ requested.\n\n**Reason:** "
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3480,
+        "width": 940,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CertificateFingerprint
+  value:
+    simple: ${incident.certmanagersaasfingerprint}
+  required: false
+  description: The SHA-1 fingerprint of the compromised certificate. Defaults to the fingerprint mapped
+    onto a fetched issue. The natural key, and the only digest revocation accepts - prefer it over the
+    common name.
+  playbookInputQuery: null
+- key: CertificateCommonName
+  value:
+    simple: ${incident.certmanagersaascommonname}
+  required: false
+  description: The common name to search on when no fingerprint is available.
+  playbookInputQuery: null
+- key: RevocationReason
+  value:
+    simple: KEY_COMPROMISE
+  required: false
+  description: The revocation reason, passed to the command's "reason" argument. Certificate Manager SaaS
+    accepts UNSPECIFIED, KEY_COMPROMISE, AFFILIATION_CHANGED, SUPERSEDED and CESSATION_OF_OPERATION. Other
+    RFC 5280 reasons are rejected by the API.
+  playbookInputQuery: null
+- key: RevocationComment
+  value:
+    simple: Revoked by Cortex (case ${incident.id})
+  required: false
+  description: Free text stored with the revocation, passed to the command's "comment" argument. Carries
+    the Cortex case identifier so the action is traceable from Certificate Manager SaaS back to Cortex.
+    The Next-Gen Trust Security gateway's web filter rejects some wordings (for example "Revoked in Cortex
+    case 123"), so test a changed comment before relying on it.
+  playbookInputQuery: null
+- key: AutoRequestReplacement
+  value:
+    simple: 'true'
+  required: false
+  description: Set to true to request a replacement certificate as soon as the revocation succeeds.
+  playbookInputQuery: null
+- key: ApplicationID
+  value: {}
+  required: false
+  description: The identifier of the Certificate Manager SaaS application the replacement certificate
+    is requested for. Required for Certificate Manager SaaS; not used by Next-Gen Trust Security.
+  playbookInputQuery: null
+- key: CertificateIssuingTemplateID
+  value: {}
+  required: false
+  description: The identifier of the Certificate Manager SaaS issuing template the replacement is issued
+    under. Required by the request sub-playbook.
+  playbookInputQuery: null
+outputs:
+- contextPath: CertManagerSaaS.Certificate.Fingerprint
+  description: The fingerprint of the certificate that was acted on.
+  type: string
+- contextPath: CertManagerSaaS.Certificate.Status
+  description: The Certificate Manager SaaS status of the certificate after revocation.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.Succeeded
+  description: Whether a replacement certificate was issued.
+  type: boolean
+- contextPath: CertManagerSaaS.CertificateRequest.ID
+  description: The identifier of the replacement certificate request.
+  type: string
+tests:
+- CertificateManagerSaaS - Test
+fromversion: 6.10.0
