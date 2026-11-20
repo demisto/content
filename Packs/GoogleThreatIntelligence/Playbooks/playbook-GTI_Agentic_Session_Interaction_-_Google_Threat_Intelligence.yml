@@ -1,0 +1,1286 @@
+id: GTI Agentic Session Interaction - Google Threat Intelligence
+version: -1
+name: GTI Agentic Session Interaction - Google Threat Intelligence
+description: This playbook interacts with the Google Threat Intelligence agent through a GTI Agentic Session. It asks the analyst for the message when it is not provided, posts the message to the provided session, or asks the analyst whether to continue an existing session or to create a new one, and displays the answer of the agent. It then asks the analyst whether to send a follow-up message and, if so, asks for the next message after every answer, until the analyst declines or submits an empty message. Finally, it retrieves the complete conversation of the session and optionally shares the session. The playbook supports up to 100 follow-up messages after the first message.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a69a1d8-c5b2-457b-8df5-54d85eb14469
+    type: start
+    task:
+      id: 1a69a1d8-c5b2-457b-8df5-54d85eb14469
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ff01404d-c971-4444-8e36-5cadd6460838
+    type: regular
+    task:
+      id: ff01404d-c971-4444-8e36-5cadd6460838
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: GTIAgenticSessionID,GTIAgenticSessionMessage,GTIAgenticSessionConversationEnded,Continue the Conversation,Select the Session,Provide the Message,GoogleThreatIntelligenceAgentic.Session,GoogleThreatIntelligenceAgentic.SessionToken,GoogleThreatIntelligenceAgentic.PageToken.Session
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4dcc9d50-a900-4397-85b5-8dc7ac245dca
+    type: condition
+    task:
+      id: 4dcc9d50-a900-4397-85b5-8dc7ac245dca
+      version: -1
+      name: Is Google Threat Intelligence - Agentic integration enabled?
+      description: Checks whether the Google Threat Intelligence - Agentic integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleThreatIntelligenceAgentic
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4d6bde22-d242-4afc-8347-23c409aaa477
+    type: regular
+    task:
+      id: 4d6bde22-d242-4afc-8347-23c409aaa477
+      version: -1
+      name: Integration is not enabled
+      description: Reports that the Google Threat Intelligence - Agentic integration is not enabled.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      message:
+        simple: The Google Threat Intelligence - Agentic integration is not enabled. Enable an instance and rerun the playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 724e7e2a-0884-4513-82d8-dd42315352c3
+    type: condition
+    task:
+      id: 724e7e2a-0884-4513-82d8-dd42315352c3
+      version: -1
+      name: Is the Session ID provided?
+      description: Checks whether the playbook inputs include the ID of an existing GTI Agentic Session to continue.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SessionID
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ba5a22c5-8e84-4d30-8b06-4c0fcf054b20
+    type: regular
+    task:
+      id: ba5a22c5-8e84-4d30-8b06-4c0fcf054b20
+      version: -1
+      name: Create the session
+      description: Creates a new GTI Agentic Session by sending the message to the Google Threat Intelligence agent.
+      script: '|||gti-agentic-session-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.EntryID
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: Provide the Message.Answers.1
+                iscontext: true
+          - operator: trim
+      message:
+        simple: ${GTIAgenticSessionMessage}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2b7539fb-da0d-4a25-8eb0-cf40574a9f97
+    type: regular
+    task:
+      id: 2b7539fb-da0d-4a25-8eb0-cf40574a9f97
+      version: -1
+      name: Store the provided Session ID
+      description: Stores the ID of the GTI Agentic Session that the playbook inputs include.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: GTIAgenticSessionID
+      value:
+        complex:
+          root: inputs.SessionID
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 803b7cd0-70c3-4d5e-88e3-0c7e91bbe66f
+    type: regular
+    task:
+      id: 803b7cd0-70c3-4d5e-88e3-0c7e91bbe66f
+      version: -1
+      name: Store the created Session ID
+      description: Stores the ID of the GTI Agentic Session that the playbook created.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: GTIAgenticSessionID
+      value:
+        complex:
+          root: GoogleThreatIntelligenceAgentic.Session
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 044f7ea5-1fe9-4eee-800f-c5ba30eb0b3f
+    type: regular
+    task:
+      id: 044f7ea5-1fe9-4eee-800f-c5ba30eb0b3f
+      version: -1
+      name: Post the message
+      description: Sends the message to the Google Threat Intelligence agent in the existing GTI Agentic Session.
+      script: '|||gti-agentic-session-message-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.EntryID
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: Provide the Message.Answers.1
+                iscontext: true
+          - operator: trim
+      message:
+        simple: ${GTIAgenticSessionMessage}
+      session_id:
+        simple: ${GTIAgenticSessionID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6030387d-42b3-4a9c-8ef7-ff4f42c96bc1
+    type: regular
+    task:
+      id: 6030387d-42b3-4a9c-8ef7-ff4f42c96bc1
+      version: -1
+      name: Display the answer
+      description: Displays the latest answer of the Google Threat Intelligence agent in the War Room, rendered as markdown.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      value:
+        complex:
+          root: GoogleThreatIntelligenceAgentic.Session.events
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: GoogleThreatIntelligenceAgentic.Session.events.message_type
+                iscontext: true
+              right:
+                value:
+                  simple: AGENT_FINAL_RESPONSE
+          accessor: agent_final_response.widgets.markdown_text_widget.text
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 56b5709a-2c70-4562-8bf3-6b87cbfd9ee3
+    type: condition
+    task:
+      id: 56b5709a-2c70-4562-8bf3-6b87cbfd9ee3
+      version: -1
+      name: Do you want to send a follow-up message?
+      description: Asks the analyst whether to send a follow-up message to the Google Threat Intelligence agent, or to end the conversation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "13"
+      "Yes":
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you want to send a follow-up message to the Google Threat Intelligence agent in the GTI Agentic Session ${GTIAgenticSessionID}? Select No to end the conversation.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 754845cf-9572-4e6f-8b74-332ae664e069
+    type: playbook
+    task:
+      id: 754845cf-9572-4e6f-8b74-332ae664e069
+      version: -1
+      name: GTI Agentic Session Conversation Turn - Google Threat Intelligence
+      description: Performs the turns of the conversation with the Google Threat Intelligence agent until the analyst ends the conversation, up to 100 follow-up messages.
+      playbookName: GTI Agentic Session Conversation Turn - Google Threat Intelligence
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      SessionID:
+        simple: ${GTIAgenticSessionID}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GTIAgenticSessionConversationEnded
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 48fe2627-7486-4e33-87bd-b96f2c0d5f8d
+    type: regular
+    task:
+      id: 48fe2627-7486-4e33-87bd-b96f2c0d5f8d
+      version: -1
+      name: Retrieve the final session
+      description: Retrieves the details of the GTI Agentic Session, along with its complete conversation.
+      script: '|||gti-agentic-session-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      session_id:
+        simple: ${GTIAgenticSessionID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2d0a71bd-2131-401f-8afa-0caef8d47c82
+    type: condition
+    task:
+      id: 2d0a71bd-2131-401f-8afa-0caef8d47c82
+      version: -1
+      name: Do you want to share the session?
+      description: Asks the analyst whether to retrieve a share token of the GTI Agentic Session.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "17"
+      "Yes":
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you want to retrieve a share token of the GTI Agentic Session ${GTIAgenticSessionID}? Anyone who has the share token can import the session along with its conversation.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 29adde3e-a082-430e-8c3f-b38e0f6b654b
+    type: regular
+    task:
+      id: 29adde3e-a082-430e-8c3f-b38e0f6b654b
+      version: -1
+      name: Share the session
+      description: Retrieves a share token of the GTI Agentic Session and displays it in the War Room. The share token is also stored in the incident context, hence it is visible to everyone with access to the incident.
+      script: '|||gti-agentic-session-token-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      session_id:
+        simple: ${GTIAgenticSessionID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 82c1e237-c51f-482d-8c3f-72766f7cf959
+    type: title
+    task:
+      id: 82c1e237-c51f-482d-8c3f-72766f7cf959
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 670fde29-a9f5-498c-836d-8f6d70271f79
+    type: condition
+    task:
+      id: 670fde29-a9f5-498c-836d-8f6d70271f79
+      version: -1
+      name: Do you want to continue an existing session?
+      description: Asks the analyst whether to continue an existing GTI Agentic Session or to create a new one.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create New Session:
+      - "5"
+      Select Existing Session:
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: The Session ID is not provided. Do you want to select an existing GTI Agentic Session to continue, or to create a new GTI Agentic Session?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Select Existing Session
+      - Create New Session
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0167ba30-67b4-4237-8e9d-e261671a097e
+    type: regular
+    task:
+      id: 0167ba30-67b4-4237-8e9d-e261671a097e
+      version: -1
+      name: Retrieve the sessions
+      description: Retrieves the GTI Agentic Sessions of the user that owns the configured API key.
+      script: '|||gti-agentic-session-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9ab32ef3-2d84-4bd2-816e-47d954f392cb
+    type: collection
+    task:
+      id: 9ab32ef3-2d84-4bd2-816e-47d954f392cb
+      version: -1
+      name: Select the Session
+      description: Asks the analyst which of the retrieved GTI Agentic Sessions to continue, or the ID of the session to continue when it is not listed.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which session do you want to continue?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: GoogleThreatIntelligenceAgentic.Session
+            transformers:
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: .=val.title + ' | ' + val.id
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The title and ID of the GTI Agentic Session to continue.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: If the session is not listed above, provide the ID of the session to continue.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The ID of the GTI Agentic Session to continue. It is used only when no session is selected in the previous question.
+        readonly: false
+      title: Select the Session
+      description: Select the GTI Agentic Session to continue, or provide its ID when it is not listed.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f0022a0e-ac2c-4daa-8824-cac02c9d0631
+    type: condition
+    task:
+      id: f0022a0e-ac2c-4daa-8824-cac02c9d0631
+      version: -1
+      name: Is the session selected?
+      description: Checks whether the analyst selected a session from the retrieved GTI Agentic Sessions or provided the ID of the session to continue.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select the Session.Answers.0
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Select the Session.Answers.1
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 14f3452f-625c-403a-83ab-805e15507980
+    type: regular
+    task:
+      id: 14f3452f-625c-403a-83ab-805e15507980
+      version: -1
+      name: Store the selected Session ID
+      description: Stores the ID of the GTI Agentic Session that the analyst selected, or the ID that the analyst provided when no session is selected.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: GTIAgenticSessionID
+      value:
+        complex:
+          root: Select the Session.Answers.0
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: Select the Session.Answers.1
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: '|'
+          - operator: LastArrayElement
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 70ffea52-750f-4f90-870f-2f33b7764b44
+    type: regular
+    task:
+      id: 70ffea52-750f-4f90-870f-2f33b7764b44
+      version: -1
+      name: No session selected
+      description: Reports that the analyst did not select or provide a valid GTI Agentic Session to continue.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      message:
+        simple: No valid GTI Agentic Session was selected or provided. Exiting the playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c8210051-c786-4819-8506-63e2c8c497b8
+    type: condition
+    task:
+      id: c8210051-c786-4819-8506-63e2c8c497b8
+      version: -1
+      name: Is the message provided?
+      description: Checks whether the playbook inputs include the message to send to the Google Threat Intelligence agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Message
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d1d38762-f42a-47a9-8c61-70ad1719cb24
+    type: collection
+    task:
+      id: d1d38762-f42a-47a9-8c61-70ad1719cb24
+      version: -1
+      name: Provide the Message
+      description: Asks the analyst for the message to send to the Google Threat Intelligence agent, and for the entry IDs of the files to attach to it.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide the message to send to the Google Threat Intelligence agent.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The message to send to the Google Threat Intelligence agent.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide the War Room entry IDs of the files to attach to the message, if any.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: A comma-separated list of the War Room entry IDs of the files to attach to the message as artifacts. It is ignored when the playbook inputs include the entry IDs.
+        readonly: false
+      title: Provide the Message
+      description: Provide the message to send to the Google Threat Intelligence agent, along with the files to attach to it.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7cf1b49f-0656-4417-80d8-110e29203f17
+    type: regular
+    task:
+      id: 7cf1b49f-0656-4417-80d8-110e29203f17
+      version: -1
+      name: Store the message
+      description: Stores the message to send to the Google Threat Intelligence agent, from the playbook inputs or from the answer of the analyst.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: GTIAgenticSessionMessage
+      value:
+        complex:
+          root: inputs.Message
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: Provide the Message.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e9ad3387-9fac-4777-857b-4d489acb0d70
+    type: regular
+    task:
+      id: e9ad3387-9fac-4777-857b-4d489acb0d70
+      version: -1
+      name: Validate the Session ID
+      description: Retrieves the GTI Agentic Session that the analyst selected or provided, to verify that it exists before the message is sent to it.
+      script: '|||gti-agentic-session-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      session_id:
+        simple: ${GTIAgenticSessionID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_Yes": 0.45,
+      "11_13_No": 0.53,
+      "15_16_Yes": 0.61,
+      "15_17_No": 0.1,
+      "18_19_Select Existing Session": 0.5,
+      "18_5_Create New Session": 0.49,
+      "21_22_yes": 0.6,
+      "21_24_#default#": 0.45,
+      "25_26_#default#": 0.45,
+      "25_27_yes": 0.51,
+      "2_25_yes": 0.5,
+      "2_3_#default#": 0.15,
+      "4_18_#default#": 0.41,
+      "4_6_yes": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3855,
+        "width": 1800,
+        "x": -340,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: SessionID
+  value: {}
+  required: false
+  description: |-
+    The ID of an existing GTI Agentic Session to continue.
+
+    Note: When it is not provided, the playbook asks the analyst whether to select an existing session from up to 50 sessions, or to create a new agentic session.
+  playbookInputQuery:
+- key: Message
+  value: {}
+  required: false
+  description: |-
+    The message to send to the Google Threat Intelligence agent.
+
+    Note: When it is not provided, the playbook asks the analyst for the message.
+  playbookInputQuery:
+- key: EntryID
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of the War Room entry IDs of the files to attach to the message as artifacts.
+
+    Note: When the message is not provided, the playbook also asks the analyst for the entry IDs, which are used only when this input is not provided.
+  playbookInputQuery:
+outputs:
+- contextPath: GoogleThreatIntelligenceAgentic.Session
+  description: The details of the GTI Agentic Session, including the complete conversation.
+  type: unknown
+- contextPath: GoogleThreatIntelligenceAgentic.SessionToken
+  description: |-
+    The share token of the GTI Agentic Session, when the analyst chooses to share the session.
+
+    Note: The share token is displayed in the War Room and stored in the incident context, hence it is visible to everyone with access to the incident. Anyone who has the share token can import the session along with its conversation.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
