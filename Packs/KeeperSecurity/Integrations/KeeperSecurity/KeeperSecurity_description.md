@@ -2,27 +2,18 @@
 
 ## Authentication
 
-Use basic authentication to communicate with the product. Supply your username and password of the account that you want to use.
-To create a new user:
+The integration uses a Keeper Admin REST API key. Creating a key requires Enterprise Root Administrator permissions.
 
-1. Log in in as admin in [Keeper Admin Console](https://keepersecurity.com/console/).
-2. Go to the **Admin** panel, found in the left side bar.
-3. Press on **Add User**, and complete the registration process.
-4. Once the user has been created, press on the **Edit** icon, and in the **User Actions** dropdown, click **Disable 2FA** (2FA is currently not supported).
+1. Log in to the [Keeper Admin Console](https://keepersecurity.com/console/).
+2. Go to **Integrations** > **API Keys** and create a new key with the **SIEM** (read) scope.
+   Alternatively, in Keeper Commander run: `public-api-key generate --name "XSIAM" --integrations "SIEM:1" --expires 1y`
+3. Copy the key (it is shown only once) and paste it in the **API Key** field of the instance configuration.
 
-### Authentication Process
-
-In order to authenticate the configured user, the product uses a device registration process. In order to register a new device that will be used to authenticate the user, follow the following procedures:
-
-1. Run the **!keeper-security-register-start** command.
-2. If the account does **not** have a configured device, then an authorization code will be sent to the configured email address.
-3. Run the **!keeper-security-register-complete** command with the acquired authorization code. If the account already has a registered device, run the command without supplying any arguments.
-4. Run the command **!keeper-security-register-test** to test that everything is working fine.
+When the key expires or is revoked, events stop being collected, so choose the expiration accordingly.
 
 ## Server Regions
 
-Use the URLs for the region that hosts your account:
-For more information, see the [Server Config File Options](https://docs.keeper.io/en/v/secrets-manager/commander-cli/commander-installation-setup/configuration#config-file-options)
+Use the URL of the region that hosts your account:
 
 - US Instance: <https://keepersecurity.com>
 - EU Instance: <https://keepersecurity.eu>
@@ -30,3 +21,9 @@ For more information, see the [Server Config File Options](https://docs.keeper.i
 - GOV Instance: <https://govcloud.keepersecurity.us>
 - CA Instance: <https://keepersecurity.ca>
 - JP Instance: <https://keepersecurity.jp>
+
+## Upgrading from the previous (Commander based) version
+
+The previous version authenticated with a username and password and a device registration flow. That flow, and the
+`keeper-security-register-*` commands, were removed. Replace the username and password with an API key as described above.
+The event fields changed, see the release notes.
