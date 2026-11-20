@@ -1,0 +1,14 @@
+{
+    "incidentId": "INC-2026-001",
+    "incidentName": "SQL Injection attack on /payments",
+    "status": "CLOSED",
+    "severity": "CRITICAL",
+    "score": 10.0,
+    "createdTime": "2026-03-18T11:47:02Z",
+    "updatedTime": "2026-03-20T05:41:36Z",
+    "closedTime": "2026-03-20T05:41:36Z",
+    "closedReason": "TRUE_POSITIVE",
+    "observationCount": 3,
+    "organizationId": "12345678-1234-1234-1234-123456789abc",
+    "url": "https://test.contrast.com/Contrast/cs/index.html#/12345678-1234-1234-1234-123456789abc/incidents/INC-2026-001"
+}

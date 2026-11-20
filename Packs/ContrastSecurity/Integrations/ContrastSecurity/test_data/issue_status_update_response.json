@@ -1,0 +1,18 @@
+{
+    "issueId": "ISS-2026-001",
+    "title": "SQL Injection from \"creditCard\" Parameter on \"/payments\" page",
+    "status": "CLOSED",
+    "severity": "CRITICAL",
+    "score": 10.0,
+    "applicationId": "12345678-1234-1234-1234-123456789abc",
+    "applicationName": "sample-payments-service",
+    "environments": [
+        "DEVELOPMENT"
+    ],
+    "incidentCount": 1,
+    "observationCount": 3,
+    "createdTime": "2026-03-18T11:47:02Z",
+    "updatedTime": "2026-03-20T05:41:36Z",
+    "closedTime": "2026-03-20T05:41:36Z",
+    "lastObservedTime": "2026-03-18T11:47:02Z"
+}

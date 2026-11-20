@@ -1,0 +1,77 @@
+{
+    "content": [
+        {
+            "issueId": "ISS-2026-001",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "dataTypes": [
+                "VULNERABILITY"
+            ],
+            "targets": [
+                "LIBRARY"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 0,
+            "observationCount": 40,
+            "createdTime": "2026-07-16T23:42:33.205Z",
+            "updatedTime": "2026-10-22T16:13:04.763Z",
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "applicationLanguage": null,
+            "applicationName": "sample-cargocats-dataservice",
+            "closedTime": null,
+            "environments": [
+                "QA"
+            ],
+            "httpRoute": "",
+            "lastAttackedTime": null,
+            "lastObservedTime": "2026-10-22T16:13:04.527Z",
+            "repositoryId": "",
+            "repositoryName": null,
+            "score": 8.9,
+            "title": "CVEs in tomcat-embed-websocket 10.1.41"
+        },
+        {
+            "issueId": "ISS-2026-002",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "dataTypes": [
+                "VULNERABILITY",
+                "BEHAVIOR"
+            ],
+            "targets": [
+                "LIBRARY"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 0,
+            "observationCount": 52,
+            "createdTime": "2026-07-16T23:42:15.777Z",
+            "updatedTime": "2026-10-22T16:11:38.959Z",
+            "applicationId": "87654321-4321-4321-4321-cba987654321",
+            "applicationLanguage": null,
+            "applicationName": "sample-cargocats-frontgateservice",
+            "closedTime": null,
+            "environments": [
+                "QA"
+            ],
+            "httpRoute": "",
+            "lastAttackedTime": null,
+            "lastObservedTime": "2026-10-22T16:11:38.621Z",
+            "repositoryId": "",
+            "repositoryName": null,
+            "score": 8.5,
+            "title": "CVEs in log4j-slf4j-impl 2.14.1"
+        }
+    ],
+    "hasMore": true,
+    "cursor": "test-next-page-cursor"
+}

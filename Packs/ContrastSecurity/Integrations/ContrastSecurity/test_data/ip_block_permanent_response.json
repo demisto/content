@@ -1,0 +1,12 @@
+{
+    "uuid": "87654321-4321-4321-4321-cba987654321",
+    "ip": "2001:db8::1",
+    "name": "XSOAR - 2001:db8::1",
+    "trusted": false,
+    "expirationTime": null,
+    "environments": {
+        "development": true,
+        "qa": true,
+        "production": true
+    }
+}

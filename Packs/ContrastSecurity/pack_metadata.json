@@ -1,0 +1,37 @@
+{
+    "name": "Contrast Security",
+    "description": "Contrast Security provides application security by detecting vulnerabilities as issues and tracking real-time attack activity as incidents. It correlates runtime observations into issues for remediation and generates incidents when those vulnerabilities are actively exploited, helping teams prioritize fixes based on actual attack activity and risk.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Contrast Security",
+    "url": "https://support.contrastsecurity.com/",
+    "email": "support@contrastsecurity.com",
+    "created": "2026-03-27T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Breach",
+        "Incident Response",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Incident Response"
+    ],
+    "keywords": [
+        "Breach Notification",
+        "Incident Response",
+        "Application Detection and Response",
+        "Application Security"
+
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "id": "incident_contrastsecuritycves",
+    "version": -1,
+    "name": "Contrast Security CVEs",
+    "ownerOnly": false,
+    "description": "The CVEs associated with the Contrast Security issue.",
+    "cliName": "contrastsecuritycves",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "id",
+            "displayName": "CVE ID",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 180,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "url",
+            "displayName": "URL",
+            "type": "url",
+            "orgType": "url",
+            "required": false,
+            "script": "",
+            "width": 400,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

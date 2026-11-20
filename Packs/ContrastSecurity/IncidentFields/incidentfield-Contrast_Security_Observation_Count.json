@@ -1,0 +1,33 @@
+{
+    "id": "incident_contrastsecurityobservationcount",
+    "version": -1,
+    "name": "Contrast Security Observation Count",
+    "ownerOnly": false,
+    "description": "The number of observations associated with the Contrast Security incident or issue.",
+    "cliName": "contrastsecurityobservationcount",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Incident",
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,4 @@
+### Observation Information
+|Observation ID|Issue ID|Type|Severity|Rule Name|Rule ID|Result|Application Name|Application ID|Application Language|Server|Server ID|Environment|Target|Technique|Detected|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [C-11111111-2222-3333-4444-555555555555](https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/C-11111111-2222-3333-4444-555555555555) | [ISS-2026-0002](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-0002) | Behavior | High | CVE Shield | cve-shield-v2 | Exposed | [sample-webhook-service](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=app-12345678-aaaa-bbbb-cccc-1234567890ab) | app-12345678-aaaa-bbbb-cccc-1234567890ab | JAVA | sample-server-agent | 1001 | QA | Library | Runtime | 2026-10-06T18:39:11.802Z |

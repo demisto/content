@@ -1,0 +1,199 @@
+{
+    "SINGLE_ISSUE_DATA": [
+        {
+            "issueId": "issue-123",
+            "title": "SQL Injection",
+            "status": "OPEN",
+            "severity": "CRITICAL",
+            "score": 9.5,
+            "applicationId": "app-123",
+            "applicationName": "MyApp",
+            "observationCount": 3,
+            "lastObservedTime": "2026-05-01T11:00:00Z",
+            "environments": [
+                "PRODUCTION",
+                "QA"
+            ],
+            "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-123"
+        },
+        {
+            "issueId": "issue-456",
+            "title": "Cross-Site Scripting",
+            "status": null,
+            "severity": null,
+            "score": null,
+            "applicationId": "app-123",
+            "applicationName": "MyApp",
+            "lastObservedTime": "2026-05-02T11:00:00Z",
+            "environments": [
+                "PRODUCTION"
+            ],
+            "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-456"
+        }
+    ],
+    "SINGLE_ISSUE_GRID_DATA": [
+        {
+            "severity": "Critical",
+            "score": 9.5,
+            "title": "SQL Injection",
+            "issueId": "issue-123",
+            "status": "Open",
+            "applicationName": "MyApp",
+            "applicationId": "app-123",
+            "observationCount": "3",
+            "lastObservedTime": "2026-05-01T11:00:00Z",
+            "environments": "PRODUCTION, QA",
+            "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-123"
+        },
+        {
+            "severity": "",
+            "title": "Cross-Site Scripting",
+            "issueId": "issue-456",
+            "status": "",
+            "applicationName": "MyApp",
+            "applicationId": "app-123",
+            "observationCount": "",
+            "lastObservedTime": "2026-05-02T11:00:00Z",
+            "environments": "PRODUCTION",
+            "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-456"
+        }
+    ],
+    "PAGE1_RESULT": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-1",
+                        "title": "Issue 1",
+                        "status": "OPEN",
+                        "severity": "CRITICAL",
+                        "score": 9.5,
+                        "applicationId": "app-1",
+                        "applicationName": "MyApp",
+                        "observationCount": 1,
+                        "lastObservedTime": "2026-05-01T11:00:00Z",
+                        "environments": [
+                            "PRODUCTION"
+                        ],
+                        "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-1"
+                    }
+                ],
+                "hasMore": true,
+                "cursor": "cursor-2"
+            }
+        }
+    ],
+    "PAGE2_RESULT": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-2",
+                        "title": "Issue 2",
+                        "status": "OPEN",
+                        "severity": "HIGH",
+                        "score": 8.0,
+                        "applicationId": "app-1",
+                        "applicationName": "MyApp",
+                        "observationCount": 1,
+                        "lastObservedTime": "2026-05-01T13:00:00Z",
+                        "environments": [],
+                        "issueLink": "https://example.com/Contrast/cs/index.html#/org-123/issues/issue-2"
+                    }
+                ],
+                "hasMore": false,
+                "cursor": "cursor-3"
+            }
+        }
+    ],
+    "SETINCIDENT_RESULT": [
+        {
+            "Type": "note",
+            "Contents": {}
+        }
+    ],
+    "SINGLE_PAGE_RESULT": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-1",
+                        "title": "Test Issue"
+                    }
+                ],
+                "hasMore": false
+            }
+        }
+    ],
+    "EMPTY_CONTENT_RESULT": [
+        {
+            "Type": 1,
+            "ContentsFormat": "text",
+            "Contents": "No issues were found for the given filters."
+        }
+    ],
+    "LARGE_PAGINATION_RESULT": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-1"
+                    }
+                ],
+                "hasMore": true,
+                "cursor": "cursor-2"
+            }
+        }
+    ],
+    "HAS_MORE_EMPTY_CURSOR_RESULT": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-1"
+                    }
+                ],
+                "hasMore": true,
+                "cursor": ""
+            }
+        }
+    ],
+    "PAGE1_MULTI": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-1"
+                    }
+                ],
+                "hasMore": true,
+                "cursor": "cursor-2"
+            }
+        }
+    ],
+    "PAGE2_MULTI": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-2"
+                    }
+                ],
+                "hasMore": true,
+                "cursor": "cursor-3"
+            }
+        }
+    ],
+    "PAGE3_MULTI": [
+        {
+            "Contents": {
+                "content": [
+                    {
+                        "issueId": "issue-3"
+                    }
+                ],
+                "hasMore": false
+            }
+        }
+    ]
+}

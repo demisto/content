@@ -1,0 +1,11 @@
+{
+    "canBlock": true,
+    "canBlockAtPerimeter": true,
+    "devMode": "MONITOR",
+    "isMonitorAtPerimeter": false,
+    "prodMode": "MONITOR",
+    "qaMode": "OFF",
+    "ruleDescription": "A vulnerability that allows users to control which files get opened and read by an application.",
+    "ruleId": "dummy-rule",
+    "ruleName": "Dummy Rule"
+}

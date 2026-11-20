@@ -1,0 +1,48 @@
+{
+    "incidentId": "INC-2026-252",
+    "organizationId": "test-org-id",
+    "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-252",
+    "status": "OPEN",
+    "observationCount": 3,
+    "createdTime": "2026-10-20T08:15:30.125Z",
+    "recommendedActions": "Configure Protect Rule.",
+    "recommendedRunbooks": [
+        "https://test.contrast.com/runbooks/sql-injection.md"
+    ],
+    "relatedRules": [
+        "sql-injection"
+    ],
+    "relatedApplications": [
+        {
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "applicationName": "dummy-application",
+            "language": "JAVA",
+            "applicationMetadata": {}
+        }
+    ],
+    "httpSourceIp": [
+        {
+            "ipAddress": "10.1.0.50",
+            "count": "3",
+            "blocked": false
+        }
+    ],
+    "servers": [
+        {
+            "id": "1001",
+            "hostname": "dummy-host-1",
+            "environment": null,
+            "operatingSystem": null
+        }
+    ],
+    "environments": [
+        "DEVELOPMENT"
+    ],
+    "closedReason": null,
+    "closedTime": null,
+    "incidentName": "SQL Injection from \"dummyParam\" Parameter on \"/dummy/attack\" page",
+    "score": 10.0,
+    "severity": "CRITICAL",
+    "summary": "Contrast observed the following suspicious value accessed the application through the \"dummyParam\" Parameter\n' OR '1'='1",
+    "updatedTime": "2026-10-20T08:20:45.310Z"
+}

@@ -1,0 +1,41 @@
+{
+    "observationId": "C-11111111-2222-3333-4444-555555555555",
+    "detectedTime": "2026-10-06T18:39:11.802Z",
+    "uiUrl": "https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/C-11111111-2222-3333-4444-555555555555",
+    "mitreCapec": null,
+    "agentVersion": null,
+    "application": {
+        "id": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+        "name": "sample-webhook-service"
+    },
+    "applicationId": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+    "applicationMetadata": null,
+    "attackPayload": {
+        "url": null,
+        "value": "spring-expression"
+    },
+    "codeLocation": null,
+    "dataType": "BEHAVIOR",
+    "denyListUuid": null,
+    "environment": "QA",
+    "httpRoute": null,
+    "issueId": "ISS-2026-0002",
+    "language": "JAVA",
+    "mitreTactics": null,
+    "organizationId": "11111111-aaaa-bbbb-cccc-111111111111",
+    "request": null,
+    "result": "EXPOSED",
+    "ruleId": "cve-shield-v2",
+    "ruleName": "CVE Shield",
+    "server": {
+        "id": "1001",
+        "name": "sample-server-agent"
+    },
+    "severity": "HIGH",
+    "sourceIp": null,
+    "target": "LIBRARY",
+    "technique": "RUNTIME",
+    "url": null,
+    "vectorAnalysis": null,
+    "virtualPatchUuid": null
+}
