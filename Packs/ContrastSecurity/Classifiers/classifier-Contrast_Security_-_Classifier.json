@@ -1,0 +1,19 @@
+{
+    "description": "Classify Contrast Security incidents and issues.",
+    "feed": false,
+    "id": "Contrast Security - Classifier",
+    "keyTypeMap": {
+        "contrast_security_incidentalert": "Contrast Security Incident",
+        "contrast_security_issuealert": "Contrast Security Issue"
+    },
+    "name": "Contrast Security - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "eventType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

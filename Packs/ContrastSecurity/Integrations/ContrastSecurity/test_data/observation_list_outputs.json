@@ -1,0 +1,153 @@
+{
+    "ContrastSecurity.Observation(val.observationId == obj.observationId)": [
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555551-1234567890",
+            "detectedTime": "2026-10-13T16:28:24.255Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "issueId": "ISS-2026-001",
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "SUSPICIOUS",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME",
+            "attackPayload": {
+                "url": "https://test-app.example.com/login",
+                "value": "/bin/sh -c : 10; id; whoami"
+            },
+            "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555551-1234567890",
+            "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001",
+            "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc"
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555552-1234567890",
+            "detectedTime": "2026-10-13T16:28:24.24Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "issueId": "ISS-2026-001",
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "SUSPICIOUS",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME",
+            "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555552-1234567890",
+            "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001",
+            "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc"
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555553-1234567890",
+            "detectedTime": "2026-10-13T16:17:57.667Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "PROBED",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME",
+            "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555553-1234567890",
+            "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc"
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555554-1234567890",
+            "detectedTime": "2026-10-13T16:17:57.651Z",
+            "dataType": "VULNERABILITY",
+            "environment": "QA",
+            "issueId": "ISS-2026-002",
+            "language": "JAVA",
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "ruleId": "library-vulnerability",
+            "ruleName": "Library CVEs",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "target": "LIBRARY",
+            "technique": "RUNTIME",
+            "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555554-1234567890",
+            "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-002"
+        }
+    ],
+    "ContrastSecurity.PageToken.Observation(val.name == obj.name)": {
+        "next_page_cursor": "",
+        "name": "contrastsecurity-incident-observation-list",
+        "has_next_page": false
+    }
+}

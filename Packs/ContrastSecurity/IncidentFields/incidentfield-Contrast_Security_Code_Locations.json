@@ -1,0 +1,78 @@
+{
+    "id": "incident_contrastsecuritycodelocations",
+    "version": -1,
+    "name": "Contrast Security Code Locations",
+    "ownerOnly": false,
+    "description": "The source code locations where Contrast detected the issue.",
+    "cliName": "contrastsecuritycodelocations",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "file",
+            "displayName": "File",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 400,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "line",
+            "displayName": "Line",
+            "type": "number",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "width": 80,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "snippet",
+            "displayName": "Snippet",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 450,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,505 @@
+id: Block IP - Contrast Security
+version: -1
+name: Block IP - Contrast Security
+description: This playbook blocks IP addresses related to a Contrast Security incident by creating organization-level IP policies based on the provided expiration time.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5981f2d-fffd-40b4-880d-2a7cdb8385b6
+    type: start
+    task:
+      id: e5981f2d-fffd-40b4-880d-2a7cdb8385b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c8f07f9a-2ec8-4c20-88b8-4e5efe66480d
+    type: condition
+    task:
+      id: c8f07f9a-2ec8-4c20-88b8-4e5efe66480d
+      version: -1
+      name: Is ContrastSecurity integration enabled?
+      description: Checks whether ContrastSecurity integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ContrastSecurity
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 633b543c-4fc0-4a25-a47f-4619069eba64
+    type: regular
+    task:
+      id: 633b543c-4fc0-4a25-a47f-4619069eba64
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: ip_data,ip_expiration
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e5eac0c5-d12d-4354-a0c1-612ee5ada965
+    type: condition
+    task:
+      id: e5eac0c5-d12d-4354-a0c1-612ee5ada965
+      version: -1
+      name: Check if the IP addresses are available in the input
+      description: Check if the IP addresses are available in the input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: ip_addresses
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bf40cb13-6bbf-4152-9c6d-734c520b5c37
+    type: condition
+    task:
+      id: bf40cb13-6bbf-4152-9c6d-734c520b5c37
+      version: -1
+      name: Check if the IP addresses are available in the incident data
+      description: Check if the IP addresses are available in the incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.contrastsecuritysourceip
+                accessor: ipAddress
+                transformers:
+                - operator: trim
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c8d98ed8-067e-4087-9915-d68bfd2d6c76
+    type: regular
+    task:
+      id: c8d98ed8-067e-4087-9915-d68bfd2d6c76
+      version: -1
+      name: Block the IP addresses
+      description: Block an IP address by creating an organization-level IP policy in Contrast Security.
+      script: '|||contrastsecurity-ip-block'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expiration_date:
+        complex:
+          root: inputs
+          accessor: expiration_date
+      extend-context:
+        simple: ip_data=ip::ip_expiration=expirationTime
+      ip_address:
+        complex:
+          root: inputs.ip_addresses
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.contrastsecuritysourceip.ipAddress
+                iscontext: true
+          - operator: trim
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+      policy_name_prefix:
+        complex:
+          root: inputs.incident_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.contrastsecurityincidentid
+                iscontext: true
+    continueonerror: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 878003a5-923e-4d45-acc9-a118ed247973
+    type: regular
+    task:
+      id: 878003a5-923e-4d45-acc9-a118ed247973
+      version: -1
+      name: War Room Entry for Blocked IP Address
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - note
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: ip_data
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: ConcatFormat
+            args:
+              ctx_data:
+                value:
+                  simple: .
+                iscontext: true
+              ctx_inc: {}
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: "${.=val.ip_data && val.ip_data.length ? 'Blocked IP Addresses\\n\\nIP Addresses: ' : 'No IP addresses were blocked.'}"
+              suffix:
+                value:
+                  simple: "${.=val.ip_data && val.ip_data.length ? '\\nExpiration Date: ' + ([].concat(val.ip_expiration || [])[0] || 'Forever') : ''}"
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1070
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9778fbd6-4b3a-4210-81d6-788d3203cb1a
+    type: regular
+    task:
+      id: 9778fbd6-4b3a-4210-81d6-788d3203cb1a
+      version: -1
+      name: IP addresses not found in incident data
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.incident_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.contrastsecurityincidentid
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'No IP addresses found in the playbook input or incident data for the Contrast Security incident ID: '
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 47bdc538-35db-4e86-830c-5dd73ab64d4f
+    type: title
+    task:
+      id: 47bdc538-35db-4e86-830c-5dd73ab64d4f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.5,
+      "1_8_#default#": 0.5,
+      "3_4_#default#": 0.5,
+      "3_5_yes": 0.53,
+      "4_7_#default#": 0.47,
+      "4_5_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 802.5,
+        "x": 110,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ip_addresses
+  value: {}
+  required: false
+  description: Specify the IP addresses to block. Supports comma-separated values. If not provided, the IP addresses are retrieved from the Contrast Security Source IP field of the incident.
+  playbookInputQuery:
+- key: incident_id
+  value: {}
+  required: false
+  description: Specify the ID of the incident. The incident ID is used as the prefix of the IP policy name.
+  playbookInputQuery:
+- key: expiration_date
+  value: {}
+  required: false
+  description: Specify the expiration duration for the blocked IP addresses. If not provided, the IP addresses are blocked permanently.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ip_addresses
+  - incident_id
+  - expiration_date
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

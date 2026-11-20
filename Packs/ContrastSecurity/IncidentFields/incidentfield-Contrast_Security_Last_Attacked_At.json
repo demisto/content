@@ -1,0 +1,32 @@
+{
+    "id": "incident_contrastsecuritylastattackedat",
+    "version": -1,
+    "name": "Contrast Security Last Attacked At",
+    "ownerOnly": false,
+    "description": "Timestamp when the most recent attack against the Contrast Security issue was detected.",
+    "cliName": "contrastsecuritylastattackedat",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

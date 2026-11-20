@@ -1,0 +1,32 @@
+{
+    "id": "incident_contrastsecuritytechniques",
+    "version": -1,
+    "name": "Contrast Security Techniques",
+    "ownerOnly": false,
+    "description": "The analysis techniques that detected the issue, such as runtime and static analysis.",
+    "cliName": "contrastsecuritytechniques",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,148 @@
+{
+    "content": [
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555551-1234567890",
+            "detectedTime": "2026-10-13T16:28:24.255Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "issueId": "ISS-2026-001",
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "SUSPICIOUS",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME",
+            "attackPayload": {
+                "url": "https://test-app.example.com/login",
+                "value": "/bin/sh -c : 10; id; whoami"
+            }
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555552-1234567890",
+            "detectedTime": "2026-10-13T16:28:24.24Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "issueId": "ISS-2026-001",
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "SUSPICIOUS",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME"
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555553-1234567890",
+            "detectedTime": "2026-10-13T16:17:57.667Z",
+            "application": {
+                "id": "12345678-1234-1234-1234-123456789abc",
+                "name": "sample-cargocats-frontgateservice"
+            },
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "dataType": "ATTACK",
+            "environment": "DEVELOPMENT",
+            "httpRoute": "/login",
+            "issueId": null,
+            "language": "JAVA",
+            "mitreTactics": [
+                {
+                    "id": "TA0040",
+                    "name": "Impact",
+                    "url": "https://attack.mitre.org/tactics/TA0040"
+                },
+                {
+                    "id": "TA0002",
+                    "name": "Execution",
+                    "url": "https://attack.mitre.org/tactics/TA0002"
+                }
+            ],
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": "PROBED",
+            "ruleId": "cmd-injection",
+            "ruleName": "Command Injection",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": "CRITICAL",
+            "sourceIp": "192.168.0.10",
+            "target": "CODE",
+            "technique": "RUNTIME"
+        },
+        {
+            "observationId": "A-D-11111111-2222-3333-4444-555555555554-1234567890",
+            "detectedTime": "2026-10-13T16:17:57.651Z",
+            "application": null,
+            "applicationId": null,
+            "dataType": "VULNERABILITY",
+            "environment": "QA",
+            "httpRoute": null,
+            "issueId": "ISS-2026-002",
+            "language": "JAVA",
+            "mitreTactics": null,
+            "organizationId": "abcdef12-3456-7890-abcd-ef1234567890",
+            "result": null,
+            "ruleId": "library-vulnerability",
+            "ruleName": "Library CVEs",
+            "server": {
+                "id": "12345",
+                "name": "sample-cargocats-frontgateservice-agent"
+            },
+            "severity": null,
+            "sourceIp": null,
+            "target": "LIBRARY",
+            "technique": "RUNTIME"
+        }
+    ],
+    "hasMore": false,
+    "cursor": null
+}

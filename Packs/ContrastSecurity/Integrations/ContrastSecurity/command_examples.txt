@@ -1,0 +1,9 @@
+!contrastsecurity-incident-comment-add comment="comment text" incident_id=INC-2026-1111
+!contrastsecurity-incident-status-update incident_id=INC-2026-80 status=Closed close_reason="Benign True Positive"
+!contrastsecurity-ip-block ip_address=192.168.1.100 policy_name_prefix=INC-2026-80 expiration_date="2 days"
+!contrastsecurity-adr-rule-update application_id=12345678-1234-1234-1234-123456789012 rule_id=path-traversal dev_mode="Monitor" qa_mode="Block at perimeter" prod_mode="Monitor"
+!contrastsecurity-issue-list page_size=2 statuses=Open severities=High
+!contrastsecurity-issue-get issue_id=ISS-2026-1326
+!contrastsecurity-issue-comment-add comment="this is test comment for issue" issue_id=ISS-2026-100
+!contrastsecurity-issue-status-update issue_id=ISS-2026-100 status=Closed
+!contrastsecurity-observation-get observation_id=A-D-11111111-2222-3333-4444-555555555555-1234567890

@@ -1,0 +1,523 @@
+{
+    "description": "Map incoming Contrast Security JSON data to XSOAR fields.",
+    "feed": false,
+    "id": "Contrast Security - Incoming Mapper",
+    "mapping": {
+        "Contrast Security Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Contrast Security Applications": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedApplications",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Close Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedReason",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Closed At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Contrast Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Created At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Environments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "environments",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Observation Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "observationCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Organization ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organizationUuid",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendedActions",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Runbooks": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendedRunbooks",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Rules": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedRules",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Servers": {
+                    "complex": {
+                        "filters": [],
+                        "root": "servers",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Source IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "httpSourceIp",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updatedTime",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentName",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "CRITICAL,HIGH,MEDIUM,LOW,NOTE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,3,2,1,0.5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Contrast Security Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Contrast Security Application ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application Language": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationLanguage",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Application Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "applicationName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Attack Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attackCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Blocked Attack Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "blockedAttackCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security CVEs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "cves",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security CWEs": {
+                    "complex": {
+                        "filters": [],
+                        "root": "cwes",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Closed At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Code Locations": {
+                    "complex": {
+                        "filters": [],
+                        "root": "codeLocations",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Contrast Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Created At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Data Types": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dataTypes",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Environments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "environments",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Exploited Attack Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "exploitedAttackCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security HTTP Route": {
+                    "complex": {
+                        "filters": [],
+                        "root": "httpRoute",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Incident Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "issueId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Issue Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Last Attacked At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastAttackedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Last Observed At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastObservedTime",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Observation Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "observationCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Organization ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organizationUuid",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Actions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "recommendation",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Recommended Runbooks": {
+                    "complex": {
+                        "filters": [],
+                        "root": "runbookUrl",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Repository ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "repositoryId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Repository Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "repositoryName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Risk": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Rule ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleId",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Rule Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ruleName",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Sensors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sensors",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Suspicious Attack Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "suspiciousAttackCount",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Targets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targets",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Techniques": {
+                    "complex": {
+                        "filters": [],
+                        "root": "techniques",
+                        "transformers": []
+                    }
+                },
+                "Contrast Security Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updatedTime",
+                        "transformers": []
+                    }
+                },
+                "External Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "issueId",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "CRITICAL,HIGH,MEDIUM,LOW,NOTE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,3,2,1,0.5"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Contrast Security - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

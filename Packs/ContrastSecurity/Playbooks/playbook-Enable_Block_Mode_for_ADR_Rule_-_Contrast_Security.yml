@@ -1,0 +1,787 @@
+id: Enable Block Mode for ADR Rule - Contrast Security
+version: -1
+name: Enable Block Mode for ADR Rule - Contrast Security
+description: This playbook updates the blocking mode of ADR rules for an application associated with a Contrast Security incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 798a59a9-b5bf-4325-8d68-ba61d3e28b09
+    type: start
+    task:
+      id: 798a59a9-b5bf-4325-8d68-ba61d3e28b09
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a2b26417-b245-498a-88e3-241e69ba5136
+    type: condition
+    task:
+      id: a2b26417-b245-498a-88e3-241e69ba5136
+      version: -1
+      name: Is ContrastSecurity integration enabled?
+      description: Checks whether ContrastSecurity integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ContrastSecurity
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a9732aa3-649c-4391-83f5-3bd1f74856ba
+    type: regular
+    task:
+      id: a9732aa3-649c-4391-83f5-3bd1f74856ba
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Selection of Application and ADR Rules,Selection of ADR Rule Blocking Mode
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ab4601fd-d907-40e2-8d49-c8373b210ba6
+    type: condition
+    task:
+      id: ab4601fd-d907-40e2-8d49-c8373b210ba6
+      version: -1
+      name: Check if the application ID and rule IDs are available in the input
+      description: Check if the application ID and rule IDs are available in the input data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: application_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: rule_ids
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9cf47518-cbc7-4f30-80f9-be57373f2218
+    type: condition
+    task:
+      id: 9cf47518-cbc7-4f30-80f9-be57373f2218
+      version: -1
+      name: Check if the application ID and rule IDs are available in the incident data
+      description: Check if the application ID and rule IDs are available in the incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.contrastsecurityapplications
+                accessor: applicationId
+                transformers:
+                - operator: trim
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: contrastsecurityrules
+                transformers:
+                - operator: trim
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1b0655c3-c8ef-40ee-a1a9-962a3dfb2fdd
+    type: collection
+    task:
+      id: 1b0655c3-c8ef-40ee-a1a9-962a3dfb2fdd
+      version: -1
+      name: Select the application and ADR rules
+      description: User input for selecting the application and the ADR rules to update from the incident data.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select the application and ADR rules
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the application.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: incident.contrastsecurityapplications
+            filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: incident.contrastsecurityapplications.applicationId
+                  iscontext: true
+            transformers:
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: ".=[].concat(val).map(function(app) { return app.applicationId + ' (' + app.applicationName + ')'; })"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The applications are listed in the application ID (application name) format.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Select the ADR rules.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: incident
+            accessor: contrastsecurityrules
+            transformers:
+            - operator: trim
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The modes of the selected ADR rules will be updated for the selected application.
+        readonly: false
+      title: Selection of Application and ADR Rules
+      description: Select the application and the ADR rules to update.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8ad05778-1169-4f79-b804-326ab500d04a
+    type: condition
+    task:
+      id: 8ad05778-1169-4f79-b804-326ab500d04a
+      version: -1
+      name: Check if any mode is provided in the input
+      description: Check if any of the development, QA, or production modes is provided in the input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: dev_mode
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: qa_mode
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: prod_mode
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a3245a28-f2dd-4ddb-ae7c-78ff6bbd49d8
+    type: collection
+    task:
+      id: a3245a28-f2dd-4ddb-ae7c-78ff6bbd49d8
+      version: -1
+      name: Select the blocking mode for the ADR rules
+      description: User input for selecting the blocking mode of the ADR rules for the development, QA, and production environments.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select the blocking mode for the ADR rules
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the mode for the development environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Off"
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: Monitor at perimeter
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If not provided, the current mode of the development environment is retained.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Select the mode for the QA environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Off"
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: Monitor at perimeter
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If not provided, the current mode of the QA environment is retained.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Select the mode for the production environment.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Off"
+        - simple: Monitor
+        - simple: Block
+        - simple: Block at perimeter
+        - simple: Monitor at perimeter
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If not provided, the current mode of the production environment is retained.
+        readonly: false
+      title: Selection of ADR Rule Blocking Mode
+      description: Select the mode for at least one environment. The selected mode for each environment will be applied to the ADR rules. If not provided, the current mode of the environment is retained.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6756135e-c223-4858-8a71-4bce4f6511ee
+    type: regular
+    task:
+      id: 6756135e-c223-4858-8a71-4bce4f6511ee
+      version: -1
+      name: Update the modes of the ADR rules
+      description: Update the modes of the ADR rules for a Contrast Security application.
+      script: '|||contrastsecurity-adr-rule-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      application_id:
+        complex:
+          root: inputs.application_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Selection of Application and ADR Rules.Answers.0
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ' ('
+          - operator: FirstArrayElement
+          - operator: trim
+      dev_mode:
+        complex:
+          root: inputs.dev_mode
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Selection of ADR Rule Blocking Mode.Answers.0
+                iscontext: true
+      prod_mode:
+        complex:
+          root: inputs.prod_mode
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Selection of ADR Rule Blocking Mode.Answers.2
+                iscontext: true
+      qa_mode:
+        complex:
+          root: inputs.qa_mode
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Selection of ADR Rule Blocking Mode.Answers.1
+                iscontext: true
+      rule_id:
+        complex:
+          root: inputs.rule_ids
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Selection of Application and ADR Rules.Answers.1
+                iscontext: true
+          - operator: trim
+    continueonerror: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f0af56f2-feeb-4591-8d77-d9b80509e86d
+    type: regular
+    task:
+      id: f0af56f2-feeb-4591-8d77-d9b80509e86d
+      version: -1
+      name: ADR rule information not found in incident data
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      value:
+        simple: 'No application ID or rule IDs found in the playbook input or incident data for the Contrast Security incident ID: ${incident.contrastsecurityincidentid}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 42822ccf-1073-47cb-85c8-0501af295f15
+    type: title
+    task:
+      id: 42822ccf-1073-47cb-85c8-0501af295f15
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.57,
+      "1_10_#default#": 0.53,
+      "3_6_yes": 0.49,
+      "3_4_#default#": 0.63,
+      "4_5_yes": 0.43,
+      "4_9_#default#": 0.54,
+      "6_8_yes": 0.5,
+      "6_7_#default#": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 1260,
+        "x": -180,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: application_id
+  value: {}
+  required: false
+  description: Specify the ID of the application. If not provided, the application ID is retrieved from the Contrast Security Applications field of the incident.
+  playbookInputQuery:
+- key: rule_ids
+  value: {}
+  required: false
+  description: Specify the IDs of the ADR rules to update. Supports comma-separated values. If not provided, the rule IDs are retrieved from the Contrast Security Rules field of the incident.
+  playbookInputQuery:
+- key: dev_mode
+  value: {}
+  required: false
+  description: 'Specify the mode for the development environment. Possible values are: Off, Monitor, Block, Block at perimeter, Monitor at perimeter. If not provided, the current mode of the development environment is retained.'
+  playbookInputQuery:
+- key: qa_mode
+  value: {}
+  required: false
+  description: 'Specify the mode for the QA environment. Possible values are: Off, Monitor, Block, Block at perimeter, Monitor at perimeter. If not provided, the current mode of the QA environment is retained.'
+  playbookInputQuery:
+- key: prod_mode
+  value: {}
+  required: false
+  description: 'Specify the mode for the production environment. Possible values are: Off, Monitor, Block, Block at perimeter, Monitor at perimeter. If not provided, the current mode of the production environment is retained.'
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - application_id
+  - rule_ids
+  - dev_mode
+  - qa_mode
+  - prod_mode
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -1,0 +1,147 @@
+{
+    "content": [
+        {
+            "issueId": "ISS-2026-1001",
+            "status": "OPEN",
+            "severity": "CRITICAL",
+            "dataTypes": [
+                "ATTACK"
+            ],
+            "targets": [
+                "CODE"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 1,
+            "observationCount": 4,
+            "createdTime": "2026-10-01T16:17:57.667Z",
+            "updatedTime": "2026-10-26T15:43:13.071Z",
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "applicationLanguage": null,
+            "applicationName": "dummy-application",
+            "closedTime": null,
+            "environments": [
+                "DEVELOPMENT"
+            ],
+            "httpRoute": "/dummy/login",
+            "lastAttackedTime": "2026-10-13T16:28:24.255Z",
+            "lastObservedTime": "2026-10-13T16:28:24.255Z",
+            "repositoryId": null,
+            "repositoryName": null,
+            "score": 10.0,
+            "title": "Command Injection on \"/dummy/login\""
+        },
+        {
+            "issueId": "ISS-2026-1002",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "dataTypes": [
+                "VULNERABILITY"
+            ],
+            "targets": [
+                "LIBRARY"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 0,
+            "observationCount": 1,
+            "createdTime": "2026-10-13T16:17:34.617Z",
+            "updatedTime": "2026-10-19T04:57:12.833Z",
+            "applicationId": "12345678-1234-1234-1234-123456789012",
+            "applicationLanguage": null,
+            "applicationName": "dummy-application-2",
+            "closedTime": null,
+            "environments": [
+                "QA"
+            ],
+            "httpRoute": "",
+            "lastAttackedTime": null,
+            "lastObservedTime": "2026-10-19T04:57:08.527Z",
+            "repositoryId": "",
+            "repositoryName": null,
+            "score": 8.0,
+            "title": "CVEs in dummy-library 1.0.0"
+        },
+        {
+            "issueId": "ISS-2026-1003",
+            "status": "OPEN",
+            "severity": "MEDIUM",
+            "dataTypes": [
+                "ATTACK",
+                "VULNERABILITY"
+            ],
+            "targets": [
+                "CODE"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 3,
+            "observationCount": 9,
+            "createdTime": "2026-10-13T16:18:06.701Z",
+            "updatedTime": "2026-10-22T10:02:53.999Z",
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "applicationLanguage": null,
+            "applicationName": "dummy-application",
+            "closedTime": null,
+            "environments": [
+                "DEVELOPMENT"
+            ],
+            "httpRoute": "/dummy/payments",
+            "lastAttackedTime": "2026-10-13T16:28:17.928Z",
+            "lastObservedTime": "2026-10-13T16:28:17.928Z",
+            "repositoryId": null,
+            "repositoryName": null,
+            "score": 5.5,
+            "title": "SQL Injection from \"dummyParam\" Parameter on \"/dummy/payments\" page"
+        },
+        {
+            "issueId": "ISS-2026-1004",
+            "status": "OPEN",
+            "severity": null,
+            "dataTypes": [
+                "ATTACK"
+            ],
+            "targets": [
+                "CODE"
+            ],
+            "sensors": [
+                "CONTRAST_AGENT"
+            ],
+            "techniques": [
+                "RUNTIME"
+            ],
+            "incidentCount": 0,
+            "observationCount": 1,
+            "createdTime": "2026-10-14T09:30:12.512Z",
+            "updatedTime": "2026-10-14T09:30:12.512Z",
+            "applicationId": "12345678-1234-1234-1234-123456789abc",
+            "applicationLanguage": null,
+            "applicationName": "dummy-application",
+            "closedTime": null,
+            "environments": [
+                "DEVELOPMENT"
+            ],
+            "httpRoute": "/dummy/files",
+            "lastAttackedTime": "2026-10-14T09:30:12.512Z",
+            "lastObservedTime": "2026-10-14T09:30:12.512Z",
+            "repositoryId": null,
+            "repositoryName": null,
+            "score": null,
+            "title": "Path Traversal on \"/dummy/files\" page"
+        }
+    ],
+    "hasMore": true,
+    "cursor": "dummy-cursor-1"
+}
