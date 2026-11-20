@@ -42,6 +42,13 @@ configuration:
   section: Collect
   defaultvalue: '1000'
   additionalinfo: The maximum number of events to fetch per cycle.
+- name: first_fetch
+  display: First fetch time
+  required: false
+  type: 0
+  section: Collect
+  defaultvalue: 1 day
+  additionalinfo: 'How far back to fetch events on the first run (e.g., 1 day, 3 days, 7 days). The start time is rounded down to midnight UTC, since history events are dated at midnight UTC.'
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
