@@ -3618,6 +3618,95 @@ class TestConcurrencyLimitRetry:
         type(resp_no_text).text = PropertyMock(side_effect=AttributeError("no text attribute"))
         assert Client._is_concurrency_limit_error(resp_no_text) is False
 
+    @pytest.mark.parametrize("entry_point", ["test-module", "qualys-get-assets"], ids=["test_module", "qualys_get_assets"])
+    def test_interactive_host_list_fails_fast_on_concurrency_limit(self, mocker: MockerFixture, client: Client, entry_point: str):
+        """
+        Given: every host list request is answered with 409 / Error Code 1960 (both Qualys slots busy,
+               e.g. while the assets fetch is running) (XSUP-80841).
+        When:  the instance test (test-module) or qualys-get-assets requests host list detections.
+        Then:  a single request is made with no back-off, so the call finishes well within the 60s test timeout,
+               and the raised error explains the concurrency limit while keeping the original Qualys error.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=_make_concurrency_limit_exception())
+
+        with pytest.raises(DemistoException) as exc_info:
+            if entry_point == "test-module":
+                Qualysv2.test_module(client, {"isFetchAssets": True}, first_fetch_time="3 days")
+            else:
+                Qualysv2.get_host_list_detections_events(client=client, since_datetime="2026-11-03", limit=1)
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+        assert f"Error Code {Qualysv2.CONCURRENCY_LIMIT_ERROR_CODE}" in str(exc_info.value)
+        assert "concurrency limited" in str(exc_info.value)
+        assert Client._is_concurrency_limit_error(exc_info.value.res) is True
+
+    def test_host_list_skips_concurrency_retry_when_disabled(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a 409 / Error Code 1960 response.
+        When:  get_host_list_detection is called with retry_on_concurrency_limit=False.
+        Then:  the 1960 error is raised after a single request, without sleeping.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=_make_concurrency_limit_exception())
+
+        with pytest.raises(DemistoException, match="concurrency limited"):
+            client.get_host_list_detection(since_datetime="2024-12-12", limit=1, retry_on_concurrency_limit=False)
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    def test_host_list_without_retry_returns_first_success(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a successful host list response.
+        When:  get_host_list_detection is called with retry_on_concurrency_limit=False.
+        Then:  the response is returned from the single request, with set_new_limit=False and no sleep.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", return_value="host-list-data")
+
+        response, set_new_limit = client.get_host_list_detection(
+            since_datetime="2024-12-12", limit=1, retry_on_concurrency_limit=False
+        )
+
+        assert response == "host-list-data"
+        assert set_new_limit is False
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "status_code, body",
+        [
+            (401, "<SIMPLE_RETURN><RESPONSE><CODE>2000</CODE><TEXT>Bad Login/Password</TEXT></RESPONSE></SIMPLE_RETURN>"),
+            (500, "Internal Server Error"),
+            (409, "<SIMPLE_RETURN><RESPONSE><CODE>1965</CODE><TEXT>Try again later.</TEXT></RESPONSE></SIMPLE_RETURN>"),
+        ],
+        ids=["401_bad_login", "500_server_error", "409_rate_limit_1965"],
+    )
+    def test_interactive_host_list_keeps_other_errors_unchanged(
+        self, mocker: MockerFixture, client: Client, status_code: int, body: str
+    ):
+        """
+        Given: a host list error that is not the 1960 concurrency limit (bad login, server error, 1965 rate limit).
+        When:  qualys-get-assets requests host list detections.
+        Then:  the original error is raised as is after a single request, without the concurrency-limit message.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        response = Mock()
+        response.status_code = status_code
+        response.headers = {}
+        response.text = body
+        original_error = DemistoException(f"original error {status_code}", res=response)
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=original_error)
+
+        with pytest.raises(DemistoException) as exc_info:
+            Qualysv2.get_host_list_detections_events(client=client, since_datetime="2026-11-03", limit=1)
+
+        assert exc_info.value is original_error
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
 
 """ XSIAM SEND RETRY TESTS """
 
