@@ -70,7 +70,7 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-- additionalinfo: Created At time before which incidents will be fetched
+- additionalinfo: Created At time before which incidents will be fetched. A date-only value (e.g. 2026-10-31) includes that whole day.
   display: Before
   name: before
   type: 0
@@ -91,6 +91,55 @@ configuration:
 - additionalinfo: 'The minimum severity threshold for fetched incidents. Accepts a single value: LOW, MEDIUM, HIGH, or CRITICAL (or numeric equivalents 10, 20, 30, 40). Alerts at or above this severity are fetched. For example, "MEDIUM" fetches medium, high, and critical severity alerts.'
   display: Minimum risk level (e.g. MEDIUM fetches medium and higher)
   name: risk_level
+  type: 0
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: 'Only fetch alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. "Microsoft 365, Okta"). Applied by the Reco API before alerts are ingested.'
+  display: SaaS application/platform
+  name: saas_platform
+  type: 0
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+  required: false
+- additionalinfo: Only fetch alerts in these statuses. Leave empty to fetch alerts in any status (Preview-state alerts are never fetched).
+  display: Alert status
+  name: alert_status
+  type: 16
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+  options:
+  - New
+  - In Progress
+  - Closed
+- additionalinfo: 'Only fetch alerts carrying at least one of these labels (comma-separated, e.g. "Identity, Privileged Access"). Labels are assigned to the alert policy in Reco.'
+  display: Include labels
+  name: include_labels
+  type: 0
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: 'Do not fetch alerts carrying any of these labels (comma-separated). Alerts without labels are still fetched.'
+  display: Exclude labels
+  name: exclude_labels
+  type: 0
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: 'An advanced Reco SCIM v2 filter expression, combined with all of the filters above using AND. Use it for OR / NOT logic and any other alert field the Reco API can filter on, e.g. actors co "@example.com" or description co "Former Employees". Some older Reco versions reject the SCIM "in" operator on severity and status; if you get an error, use "eq" clauses joined with "or".'
+  display: Advanced filter (SCIM)
+  name: custom_filter
   type: 0
   required: false
   section: Collect
@@ -725,6 +774,14 @@ script:
       - AUTH_STATUS_INVESTIGATED
       - AUTH_STATUS_CLOUD_INVENTORY
       - AUTH_STATUS_SYSTEM_SANCTIONED
+    - description: The app inventory the application belongs to. Defaults to app discovery.
+      name: app_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - APP_ENTITY_TYPE_APP_DISCOVERY
+      - APP_ENTITY_TYPE_SAAS_TO_SAAS
+      - APP_ENTITY_TYPE_APP_PORTFOLIO
     description: Set authorization status for an application in Reco.
     name: reco-set-app-authorization-status
     outputs:
@@ -1185,6 +1242,321 @@ script:
     - contextPath: Reco.AppInstances.filesCount
       description: The number of files tracked in this instance.
       type: Number
+  - arguments:
+    - description: 'Only alerts created after this time. ISO 8601 (e.g. "2026-11-01T00:00:00Z") or relative (e.g. "7 days ago"). UTC is assumed when no time zone is given.'
+      name: after
+      required: false
+    - description: 'Only alerts created before this time. ISO 8601 (e.g. "2026-11-08T23:59:59Z") or relative. UTC is assumed when no time zone is given. A date-only value (e.g. "2026-10-31") includes that whole day.'
+      name: before
+      required: false
+    - description: 'Only alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. "Microsoft 365").'
+      name: saas_platform
+      required: false
+      isArray: true
+    - description: 'Only alerts with one of these risk levels (comma-separated): LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40). Unlike the integration parameter, this is an explicit list, not a minimum.'
+      name: risk_level
+      required: false
+      isArray: true
+    - description: 'Only alerts carrying at least one of these labels (comma-separated, e.g. "Identity,Privileged Access").'
+      name: labels
+      required: false
+      isArray: true
+    - description: Exclude alerts carrying any of these labels (comma-separated).
+      name: exclude_labels
+      required: false
+      isArray: true
+    - description: Only alerts in these statuses (comma-separated).
+      name: status
+      required: false
+      isArray: true
+      predefined:
+      - New
+      - In Progress
+      - Closed
+    - description: 'Only alerts whose source application contains this value (e.g. "GOOGLE_DRIVE").'
+      name: source
+      required: false
+    - description: 'An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com".'
+      name: filters
+      required: false
+    - description: The maximum number of alerts to return.
+      name: limit
+      required: false
+      defaultValue: '50'
+    - auto: PREDEFINED
+      description: The order of the results by creation time.
+      name: sort_order
+      required: false
+      predefined:
+      - descending
+      - ascending
+      defaultValue: descending
+    description: Lists Reco alerts for a specified time range and filters, without using or changing the fetch-incidents configuration or last-run timestamp. All filters are applied by the Reco API. Returns alert summaries; use reco-get-alert or reco-fetch-alerts for full alert details.
+    name: reco-list-alerts
+    outputs:
+    - contextPath: Reco.Alerts.id
+      description: The alert ID.
+      type: String
+    - contextPath: Reco.Alerts.description
+      description: The alert description.
+      type: String
+    - contextPath: Reco.Alerts.severity
+      description: The alert severity (LOW, MEDIUM, HIGH, CRITICAL).
+      type: String
+    - contextPath: Reco.Alerts.status
+      description: The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED).
+      type: String
+    - contextPath: Reco.Alerts.createdAt
+      description: The alert creation time.
+      type: Date
+    - contextPath: Reco.Alerts.updatedAt
+      description: The alert last update time.
+      type: Date
+    - contextPath: Reco.Alerts.apps
+      description: The source applications that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.actors
+      description: The actor emails involved in the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.customLabels
+      description: The custom labels of the policy that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.instance.id
+      description: The ID of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.instance.appName
+      description: The name of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.ticketId
+      description: The linked ticket ID, if any.
+      type: String
+    - contextPath: Reco.Alerts.ticketUrl
+      description: The linked ticket URL, if any.
+      type: String
+  - arguments:
+    - description: 'Only alerts created after this time. ISO 8601 (e.g. "2026-11-01T00:00:00Z") or relative (e.g. "7 days ago"). UTC is assumed when no time zone is given.'
+      name: after
+      required: false
+    - description: 'Only alerts created before this time. ISO 8601 (e.g. "2026-11-08T23:59:59Z") or relative. UTC is assumed when no time zone is given. A date-only value (e.g. "2026-10-31") includes that whole day.'
+      name: before
+      required: false
+    - description: 'Only alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. "Microsoft 365").'
+      name: saas_platform
+      required: false
+      isArray: true
+    - description: 'Only alerts with one of these risk levels (comma-separated): LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40). Unlike the integration parameter, this is an explicit list, not a minimum.'
+      name: risk_level
+      required: false
+      isArray: true
+    - description: 'Only alerts carrying at least one of these labels (comma-separated, e.g. "Identity,Privileged Access").'
+      name: labels
+      required: false
+      isArray: true
+    - description: Exclude alerts carrying any of these labels (comma-separated).
+      name: exclude_labels
+      required: false
+      isArray: true
+    - description: Only alerts in these statuses (comma-separated).
+      name: status
+      required: false
+      isArray: true
+      predefined:
+      - New
+      - In Progress
+      - Closed
+    - description: 'Only alerts whose source application contains this value (e.g. "GOOGLE_DRIVE").'
+      name: source
+      required: false
+    - description: 'An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com".'
+      name: filters
+      required: false
+    - description: The maximum number of alerts to return. Every alert is enriched with its full details, one API call each, so large values are slow and may reach the command timeout.
+      name: limit
+      required: false
+      defaultValue: '50'
+    - auto: PREDEFINED
+      description: The order of the results by creation time.
+      name: sort_order
+      required: false
+      predefined:
+      - ascending
+      - descending
+      defaultValue: ascending
+    description: Retrieves full alert details (including policy violations, the same data fetch-incidents ingests) for a historical time range and filters, for investigations, mapping tests and controlled backfills. It returns the alerts to the context only; it does not create incidents and does not use or change the fetch-incidents last-run timestamp.
+    name: reco-fetch-alerts
+    outputs:
+    - contextPath: Reco.Alerts.id
+      description: The alert ID.
+      type: String
+    - contextPath: Reco.Alerts.description
+      description: The alert description.
+      type: String
+    - contextPath: Reco.Alerts.severity
+      description: The alert severity (LOW, MEDIUM, HIGH, CRITICAL).
+      type: String
+    - contextPath: Reco.Alerts.status
+      description: The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED).
+      type: String
+    - contextPath: Reco.Alerts.createdAt
+      description: The alert creation time.
+      type: Date
+    - contextPath: Reco.Alerts.updatedAt
+      description: The alert last update time.
+      type: Date
+    - contextPath: Reco.Alerts.apps
+      description: The source applications that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.actors
+      description: The actor emails involved in the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.customLabels
+      description: The custom labels of the policy that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.instance.id
+      description: The ID of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.instance.appName
+      description: The name of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.ticketId
+      description: The linked ticket ID, if any.
+      type: String
+    - contextPath: Reco.Alerts.ticketUrl
+      description: The linked ticket URL, if any.
+      type: String
+    - contextPath: Reco.Alerts.policyViolations
+      description: The policy violations of the alert (detailed alert only).
+      type: Unknown
+  - arguments:
+    - description: The ID of the alert to retrieve.
+      name: alert_id
+      required: true
+    description: Retrieves a single Reco alert, including its policy violations, by ID. Does not use or change the fetch-incidents last-run timestamp.
+    name: reco-get-alert
+    outputs:
+    - contextPath: Reco.Alerts.id
+      description: The alert ID.
+      type: String
+    - contextPath: Reco.Alerts.description
+      description: The alert description.
+      type: String
+    - contextPath: Reco.Alerts.severity
+      description: The alert severity (LOW, MEDIUM, HIGH, CRITICAL).
+      type: String
+    - contextPath: Reco.Alerts.status
+      description: The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED).
+      type: String
+    - contextPath: Reco.Alerts.createdAt
+      description: The alert creation time.
+      type: Date
+    - contextPath: Reco.Alerts.updatedAt
+      description: The alert last update time.
+      type: Date
+    - contextPath: Reco.Alerts.apps
+      description: The source applications that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.actors
+      description: The actor emails involved in the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.customLabels
+      description: The custom labels of the policy that triggered the alert.
+      type: Unknown
+    - contextPath: Reco.Alerts.instance.id
+      description: The ID of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.instance.appName
+      description: The name of the app instance the alert belongs to.
+      type: String
+    - contextPath: Reco.Alerts.ticketId
+      description: The linked ticket ID, if any.
+      type: String
+    - contextPath: Reco.Alerts.ticketUrl
+      description: The linked ticket URL, if any.
+      type: String
+    - contextPath: Reco.Alerts.policyViolations
+      description: The policy violations of the alert (detailed alert only).
+      type: Unknown
+  - arguments:
+    - description: The ID (UUID) of the alert, as returned in `id` by reco-list-alerts.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: The new severity.
+      name: severity
+      required: true
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    description: Sets the severity of a Reco threat alert. The change is recorded in the Reco audit log.
+    name: reco-update-alert-severity
+    outputs:
+    - contextPath: Reco.Alerts.id
+      description: The alert ID.
+      type: String
+    - contextPath: Reco.Alerts.description
+      description: The alert description.
+      type: String
+    - contextPath: Reco.Alerts.riskLevel
+      description: The alert severity after the update.
+      type: String
+    - contextPath: Reco.Alerts.status
+      description: The alert status.
+      type: String
+    - contextPath: Reco.Alerts.updatedAt
+      description: The alert last update time.
+      type: Date
+  - arguments:
+    - description: The ID (UUID) of the entity to add the label.
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of the entity.
+      name: entity_type
+      required: true
+      predefined:
+      - account
+      - app
+      - identity
+      - posture
+      - saas-to-saas
+      - ip-address
+      - ai-agent
+      - device
+    - description: The name of the label. When adding, the label must already exist in the label catalog of your Reco tenant.
+      name: label_name
+      required: true
+    - description: The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities.
+      name: instance_id
+      required: false
+    description: Adds an existing label from the label catalog to a Reco entity.
+    name: reco-add-entity-label
+  - arguments:
+    - description: The ID (UUID) of the entity to remove the label.
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of the entity.
+      name: entity_type
+      required: true
+      predefined:
+      - account
+      - app
+      - identity
+      - posture
+      - saas-to-saas
+      - ip-address
+      - ai-agent
+      - device
+    - description: The name of the label. When adding, the label must already exist in the label catalog of your Reco tenant.
+      name: label_name
+      required: true
+    - description: The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities.
+      name: instance_id
+      required: false
+    description: Removes a label from a Reco entity.
+    name: reco-remove-entity-label
 tests:
 - No tests
 fromversion: 6.5.0
