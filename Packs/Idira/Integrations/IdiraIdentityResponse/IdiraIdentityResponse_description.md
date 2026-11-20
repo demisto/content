@@ -31,4 +31,4 @@ Assign the service user a role that grants **system-administrator** or **user-ma
 
 ### Scope
 
-This version implements the Identity (workforce) actions only. Privilege Cloud (session/credential) and Secure Infrastructure Access (access-policy) actions are planned for a follow-up.
+This version implements the actions for Identity (workforce), Privilege Cloud (session/credential) and Secure Infrastructure Access (access-policy) services.
