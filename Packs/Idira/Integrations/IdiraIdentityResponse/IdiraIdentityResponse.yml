@@ -1,0 +1,465 @@
+commonfields:
+  id: IdiraIdentityResponse
+  version: -1
+name: IdiraIdentityResponse
+display: Idira Identity Response
+category: Identity and Access Management
+provider: Idira
+description: Trigger identity (workforce) response actions in the Idira Identity Security Platform - lock, disable, or unlock a user, force logout, expire a password, and remove a privileged role - as part of a detection-to-containment playbook.
+sectionorder:
+- Connect
+configuration:
+- name: identity_url
+  display: Identity URL
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Idira Identity tenant FQDN used for OAuth2 authentication and Identity workforce actions (e.g., https://abc1234.id.cyberark.cloud).
+- name: client_id
+  display: Client ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Service username without domain (configured as an OAuth confidential client) with system-administrator or user-management rights.
+- name: credentials
+  display: Client Secret (Service User Password)
+  displaypassword: Client Secret
+  required: true
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: Service user password for OAuth2 client_credentials authentication.
+- name: privilege_cloud_url
+  display: Privilege Cloud URL
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The Idira Privilege Cloud PVWA host (e.g., https://abc1234.privilegecloud.cyberark.cloud). Required only for the account, session, and credential commands.
+- name: sia_url
+  display: Secure Infrastructure Access (SIA) URL
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The Idira Secure Infrastructure Access host (e.g., https://abc1234.dpa.cyberark.cloud). Required only for the disable-access-policy command.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration will not verify SSL certificates.
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration will use the system proxy settings.
+- name: disable_usage_reporting
+  display: Disable usage reporting
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration does not send usage events (command executed, integration version) to Palo Alto Networks.
+script:
+  commands:
+  - name: idira-identity-response-get-user-by-name
+    description: Resolves a username to its Idira Identity user unique ID. Run this first - the lock, disable, unlock, and force-logout actions target the user by unique ID, not username.
+    arguments:
+    - name: username
+      description: 'The username of the cloud user to resolve. Format: username@suffix if a suffix is required, otherwise username.'
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.User.ID
+      description: The resolved user unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.User.Username
+      description: The username that was resolved.
+      type: String
+  - name: idira-identity-response-lock-user
+    description: Locks a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+    arguments:
+    - name: user_id
+      description: The user unique ID (from idira-identity-response-get-user-by-name).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.UserState.ID
+      description: The user unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.State
+      description: The state the user was set to (Locked).
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-disable-user
+    description: Disables a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+    arguments:
+    - name: user_id
+      description: The user unique ID (from idira-identity-response-get-user-by-name).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.UserState.ID
+      description: The user unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.State
+      description: The state the user was set to (Disabled).
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-unlock-user
+    description: Reverses a lock or disable by setting the user state back to None, restoring the ability to authenticate.
+    arguments:
+    - name: user_id
+      description: The user unique ID (from idira-identity-response-get-user-by-name).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.UserState.ID
+      description: The user unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.State
+      description: The state the user was set to (None).
+      type: String
+    - contextPath: IdiraIdentityResponse.UserState.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-force-logout
+    description: Ends all of the user's active sessions and cookies, forcing them to sign in again.
+    arguments:
+    - name: user_id
+      description: The user unique ID (from idira-identity-response-get-user-by-name).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.ForceLogout.ID
+      description: The user unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.ForceLogout.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-remove-role
+    description: Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
+    arguments:
+    - name: role_id
+      description: The unique ID of the role.
+      required: true
+    - name: user_ids
+      description: Comma-separated list of user unique IDs (or usernames) to remove from the role.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.RoleRemoval.RoleId
+      description: The role unique ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.RoleRemoval.Users
+      description: The user IDs removed from the role.
+      type: Unknown
+    - contextPath: IdiraIdentityResponse.RoleRemoval.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-expire-password
+    description: Requires the user to set a new password at their next login.
+    arguments:
+    - name: username
+      description: The username of the cloud user.
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.PasswordExpiry.Name
+      description: The username.
+      type: String
+    - contextPath: IdiraIdentityResponse.PasswordExpiry.ForcePasswordChangeNext
+      description: Whether the user must change the password at next login.
+      type: Boolean
+    - contextPath: IdiraIdentityResponse.PasswordExpiry.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-get-account
+    description: Resolves privileged accounts to their internal account IDs (Idira Privilege Cloud). Run this first - the rotate and verify actions target the account by internal ID. Requires the Privilege Cloud URL.
+    arguments:
+    - name: search
+      description: Keywords to search for (for example, account name or address).
+    - name: search_type
+      description: Search mode.
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - startswith
+      defaultValue: contains
+    - name: safe_name
+      description: Filter results to a specific Safe.
+    - name: limit
+      description: Maximum number of accounts to return (max 1000).
+      defaultValue: "50"
+    outputs:
+    - contextPath: IdiraIdentityResponse.Account.id
+      description: The internal account ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.name
+      description: The account object name.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.userName
+      description: The account username.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.safeName
+      description: The Safe the account belongs to.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.platformId
+      description: The platform of the account.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.address
+      description: The machine address of the account.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.secretType
+      description: The secret type of the account.
+      type: String
+  - name: idira-identity-response-get-account-details
+    description: Fetches the details of a single privileged account by its internal ID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: account_id
+      description: The internal account ID (from idira-identity-response-get-account).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.Account.id
+      description: The internal account ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.name
+      description: The account object name.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.userName
+      description: The account username.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.safeName
+      description: The Safe the account belongs to.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.platformId
+      description: The platform of the account.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.address
+      description: The machine address of the account.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.secretType
+      description: The secret type of the account.
+      type: String
+  - name: idira-identity-response-list-sessions
+    description: Lists active privileged sessions (Idira Privilege Cloud) to resolve a SessionGuid. Check the CanTerminate/CanSuspend flags before acting. Requires the Privilege Cloud URL.
+    arguments:
+    - name: search
+      description: Keywords to search for (for example, the username).
+    - name: safe
+      description: Filter results to a specific Safe.
+    - name: limit
+      description: Maximum number of sessions to return.
+      defaultValue: "25"
+    outputs:
+    - contextPath: IdiraIdentityResponse.Session.SessionGuid
+      description: The session GUID (use to terminate/suspend, not the numeric SessionID).
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.User
+      description: The user of the session.
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.AccountUsername
+      description: The account username used in the session.
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.AccountAddress
+      description: The account address used in the session.
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.RemoteMachine
+      description: The remote machine of the session.
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.Protocol
+      description: The session protocol.
+      type: String
+    - contextPath: IdiraIdentityResponse.Session.RiskScore
+      description: The risk score of the session.
+      type: Number
+    - contextPath: IdiraIdentityResponse.Session.CanTerminate
+      description: Whether the session can be terminated.
+      type: Boolean
+    - contextPath: IdiraIdentityResponse.Session.CanSuspend
+      description: Whether the session can be suspended.
+      type: Boolean
+    - contextPath: IdiraIdentityResponse.Session.CanMonitor
+      description: Whether the session can be monitored.
+      type: Boolean
+  - name: idira-identity-response-terminate-session
+    description: Terminates a live privileged session by GUID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: session_guid
+      description: The session GUID (from idira-identity-response-list-sessions).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.SessionAction.SessionGuid
+      description: The session GUID.
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Action
+      description: The action performed (Terminate).
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-suspend-session
+    description: Suspends a live privileged session by GUID (Idira Privilege Cloud). Reversible with idira-identity-response-resume-session. Not supported for SSH/OPM sessions. Requires the Privilege Cloud URL.
+    arguments:
+    - name: session_guid
+      description: The session GUID (from idira-identity-response-list-sessions).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.SessionAction.SessionGuid
+      description: The session GUID.
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Action
+      description: The action performed (Suspend).
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-resume-session
+    description: Resumes a suspended privileged session by GUID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: session_guid
+      description: The session GUID (from idira-identity-response-list-sessions).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.SessionAction.SessionGuid
+      description: The session GUID.
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Action
+      description: The action performed (Resume).
+      type: String
+    - contextPath: IdiraIdentityResponse.SessionAction.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-rotate-credential
+    description: Triggers an immediate CPM credential change on a privileged account (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: account_id
+      description: The internal account ID (from idira-identity-response-get-account).
+      required: true
+    - name: change_creds_for_group
+      description: Whether the CPM changes credentials on all accounts in the same group.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: IdiraIdentityResponse.CredentialAction.AccountId
+      description: The internal account ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.CredentialAction.Action
+      description: The action performed (Rotate).
+      type: String
+    - contextPath: IdiraIdentityResponse.CredentialAction.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-verify-credential
+    description: Marks a privileged account for CPM verification to confirm the credential is valid (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: account_id
+      description: The internal account ID (from idira-identity-response-get-account).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.CredentialAction.AccountId
+      description: The internal account ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.CredentialAction.Action
+      description: The action performed (Verify).
+      type: String
+    - contextPath: IdiraIdentityResponse.CredentialAction.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-vault-account
+    description: Brings an unmanaged, risky privileged account under Idira management (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    arguments:
+    - name: platform_id
+      description: The platform definition to assign (case-sensitive).
+      required: true
+    - name: safe_name
+      description: The target Safe.
+      required: true
+    - name: name
+      description: The account object name.
+    - name: address
+      description: The machine name or address.
+    - name: username
+      description: The account username.
+    - name: secret_type
+      description: The secret type.
+      auto: PREDEFINED
+      predefined:
+      - password
+      - key
+    - name: secret
+      description: The password or SSH key value.
+    - name: automatic_management_enabled
+      description: Whether to enable CPM automatic management.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+    - contextPath: IdiraIdentityResponse.Account.id
+      description: The assigned internal account ID.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.name
+      description: The account object name.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.safeName
+      description: The Safe the account was added to.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.platformId
+      description: The platform of the account.
+      type: String
+    - contextPath: IdiraIdentityResponse.Account.Success
+      description: Whether the account was vaulted.
+      type: Boolean
+  - name: idira-identity-response-disable-access-policy
+    description: Revokes standing or just-in-time access by disabling a Secure Infrastructure Access (SIA) policy. Reversible by setting status to Enabled. Requires the SIA URL.
+    arguments:
+    - name: policy_id
+      description: The policy UUID (from the SIA access-policies list).
+      required: true
+    - name: policy_name
+      description: The policy name (1-200 characters).
+      required: true
+    - name: status
+      description: The status to set on the policy.
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
+      - Draft
+      - Expired
+      - Irrelevant
+      defaultValue: Disabled
+    outputs:
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyId
+      description: The policy UUID.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyName
+      description: The policy name.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.Status
+      description: The status the policy was set to.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.8927230
+fromversion: 8.11.0
+supportlevelheader: xsoar
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
+supportedModules:
+- xsiam

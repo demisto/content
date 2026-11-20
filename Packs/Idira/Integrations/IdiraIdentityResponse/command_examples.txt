@@ -1,0 +1,17 @@
+!idira-identity-response-get-user-by-name username=jdoe@corp
+!idira-identity-response-lock-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-disable-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-unlock-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-force-logout user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-expire-password username=jdoe
+!idira-identity-response-remove-role role_id=role-123 user_ids=00000000-0000-0000-0000-000000000000
+!idira-identity-response-get-account search=svc-sql
+!idira-identity-response-get-account-details account_id=12_34
+!idira-identity-response-list-sessions search=jdoe
+!idira-identity-response-terminate-session session_guid=00000000-0000-0000-0000-000000000000
+!idira-identity-response-suspend-session session_guid=00000000-0000-0000-0000-000000000000
+!idira-identity-response-resume-session session_guid=00000000-0000-0000-0000-000000000000
+!idira-identity-response-rotate-credential account_id=12_34
+!idira-identity-response-verify-credential account_id=12_34
+!idira-identity-response-vault-account platform_id=WinServerLocal safe_name=IncidentResponse name=risky-admin address=10.0.0.5 username=admin
+!idira-identity-response-disable-access-policy policy_id=00000000-0000-0000-0000-000000000000 policy_name="Prod SSH Access"
