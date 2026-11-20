@@ -353,3 +353,4 @@ def alert_severity_to_dbot_score(severity_str: str):
         return 3
     demisto.info(f"FireEye Incident severity: {severity} is not known. Setting as unknown(DBotScore of 0).")
     return 0
+# collect-tests investigation
