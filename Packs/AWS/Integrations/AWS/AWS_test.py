@@ -1558,51 +1558,30 @@ def test_ecs_update_cluster_settings_command_failure(mocker):
         ECS.update_cluster_settings_command(mock_client, args)
 
 
-def test_register_proxydome_header(mocker):
+def test_get_service_client_platform_path_does_not_use_proxydome(mocker):
     """
-    Given: A mocked boto3 client and ProxyDome token.
-    When: register_proxydome_header is called to configure ProxyDome authentication.
-    Then: It should register an event handler to inject the ProxyDome header.
+    Given: Platform CTS credentials.
+    When: get_service_client builds a boto3 client.
+    Then: No proxy is configured, SSL verification is enabled, and no ProxyDome token is fetched.
     """
-    from AWS import register_proxydome_header
+    from AWS import get_service_client
 
-    mock_client = mocker.Mock()
-    mock_event_system = mocker.Mock()
-    mock_client.meta.events = mock_event_system
+    mock_session = mocker.Mock()
+    mocker.patch("AWS.get_connector_id", return_value="connector-id")
+    mock_get_token = mocker.patch("AWS.get_proxydome_token", create=True)
 
-    mocker.patch("AWS.get_proxydome_token", return_value="test-token")
+    get_service_client(
+        credentials={"key": "key", "access_token": "secret", "session_token": "token"},
+        params={},
+        args={},
+        command="aws-s3-bucket-policy-get",
+        session=mock_session,
+    )
 
-    register_proxydome_header(mock_client)
-
-    mock_event_system.register_last.assert_called_once()
-    assert mock_event_system.register_last.call_args[0][0] == "before-send.*.*"
-
-
-def test_register_proxydome_header_adds_correct_header(mocker):
-    """
-    Given: A mocked boto3 client and the ProxyDome header injection function.
-    When: register_proxydome_header sets up the header injection and a request is made.
-    Then: It should add the correct x-caller-id header to the request.
-    """
-    from AWS import register_proxydome_header
-
-    mock_client = mocker.Mock()
-    mock_event_system = mocker.Mock()
-    mock_client.meta.events = mock_event_system
-
-    mocker.patch("AWS.get_proxydome_token", return_value="test-token-123")
-
-    register_proxydome_header(mock_client)
-
-    # Get the registered function
-    header_function = mock_event_system.register_last.call_args[0][1]
-
-    # Test the header injection
-    mock_request = mocker.Mock()
-    mock_request.headers = {}
-    header_function(mock_request)
-
-    assert mock_request.headers["x-caller-id"] == "test-token-123"
+    call_kwargs = mock_session.client.call_args.kwargs
+    assert call_kwargs["verify"] is True
+    assert not call_kwargs["config"].proxies
+    mock_get_token.assert_not_called()
 
 
 def test_aws_error_handler_handle_response_error_with_request_id(mocker):
@@ -22716,7 +22695,7 @@ def test_execute_cli_command_success_platform(mocker):
     Given: CTS platform credentials and a CLI command that returns a JSON response.
     When: execute_cli_command is called.
     Then: The aws binary runs without a shell, with the leading 'aws' stripped, '--output json' appended,
-          CTS credentials and region in the environment, no ProxyDome proxy, and the JSON response in AWS.CLI.Output.
+          CTS credentials and region in the environment, and the JSON response in AWS.CLI.Output.
     """
     from AWS import execute_cli_command
 

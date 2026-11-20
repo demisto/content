@@ -20,8 +20,6 @@ import subprocess
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_MAX_WORKERS: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 AWS_CLI_COMMAND = "aws-cli"
@@ -11307,8 +11305,7 @@ def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[
     """
     Build the environment variables for the AWS CLI subprocess.
 
-    On the Cortex Platform path, the CTS short-lived credentials are used. The command runs on
-    engine0, which has direct internet access, so no ProxyDome configuration is injected.
+    On the Cortex Platform path, the CTS short-lived credentials are used.
     On the marketplace path, the configured access keys are used (optionally via STS AssumeRole).
 
     Args:
@@ -11971,26 +11968,6 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         return internal_error
 
 
-def register_proxydome_header(boto_client: BotoClient) -> None:
-    """
-    Register ProxyDome authentication header for all AWS API requests.
-
-    This function adds the ProxyDome caller ID header to every boto3 request
-    by registering an event handler that injects the header before sending requests.
-
-    Args:
-        boto_client (BotoClient): The boto3 client to configure with ProxyDome headers
-    """
-    event_system = boto_client.meta.events
-    proxydome_token: str = get_proxydome_token()
-
-    def _add_proxydome_header(request, **kwargs):
-        request.headers["x-caller-id"] = proxydome_token
-
-    # Register the header injection function to be called before each request
-    event_system.register_last("before-send.*.*", _add_proxydome_header)
-
-
 def _assume_role_credentials(params: dict, access_key_id: str, secret_access_key: str, region: str) -> dict:
     """
     Call AWS STS ``AssumeRole`` using the marketplace-supplied access keys and
@@ -12037,10 +12014,10 @@ def get_service_client(
     Supports two authentication paths:
 
     - **Cortex Cloud platform**: ``credentials`` is populated by ``get_cloud_credentials()``
-      with short-lived CTS tokens. Requests are routed through ProxyDome.
+      with short-lived CTS tokens.
     - **XSOAR / XSIAM marketplace**: ``credentials`` is empty. Access keys are read from
       the paired ``credentials`` integration parameter. When ``role_arn`` is set, STS
-      ``AssumeRole`` is called to obtain temporary credentials. ProxyDome is not used.
+      ``AssumeRole`` is called to obtain temporary credentials.
 
     Args:
         credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
@@ -12112,29 +12089,14 @@ def get_service_client(
         read_timeout=read_timeout,
         retries={"max_attempts": retries},
     )
-    if is_platform_path:
-        base_config = base_config.merge(
-            Config(
-                proxies={"https": DEFAULT_PROXYDOME},
-                proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH},
-            )
-        )
     client_config = base_config.merge(config) if config else base_config
 
-    # On the platform path, verify using the ProxyDome CA bundle (requests go through ProxyDome
-    # which presents a self-signed cert). On the marketplace path, respect the user's insecure param:
     # SSL verification is enabled by default (insecure=False) and disabled only when the user
     # checks the "Trust any certificate (not secure)" box.
-    if is_platform_path:
-        verify_ssl: str | bool = DEFAULT_PROXYDOME_CERTFICATE_PATH
-    else:
-        verify_ssl = not argToBoolean(params.get("insecure", False))
+    verify_ssl: bool = not argToBoolean(params.get("insecure", False))
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)
-
-    if is_platform_path:
-        register_proxydome_header(client)
 
     return client, aws_session
 
