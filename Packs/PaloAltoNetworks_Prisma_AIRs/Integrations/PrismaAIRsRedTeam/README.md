@@ -353,7 +353,7 @@ There are no input arguments for this command.
 ### prisma-airs-redteam-targets-validate-auth
 
 ***
-Validate authentication credentials for a Red Team target provider without creating or modifying a target. Useful for verifying credentials before creating a target. The server proxies the credentials against the target provider's endpoint, so valid live credentials (and typically a `target_id`) are required for a successful validation.
+Validate authentication credentials for a Red Team target provider without creating or modifying a target. Useful for verifying credentials before creating a target.
 
 #### Base Command
 
@@ -363,8 +363,8 @@ Validate authentication credentials for a Red Team target provider without creat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| auth_type | The authentication type to validate. Supported values include HEADERS, BASIC_AUTH, OAUTH2. | Required |
-| auth_config | The authentication configuration as a JSON object \(e.g., \`{"headers": {"Authorization": "Bearer sk-xxx"}}\`\). | Required |
+| auth_type | The authentication type to validate (for example, HEADERS, BEARER, API_KEY). | Required |
+| auth_config | The authentication configuration as a JSON object (for example: {"Authorization": "Bearer sk-xxx"}). | Required |
 | target_id | The optional UUID of an existing target to validate credentials against. | Optional |
 | network_broker_channel_uuid | The optional network broker channel UUID to route the validation through. | Optional |
 
@@ -393,7 +393,7 @@ Validate authentication credentials for a Red Team target provider without creat
 ### prisma-airs-redteam-targets-templates
 
 ***
-List Red Team target configuration templates per provider. Each template describes the connection fields expected for that target provider type. Read-only.
+List Red Team target configuration templates per provider (for example, OPENAI, HUGGING_FACE, DATABRICKS, BEDROCK, REST, STREAMING, WEBSOCKET). Each template describes the connection fields expected for that target provider type.
 
 #### Base Command
 
@@ -898,7 +898,7 @@ Delete a Red Team tenant instance. This permanently removes the instance and can
 ### prisma-airs-redteam-devices-create
 
 ***
-Create one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5). The parent instance's app_id/region/tsg_id are resolved automatically from the tenant_id when not supplied.
+Create one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
 
 #### Base Command
 
@@ -1139,7 +1139,7 @@ Create a new Red Team custom target adapter. By default the script is run end-to
 | script_b64 | The adapter Python script, already base64-encoded. Use this or script. | Optional |
 | description | An optional description for the adapter. | Optional |
 | network_broker_channel_uuid | The network broker channel UUID. Optional while the adapter is a DRAFT, required to activate it (validate=true). | Optional |
-| variables | A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). | Optional |
+| variables | A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). Example: [{"key":"endpoint","value":"http://agent.svc:8080","type":"VAR"},{"key":"api_key","value":"s3cret","type":"SECRET"}]. | Optional |
 | validate | Whether to run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
@@ -1941,7 +1941,7 @@ Update a Red Team network broker channel's name and/or description. At least one
 ### prisma-airs-redteam-languages-list
 
 ***
-List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane. Both planes return the same shape (and, in practice, the same list).
+List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane.
 
 #### Base Command
 
@@ -2327,7 +2327,7 @@ Get stream details for a Red Team dynamic scan report.
 ### prisma-airs-redteam-report-download
 
 ***
-Download a Red Team scan report and attach it to the War Room. The endpoint streams the report back as a ZIP archive bundling the report file(s) (for example `report_summary.csv`).
+Download a Red Team scan report and attach it to the War Room. The endpoint streams the report back as a ZIP archive bundling the report file(s) (for example report_summary.csv).
 
 #### Base Command
 
@@ -2381,7 +2381,7 @@ Returns the report as a downloadable ZIP file in the War Room. The archive conte
 ### prisma-airs-redteam-report-generate-partial
 
 ***
-Unlock the partial report of a still-running Red Team scan. Consumes one quota credit of the job type and unlocks the report for viewing. The job must be in the `PARTIALLY_COMPLETE` state. Returns the updated job information.
+Unlock the partial report of a still-running Red Team scan. Consumes one quota credit of the job type and unlocks the report for viewing. The job must be in the PARTIALLY_COMPLETE state. Returns the updated job information.
 
 #### Base Command
 
@@ -3164,7 +3164,7 @@ Add an allowed value to an existing custom-attack property name.
 ### prisma-airs-redteam-sentiment-get
 
 ***
-Get the sentiment (up/down-vote) recorded for a Red Team scan report. Read-only.
+Get the sentiment (up/down-vote) recorded for a Red Team scan report.
 
 #### Base Command
 
@@ -3241,7 +3241,7 @@ Update the sentiment (up/down-vote) for a Red Team scan report.
 ### prisma-airs-redteam-prompt-sets-reference
 
 ***
-Get the reference metadata for a single custom prompt set by UUID.
+Resolve a prompt set reference (the data-plane consumption view of a prompt set).
 
 #### Base Command
 
@@ -3251,7 +3251,7 @@ Get the reference metadata for a single custom prompt set by UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The UUID of the custom prompt set. | Required |
+| uuid | The UUID of the prompt set. | Required |
 
 #### Context Output
 
@@ -3259,12 +3259,12 @@ Get the reference metadata for a single custom prompt set by UUID.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamPromptSetReference.uuid | String | The UUID of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetReference.name | String | The name of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetReference.status | String | The validation status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetReference.status | String | The status of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetReference.active | Boolean | Whether the prompt set is active. |
-| PrismaAIRs.RedTeamPromptSetReference.version | String | The current version ID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetReference.tsg_id | String | The tenant service group ID owning the prompt set. |
-| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | The when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | The when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetReference.version | String | The version of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetReference.tsg_id | String | The tenant Service Group ID that owns the prompt set. |
+| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | The creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | The last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3283,7 +3283,7 @@ Get the reference metadata for a single custom prompt set by UUID.
 ### prisma-airs-redteam-prompt-sets-version-info
 
 ***
-Get version information (status, latest flag, and prompt counts) for a custom prompt set.
+Get version information for a prompt set, including prompt counts.
 
 > **Note:** As of this release the upstream `.../version-info` endpoint returns an HTTP 500 (`internal_error`) for every prompt set queried, so this command currently surfaces that server error. The command is implemented to match the working reference/active-list contract and will function once the upstream endpoint is fixed.
 
@@ -3295,7 +3295,7 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The UUID of the custom prompt set. | Required |
+| uuid | The UUID of the prompt set. | Required |
 | version | A specific version ID to query. If not provided, the latest version is returned. | Optional |
 
 #### Context Output
@@ -3303,10 +3303,10 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.uuid | String | The UUID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.status | String | The validation status of the version. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.status | String | The status of the prompt set version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.is_latest | Boolean | Whether this is the latest version. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.version | String | The version ID. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | The when the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.version | String | The version identifier. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | The timestamp the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts | Number | The total number of prompts in the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.active_prompts | Number | The number of active prompts in the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.inactive_prompts | Number | The number of inactive prompts in the version. |
@@ -3320,7 +3320,7 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 ### prisma-airs-redteam-prompt-sets-active-list
 
 ***
-List all active custom prompt sets available to the tenant.
+List active prompt sets (the data-plane consumption view).
 
 #### Base Command
 
@@ -3336,11 +3336,11 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamPromptSetActive.uuid | String | The UUID of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetActive.name | String | The name of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetActive.status | String | The validation status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetActive.status | String | The status of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetActive.active | Boolean | Whether the prompt set is active. |
-| PrismaAIRs.RedTeamPromptSetActive.version | String | The current version ID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | The when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | The when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetActive.version | String | The version of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | The creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | The last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
