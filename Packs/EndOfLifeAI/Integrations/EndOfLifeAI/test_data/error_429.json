@@ -1,0 +1,5 @@
+{
+  "error": "Rate limit exceeded. Free tier allows 150 requests per day; the count resets at 00:00 UTC.",
+  "upgrade": "https://endoflife.ai/api#get-key",
+  "docs": "https://endoflife.ai/api"
+}
