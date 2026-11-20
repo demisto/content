@@ -32,11 +32,22 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Select products to fetch | Products to fetch alerts for. If none is selected, alerts for all products are fetched. | False |
 | Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Fetch alerts for selected products
+
+By default, the integration fetches alerts for all Doppel products. To limit the fetch, select one or more products in the **Select products to fetch** parameter: *domains*, *social_media*, *mobile_apps*, *ecommerce*, *crypto*, *email*, *paid_ads*, *telco*, or *darkweb*. The parameter works the same way with API Version V1 and V2.
+
+- When no product is selected, alerts for all products are fetched, including alerts for Doppel products that are not in the list.
+- When one or more products are selected, only alerts for those products are fetched. Doppel applies the filter, so the *Number of incidents for each fetch* limit applies to the selected products only.
+- The filter applies to alerts created after the last fetch. Changing the selection does not remove incidents that were already created, and does not fetch older alerts for a newly selected product.
+- The filter applies to ***fetch-incidents*** only. Mirroring of existing incidents and the ***doppel-get-alerts*** command are not filtered.
+- **Test** checks the selected products against Doppel, so a selection that Doppel rejects fails the test.
 
 ## Commands
 

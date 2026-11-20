@@ -22,6 +22,7 @@ from Doppel import (
     get_modified_remote_data_command,
     format_datetime,
     _paginated_call_to_get_alerts,
+    _fetch_products_to_modules,
     _get_last_fetch_datetime,
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
@@ -1741,6 +1742,289 @@ def test_fetch_incidents_persists_boundary_ids(mocker):
     last_run_data = set_last_run.call_args[0][0]
     assert last_run_data["last_run"] == "2025-01-27T07:55:12Z"
     assert last_run_data["recently_seen_ids"] == ["TET-2"]
+
+
+# ---------------- Product fetch filter (Select products to fetch) ----------------
+
+V1_ALERTS_URL = "https://api.doppel.com/v1/alerts"
+FETCH_FILTER_PARAMS = {"max_fetch": 50, "fetch_timeout": "30", "mirror_direction": "None"}
+FETCH_FILTER_LAST_RUN = {"last_run": "2025-01-27T07:55:00Z", "recently_seen_ids": []}
+FETCH_FILTER_PAGE = {
+    "alerts": [
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742", "product": "domains"},
+        {"id": "TET-2", "created_at": "2025-01-27T07:55:12.063742", "product": "social_media"},
+    ]
+}
+# The exact query the fetch sends when no product is selected (page 0, cursor from FETCH_FILTER_LAST_RUN).
+UNFILTERED_FETCH_QUERY = {
+    "created_after": ["2025-01-27t07:55:00"],
+    "sort_type": ["date_sourced"],
+    "sort_order": ["asc"],
+    "page": ["0"],
+    "page_size": ["200"],
+}
+
+
+def _v1_client():
+    return Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+
+
+def _mock_alert_pages(requests_mock):
+    """Serve one page of alerts, then an empty page, from the V1 alerts endpoint."""
+    return requests_mock.get(V1_ALERTS_URL, [{"json": FETCH_FILTER_PAGE}, {"json": {"alerts": []}}])
+
+
+@pytest.mark.parametrize(
+    "fetch_products, expected_modules",
+    [
+        (None, None),
+        ("", None),
+        ([], None),
+        ([""], None),
+        (["domains"], "domains"),
+        ("domains", "domains"),
+        (["domains", "social_media", "telco"], "domains,social_media,telco"),
+        ("domains, social_media", "domains,social_media"),
+        ([" Domains ", "SOCIAL_MEDIA", "domains"], "domains,social_media"),
+        (
+            ["domains", "social_media", "mobile_apps", "ecommerce", "crypto", "email", "paid_ads", "telco", "darkweb"],
+            "domains,social_media,mobile_apps,ecommerce,crypto,email,paid_ads,telco,darkweb",
+        ),
+    ],
+)
+def test_fetch_products_to_modules(fetch_products, expected_modules):
+    """The selection becomes one comma-separated string (trimmed, lower-cased, de-duplicated), or None when empty."""
+    assert _fetch_products_to_modules(fetch_products) == expected_modules
+
+
+@pytest.mark.parametrize(
+    "fetch_products, unsupported",
+    [
+        (["not_a_product"], "not_a_product"),
+        (["domains", "not_a_product"], "not_a_product"),
+        ("domains,severity", "severity"),
+    ],
+)
+def test_fetch_products_to_modules_rejects_unsupported_value(fetch_products, unsupported):
+    """An unsupported value raises an error that names it; it is never dropped silently."""
+    with pytest.raises(DemistoException) as error:
+        _fetch_products_to_modules(fetch_products)
+
+    assert f"parameter: {unsupported}." in str(error.value)
+    assert "Supported values are: domains, social_media" in str(error.value)
+
+
+def test_fetch_products_match_integration_yml():
+    """The values the code accepts are exactly the options the fetch_products parameter offers in Doppel.yml."""
+    from pathlib import Path
+
+    from Doppel import FETCH_PRODUCTS
+
+    lines = (Path(__file__).resolve().parent / "Doppel.yml").read_text().splitlines()
+    options_start = lines.index("  options:", lines.index("  name: fetch_products")) + 1
+    options = []
+    for line in lines[options_start:]:
+        if not line.startswith("  - "):
+            break
+        options.append(line[4:].strip())
+
+    assert tuple(options) == FETCH_PRODUCTS
+
+
+def test_paginated_call_to_get_alerts_with_modules():
+    """A modules value is added to the fetch query as given; product is never added."""
+    mock_client = MagicMock()
+    mock_client.get_alerts.return_value = {"alerts": [{"id": "alert1"}]}
+    last_fetch_datetime = datetime(2025, 2, 27, 14, 30, 0)
+
+    _paginated_call_to_get_alerts(mock_client, 0, last_fetch_datetime, "domains,social_media")
+
+    mock_client.get_alerts.assert_called_once_with(
+        params={
+            "created_after": "2025-02-27T14:30:00",
+            "sort_type": "date_sourced",
+            "sort_order": "asc",
+            "page": 0,
+            "page_size": 200,
+            "modules": "domains,social_media",
+        }
+    )
+
+
+@pytest.mark.parametrize("fetch_products", [None, "", []])
+def test_fetch_incidents_without_product_selection_sends_unchanged_request(mocker, requests_mock, fetch_products):
+    """With no product selected, the HTTP request carries exactly the pre-filter query: no modules, no product."""
+    _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {}, fetch_products=fetch_products)
+
+    assert alerts_mock.request_history[0].qs == UNFILTERED_FETCH_QUERY
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-1", "Doppel Alert TET-2"]
+
+
+def test_fetch_incidents_default_argument_sends_unchanged_request(mocker, requests_mock):
+    """Callers that do not pass fetch_products at all get the unfiltered request."""
+    _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert alerts_mock.request_history[0].qs == UNFILTERED_FETCH_QUERY
+
+
+@pytest.mark.parametrize(
+    "fetch_products, expected_modules",
+    [
+        (["domains"], "domains"),
+        (["domains", "social_media", "telco"], "domains,social_media,telco"),
+    ],
+)
+def test_fetch_incidents_with_product_selection_sends_single_modules_value(
+    mocker, requests_mock, fetch_products, expected_modules
+):
+    """A selection adds one comma-separated modules value to every page request and never sends product."""
+    set_last_run = _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {}, fetch_products=fetch_products)
+
+    assert alerts_mock.call_count == 2
+    for page, request in enumerate(alerts_mock.request_history):
+        # One value in the list means the parameter was sent once, not repeated per product.
+        assert request.qs == {**UNFILTERED_FETCH_QUERY, "page": [str(page)], "modules": [expected_modules]}
+        assert "product" not in request.qs
+    # The filter runs in the API; the cursor still advances to the newest fetched alert.
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T07:55:12Z", "recently_seen_ids": ["TET-2"]}
+
+
+def test_fetch_incidents_with_unsupported_product_fails_before_any_request(mocker, requests_mock):
+    """An unsupported value stops the fetch with an error naming it: no request, no incidents, cursor untouched."""
+    set_last_run = _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    with pytest.raises(DemistoException, match="not_a_product"):
+        fetch_incidents_command(_v1_client(), {}, fetch_products=["domains", "not_a_product"])
+
+    assert alerts_mock.call_count == 0
+    demisto.incidents.assert_not_called()
+    set_last_run.assert_not_called()
+
+
+def test_test_module_without_product_selection_sends_unchanged_request(requests_mock):
+    """With no product selected, the test request carries only its date window."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    assert test_module(_v1_client()) == "ok"
+
+    assert set(alerts_mock.last_request.qs) == {"created_before", "created_after"}
+
+
+def test_test_module_sends_configured_product_filter(requests_mock):
+    """The test request carries the same single modules value as fetch, and no product."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    assert test_module(_v1_client(), fetch_products=["domains", "darkweb"]) == "ok"
+
+    assert alerts_mock.last_request.qs["modules"] == ["domains,darkweb"]
+    assert set(alerts_mock.last_request.qs) == {"created_before", "created_after", "modules"}
+
+
+def test_test_module_fails_when_api_rejects_product_filter(requests_mock):
+    """A filter the API rejects fails the test with the API's message instead of returning ok."""
+    requests_mock.get(V1_ALERTS_URL, status_code=400, json={"message": "domains is not a valid modules"})
+
+    with pytest.raises(DemistoException, match="not a valid modules"):
+        test_module(_v1_client(), fetch_products=["domains"])
+
+
+def test_test_module_with_unsupported_product_fails_before_any_request(requests_mock):
+    """An unsupported value fails the test with an error naming it, without calling the API."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    with pytest.raises(DemistoException, match="not_a_product"):
+        test_module(_v1_client(), fetch_products=["not_a_product"])
+
+    assert alerts_mock.call_count == 0
+
+
+@pytest.mark.parametrize("command", ["test-module", "fetch-incidents"])
+def test_main_passes_fetch_products_param_to_request(mocker, requests_mock, command):
+    """main() wires the fetch_products instance param into both the test and the fetch request."""
+    from Doppel import main
+
+    _fetch_demisto_mocks(
+        mocker,
+        params={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["domains", "social_media"],
+            **FETCH_FILTER_PARAMS,
+        },
+        last_run=FETCH_FILTER_LAST_RUN,
+    )
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Doppel.return_results")
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    main()
+
+    return_error_mock.assert_not_called()
+    assert alerts_mock.request_history[0].qs["modules"] == ["domains,social_media"]
+    assert "product" not in alerts_mock.request_history[0].qs
+
+
+@pytest.mark.parametrize("command", ["test-module", "fetch-incidents"])
+def test_main_reports_unsupported_fetch_product(mocker, requests_mock, command):
+    """An unsupported fetch_products value surfaces as a command error that names the value."""
+    from Doppel import main
+
+    _fetch_demisto_mocks(
+        mocker,
+        params={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["not_a_product"],
+            **FETCH_FILTER_PARAMS,
+        },
+        last_run=FETCH_FILTER_LAST_RUN,
+    )
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value={})
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    main()
+
+    assert alerts_mock.call_count == 0
+    assert "not_a_product" in return_error_mock.call_args[0][0]
+
+
+def test_main_ignores_fetch_products_for_other_commands(mocker, requests_mock):
+    """Commands other than fetch and test never read the fetch filter, so doppel-get-alerts stays unfiltered."""
+    from Doppel import main
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["domains"],
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="doppel-get-alerts")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Doppel.return_results")
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json=FETCH_FILTER_PAGE)
+
+    main()
+
+    return_error_mock.assert_not_called()
+    assert "modules" not in alerts_mock.last_request.qs
 
 
 # ---------------- Revival reopen entries ----------------

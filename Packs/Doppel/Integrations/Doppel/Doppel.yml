@@ -117,6 +117,22 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- additionalinfo: Products to fetch alerts for. If none is selected, alerts for all products are fetched.
+  display: Select products to fetch
+  name: fetch_products
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - domains
+  - social_media
+  - mobile_apps
+  - ecommerce
+  - crypto
+  - email
+  - paid_ads
+  - telco
+  - darkweb
 - additionalinfo: Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance. The doppel-get-alert-screenshot command works regardless of this setting.
   display: Attach alert screenshots to incidents
   name: attach_screenshots

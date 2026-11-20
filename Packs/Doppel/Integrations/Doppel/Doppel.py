@@ -43,6 +43,8 @@ DEFAULT_MAX_FETCH = 10
 MAX_FETCH_PAGES_PER_RUN = 1000
 # Map Doppel alert severities to XSOAR incident severities (0 = Unknown).
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+# Doppel products selectable in the "Select products to fetch" parameter (keep in sync with Doppel.yml).
+FETCH_PRODUCTS = ("domains", "social_media", "mobile_apps", "ecommerce", "crypto", "email", "paid_ads", "telco", "darkweb")
 
 # Queue states that mean the alert needs attention again. When Doppel's Revival
 # Monitoring reopens an alert (same alert id, no new row), it lands in doppel_review
@@ -52,7 +54,7 @@ ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 # Client attribution sent with every Doppel API request (usage attribution only; the header
 # is optional server-side and never affects request handling). The version is the pack
 # version and must be bumped on each release (pack_metadata.json is not readable at runtime).
-PACK_VERSION = "1.4.0"
+PACK_VERSION = "1.5.0"
 CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
 
 # --- API V2 (OAuth 2.0 client credentials) constants ---
@@ -619,7 +621,28 @@ def _get_last_fetch_datetime(last_run):
     return last_fetch_datetime
 
 
-def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
+def _fetch_products_to_modules(fetch_products: Any) -> str | None:
+    """Turn the fetch_products param into the value of the alerts API "modules" filter.
+
+    Returns None when no product is selected, so the request stays unfiltered.
+
+    The API reads the products from a single comma-separated value and applies only the
+    first value of a repeated parameter, so the selection is joined here and never passed
+    on as a list. An unsupported value raises instead of being dropped: dropping the only
+    selected value would remove the filter and fetch every product.
+    """
+    products = [str(product).strip().lower() for product in argToList(fetch_products)]
+    products = list(dict.fromkeys(product for product in products if product))
+    unsupported = [product for product in products if product not in FETCH_PRODUCTS]
+    if unsupported:
+        raise DemistoException(
+            f"Unsupported value in the 'Select products to fetch' parameter: {', '.join(unsupported)}. "
+            f"Supported values are: {', '.join(FETCH_PRODUCTS)}."
+        )
+    return ",".join(products) or None
+
+
+def _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules: str | None = None):
     """
     Set the query parameters
     """
@@ -631,6 +654,9 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
         "page": page,
         "page_size": DOPPEL_MAX_PAGE_SIZE,  # Pull large pages to drain backlogs in fewer requests (API max is 200)
     }
+    if modules:
+        # "modules" is sent alone: the API intersects it with "product" when both are present.
+        query_params["modules"] = modules
     get_alerts_response = client.get_alerts(params=query_params)
     alerts = get_alerts_response.get("alerts", None)
     return alerts
@@ -639,7 +665,7 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, fetch_products: Any = None) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -649,15 +675,22 @@ def test_module(client: Client) -> str:
     :type client: ``Client``
     :param Client: client to use
 
+    :type fetch_products: ``Any``
+    :param fetch_products: the "Select products to fetch" param; when set, the test request
+        carries the same filter as fetch, so a filter the API rejects fails the test.
+
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    modules = _fetch_products_to_modules(fetch_products)
 
     try:
         # Using the same dates so that we do not fetch any data for testing,
         # but still get the response as 200
         current_datetime_str = datetime.now().strftime(DOPPEL_API_DATE_FORMAT)
         query_params = {"created_before": current_datetime_str, "created_after": current_datetime_str}
+        if modules:
+            query_params["modules"] = modules
 
         # Call the client's `get_alerts` method to test the connection
         client.get_alerts(params=query_params)
@@ -991,7 +1024,7 @@ def _alert_to_incident(alert, mirroring_object):
     }
 
 
-def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
+def fetch_incidents_command(client: Client, args: dict[str, Any], fetch_products: Any = None) -> None:
     """
     Fetch incidents from Doppel alerts and create XSOAR incidents.
 
@@ -1000,8 +1033,14 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     via a small boundary set), so a large multi-page backlog is drained safely over
     consecutive runs without ever creating the same alert twice. Only lightweight
     cursor metadata is persisted in lastRun - never raw incident data.
+
+    When fetch_products (the "Select products to fetch" param) is set, the API returns
+    only alerts for those products; otherwise the request is unfiltered.
     """
     demisto.debug("Doppel - Fetching alerts from Doppel.")
+    modules = _fetch_products_to_modules(fetch_products)
+    if modules:
+        demisto.debug(f"Doppel - Fetch is limited to products: {modules}.")
     start_time = time.time()
     timeout = _parse_fetch_timeout()
     fetch_limit = _parse_max_fetch()
@@ -1027,7 +1066,7 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
         if page >= MAX_FETCH_PAGES_PER_RUN:
             demisto.debug(f"Doppel - Reached the per-run page ceiling ({MAX_FETCH_PAGES_PER_RUN}); continuing next run.")
             break
-        alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
+        alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules)
         if not alerts:
             demisto.debug("Doppel - No more alerts returned; exiting pagination loop.")
             break
@@ -1301,10 +1340,11 @@ def main() -> None:
 
     # Read once here and pass down: functions below must not reach for demisto.params() themselves.
     attach_screenshots: bool = argToBoolean(params.get("attach_screenshots", False))
+    fetch_products = params.get("fetch_products")
 
     # Explicitly define the type for the command function dictionary
     supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
-        "fetch-incidents": fetch_incidents_command,
+        "fetch-incidents": lambda client, args: fetch_incidents_command(client, args, fetch_products=fetch_products),
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": lambda client, args: get_remote_data_command(client, args, attach_screenshots=attach_screenshots),
         "update-remote-system": update_remote_system_command,
@@ -1318,7 +1358,9 @@ def main() -> None:
     }
 
     # Special case for 'test-module' which does not take args
-    supported_commands_test_module: dict[str, Callable[[Client], Any]] = {"test-module": test_module}
+    supported_commands_test_module: dict[str, Callable[[Client], Any]] = {
+        "test-module": lambda client: test_module(client, fetch_products=fetch_products)
+    }
 
     current_command: str = demisto.command()
     demisto.info(f"Command being called is {current_command}")
