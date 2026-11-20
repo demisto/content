@@ -1,0 +1,39 @@
+{
+    "entity": {
+        "id": "a:a:JF2xro6g",
+        "name": "SERVER01",
+        "fqdn": "server.domain.local",
+        "domain": "domain.local",
+        "assetType": 2,
+        "osType": 2,
+        "operatingSystem": "Windows Server 2019 Datacenter",
+        "ipV4Addresses": [
+            "10.0.0.15"
+        ],
+        "ipV6Addresses": [],
+        "protectionState": 3,
+        "identityProtectionState": 1,
+        "rpcProtectionState": 1,
+        "isQuarantined": false,
+        "riskScore": 42,
+        "source": 3,
+        "healthState": {
+            "healthStatus": 1,
+            "healthIssuesList": []
+        },
+        "labels": [
+            {
+                "id": "l:a:1234abcd",
+                "name": "Crown Jewels"
+            },
+            {
+                "id": "l:a:5678efgh",
+                "name": "Production"
+            }
+        ],
+        "lastLogon": 1724932815000,
+        "protectedAt": 1722340815000,
+        "monitoringStatus": 1
+    },
+    "permission": 3
+}
