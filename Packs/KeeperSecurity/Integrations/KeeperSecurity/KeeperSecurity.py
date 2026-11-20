@@ -1,13 +1,9 @@
-from datetime import datetime
+import hashlib
+from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from keepercommander import api, crypto, utils
-from keepercommander.auth.login_steps import DeviceApprovalChannel, LoginStepDeviceApproval, LoginStepPassword
-from keepercommander.loginv3 import InvalidDeviceToken, LoginV3API, LoginV3Flow
-from keepercommander.params import KeeperParams
-from keepercommander.proto import APIRequest_pb2
 
 """ CONSTANTS """
 
@@ -18,469 +14,202 @@ PRODUCT = "Security"
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_MAX_FETCH = 10000
 API_MAX_FETCH = 1000
-SESSION_TOKEN_TTL = 3600  # In seconds
-REGISTRATION_FLOW_MESSAGE = (
-    "In order to authorize the instance, first run the command `!keeper-security-register-start`."
-    " A code will be sent to your email, copy it and paste that value in the command"
-    " `!keeper-security-register-complete` as an argument to finish the process."
+DEFAULT_FIRST_FETCH = "1 hour"
+EVENTS_ENDPOINT = "/api/rest/public/events"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, the only format the API parses reliably
+INVALID_TOKEN_MESSAGE = (
+    "Authorization failed. Make sure the API key is valid, has not expired or been revoked, and was created with the "
+    "'SIEM:1' (read) integration scope."
 )
-DEVICE_ALREADY_REGISTERED = (
-    "Device is already registered, try running the 'keeper-security-register-complete'"
-    " command without supplying a code argument."
-)
-SSO_REDIRECT = "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
-LAST_RUN = "Last Run"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-""" HELPER FUNCTIONS """
-
-
-def get_current_time_in_seconds() -> int:
-    """A function to return time as an int number of seconds since the epoch
-
-    Returns:
-        int: Number of seconds since the epoch
-    """
-    return int(datetime.now().timestamp())
-
-
-def load_integration_context_into_keeper_params(
-    username: str,
-    password: str,
-    server_url: str,
-):
-    """Load data from the integration context into a KeeperParams instance, which is used
-    to communicate with the product. We call it inside the init method of the Client that
-    will be used to communicate with the product.
-
-    Args:
-        username (str): The username of the account.
-        password (str): The password of the account.
-        server_url (str): The server URL.
-
-    Returns:
-        KeeperParams: An instance that will be used to communicate with the product.
-    """
-    integration_context = get_integration_context()
-    keeper_params = KeeperParams()
-    keeper_params.user = username
-    keeper_params.password = password
-    keeper_params.server = server_url
-
-    # To allow requests to bypass proxy
-    # ref -> https://docs.keeper.io/en/v/secrets-manager/commander-cli/troubleshooting-commander-cli#ssl-certificate-errors
-    keeper_params.rest_context.certificate_check = False
-
-    keeper_params.device_token = integration_context.get("device_token")
-    keeper_params.device_private_key = integration_context.get("device_private_key")
-    keeper_params.session_token = integration_context.get("session_token")
-    keeper_params.clone_code = integration_context.get("clone_code")
-    return keeper_params
-
-
-def append_to_integration_context(context_to_append: dict[str, Any]):
-    """Appends data to the integration context DB.
-
-    Args:
-        context_to_append (dict[str, Any]): Context data to append
-    """
-    integration_context = get_integration_context()
-    integration_context |= context_to_append
-    set_integration_context(integration_context)
-
-
 """ CLIENT CLASS """
 
 
-class Client:
-    class DeviceApproval(LoginStepDeviceApproval):
-        """
-        In charge of sending and verifying the code sent to the user's email when registering the device for the first time.
-        LoginStepDeviceApproval is is an abstract class that must be implemented. Some of the abstract methods
-        are not needed, therefore, we implement them by including a pass segment.
-        """
+class Client(BaseClient):
+    """Client for the Keeper Security Admin REST API (ARAM events)."""
 
-        @property
-        def username(self):
-            pass
-
-        def cancel(self):
-            pass
-
-        def send_push(
-            self,
-            params: KeeperParams,
-            channel: DeviceApprovalChannel,
-            encryptedDeviceToken: bytes,
-            encryptedLoginToken: bytes,
-        ):
-            LoginV3Flow.verifyDevice(
-                params, encryptedDeviceToken, encryptedLoginToken, approval_action="push", approval_channel=channel
-            )
-
-        def send_code(
-            self,
-            params: KeeperParams,
-            channel: DeviceApprovalChannel,
-            encryptedDeviceToken: bytes,
-            encryptedLoginToken: bytes,
-            code: str,
-        ):
-            LoginV3Flow.verifyDevice(
-                params,
-                encryptedDeviceToken,
-                encryptedLoginToken,
-                approval_action="code",
-                approval_channel=channel,
-                approval_code=code,
-            )
-
-        def resume(self):
-            pass
-
-    class PasswordStep(LoginStepPassword):
-        """
-        In charge of verifying the user's password after verifying the device registration.
-        LoginStepPassword is is an abstract class that must be implemented. Some of the abstract methods
-        are not needed, therefore, we implement them by including a pass segment.
-        """
-
-        def __init__(self, salt_bytes: bytes, salt_iterations: int):
-            self.salt_bytes = salt_bytes
-            self.salt_iterations = salt_iterations
-
-        @property
-        def username(self):
-            pass
-
-        def forgot_password(self):
-            pass
-
-        def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> Any:
-            # This function returns the data type APIRequest_pb2.LoginResponse
-            params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)
-            return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
-
-        def verify_biometric_key(self, biometric_key: bytes):
-            pass
-
-        def cancel(self):
-            pass
-
-    def __init__(
-        self,
-        server_url: str,
-        username: str,
-        password: str,
-    ) -> None:
-        self.keeper_params: KeeperParams = load_integration_context_into_keeper_params(
-            username=username,
-            password=password,
-            server_url=server_url,
+    def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False) -> None:
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"x-api-token": f"Bearer {api_key}", "Accept": "application/json"},
         )
 
-    def refresh_session_token_if_needed(
+    @staticmethod
+    def _error_handler(res: requests.Response) -> None:
+        if res.status_code == 403:
+            raise DemistoException(f"{INVALID_TOKEN_MESSAGE} Response: {res.text}", res=res)
+        if res.status_code == 429:
+            raise DemistoException(f"Keeper Security throttled the request (HTTP 429). Response: {res.text}", res=res)
+        raise DemistoException(f"Error in API call [{res.status_code}] - {res.reason}. Response: {res.text}", res=res)
+
+    def get_events(
         self,
-    ) -> None:
-        """Refresh the session token if needed.
+        start_date: datetime,
+        end_date: datetime,
+        limit: int = API_MAX_FETCH,
+        continuation_token: str | None = None,
+    ) -> dict[str, Any]:
+        """Gets one page of audit events, in ascending order. Both date bounds are inclusive.
 
-        Raises:
-            DemistoException: If saved the TTL of the session token, but it is not found in the
-            integration's context.
+        Note that a continuation token is only valid together with the same start and end dates it was issued for.
         """
-        integration_context = get_integration_context()
-        valid_until = integration_context.get("valid_until", 0)
-        current_time = get_current_time_in_seconds()
-        if self.keeper_params.session_token and current_time >= valid_until - 10:
-            demisto.info("Refreshing session token")
-            encrypted_device_token = LoginV3API.get_device_id(self.keeper_params)
-            resp = self.save_device_tokens(
-                encrypted_device_token=encrypted_device_token,
-            )
-            encrypted_login_token: bytes = resp.encryptedLoginToken
-
-            self.validate_device_registration(
-                encrypted_device_token=encrypted_device_token,
-                encrypted_login_token=encrypted_login_token,
-            )
-            self.save_session_token()
-        else:
-            demisto.info("No need to refresh session token")
-
-    def save_device_tokens(self, encrypted_device_token: bytes) -> Any:
-        """Save the devices' tokens when starting to verify the device registration.
-
-        Args:
-            encrypted_device_token (bytes): The encrypted device token.
-
-        Returns:
-            APIRequest_pb2.LoginResponse: The response that holds data about the API call.
-        """
-        # This function returns the data type APIRequest_pb2.LoginResponse
-        resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token, cloneCode=None, loginType="NORMAL")
-        append_to_integration_context(
-            {
-                "device_private_key": self.keeper_params.device_private_key,
-                "device_token": self.keeper_params.device_token,
-                "login_token": utils.base64_url_encode(resp.encryptedLoginToken),
-            }
-        )
-        return resp
-
-    def start_registering_device(
-        self,
-        device_approval: DeviceApproval,
-        new_device: bool = False,
-    ):
-        """Start the registration process of a new or old device.
-
-        Args:
-            device_approval (DeviceApproval): DeviceApproval instance that is in charge of sending the code to the
-            user's email.
-            new_device (bool, optional): If we should configure a new device. Defaults to False.
-
-        Raises:
-            DemistoException: If we try registering an already registered and authenticated device.
-            DemistoException: If we get a response status that we don't know how to handle.
-        """
-        encryptedDeviceToken = LoginV3API.get_device_id(self.keeper_params, new_device)
-        resp = self.save_device_tokens(
-            encrypted_device_token=encryptedDeviceToken,
-        )
-        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # pylint: disable=no-member
-            # client goes to "standard device approval"
-            device_approval.send_push(
-                self.keeper_params,
-                DeviceApprovalChannel.Email,
-                encryptedDeviceToken,
-                resp.encryptedLoginToken,
-            )
-        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # pylint: disable=no-member
-            raise DemistoException(DEVICE_ALREADY_REGISTERED)
-        elif resp.loginState == APIRequest_pb2.REDIRECT_CLOUD_SSO:  # pylint: disable=no-member
-            raise DemistoException(SSO_REDIRECT)
-        else:
-            raise DemistoException(f"Unknown login state {resp.loginState}")
-
-    def validate_device_registration(
-        self,
-        encrypted_device_token: bytes,
-        encrypted_login_token: bytes,
-    ):
-        """Verify the registration process of a new or old device. This method is also used as part of the
-        mechanism to refresh the session token.
-
-        Args:
-            encrypted_device_token (bytes): The encrypted device token.
-            encrypted_login_token (bytes): The encrypted login token.
-
-        Raises:
-            DemistoException: When trying to verify the user's password, and an error occurs.
-            DemistoException: When trying to verify the device registration, and an error occurs.
-        """
-        resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token)
-        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # pylint: disable=no-member
-            salt = api.get_correct_salt(resp.salt)
-            password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
-            verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
-            # Disabling pylint due to external class declaration
-            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # pylint: disable=no-member
-                LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
-            else:
-                raise DemistoException(
-                    "Unknown login state after verify"
-                    # Disabling pylint due to external class declaration
-                    f" password {verify_password_response.loginState}"  # pylint: disable=no-member
-                )
-        else:
-            raise DemistoException(f"Unknown login state {resp.loginState}")
-
-    def finish_registering_device(
-        self,
-        device_approval: DeviceApproval,
-        encrypted_login_token: bytes,
-        code: str = "",
-    ):
-        """Finish the registration process of a new or old device. If the code argument is given, then
-        we are verifying the newly registered device.
-
-        Args:
-            device_approval (DeviceApproval): DeviceApproval instance that is in charge of verifying the code sent
-            to user's email.
-            encrypted_login_token (bytes): The encrypted login token.
-            code (str, optional): The code sent to the user's email. Defaults to "".
-        """
-        encrypted_device_token = utils.base64_url_decode(self.keeper_params.device_token)
-        if code:
-            device_approval.send_code(
-                self.keeper_params,
-                DeviceApprovalChannel.Email,
-                encrypted_device_token,
-                encrypted_login_token,
-                code,
-            )
-        self.validate_device_registration(
-            encrypted_device_token=encrypted_device_token,
-            encrypted_login_token=encrypted_login_token,
-        )
-
-    def start_registration(self):
-        device_approval = self.DeviceApproval()
-        try:
-            self.start_registering_device(device_approval)
-        except InvalidDeviceToken:
-            demisto.info("Registering new device")
-            self.start_registering_device(device_approval, new_device=True)
-
-    def save_session_token(
-        self,
-    ):
-        append_to_integration_context(
-            {
-                "session_token": self.keeper_params.session_token,
-                "clone_code": self.keeper_params.clone_code,
-                "valid_until": get_current_time_in_seconds() + SESSION_TOKEN_TTL,
-            }
-        )
-
-    def complete_registration(self, code: str):
-        device_approval = self.DeviceApproval()
-        integration_context = get_integration_context()
-        encrypted_login_token = utils.base64_url_decode(integration_context["login_token"])
-        self.finish_registering_device(device_approval, encrypted_login_token, code)
-        self.save_session_token()
-        if not self.keeper_params.session_token:
-            raise DemistoException("Could not find session token")
-
-    def query_audit_logs(self, limit: int, start_event_time: int) -> dict[str, Any]:
-        request_query = {
-            "command": "get_audit_event_reports",
-            "report_type": "raw",
-            "scope": "enterprise",
+        params: dict[str, Any] = {
+            "start_date": start_date.strftime(DATE_FORMAT),
+            "end_date": end_date.strftime(DATE_FORMAT),
             "limit": limit,
-            "order": "ascending",
-            "filter": {
-                "created": {"min": start_event_time},
-            },
         }
-        return api.communicate(self.keeper_params, request_query)
+        if continuation_token:
+            params["continuation_token"] = continuation_token
+        return self._http_request(
+            "GET",
+            EVENTS_ENDPOINT,
+            params=params,
+            # The API allows 10 requests per 10 seconds per API key and answers 429 when throttled.
+            retries=3,
+            status_list_to_retry=[429],
+            backoff_factor=3,
+            error_handler=self._error_handler,
+        )
 
-    def test_registration(self) -> None:
-        if not self.keeper_params.session_token:
-            demisto.debug("No session token configured")
-            raise DemistoException(REGISTRATION_FLOW_MESSAGE)
-        self.query_audit_logs(limit=1, start_event_time=0)
+
+""" HELPER FUNCTIONS """
 
 
-def load_json(path: str):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+def normalize_base_url(url: str) -> str:
+    """Accepts 'keepersecurity.com' as well as 'https://keepersecurity.com/' and returns a clean base URL."""
+    url = (url or "keepersecurity.com").strip().rstrip("/")
+    if not url.startswith(("http://", "https://")):
+        url = f"https://{url}"
+    return url
+
+
+def event_hash(event: dict[str, Any]) -> str:
+    """The API does not return an event ID, so identify an event by the fields that describe it."""
+    fields = ("timestamp", "audit_event", "username", "remote_address", "client_version", "category", "enterprise_id")
+    raw = "|".join(str(event.get(field, "")) for field in fields)
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def add_time_to_events(audit_events: list[dict[str, Any]]) -> None:
+    """Adds the `_time` field, which XSIAM uses as the event time. `timestamp` is in epoch milliseconds."""
+    for audit_event in audit_events:
+        audit_event["_time"] = timestamp_to_datestring(audit_event["timestamp"], is_utc=True)
+
+
+def dedup_events(
+    audit_events: list[dict[str, Any]], last_fetch_time_ms: int, last_fetched_hashes: set[str]
+) -> list[dict[str, Any]]:
+    """Removes events that were already fetched.
+
+    The query's start date has a resolution of seconds and is inclusive, so the same second can be returned again.
+    """
+    return [
+        audit_event
+        for audit_event in audit_events
+        if int(audit_event["timestamp"]) > last_fetch_time_ms
+        or (int(audit_event["timestamp"]) == last_fetch_time_ms and event_hash(audit_event) not in last_fetched_hashes)
+    ]
 
 
 def get_audit_logs(
-    client: Client, last_latest_event_time: int, max_fetch_limit: int, last_fetched_ids: set[str]
-) -> list[dict[str, Any]]:
-    continue_fetching = True
-    events_to_return: list[dict[str, Any]] = []
-    # last_latest_event_time -> UNIX epoch time in seconds
-    start_time_to_fetch = last_latest_event_time
-    fetched_ids = last_fetched_ids
-    res_count = 0
-    while continue_fetching and res_count < max_fetch_limit:
-        query_response = client.query_audit_logs(
-            limit=min(API_MAX_FETCH, max_fetch_limit - res_count), start_event_time=start_time_to_fetch
-        )
-        audit_events = query_response["audit_event_overview_report_rows"]
-        audit_events_count = len(audit_events)
-        demisto.debug(f"{LOG_LINE} got {audit_events_count} events from API")
-        if audit_events:
-            dedupped_audit_events = dedup_events(audit_events, fetched_ids)
-            dedupped_events_count = len(dedupped_audit_events)
-            demisto.debug(f"{LOG_LINE} Events count after dedup {dedupped_events_count}")
-            if dedupped_audit_events:
-                add_time_to_events(dedupped_audit_events)
-                res_count += dedupped_events_count
-                events_to_return.extend(dedupped_audit_events)
-                # Getting last events's creation date, assuming asc order
-                start_time_to_fetch = int(dedupped_audit_events[-1]["created"])
-                # We get the event IDs that have the same creation time as the latest event in the response
-                # We use them to dedup in the next run
-                fetched_ids = {
-                    str(audit_event["id"])
-                    for audit_event in dedupped_audit_events
-                    if int(audit_event["created"]) == start_time_to_fetch
-                }
-                # Last run of pagination, avoiding endless loop if all the page's results have the same time.
-                # We do not have other eay to handle this case.
-                if last_latest_event_time == start_time_to_fetch:
-                    demisto.debug("Got equal start and end time, this was the last page.")
-                    continue_fetching = False
-            else:
-                continue_fetching = False
-        else:
-            continue_fetching = False
-    demisto.setLastRun({"last_fetch_epoch_time": str(start_time_to_fetch), "last_fetch_ids": list(fetched_ids)})
-    return events_to_return
-
-
-def add_time_to_events(audit_events: list[dict[str, Any]]):
-    for audit_event in audit_events:
-        audit_event["_time"] = audit_event["created"]
-
-
-def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str]) -> list[dict[str, Any]]:
-    dedupped_audit_events = list(
-        filter(
-            lambda audit_event: str(audit_event["id"]) not in last_fetched_ids,
-            audit_events,
-        )
-    )
-    return dedupped_audit_events
-
-
-def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int) -> list[dict[str, Any]]:
-    demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
-    # SDK's query uses Epoch time to filter events
-    last_fetch_epoch_time = int(last_run.get("last_fetch_epoch_time", "0"))
-
-    # (if 0) returns False
-    last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
-    # last_fetch_epoch_time = 0
-    last_fetched_ids = set(last_run.get("last_fetch_ids", []))
-    audit_log = get_audit_logs(
-        client=client,
-        last_latest_event_time=last_fetch_epoch_time,
-        max_fetch_limit=max_fetch_limit,
-        last_fetched_ids=last_fetched_ids,
-    )
-    return audit_log
-
-
-def start_registration_command(client: Client):
-    client.start_registration()
-    return CommandResults(readable_output="Code was sent successfully to the user's email")
-
-
-def complete_registration_command(client: Client, code: str):
-    client.complete_registration(code=code)
-    return CommandResults(readable_output="Login completed")
-
-
-def test_authorization(
     client: Client,
-) -> CommandResults:
-    client.test_registration()
-    return CommandResults(readable_output="Successful connection")
+    start_time_ms: int,
+    max_fetch_limit: int,
+    last_fetched_hashes: set[str],
+    end_date: datetime | None = None,
+) -> tuple[list[dict[str, Any]], int, set[str]]:
+    """Fetches events newer than start_time_ms, following the continuation token.
+
+    Returns:
+        The events, the timestamp (ms) of the latest event and the hashes of the events with that timestamp.
+    """
+    end_date = end_date or datetime.now(UTC)
+    start_date = datetime.fromtimestamp(start_time_ms // 1000, tz=UTC)
+    events: list[dict[str, Any]] = []
+    latest_time_ms = start_time_ms
+    latest_hashes = set(last_fetched_hashes)
+    continuation_token = None
+    has_more = True
+
+    while has_more and len(events) < max_fetch_limit:
+        response = client.get_events(
+            start_date=start_date,
+            end_date=end_date,
+            limit=min(API_MAX_FETCH, max_fetch_limit - len(events)),
+            continuation_token=continuation_token,
+        )
+        page = response.get("events") or []
+        demisto.debug(f"{LOG_LINE} got {len(page)} events from API")
+        new_events = dedup_events(page, start_time_ms, last_fetched_hashes)
+        demisto.debug(f"{LOG_LINE} events count after dedup {len(new_events)}")
+        new_events = new_events[: max_fetch_limit - len(events)]
+
+        for audit_event in new_events:
+            timestamp = int(audit_event["timestamp"])
+            if timestamp > latest_time_ms:
+                latest_time_ms = timestamp
+                latest_hashes = set()
+            if timestamp == latest_time_ms:
+                latest_hashes.add(event_hash(audit_event))
+        events.extend(new_events)
+
+        continuation_token = response.get("continuation_token")
+        has_more = bool(response.get("has_more") and continuation_token)
+
+    add_time_to_events(events)
+    return events, latest_time_ms, latest_hashes
 
 
-def test_module() -> str:
-    # We are unable to use client.test_registration(), since the method uses the integration context
-    # and when we are running test-module, we don't have access to it
-    raise DemistoException(REGISTRATION_FLOW_MESSAGE)
+def fetch_events(
+    client: Client, last_run: dict[str, Any], max_fetch_limit: int, first_fetch: datetime
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
+    start_time_ms = int(last_run.get("last_fetch_time_ms") or first_fetch.timestamp() * 1000)
+    last_fetched_hashes = set(last_run.get("last_fetch_hashes", []))
+
+    events, latest_time_ms, latest_hashes = get_audit_logs(
+        client=client,
+        start_time_ms=start_time_ms,
+        max_fetch_limit=max_fetch_limit,
+        last_fetched_hashes=last_fetched_hashes,
+    )
+    next_run = {"last_fetch_time_ms": latest_time_ms, "last_fetch_hashes": list(latest_hashes)}
+    return events, next_run
+
+
+""" COMMANDS """
+
+
+def test_module(client: Client) -> str:
+    now = datetime.now(UTC)
+    client.get_events(start_date=now - timedelta(hours=1), end_date=now, limit=1)
+    return "ok"
+
+
+def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
+    limit = arg_to_number(args.get("limit")) or 50
+    now = datetime.now(UTC)
+    start_date = arg_to_datetime(args.get("start_date") or "1 hour", arg_name="start_date", required=True)
+    end_date = arg_to_datetime(args.get("end_date"), arg_name="end_date") or now
+    assert start_date is not None  # required=True
+    events, _, _ = get_audit_logs(
+        client=client,
+        start_time_ms=int(start_date.timestamp() * 1000),
+        max_fetch_limit=limit,
+        last_fetched_hashes=set(),
+        end_date=end_date,
+    )
+    results = CommandResults(
+        readable_output=tableToMarkdown("Keeper Security Audit Events", events, removeNull=True),
+        raw_response=events,
+    )
+    return events, results
 
 
 def main() -> None:  # pragma: no cover
@@ -488,37 +217,39 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    username = params.get("credentials", {})["identifier"]
-    password = params.get("credentials", {})["password"]
-    server_url = params.get("url") or "keepersecurity.com"
-    client = Client(
-        server_url=server_url,
-        username=username,
-        password=password,
-    )
-    client.refresh_session_token_if_needed()
-    demisto.debug(f"Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is {command}")
     try:
+        api_key = (params.get("credentials") or {}).get("password") or ""
+        if not api_key:
+            raise DemistoException("The API key is required.")
+        client = Client(
+            base_url=normalize_base_url(params.get("url", "")),
+            api_key=api_key,
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+        )
+
         if command == "test-module":
-            return_results(test_module())
-        elif command == "keeper-security-register-start":
-            return_results(start_registration_command(client=client))
-        elif command == "keeper-security-register-complete":
-            return_results(complete_registration_command(client=client, code=args.get("code", "")))
-        elif command == "keeper-security-register-test":
-            return_results(test_authorization(client=client))
+            return_results(test_module(client))
+        elif command == "keeper-security-get-events":
+            events, results = get_events_command(client, args)
+            return_results(results)
+            if argToBoolean(args.get("should_push_events", False)):
+                send_events_to_xsiam(events, VENDOR, PRODUCT)
         elif command == "fetch-events":
-            last_run = demisto.getLastRun()
-            fetched_audit_logs = fetch_events(
+            first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH, required=True)
+            assert first_fetch is not None  # required=True
+            events, next_run = fetch_events(
                 client=client,
-                last_run=last_run,
+                last_run=demisto.getLastRun(),
                 max_fetch_limit=arg_to_number(params.get("alerts_max_fetch")) or DEFAULT_MAX_FETCH,
+                first_fetch=first_fetch,
             )
-            demisto.debug(f"Events to send to XSIAM {fetched_audit_logs=}")
-            send_events_to_xsiam(fetched_audit_logs, VENDOR, PRODUCT)
+            demisto.debug(f"Sending {len(events)} events to XSIAM")
+            send_events_to_xsiam(events, VENDOR, PRODUCT)
+            demisto.setLastRun(next_run)
         else:
-            raise NotImplementedError
-    # Log exceptions and return errors
+            raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
