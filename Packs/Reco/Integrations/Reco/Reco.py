@@ -340,8 +340,13 @@ class RecoClient(BaseClient):
         totalResults being stale or the server having fewer items than reported).
         Capped at MAX_PAGES to guard against an unbounded loop if the server
         never reports totalResults or an empty page.
+
+        The External API treats `startIndex` as 1-based although its docs say 0-based, so with
+        0-based offsets each page repeats the previous page's last item. Items are therefore
+        de-duplicated by `id`, which keeps this correct whichever way the API counts.
         """
         all_items: list[dict[str, Any]] = []
+        seen_ids: set[Any] = set()
         start_index = 0
         for _page in range(MAX_PAGES):
             response = self._external_api_list(
@@ -353,7 +358,13 @@ class RecoClient(BaseClient):
             page_items = response.get(item_key, [])
             if not page_items:
                 break
-            all_items.extend(page_items)
+            for item in page_items:
+                item_id = item.get("id")
+                if item_id is not None:
+                    if item_id in seen_ids:
+                        continue
+                    seen_ids.add(item_id)
+                all_items.append(item)
             total = int(response.get("totalResults", 0) or response.get("total_results", 0) or 0)
             demisto.debug(f"_paginate_all {endpoint}: fetched {len(all_items)}/{total}")
             if total and len(all_items) >= total:
@@ -569,7 +580,7 @@ class RecoClient(BaseClient):
         """List identities from the external API, optionally filtered by email."""
         filter_parts: list[str] = []
         if email_address:
-            filter_parts.append(f'email co "{email_address}"')
+            filter_parts.append(f"email co {_scim_quote(email_address)}")
         # label filter is handled separately via get_risky_users (ListAccounts)
         scim_filter = " and ".join(filter_parts)
         try:
@@ -592,7 +603,7 @@ class RecoClient(BaseClient):
         try:
             response = self._external_api_list(
                 "users/list",
-                filters=f'email co "{email_address}"',
+                filters=f"email co {_scim_quote(email_address)}",
                 count=10,
             )
             return response.get("users", [])
@@ -647,9 +658,9 @@ class RecoClient(BaseClient):
         filter_parts: list[str] = []
         if asset_name:
             op = "co" if regex_search else "eq"
-            filter_parts.append(f'name {op} "{asset_name}"')
+            filter_parts.append(f"name {op} {_scim_quote(asset_name)}")
         elif asset_id:
-            filter_parts.append(f'id eq "{asset_id}"')
+            filter_parts.append(f"id eq {_scim_quote(asset_id)}")
         if sensitive_only:
             filter_parts.append('sensitivityLevel in ["30","40"]')
         scim_filter = " and ".join(filter_parts)
