@@ -3542,6 +3542,31 @@ Retrieve all Kibana alerts indices.
 | --- | --- | --- |
 | Elasticsearch.Kibana.Index | Unknown | The information retrieved for the Kibana alerts indices. |
 
+#### Command Example
+
+```!es-kibana-alerts-index-get```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Index": {
+                "index_mapping_outdated":false,
+                "name": ".alerts-security.alerts-default"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>| index_mapping_outdated | name |
+>| --- | --- |
+>| false | .alerts-security.alerts-default |
+
 ### es-kibana-alerts-index-delete
 
 ***

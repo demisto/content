@@ -274,16 +274,16 @@ script:
       isArray: true
       name: fields
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultvalue: 'false'
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       name: explain
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '0'
+    - defaultvalue: '0'
       description: The page number from which to start a search.
       name: page
-    - defaultValue: '100'
+    - defaultvalue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
     - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
@@ -291,7 +291,7 @@ script:
       predefined:
       - ''
     - auto: PREDEFINED
-      defaultValue: asc
+      defaultvalue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
       name: sort-order
       predefined:
@@ -304,7 +304,7 @@ script:
     - description: The ending time of the time range.
       name: timestamp_range_end
     - description: Timestamp field name.
-      defaultValue: "@timestamp"
+      defaultvalue: "@timestamp"
       name: timestamp_field
     description: Queries an index.
     name: es-search
@@ -360,16 +360,16 @@ script:
       isArray: true
       name: fields
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultvalue: 'false'
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       name: explain
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '0'
+    - defaultvalue: '0'
       description: The page number from which to start a search.
       name: page
-    - defaultValue: '100'
+    - defaultvalue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
     - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
@@ -377,14 +377,14 @@ script:
       predefined:
       - ''
     - auto: PREDEFINED
-      defaultValue: asc
+      defaultvalue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
       name: sort-order
       predefined:
       - asc
       - desc
     - description: Timestamp field name.
-      defaultValue: "@timestamp"
+      defaultvalue: "@timestamp"
       name: timestamp_field
     description: Searches an index.
     name: search
@@ -466,11 +466,11 @@ script:
     - description: The maximum number of indices to return.
       name: limit
       required: false
-      defaultValue: '50'
+      defaultvalue: '50'
     - description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
       name: all_results
       required: false
-      defaultValue: false
+      defaultvalue: false
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -533,14 +533,14 @@ script:
       - all
       description: Whether to expand wildcard expressions to indices that are open, closed, or both.
     - name: flat_settings
-      defaultValue: 'false'
+      defaultvalue: 'false'
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
       description: Whether to return settings in the flat format.
     - name: include_defaults
-      defaultValue: 'false'
+      defaultvalue: 'false'
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -561,6 +561,7 @@ script:
       type: Unknown
   - name: es-index-delete
     description: Deletes one or more Elasticsearch indices.
+    execution: true
     arguments:
     - name: index
       required: true
@@ -612,10 +613,10 @@ script:
       name: sort-tiebreaker
     - description: Filter using query DSL.
       name: filter
-    - defaultValue: event.category
+    - defaultvalue: event.category
       description: The event category field.
       name: event_category_field
-    - defaultValue: '100'
+    - defaultvalue: '100'
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
     - description: The starting time of the time range.
@@ -623,7 +624,7 @@ script:
     - description: The ending time of the time range.
       name: timestamp_range_end
     - description: Timestamp field name.
-      defaultValue: "@timestamp"
+      defaultvalue: "@timestamp"
       name: timestamp_field
     outputs:
     - contextPath: Elasticsearch.Search.Results._index
@@ -690,6 +691,7 @@ script:
       type: string
     description: Indexes a document into an Elasticsearch index.
   - name: es-delete
+    execution: true
     arguments:
     - name: index_name
       required: true
@@ -731,7 +733,7 @@ script:
       type: number
     - contextPath: Elasticsearch.Document.found
       description: Whether the requested document has been found.
-      type: string
+      type: Boolean
     description: Retrieves a document from an Elasticsearch index.
   - name: es-get-multiple
     arguments:
@@ -1177,10 +1179,10 @@ script:
     - name: tags
       description: Filters the returned cases by tags.
     - name: page
-      defaultValue: '1'
+      defaultvalue: '1'
       description: The page number from which to start a search.
     - name: size
-      defaultValue: '20'
+      defaultvalue: '20'
       description: The number of items to return. Limited to 100 items.
     outputs:
     - contextPath: Elasticsearch.Kibana.Case.title
@@ -1216,10 +1218,10 @@ script:
       required: true
       description: The identifier for the case. To retrieve case IDs, use es-kibana-case-list.
     - name: limit
-      defaultValue: '50'
+      defaultvalue: '50'
       description: Limit on the number of keys to return.
     - name: offset
-      defaultValue: '0'
+      defaultvalue: '0'
       description: Starting record index to begin retrieving records from.
     outputs:
     - contextPath: Elasticsearch.Kibana.Case.Alert.id
@@ -1389,16 +1391,16 @@ script:
     - name: connector_fields
       description: The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null).
     - name: custom_fields
-      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property.
+      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultvalue property.
     - name: extract_observables
-      description: Indicates whether observables (for example, IPs, hashes, and URLs) are automatically extracted from case comments and events.
+      description: Whether observables (for example, IPs, hashes, and URLs) are automatically extracted from case comments and events.
     - name: owner
       auto: PREDEFINED
       predefined:
       - cases
       - observability
       - securitySolution
-      description: The application that owns the cases - Stack Management, Observability, or Elastic Security..
+      description: The application that owns the cases - Stack Management, Observability, or Elastic Security.
     outputs:
     - contextPath: Elasticsearch.Kibana.CaseSettings.id
       description: The identifier of the case configuration.
@@ -1490,7 +1492,7 @@ script:
       description: The time the comment was last updated.
       type: Date
   - name: es-kibana-case-comment-get
-    description: Get a single comment or alert for a case.
+    description: Gets a single comment or alert for a case.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
@@ -1536,7 +1538,7 @@ script:
       type: String
     - contextPath: Elasticsearch.Kibana.CaseConnector.referencedByCount
       description: The amount of references.
-      type: Date
+      type: Number
   - name: es-kibana-case-creators-get
     description: Retrieves the case creators and the number of cases each creator has.
     arguments:
@@ -1597,7 +1599,7 @@ script:
     - name: connector_fields
       description: The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null).
     - name: custom_fields
-      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property.
+      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultvalue property.
     outputs:
     - contextPath: Elasticsearch.Kibana.CaseSettings.id
       description: The identifier of the case configuration.
@@ -1675,7 +1677,7 @@ script:
     - name: search
       description: An Elasticsearch simple_query_string query that filters the objects in the response.
     - name: default_search_operator
-      defaultValue: OR
+      defaultvalue: OR
       auto: PREDEFINED
       predefined:
       - OR
@@ -1705,10 +1707,10 @@ script:
       isArray: true
       description: List of consumers to filter.
     - name: page
-      defaultValue: '1'
+      defaultvalue: '1'
       description: The page number from which to start a search.
     - name: size
-      defaultValue: '10'
+      defaultvalue: '10'
       description: The number of rules to return per page.
     outputs:
     - contextPath: Elasticsearch.Kibana.Rule.id
@@ -1820,7 +1822,7 @@ script:
       - 'false'
       description: Whether to validate the existence of the alert.
     - name: mute_all
-      defaultValue: 'false'
+      defaultvalue: 'false'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1837,7 +1839,7 @@ script:
     - name: alert_id
       description: The identifier for the alert.
     - name: unmute_all
-      defaultValue: 'false'
+      defaultvalue: 'false'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1873,7 +1875,7 @@ script:
       - other
       description: The reason for the status change.
     - name: conflicts
-      defaultValue: abort
+      defaultvalue: abort
       auto: PREDEFINED
       predefined:
       - abort
@@ -1892,7 +1894,7 @@ script:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
   - name: es-kibana-alerts-index-get
-    description: Retrieve all Kibana alerts indices.
+    description: Retrieves all Kibana alerts indices.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
@@ -1902,6 +1904,7 @@ script:
       type: Unknown
   - name: es-kibana-alerts-index-delete
     description: Deletes a Kibana alerts index.
+    execution: true
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
@@ -1917,7 +1920,7 @@ script:
       isArray: true
     - name: agent_type
       description: The type of agent on which to run the isolation action.
-      defaultValue: endpoint
+      defaultvalue: endpoint
       auto: PREDEFINED
       predefined:
       - endpoint
@@ -2055,7 +2058,7 @@ script:
       isArray: true
     - name: agent_type
       description: The type of agent on which to run the isolation action.
-      defaultValue: endpoint
+      defaultvalue: endpoint
       auto: PREDEFINED
       predefined:
       - endpoint
@@ -2128,7 +2131,7 @@ script:
       isArray: true
     - name: agent_type
       description: The type of agent on which to run the isolation action.
-      defaultValue: endpoint
+      defaultvalue: endpoint
       auto: PREDEFINED
       predefined:
       - endpoint
@@ -2422,7 +2425,7 @@ script:
       - desc
       description: Determines the sort order.
     - name: page
-      defaultValue: '1'
+      defaultvalue: '1'
       description: The page number to return. Minimum value is 0.
     - name: size
       description: The number of exception list items to return per page. Minimum value is 0.
@@ -2471,7 +2474,7 @@ script:
       - desc
       description: Determines the sort order.
     - name: page
-      defaultValue: '1'
+      defaultvalue: '1'
       description: The page number to return. Minimum value is 1.
     - name: size
       description: The number of exception lists to return per page. Minimum value is 1.
@@ -2665,7 +2668,7 @@ script:
       - desc
       description: Determines the sort order.
     - name: page
-      defaultValue: '1'
+      defaultvalue: '1'
       description: The page number to return. Minimum value is 0.
     - name: size
       description: The number of exception list items to return per page. Minimum value is 0.
@@ -2944,7 +2947,8 @@ script:
       description: The creation date of the value list.
       type: Date
   - name: es-kibana-value-list-delete
-    description: Delete a value list using the list ID.
+    description: Deletes a value list using the list ID.
+    execution: true
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
@@ -2952,9 +2956,9 @@ script:
       description: Value list identifier to delete, including all of its list items.
       required: true
     - name: delete_references
-      description: Determines whether exception items referencing this value list should be deleted.
+      description: Whether exception items referencing this value list should be deleted as well.
     - name: ignore_references
-      description: Determines whether to delete value list without performing any additional checks of where this list may be utilized.
+      description: Whether to delete the value list without performing any additional checks of where this list may be utilized.
     outputs:
     - contextPath: Elasticsearch.Kibana.ValueList
       description: The deleted value list metadata.

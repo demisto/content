@@ -1798,7 +1798,7 @@ def index_document_command(args, proxies):
     return result
 
 
-def delete_document_command(args, proxies):
+def delete_document_command(args: Dict[str, Any], proxies: Any) -> CommandResults:
     index = args.get("index_name")
     doc_id = args.get("id", "")
     es = elasticsearch_builder(proxies)
@@ -1887,7 +1887,8 @@ def get_multiple_documents_command(args, proxies):
         readable_output=readable,
         outputs_prefix="Elasticsearch.Documents",
         outputs=resp,
-        outputs_key_field="id",
+        raw_response=resp,
+        outputs_key_field="id"
     )
     return result
 
@@ -2092,8 +2093,7 @@ def get_index_command(args: Dict[str, Any], proxies) -> Optional[CommandResults]
     try:
         resp = es.indices.get(**get_kwargs)
     except NotFoundError:
-        return_error(f'Index "{index}" was not found.')
-        return None
+        raise DemistoException(f'Index "{index}" was not found.')
 
     demisto.debug(f"Get index response: {resp}")
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
@@ -2653,13 +2653,13 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
 def build_case_settings_body(args: Dict[str, Any]) -> Dict[str, Any]:
     body = args.get("body")
     if body is not None:
-        return json.loads(body) if isinstance(body, str) else body
+        return safe_load_json(body)
 
     body = {}
     if args.get("closure_type") is not None:
         body["closure_type"] = args["closure_type"]
 
-    connector = {"fields": None}
+    connector: Dict[str, Any] = {}
     connector_field_map = {"connector_id": "id", "connector_name": "name", "connector_type": "type"}
     for arg_name, field_name in connector_field_map.items():
         if args.get(arg_name) is not None:
@@ -2667,6 +2667,8 @@ def build_case_settings_body(args: Dict[str, Any]) -> Dict[str, Any]:
     if args.get("connector_fields") is not None:
         connector_fields = args["connector_fields"]
         connector["fields"] = json.loads(connector_fields) if isinstance(connector_fields, str) else connector_fields
+    elif connector:
+        connector["fields"] = None
     if connector:
         body["connector"] = connector
 
@@ -2879,10 +2881,11 @@ def es_kibana_case_connectors_find_command(args: Dict[str, Any], proxies) -> Com
 
 
 def es_kibana_case_creators_get_command(args: Dict[str, Any], proxies) -> CommandResults:
+    space_id = args.get("space_id")
     params: Dict[str, Any] = {}
     if args.get("owner") is not None:
         params["owner"] = args["owner"]
-    response = kibana_http_request("GET", "/api/cases/reporters", params=params, proxies=proxies)
+    response = kibana_http_request("GET", "/api/cases/reporters", space_id=space_id, params=params, proxies=proxies)
     creators = response if isinstance(response, list) else []
 
     hr_rows = [{"name": creator.get("username", None)} for creator in creators]
@@ -3246,12 +3249,12 @@ def es_kibana_alerts_index_create_command(args: Dict[str, Any], proxies) -> Comm
     space_id = args.get("space_id")
 
     response = kibana_http_request("POST", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
-    result = "Creation acknowledged" if isinstance(response, dict) and response["acknowledged"] else "Creation NOT acknowledged"
+    result = "Creation acknowledged" if isinstance(response, dict) and response.get("acknowledged") else "Creation NOT acknowledged"
 
-    return CommandResults(readable_output=result)
+    return CommandResults(readable_output=result, raw_response=response)
 
 
-def es_kibana_get_all_indeces_command(args: Dict[str, Any], proxies) -> CommandResults:
+def es_kibana_get_all_indices_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
 
     response = kibana_http_request("GET", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
@@ -3267,9 +3270,9 @@ def es_kibana_alerts_index_delete_command(args: Dict[str, Any], proxies) -> Comm
     space_id = args.get("space_id")
 
     response = kibana_http_request("DELETE", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
-    result = "Deletion acknowledged" if isinstance(response, dict) and response["acknowledged"] else "Deletion NOT acknowledged"
+    result = "Deletion acknowledged" if isinstance(response, dict) and response.get("acknowledged") else "Deletion NOT acknowledged"
 
-    return CommandResults(readable_output=result)
+    return CommandResults(readable_output=result, raw_response=response)
 
 
 """SHARED EXCEPTION ENTRY HELPERS (used by endpoint exception list items and exception list items)"""
@@ -4006,6 +4009,9 @@ def es_kibana_value_list_delete_command(args: Dict[str, Any], proxies) -> Comman
     for arg_name, param_name in param_arg_map.items():
         if args.get(arg_name) is not None:
             params[param_name] = args[arg_name]
+    value_list_id = args.get("value_list_id")
+    if not value_list_id:
+        raise DemistoException('The "value_list_id" argument is required.')
 
     kibana_http_request("DELETE", "/api/lists", space_id=space_id, params=params, proxies=proxies)
 
@@ -5191,7 +5197,7 @@ def main():  # pragma: no cover
         elif demisto.command() == "es-kibana-alerts-index-create":
             return_results(es_kibana_alerts_index_create_command(args, proxies))
         elif demisto.command() == "es-kibana-alerts-index-get":
-            return_results(es_kibana_get_all_indeces_command(args, proxies))
+            return_results(es_kibana_get_all_indices_command(args, proxies))
         elif demisto.command() == "es-kibana-alerts-index-delete":
             return_results(es_kibana_alerts_index_delete_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-execute-command":

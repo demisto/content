@@ -3523,7 +3523,7 @@ class TestEsKibanaAlertsIndexCreateCommand:
 
 
 class TestEsKibanaAlertsIndexGetCommand:
-    """Tests for es_kibana_get_all_indeces_command (es-kibana-alerts-index-get)."""
+    """Tests for es_kibana_get_all_indices_command (es-kibana-alerts-index-get)."""
 
     def test_es_kibana_alerts_index_get(self, mocker):
         import Elasticsearch_v2
@@ -3538,7 +3538,7 @@ class TestEsKibanaAlertsIndexGetCommand:
         proxies = {"http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080"}
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
 
-        result = Elasticsearch_v2.es_kibana_get_all_indeces_command({}, proxies)
+        result = Elasticsearch_v2.es_kibana_get_all_indices_command({}, proxies)
 
         mock_request.assert_called_once_with("GET", "/api/detection_engine/index", space_id=None, proxies=proxies)
         assert result.outputs == response
@@ -3552,7 +3552,7 @@ class TestEsKibanaAlertsIndexGetCommand:
         response = {"acknowledged": True, "indices": {".kibana_8.x": {}}}
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
 
-        result = Elasticsearch_v2.es_kibana_get_all_indeces_command({"space_id": "custom-space"}, {})
+        result = Elasticsearch_v2.es_kibana_get_all_indices_command({"space_id": "custom-space"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "GET"
@@ -3570,7 +3570,7 @@ class TestEsKibanaAlertsIndexGetCommand:
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            Elasticsearch_v2.es_kibana_get_all_indeces_command({"space_id": "security"}, {})
+            Elasticsearch_v2.es_kibana_get_all_indices_command({"space_id": "security"}, {})
 
 
 class TestEsKibanaAlertsIndexDeleteCommand:
