@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl
 import dateparser
 import demistomock as demisto
 import oracledb
+import psycopg
 import pymysql
 import sqlalchemy
 from CommonServerPython import *
@@ -118,7 +119,7 @@ class Client:
         if dialect == MY_SQL:
             module = "mysql"
         elif dialect == POSTGRES_SQL:
-            module = "postgresql"
+            module = "postgresql+psycopg"
         elif dialect == ORACLE:
             module = "oracle+oracledb"
         elif dialect == TRINO:
@@ -178,9 +179,14 @@ class Client:
         module = self._convert_dialect_to_module(self.dialect)
         db_url = self._generate_db_url(module)
 
+        if self.dialect == POSTGRES_SQL:
+            # psycopg 3 binds parameters on the server by default, which rejects bind variables in
+            # SET/DDL statements and in multi-statement queries. ClientCursor binds them client side, like psycopg2.
+            ssl_connection["cursor_factory"] = psycopg.ClientCursor
+
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
-                ssl_connection = {"sslmode": "require"}
+                ssl_connection["sslmode"] = "require"
             elif self.dialect == TRINO:
                 ssl_connection = {"http_scheme": "https"}
             else:

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Generic SQL now uses the psycopg 3 driver for PostgreSQL. A PostgreSQL query that contains multiple statements now returns the result of the first statement instead of the last one. All statements still run. For example, `SELECT * FROM t WHERE id = 1; SELECT * FROM t WHERE id = 5` now returns the row with id = 1, and `SET search_path TO my_schema; SELECT * FROM my_table` now returns 'Command executed' with no results. Run each statement whose result you need as a separate query."
+}
