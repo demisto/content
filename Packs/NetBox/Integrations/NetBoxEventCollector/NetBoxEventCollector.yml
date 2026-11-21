@@ -17,6 +17,16 @@ configuration:
   required: true
   hiddenusername: true
   section: Connect
+- defaultvalue: v4.1 and above
+  display: NetBox Version
+  name: netbox_version
+  type: 15
+  options:
+  - v4.1 and above
+  - Below v4.1
+  additionalinfo: The version of the NetBox server. NetBox v4.1 moved the object changes API endpoint from /api/extras/object-changes to /api/core/object-changes.
+  section: Connect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
