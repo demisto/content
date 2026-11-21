@@ -1,0 +1,855 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Health Check - Ingestion/Integration/Configuration",
+            "description": null,
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-5828",
+                    "data": [
+                        {
+                            "key": "xql_1773145445339",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "dataset = pan_dss_raw | fields record_generated_time, domain_name | sort desc record_generated_time | dedup domain_name | filter timestamp_diff(current_time(), record_generated_time, \"DAY\") > 1 | alter daysNoUpdate = timestamp_diff(current_time(), record_generated_time, \"DAY\") | fields domain_name as name, daysNoUpdate //Healthcheck",
+                                "entityType": "xql-widget-table-d83d6254-0aa2-4d64-8044-8e724ad519d5",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": "\"stretch\""
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773145541487",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 1d |dataset = pan_dss_raw | fields domain_name as IdentityDomain | dedup IdentityDomain //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "1d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-be233fed-fee0-4737-89b9-1ad43546e1ec",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7218",
+                    "data": [
+                        {
+                            "key": "ngfwIngestionDetails",
+                            "data": {
+                                "sort": [],
+                                "type": "Table",
+                                "width": 100,
+                                "height": 378,
+                                "source": "log_type",
+                                "filters": [],
+                                "entityType": "ngfwIngestionDetails-bmh2odsns"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4662",
+                    "data": [
+                        {
+                            "key": "xql_1773145219483",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 7d | dataset = metrics_source | filter _PRODUCT = \"NGFW\" | alter ngfw_serial =_device_id | comp values (_log_type) as log_types by ngfw_serial | alter sending_eal_logs = if(log_types = \"eal\", \"yes\", \"no\") | alter sending_traffic_logs = if(log_types = \"traffic\", \"yes\", \"no\") | alter sending_file_data = if(log_types = \"file_data\", \"yes\", \"no\") | alter sending_system_logs = if(log_types = \"system\", \"yes\", \"no\") | alter sending_threat_logs = if(log_types = \"threat\", \"yes\", \"no\") | alter sending_url_logs = if(log_types = \"url\", \"yes\", \"no\") | alter sending_gp_logs = if(log_types = \"globalprotect\", \"yes\", \"no\") | alter sending_config_logs = if(log_types = \"config\", \"yes\", \"no\") | alter sending_auth_logs = if(log_types = \"auth\", \"yes\", \"no\") | fields ngfw_serial , sending* //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-187812b8-5a84-435c-9113-830387fbbcd5",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773147166230",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d |dataset = playbook_tasks | comp values(entity_id ) as tasks by task_name   //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-ad4a9aa3-4361-46d0-a9c5-9d429ffc6e5c",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8819",
+                    "data": [
+                        {
+                            "key": "mitreDataSources",
+                            "data": {
+                                "type": "Table",
+                                "width": 50,
+                                "height": 400
+                            }
+                        },
+                        {
+                            "key": "ingestionRate",
+                            "data": {
+                                "type": "Timeline",
+                                "width": 50,
+                                "filter": {
+                                    "selection": {
+                                        "label": "All Sources",
+                                        "value": "all",
+                                        "disabled": false
+                                    }
+                                },
+                                "height": 400,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-920",
+                    "data": [
+                        {
+                            "key": "xql_1773664559419",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config timeframe = 7d | dataset = issues | filter xdm.issue.domain = \"HEALTH\" | comp count() as count by xdm.issue.name , xdm.issue.type | sort desc xdm.issue.type \n\n\n\n| view graph type = column subtype = grouped show_callouts = `true` xaxis = xdm.issue.name yaxis = count series = xdm.issue.type seriescolor(\"Ingestion\",\"#ca3914\") seriescolor(\"Parsing\",\"#1462f3\") //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.issue.name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "xdm.issue.type"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Ingestion",
+                                                    "#ca3914"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Parsing",
+                                                    "#1462f3"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "timeRange": "dashboard_timeframe",
+                                        "xqlPhrase": "config timeframe = 7d | dataset = issues | filter xdm.issue.domain = \"HEALTH\" and xdm.issue.name = $x_axis.value \n",
+                                        "timePicker": [],
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_xql_search"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1434",
+                    "data": [
+                        {
+                            "key": "xql_1773840571393",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "dataset = unknown_unknown_raw | comp values(_reporting_device_ip ), count() by _broker_device_name //Healthcheck",
+                                "entityType": "xql-widget-table-6711f743-1cff-4ba2-bbf1-8d0fc0e33e67",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-39",
+                    "data": [
+                        {
+                            "key": "ingestionDetails",
+                            "data": {
+                                "sort": [],
+                                "type": "Table",
+                                "width": 100,
+                                "height": 400,
+                                "source": "product",
+                                "filters": [],
+                                "entityType": "ingestionDetails-dju6hp3tj"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8030",
+                    "data": [
+                        {
+                            "key": "xql_1773911506249",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 3d| preset = authentication_story  |  alter assacioatedproducts = split(associated_products ,\",\") | arrayexpand  assacioatedproducts| dedup assacioatedproducts | fields  assacioatedproducts //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "3d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-f0da365b-b924-4ff7-8c3a-7087a13a7cda",
+                                "time_frame": {
+                                    "to": 1773841923000,
+                                    "from": 1773237123000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773920763500",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe =3d | preset = network_story |  alter assacioatedproducts = split(associated_products ,\",\") | arrayexpand  assacioatedproducts| dedup assacioatedproducts| fields assacioatedproducts //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "3d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-ed634c92-ddc2-4da6-a2c0-2b7acd0e2b29",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3069",
+                    "data": [
+                        {
+                            "key": "xql_1773911726729",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "dataset = cloud_audit_logs | dedup log_name | fields log_name //Healthcheck",
+                                "entityType": "xql-widget-table-6815e072-3788-4bf4-bdf2-41874601d636",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "stretch",
+                                        "gridRowsHeight": "high-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773920994974",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "dataset = saas_audit_logs | dedup product | fields product //Healthcheck",
+                                "entityType": "xql-widget-table-71037077-a225-4e2c-a2ab-aa69d61814e6",
+                                "time_frame": {
+                                    "to": 1773917841000,
+                                    "from": 1773313041000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": {
+                                        "rowHeight": "regular",
+                                        "gridRowsHeight": "medium-row"
+                                    },
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 2,
+            "global_id": "a9fc2cb916064da780c665797edeba5d",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1773664559419",
+            "title": "Health Issues - 7d",
+            "creation_time": 1774529157537,
+            "description": null,
+            "data": {
+                "phrase": "config timeframe = 7d | dataset = issues | filter xdm.issue.domain = \"HEALTH\" | comp count() as count by xdm.issue.name , xdm.issue.type | sort desc xdm.issue.type \n\n\n\n| view graph type = column subtype = grouped show_callouts = `true` xaxis = xdm.issue.name yaxis = count series = xdm.issue.type seriescolor(\"Ingestion\",\"#ca3914\") seriescolor(\"Parsing\",\"#1462f3\") //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.issue.name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "xdm.issue.type"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Ingestion",
+                                    "#ca3914"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Parsing",
+                                    "#1462f3"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773920994974",
+            "title": "Sources Feeding SaaS Audit Dataset - 3d",
+            "creation_time": 1774529158424,
+            "description": null,
+            "data": {
+                "phrase": "dataset = saas_audit_logs | dedup product | fields product //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "3d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "to": 1773917841000,
+                    "from": 1773313041000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "saas_audit_logs"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773147166230",
+            "title": "Playbook Failing Tasks - 30d",
+            "creation_time": 1774529154425,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset = playbook_tasks | comp values(entity_id ) as tasks by task_name   //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "playbook_tasks"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773840571393",
+            "title": "Unknown Dataset Usaage",
+            "creation_time": 1774529158028,
+            "description": null,
+            "data": {
+                "phrase": "dataset = unknown_unknown_raw | comp values(_reporting_device_ip ), count() by _broker_device_name //Healthcheck",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "unknown_unknown_raw"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773911506249",
+            "title": "Sources Feeding Authentication Preset - 3d",
+            "creation_time": 1774529156365,
+            "description": null,
+            "data": {
+                "phrase": "config timeframe = 3d| preset = authentication_story  |  alter assacioatedproducts = split(associated_products ,\",\") | arrayexpand  assacioatedproducts| dedup assacioatedproducts | fields  assacioatedproducts //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "3d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "to": 1773841923000,
+                    "from": 1773237123000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773145219483",
+            "title": "NGFW Log Types - 7d",
+            "creation_time": 1774529155230,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 7d | dataset = metrics_source | filter _PRODUCT = \"NGFW\" | alter ngfw_serial =_device_id | comp values (_log_type) as log_types by ngfw_serial | alter sending_eal_logs = if(log_types = \"eal\", \"yes\", \"no\") | alter sending_traffic_logs = if(log_types = \"traffic\", \"yes\", \"no\") | alter sending_file_data = if(log_types = \"file_data\", \"yes\", \"no\") | alter sending_system_logs = if(log_types = \"system\", \"yes\", \"no\") | alter sending_threat_logs = if(log_types = \"threat\", \"yes\", \"no\") | alter sending_url_logs = if(log_types = \"url\", \"yes\", \"no\") | alter sending_gp_logs = if(log_types = \"globalprotect\", \"yes\", \"no\") | alter sending_config_logs = if(log_types = \"config\", \"yes\", \"no\") | alter sending_auth_logs = if(log_types = \"auth\", \"yes\", \"no\") | fields ngfw_serial , sending* //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "metrics_source"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773145541487",
+            "title": "CIE - Ingested Domains",
+            "creation_time": 1774529154663,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 1d |dataset = pan_dss_raw | fields domain_name as IdentityDomain | dedup IdentityDomain //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "1d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773911726729",
+            "title": "Sources Feeding Cloud Audit Log  - 3d",
+            "creation_time": 1774529154054,
+            "description": "",
+            "data": {
+                "phrase": "dataset = cloud_audit_logs | dedup log_name | fields log_name //Healthcheck",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "stretch",
+                        "gridRowsHeight": "high-row"
+                    },
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_audit_logs"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773920763500",
+            "title": "Sources Feeding Network Preset - 3d",
+            "creation_time": 1774529153843,
+            "description": null,
+            "data": {
+                "phrase": "config timeframe =3d | preset = network_story |  alter assacioatedproducts = split(associated_products ,\",\") | arrayexpand  assacioatedproducts| dedup assacioatedproducts| fields assacioatedproducts //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "3d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773145445339",
+            "title": "CIE Non Reporting Domains",
+            "creation_time": 1774529153070,
+            "description": "",
+            "data": {
+                "phrase": "dataset = pan_dss_raw | fields record_generated_time, domain_name | sort desc record_generated_time | dedup domain_name | filter timestamp_diff(current_time(), record_generated_time, \"DAY\") > 1 | alter daysNoUpdate = timestamp_diff(current_time(), record_generated_time, \"DAY\") | fields domain_name as name, daysNoUpdate //Healthcheck",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": {
+                        "rowHeight": "regular",
+                        "gridRowsHeight": "medium-row"
+                    },
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
