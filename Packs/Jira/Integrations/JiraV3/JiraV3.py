@@ -38,7 +38,7 @@ DEFAULT_PAGE_SIZE = 50
 ID_OR_KEY_MISSING_ERROR = "Please provide either an issue ID or issue key."
 ID_AND_KEY_GIVEN = "Please provide only one, either an issue Id or issue key."
 EPIC_ID_OR_KEY_MISSING_ERROR = "Please provide either an epic ID or epic key."
-CLOSE_INCIDENT_REASON = 'Issue was marked as "Resolved", or status was changed to "Done"'
+CLOSE_INCIDENT_REASON = 'Issue was resolved or status category changed to "Done"'
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 # This will be appended to the attachment's name when mirroring an attachment from XSOAR to Jira
 ATTACHMENT_MIRRORED_FROM_XSOAR = "_mirrored_from_xsoar"
@@ -2426,7 +2426,7 @@ def create_issue_command(
     # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
-            "When using the argument `issue_json`, additional arguments should be placed within the `fields` in the json.ֿֿֿ"
+            "When using the argument `issue_json`, additional arguments should be placed within the `fields` in the json."
         )
 
     args_for_api = deepcopy(args)
@@ -2494,7 +2494,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     ]:
         raise DemistoException(
             "When using the `issue_json` argument, additional arguments cannot be used "
-            "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+            "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments."
             "\n see the argument description"
         )
 
@@ -4016,7 +4016,8 @@ def get_attachments_entries_for_fetched_incident(
             incident_modified_date
             and (
                 attachment_created_date := dateparser.parse(
-                    attachment_metadata.get("created", ""), settings={"TIMEZONE": user_timezone_name}
+                    attachment_metadata.get("created", ""),
+                    settings={"TIMEZONE": user_timezone_name, "RETURN_AS_TIMEZONE_AWARE": True},
                 )
             )
             and attachment_created_date <= incident_modified_date
@@ -4331,7 +4332,10 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
 
 def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> list:
     last_update = convert_string_date_to_specific_format(last_update_date, dateparser_settings={"TIMEZONE": timezone_name})
-    demisto.debug(f"Performing get-modified-remote-data command. Last update is: {last_update}")
+    demisto.debug(
+        f"Performing get-modified-remote-data command. Raw last_update_date='{last_update_date}', "
+        f"timezone='{timezone_name}', converted last_update='{last_update}'"
+    )
     query_params = create_query_params(jql_query=f'updated > "{last_update}"', max_results=100)
     query_res = client.run_query(query_params=query_params)
     modified_issues = query_res.get("issues", [])
@@ -4387,7 +4391,13 @@ def get_remote_data_command(
         demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
         demisto.debug(f"Incident Last update time: {dateparser.parse(parsed_args.last_update)}")
         demisto.debug("Updating incident from remote system")
-        incident_modified_date = dateparser.parse(parsed_args.last_update, settings={"TIMEZONE": user_timezone_name})
+        # RETURN_AS_TIMEZONE_AWARE is required here: Jira comment/attachment timestamps always carry an explicit UTC
+        # offset and parse as timezone-aware, but this last_update string often doesn't. Without forcing both sides
+        # to be aware, the comparisons in get_updated_remote_data raise TypeError (naive vs aware), which aborts the
+        # whole get-remote-data call and silently drops all comments/attachments/field updates for that poll.
+        incident_modified_date = dateparser.parse(
+            parsed_args.last_update, settings={"TIMEZONE": user_timezone_name, "RETURN_AS_TIMEZONE_AWARE": True}
+        )
         updated_incident = issue
         parsed_entries = get_updated_remote_data(
             client=client,
@@ -4461,7 +4471,7 @@ def get_updated_remote_data(
     """
     parsed_entries: list[Dict[str, Any]] = []
     demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}Reason: Issue modified in remote")
-    # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
+    # Close incident if the Jira issue gets resolved, or its status category gets updated to Done.
     if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(updated_incident)):
         demisto.debug(f"Closing incident with ID: {issue_id}, since corresponding issue was resolved")
         parsed_entries.append(closed_issue)
@@ -4487,16 +4497,27 @@ def get_updated_remote_data(
     # Mirroring comments
     if fetch_comments:
         comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
+        demisto.debug(
+            f"Evaluating {len(comments_entries)} comment(s) on issue {issue_id} for mirroring. "
+            f"incident_modified_date={incident_modified_date.isoformat() if incident_modified_date else None} "
+            f"(timezone={user_timezone_name})"
+        )
         for comment_entry in comments_entries:
+            comment_id = comment_entry.get("Id", "")
             comment_body = comment_entry.get("Comment", "")
+            raw_updated = comment_entry.get("Updated", "")
             if comment_updated_date := dateparser.parse(
-                comment_entry.get("Updated", ""), settings={"TIMEZONE": user_timezone_name}
+                raw_updated, settings={"TIMEZONE": user_timezone_name, "RETURN_AS_TIMEZONE_AWARE": True}
             ):
-                if (
-                    COMMENT_MIRRORED_FROM_XSOAR not in comment_body
-                    and incident_modified_date
-                    and comment_updated_date > incident_modified_date
-                ):
+                is_from_xsoar = COMMENT_MIRRORED_FROM_XSOAR in comment_body
+                is_newer_than_incident = bool(incident_modified_date and comment_updated_date > incident_modified_date)
+                will_mirror = not is_from_xsoar and is_newer_than_incident
+                demisto.debug(
+                    f"Comment {comment_id} on issue {issue_id}: raw_updated='{raw_updated}', "
+                    f"parsed_updated={comment_updated_date.isoformat()}, from_xsoar={is_from_xsoar}, "
+                    f"newer_than_incident={is_newer_than_incident} -> {'mirroring' if will_mirror else 'skipping'}"
+                )
+                if will_mirror:
                     # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
                     parsed_entries.append(
                         {
@@ -4510,19 +4531,22 @@ def get_updated_remote_data(
                 elif not incident_modified_date:
                     demisto.debug(f"Could not parse the incident updated date, got the following date: {incident_modified_date}")
             else:
-                demisto.debug(
-                    f'Could not parse the comment updated date, got the following date: {comment_entry.get("Updated", "")}'
-                )
+                demisto.debug(f"Comment {comment_id} on issue {issue_id}: could not parse updated date '{raw_updated}'")
         updated_incident["extractedComments"] = comments_entries
     return parsed_entries
 
 
 def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """This function creates an entry to send to XSOAR, which will indicate that the incident that corresponds
-    to the issue, transitioned to status `Done`, or has been resolved and closed, by checking the resolution time.
-    NOTE: Checking the status if it equals to `Done` is not enough, since not every
-    workflow has these two statuses, therefore, to make the implementation backwards compatible, this condition
-    was left in V3, and an extra condition was added to check if the issue was `resolved`.
+    to the issue, transitioned to a `Done`-category status, or has been resolved and closed, by checking the
+    resolution time.
+    NOTE: Jira itself buckets every status of every workflow (including custom ones) into exactly one status
+    category: `To Do`, `In Progress`, or `Done` (`fields.status.statusCategory.key`). Checking the category instead
+    of only matching the specific status name `Done` means any workflow's terminal status - `Closed`, `Resolved`,
+    `Won't Fix`, a custom name, etc. - closes the mirrored incident too, with no per-instance configuration needed.
+    The literal `status.name == "Done"` check is kept alongside it for backwards compatibility (e.g. minimal/partial
+    issue payloads that don't include statusCategory), and `resolutiondate` is kept as a further fallback for the
+    rare case where neither the category nor the name is `Done` but the issue was resolved directly.
 
     Args:
         issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSOAR.
@@ -4534,13 +4558,13 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     issue_id = issue.get("id", "") or ""
     issue_fields = issue.get("fields") or {}
     resolution_date = ""
-    if (demisto.get(issue_fields, "status.name", "") == "Done") or (
-        resolution_date := demisto.get(issue, "fields.resolutiondate", "")
-    ):
+    status_category = demisto.get(issue_fields, "status.statusCategory.key", "") or ""
+    status_name = demisto.get(issue_fields, "status.name", "") or ""
+    if status_category == "done" or status_name == "Done" or (resolution_date := demisto.get(issue, "fields.resolutiondate", "")):
         demisto.debug(
             f"Handling incoming resolved issue (id {issue_id}) with resolution date: {resolution_date}"
             if resolution_date
-            else f"Handling incoming resolved issue (id {issue_id}) with status `Done`"
+            else f"Handling incoming resolved issue (id {issue_id}) with status '{status_name}' (category '{status_category}')"
         )
         closing_entry = {
             "Type": EntryType.NOTE,
@@ -4550,6 +4574,11 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
             },
             "ContentsFormat": EntryFormat.JSON,
         }
+    else:
+        demisto.debug(
+            f"Issue (id {issue_id}) is not resolved: status='{status_name}', status_category='{status_category}', "
+            "resolutiondate is empty"
+        )
     return closing_entry
 
 
