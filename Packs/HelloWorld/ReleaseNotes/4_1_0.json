@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The ***helloworld-say-hello*** command output path was changed from *HelloWorld.Hello* to *HelloWorld.Greeting*."
+}
