@@ -1,0 +1,33 @@
+{
+    "associatedToAll": true,
+    "associatedTypes": [],
+    "caseInsensitive": true,
+    "cliName": "threatmonstatus",
+    "closeForm": false,
+    "content": true,
+    "description": "The ThreatMon status of the indicator (Active or Inactive).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_threatmonstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ThreatMon Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

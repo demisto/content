@@ -123,6 +123,16 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Set Reputation by ThreatMon Severity
+  additionalinfo: When selected, the reputation is set by the ThreatMon severity of each indicator (Critical and High - Bad, Medium and Low - Suspicious) instead of Indicator Reputation. Indicators without a severity get Indicator Reputation.
+  name: severity_reputation
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability

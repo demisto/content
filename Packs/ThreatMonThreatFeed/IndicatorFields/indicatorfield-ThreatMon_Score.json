@@ -1,0 +1,33 @@
+{
+    "associatedToAll": true,
+    "associatedTypes": [],
+    "caseInsensitive": true,
+    "cliName": "threatmonscore",
+    "closeForm": false,
+    "content": true,
+    "description": "The ThreatMon risk score of the indicator, from 0 to 100.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_threatmonscore",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ThreatMon Score",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
