@@ -2287,6 +2287,8 @@ script:
 
   - name: azure-storage-fileshare-directory-create
     description: "Creates a new directory under the specified share or parent directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
+    hidden:
+      - platform
     arguments:
     - name: subscription_id
       required: false
@@ -2307,6 +2309,8 @@ script:
   - name: azure-storage-fileshare-directory-delete
     description: "Deletes the specified empty directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
     execution: true
+    hidden:
+      - platform
     arguments:
     - name: subscription_id
       required: false
