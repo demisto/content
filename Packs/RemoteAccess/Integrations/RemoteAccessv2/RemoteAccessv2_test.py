@@ -217,8 +217,42 @@ def test_copy_to_command_failed_to_mkdir(mocker):
 
     results: CommandResults = copy_to_command(mock_client, {"entry": 123, "entry_id": 456, "dest-dir": "test_dir"})
 
-    assert "permission error, occurred when run the command: mkdir -p test_dir" in demisto.debug.call_args[0][0]
+    assert "permission error, occurred when run the command: mkdir -p -- test_dir" in demisto.debug.call_args[0][0]
     assert results.readable_output == "### The file corresponding to entry ID: 456 was copied to remote host."
+
+
+@pytest.mark.parametrize(
+    "args, expected_cmd",
+    [
+        ({"dest-dir": "test_dir"}, "mkdir -p -- test_dir"),
+        ({"dest-dir": "safe; touch marker"}, "mkdir -p -- 'safe; touch marker'"),
+        ({"dest-dir": "a$(id)`id`|id&&id"}, "mkdir -p -- 'a$(id)`id`|id&&id'"),
+        ({"dest-dir": "it's"}, "mkdir -p -- 'it'\"'\"'s'"),
+        ({"dest-dir": "-rf"}, "mkdir -p -- -rf"),
+        ({"destination_path": "a$(touch marker)/file.txt"}, "mkdir -p -- 'a$(touch marker)'"),
+    ],
+)
+def test_copy_to_command_mkdir_is_shell_quoted(mocker, args, expected_cmd):
+    """
+    Given:
+    - A dest-dir / destination_path argument, possibly containing shell metacharacters.
+
+    When:
+    - Calling the copy-to command.
+
+    Then:
+    - Ensure the mkdir command sent to the remote host quotes the directory, so no extra command can be injected.
+    """
+    from paramiko import SSHClient
+    from RemoteAccessv2 import copy_to_command
+
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test", "name": "file-name.txt"})
+    mocker.patch("RemoteAccessv2.perform_copy_command", return_value="")
+    shell_mock = mocker.patch("RemoteAccessv2.execute_shell_command")
+
+    copy_to_command(SSHClient(), {"entry_id": 456, **args})
+
+    assert shell_mock.call_args[1]["args"]["cmd"] == expected_cmd
 
 
 def test_copy_to_command_invalid_entry_id(mocker):
