@@ -19,12 +19,12 @@ For more information about administrator permissions see the [FortiManager docum
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
-| Username |  | True |
-| The instance ADOM |  | True |
+| Server URL | The FortiManager server URL, for example https://fortimanager.example.com. | True |
+| Username | The FortiManager administrator username and password. The administrator needs JSON API access. | True |
+| The instance ADOM | The default ADOM for the commands. Use 'global' for the global ADOM. Commands can override it with the adom argument. | True |
 | Workspace Mode - lock the ADOM before changes | Enable when FortiManager Workspace Mode is set to Normal. Each write command locks the ADOM, applies the change, commits it, and unlocks the ADOM. Workflow mode (changes that require approval) is not supported. | False |
-| Trust any certificate \(not secure\) |  | False |
-| Use system proxy settings |  | False |
+| Trust any certificate \(not secure\) | Skip TLS certificate verification of the FortiManager server. | False |
+| Use system proxy settings | Use the system proxy settings to connect to the FortiManager server. | False |
 
 ## Commands
 
