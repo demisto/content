@@ -255,6 +255,12 @@ IOC_HEADERS = [
 ]
 
 IOC_DEVICE_COUNT_MAP = {"id": "ID", "type": "Type", "value": "Value", "device_count": "DeviceCount"}
+# Safety cap on the number of pages fetched from the IOC devices query endpoint (100 device IDs per page by default).
+MAX_IOC_DEVICE_PAGES = 1000
+# Per-execution cache of which IOC route family works for this API client ("modern" or "legacy").
+# Deliberately NOT persisted in the integration context: scopes can change between executions, so the modern
+# route is probed (at most once) in every execution.
+IOC_ROUTE_MODE: str | None = None
 
 SEARCH_DEVICE_KEY_MAP = {
     "device_id": "ID",
@@ -578,6 +584,7 @@ def http_request(
     json=None,
     status_code=None,
     timeout=None,
+    refresh_token_on_forbidden: bool = True,
 ):
     """
     A wrapper for requests lib to send our requests and handle requests and responses better.
@@ -612,6 +619,10 @@ def http_request(
 
     :type timeout: ``float``
     :param: timeout: The timeout for the request.
+
+    :type refresh_token_on_forbidden: ``bool``
+    :param refresh_token_on_forbidden: If False, an HTTP 403 response is passed straight to the error handler without
+        requesting a new token and retrying. 401 and 429 responses are not affected.
 
     :return: Returns the http request response json
     :rtype: ``dict``
@@ -681,7 +692,8 @@ def http_request(
             valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
-            if res.status_code in (401, 403, 429) and get_token_flag:
+            skip_forbidden_refresh = res.status_code == 403 and not refresh_token_on_forbidden
+            if res.status_code in (401, 403, 429) and get_token_flag and not skip_forbidden_refresh:
                 demisto.debug(f"Try to create a new token because {res.status_code=}")
                 token = get_token(new_token=True)
                 headers["Authorization"] = f"Bearer {token}"
@@ -2352,12 +2364,73 @@ def delete_custom_ioc(ids: str) -> dict:
     return http_request("DELETE", "/iocs/entities/indicators/v1", params=params)
 
 
+def _legacy_ioc_request(
+    modern_url_suffix: str,
+    legacy_url_suffix: str,
+    params: dict[str, Any] | None,
+    status_code: int | list[int] | None,
+    modern_error: DemistoException | None,
+) -> dict[str, Any]:
+    """
+    Calls the legacy Custom IOC route (with the normal token-refresh behavior) after the modern route returned HTTP 403.
+    Responses accepted through `status_code` (e.g. 404 = no results) are returned as is. If the legacy call raises,
+    a clear error explaining the missing modern scope is raised instead.
+
+    :param modern_error: The 403 error raised by the modern route in this call, or None if the 403 was cached earlier.
+    """
+    try:
+        return http_request("GET", legacy_url_suffix, params=params, status_code=status_code)
+    except DemistoException as legacy_error:
+        modern_status = "returned HTTP 403" if modern_error else "returned HTTP 403 earlier in this execution"
+        raise DemistoException(
+            f"Access denied to the CrowdStrike IOC endpoints. The modern route {modern_url_suffix} {modern_status} and the "
+            f"legacy fallback route {legacy_url_suffix} also failed ({legacy_error}). Make sure the API client has the "
+            "'IOC Manager - Read' (iocs:read) scope, which the modern route needs. The legacy 'IOCs - Read' scope is "
+            "retired. Also check the API client's IP allowlist.",
+            exception=legacy_error,
+        ) from (modern_error or legacy_error)
+
+
+def _request_with_legacy_ioc_fallback(
+    modern_url_suffix: str,
+    legacy_url_suffix: str,
+    params: dict[str, Any] | None,
+    status_code: int | list[int] | None = None,
+) -> dict[str, Any]:
+    """
+    Calls the modern IOC Management endpoint first and falls back to the legacy Custom IOC endpoint
+    if an HTTP 403 Forbidden error is returned (e.g., when an API client only has legacy IOC scopes).
+    The modern 403 does not trigger a token refresh, and the selected route is cached in IOC_ROUTE_MODE
+    for the rest of the execution so the modern route is probed at most once.
+    """
+    global IOC_ROUTE_MODE
+    if IOC_ROUTE_MODE == "legacy":
+        return _legacy_ioc_request(modern_url_suffix, legacy_url_suffix, params, status_code, modern_error=None)
+    try:
+        response = http_request(
+            "GET", modern_url_suffix, params=params, status_code=status_code, refresh_token_on_forbidden=False
+        )
+    except DemistoException as modern_error:
+        if "code: 403" not in str(modern_error):
+            raise
+        IOC_ROUTE_MODE = "legacy"
+        demisto.debug(f"Received HTTP 403 on {modern_url_suffix}, using legacy route {legacy_url_suffix} for this execution")
+        return _legacy_ioc_request(modern_url_suffix, legacy_url_suffix, params, status_code, modern_error=modern_error)
+    IOC_ROUTE_MODE = "modern"
+    return response
+
+
 def get_ioc_device_count(ioc_type, value):
     """
     Gets the devices that encountered the IOC
     """
     payload = assign_params(type=ioc_type, value=value)
-    response = http_request("GET", "/indicators/aggregates/devices-count/v1", payload, status_code=404)
+    response = _request_with_legacy_ioc_fallback(
+        "/iocs/aggregates/indicators/device-count/v1",
+        "/indicators/aggregates/devices-count/v1",
+        payload,
+        status_code=404,
+    )
     errors = response.get("errors", [])
     for error in errors:
         if error.get("code") == 404:
@@ -7108,42 +7181,70 @@ def delete_custom_ioc_command(ioc_id: str) -> dict:
     return create_entry_object(contents=raw_res, hr=f"Custom IOC {ioc_id} was successfully deleted.")
 
 
-def get_ioc_device_count_command(ioc_type: str, value: str):
+def get_ioc_device_count_command(ioc_type: str, value: str | list[str] | None):
+    """
+    :param ioc_type: The type of the indicator, applied to every value
+    :param value: The IOC value, or a list / comma-separated string of IOC values
+    :return: A single result for a single value (backward compatible), or a list with one result per value.
+    """
+    values = argToList(value)
+    if len(values) <= 1:
+        return get_single_ioc_device_count(ioc_type, values[0] if values else value)  # type: ignore[arg-type]
+    return [get_single_ioc_device_count(ioc_type, single_value) for single_value in values]
+
+
+def build_zero_ioc_device_count_result(ioc_type: str, value: str, raw_response: dict | None = None) -> CommandResults:
+    """
+    Builds a result with DeviceCount 0 for an indicator that no device has observed.
+
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
+    :param raw_response: The raw API response, if there is one
+    :return: CommandResults with a CrowdStrike.IOC entry whose DeviceCount is 0
+    """
+    return CommandResults(
+        outputs_prefix="CrowdStrike.IOC",
+        outputs_key_field="ID",
+        outputs={"ID": f"{ioc_type}:{value}", "Type": ioc_type, "Value": value, "DeviceCount": 0},
+        readable_output=f"No results found for {ioc_type} - {value}",
+        raw_response=raw_response,
+    )
+
+
+def get_single_ioc_device_count(ioc_type: str, value: str):
     """
     :param ioc_type: The type of the indicator
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    if "No results found for" in raw_res:
-        return raw_res
+    if isinstance(raw_res, str):  # 404 - no device has observed the indicator
+        return build_zero_ioc_device_count_result(ioc_type, value)
     else:
         handle_response_errors(raw_res)
         device_count_res = raw_res.get("resources")
         ioc_id = f"{ioc_type}:{value}"
         if not device_count_res:
-            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+            return build_zero_ioc_device_count_result(ioc_type, value, raw_response=raw_res)
 
         device_count = device_count_res[0].get("device_count")
+        truncated = False
         if argToBoolean(device_count_res[0].get("limit_exceeded", False)):
             demisto.debug(f"limit exceeded for {ioc_id}, trying to count by run_indicator_device_id_request")
             # rate limit exceeded, so we will get the count by running the run_indicator_device_id_request function
             # see https://falcon.crowdstrike.com/documentation/page/ed1b4a95/detection-and-prevention-policy-apis
 
-            device_count = 0
-            params = assign_params(type=ioc_type, value=value)
-
-            while True:
-                device_ids_raw = run_indicator_device_id_request(params)
-                device_count += len(device_ids_raw.get("resources", []))
-                offset = demisto.get(device_ids_raw, "meta.pagination.offset")
-                if not offset:
-                    break
-                params["offset"] = offset
-
+            _, all_device_ids, truncated = fetch_all_indicator_device_ids(ioc_type, value)
+            device_count = len(all_device_ids)
             device_count_res[0]["device_count"] = device_count
 
-        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-        hr = f"Indicator of Compromise **{ioc_id}** device count: **{device_count}**"
+        context = [
+            {"ID": ioc_id} | get_trasnformed_dict(device_count_item, IOC_DEVICE_COUNT_MAP) | {"DeviceCountTruncated": truncated}
+            for device_count_item in device_count_res
+        ]
+        displayed_count = (
+            f"≥ {device_count} (truncated: reached the maximum of {MAX_IOC_DEVICE_PAGES} pages)" if truncated else device_count
+        )
+        hr = f"Indicator of Compromise **{ioc_id}** device count: **{displayed_count}**"
         return create_entry_object(contents=raw_res, ec={"CrowdStrike.IOC(val.ID === obj.ID)": context}, hr=hr)
 
 
@@ -8107,27 +8208,73 @@ def validate_response(raw_res):
 
 
 def run_indicator_device_id_request(params):
-    return http_request("GET", "/indicators/queries/devices/v1", params=params, status_code=404)
+    return _request_with_legacy_ioc_fallback(
+        "/iocs/queries/indicators/devices/v1",
+        "/indicators/queries/devices/v1",
+        params=params,
+        status_code=404,
+    )
+
+
+def fetch_all_indicator_device_ids(ioc_type: str | None, ioc_value: str | None) -> tuple[dict, list[str], bool]:
+    """
+    Follows `meta.pagination.offset` on the IOC devices query endpoint and collects the device IDs from all pages.
+    Every page request keeps the legacy-route fallback on HTTP 403.
+    Paging stops when no offset is returned, when an empty page is returned, or after MAX_IOC_DEVICE_PAGES requests.
+
+    :return: The raw response of the first page (used for error handling), the device IDs from all pages, and whether
+        the results were truncated because MAX_IOC_DEVICE_PAGES was reached while more pages were still pending.
+    """
+    params = assign_params(type=ioc_type, value=ioc_value)
+    first_page_response: dict = {}
+    device_ids: list[str] = []
+    for page_number in range(MAX_IOC_DEVICE_PAGES):
+        response = run_indicator_device_id_request(params)
+        if page_number == 0:
+            first_page_response = response
+        page_device_ids = response.get("resources") or []
+        device_ids.extend(page_device_ids)
+        offset = demisto.get(response, "meta.pagination.offset")
+        if not page_device_ids or not offset:
+            return first_page_response, device_ids, False
+        params["offset"] = offset
+    demisto.debug(f"Reached the maximum of {MAX_IOC_DEVICE_PAGES} pages for {ioc_type}:{ioc_value}, stopping pagination.")
+    return first_page_response, device_ids, True
 
 
 def get_indicator_device_id():
+    """
+    Runs cs-falcon-device-ran-on / cs-device-ran-on.
+    Returns a single result for a single value (backward compatible), or a list with one result per value.
+    """
     args = demisto.args()
     ioc_type = args.get("type")
-    ioc_value = args.get("value")
-    params = assign_params(type=ioc_type, value=ioc_value)
-    raw_res = run_indicator_device_id_request(params=params)
-    errors = raw_res.get("errors", [])
+    ioc_values = argToList(args.get("value"))
+    if len(ioc_values) <= 1:
+        return get_single_indicator_device_id(ioc_type, ioc_values[0] if ioc_values else args.get("value"))
+    return [get_single_indicator_device_id(ioc_type, ioc_value) for ioc_value in ioc_values]
+
+
+def get_single_indicator_device_id(ioc_type: str | None, ioc_value: str | None) -> CommandResults | str:
+    raw_res, all_device_ids, truncated = fetch_all_indicator_device_ids(ioc_type, ioc_value)
+    errors = raw_res.get("errors") or []
     for error in errors:
         if error.get("code") == 404:
             return f"No results found for {ioc_type} - {ioc_value}"
     devices_response = []
     if validate_response(raw_res):
-        devices_response = raw_res.get("resources")
+        devices_response = all_device_ids
+        raw_res = raw_res | {"resources": all_device_ids}
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)
     ioc_id = f"{ioc_type}:{ioc_value}"
     readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", devices_response, headers="Device ID")
+    if truncated:
+        readable_output = (
+            f"**Warning:** Results truncated after {MAX_IOC_DEVICE_PAGES} pages ({len(devices_response)} device IDs "
+            f"returned); the actual number of devices may be higher.\n\n{readable_output}"
+        )
     outputs = {
         "DeviceID": devices_response,
         "DeviceIOC": {
@@ -8135,6 +8282,7 @@ def get_indicator_device_id():
             "Value": ioc_value,
             "ID": ioc_id,
             "DeviceID": devices_response,
+            "Truncated": truncated,
         },
     }
     return CommandResults(

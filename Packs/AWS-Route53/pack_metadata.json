@@ -21,6 +21,8 @@
     ],
     "supportedModules": [
         "agentix",
-        "xsiam"
+        "xsiam",
+        "exposure_management",
+        "asm"
     ]
 }
