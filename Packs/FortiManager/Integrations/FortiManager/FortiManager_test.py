@@ -1,4 +1,6 @@
 import demistomock as demisto
+import pytest
+from CommonServerPython import DemistoException
 from FortiManager import Client
 
 
@@ -94,9 +96,6 @@ def test_get_range_for_list_command__no_from_and_to():
 
 
 """ Workspace Mode """
-
-import pytest
-from CommonServerPython import DemistoException
 
 ADDRESS_URL = "/pm/config/adom/MyADOM/obj/firewall/address"
 LOCK_URL = "/dvmdb/adom/MyADOM/workspace/lock"

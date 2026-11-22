@@ -1,3 +1,6 @@
+import re
+import traceback
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -122,7 +125,7 @@ class Client(BaseClient):
             response = self.fortimanager_request_with_retry(
                 method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
             )
-            return response.get("result")[0].get("data")
+            return response["result"][0].get("data")
 
         self.lock_workspace(workspace_scope)
         try:
@@ -133,7 +136,7 @@ class Client(BaseClient):
         finally:
             self.unlock_workspace(workspace_scope)
 
-        return response.get("result")[0].get("data")
+        return response["result"][0].get("data")
 
     def lock_workspace(self, workspace_scope: str) -> None:
         """Locks the ADOM so that config changes are accepted when FortiManager Workspace Mode is enabled."""
@@ -143,7 +146,7 @@ class Client(BaseClient):
         except DemistoException as e:
             raise DemistoException(
                 f"Failed to lock {workspace_scope} (FortiManager Workspace Mode). The ADOM may be locked by another "
-                f"administrator - try again later. FortiManager error: {e.message}"
+                f"administrator - try again later. FortiManager error: {str(e)}"
             )
 
     def commit_workspace(self, workspace_scope: str) -> None:
@@ -154,7 +157,7 @@ class Client(BaseClient):
         except DemistoException as e:
             raise DemistoException(
                 f"The change was sent, but committing {workspace_scope} failed (FortiManager Workspace Mode). "
-                f"FortiManager error: {e.message}"
+                f"FortiManager error: {str(e)}"
             )
 
     def unlock_workspace(self, workspace_scope: str) -> None:
@@ -939,7 +942,8 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e}", error=e)
 
 
 """ ENTRY POINT """
