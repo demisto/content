@@ -9,7 +9,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import json
 import warnings
-from datetime import datetime, UTC
+from datetime import datetime, timedelta, UTC
 
 import requests
 import urllib3
@@ -77,6 +77,7 @@ FETCH_INDEX = PARAMS.get("fetch_index", "")
 FETCH_QUERY_PARM = PARAMS.get("fetch_query", "")
 RAW_QUERY = PARAMS.get("raw_query", "")
 FETCH_TIME = "now"
+FIRST_FETCH_LOOK_BACK = timedelta(minutes=1)
 FETCH_SIZE = int(PARAMS.get("fetch_size", 5000))
 INSECURE = not PARAMS.get("insecure", False)
 TIME_METHOD = PARAMS.get("time_method", "Simple-Date")
@@ -744,8 +745,11 @@ def execute_raw_query(es, raw_query, index, size=None, page=None):
 
 
 def fetch_events(proxies):
+    fetch_start_time = datetime.now(UTC)
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time") or FETCH_TIME
+    is_first_fetch = not last_run.get("time")
+    # On the first fetch, look back a little so events that reach Elasticsearch shortly after their timestamp are not missed.
+    last_fetch = last_run.get("time") or (fetch_start_time - FIRST_FETCH_LOOK_BACK).isoformat()
     seen_event_ids = set(last_run.get("event_ids", []))
     demisto.debug(f"fetch_events - last_run before fetch:\n{last_fetch}, seen_event_ids: {len(seen_event_ids)}")
     es = elasticsearch_builder(proxies)
@@ -795,6 +799,11 @@ def fetch_events(proxies):
     if total_results > 0:
         demisto.setLastRun(updated_last_run)
         demisto.debug(f"fetch_events - Updated last_run object after successful fetch:\n{updated_last_run}")
+    elif is_first_fetch:
+        # Save the start time of this run so the next fetch starts from a fixed point in the past instead of the current time.
+        updated_last_run = {"time": fetch_start_time.isoformat(), "event_ids": []}
+        demisto.setLastRun(updated_last_run)
+        demisto.debug(f"fetch_events - No events were found on the first fetch, saved last_run:\n{updated_last_run}")
     else:
         demisto.results("No events were found, last_run not updated.")
 
