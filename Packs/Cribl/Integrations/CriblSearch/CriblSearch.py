@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 from typing import Any
-from pydantic import AnyUrl, Field, SecretStr, root_validator, validator  # pylint: disable=no-name-in-module
+from pydantic import AnyUrl, Field, SecretStr, model_validator, validator  # pylint: disable=no-name-in-module
 
 from ContentClientApiModule import *
 from BaseContentApiModule import *
@@ -481,7 +481,7 @@ def test_module(client: CriblSearchClient) -> str:
 class SearchQueryArgs(ContentBaseModel):
     # NOTE: API enforces a oneOf on this endpoint - exactly one of:
     #   (A) query_id alone, (B) job_id alone, or (C) query + earliest + latest (all three).
-    # Combos (A)/(B)/(C) presence is enforced client-side via @root_validator below
+    # Combos (A)/(B)/(C) presence is enforced client-side via @model_validator below
     # (raises ValueError -> Pydantic ValidationError). Conflicting combos still bubble from the API.
     query_id: str | None = Field(None, alias="query_id")
     job_id: str | None = Field(None, alias="job_id")
@@ -513,20 +513,13 @@ class SearchQueryArgs(ContentBaseModel):
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def validate_oneof_combos(cls, values):
-        query = values.get("query")
-        query_id = values.get("query_id")
-        job_id = values.get("job_id")
-        earliest = values.get("earliest")
-        latest = values.get("latest")
-
-        if query is None and query_id is None and job_id is None:
+    @model_validator(mode="after")
+    def validate_oneof_combos(self):
+        if self.query is None and self.query_id is None and self.job_id is None:
             raise ValueError("At least one of 'query', 'query_id', or 'job_id' must be provided.")
-        if query is not None and (earliest is None or latest is None):
+        if self.query is not None and (self.earliest is None or self.latest is None):
             raise ValueError("When 'query' is provided, both 'earliest' and 'latest' must also be provided.")
-        return values
+        return self
 
 
 def search_query_command(client: CriblSearchClient, args: SearchQueryArgs) -> CommandResults:
@@ -984,14 +977,11 @@ class SearchJobUpdateArgs(ContentBaseModel):
             return None
         return argToBoolean(v)
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def validate_at_least_one_field(cls, values):
-        status = values.get("status")
-        is_private = values.get("is_private")
-        if status is None and is_private is None:
+    @model_validator(mode="after")
+    def validate_at_least_one_field(self):
+        if self.status is None and self.is_private is None:
             raise ValueError("At least one of 'status' or 'is_private' must be provided.")
-        return values
+        return self
 
 
 def search_job_update_command(client: CriblSearchClient, args: SearchJobUpdateArgs) -> CommandResults:
