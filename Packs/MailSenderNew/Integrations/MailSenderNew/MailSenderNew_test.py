@@ -3,8 +3,20 @@ import demistomock as demisto
 import pytest
 import hmac
 import hashlib
+import re
+from email import message_from_string
+from email.header import decode_header, make_header
+from email.utils import getaddresses
 
 RETURN_ERROR_TARGET = "MailSenderNew.return_error"
+RFC5322_MAX_LINE_BYTES = 998
+LONG_TO_LIST = [f"user{i}@example.com" for i in range(80)]  # disable-secrets-detection
+
+
+def _decode_header_value(raw_msg: str, header_name: str) -> str:
+    """Parse the serialized message, decode RFC 2047 words and unfold (RFC 5322 2.2.3) the header."""
+    decoded = str(make_header(decode_header(message_from_string(raw_msg)[header_name])))
+    return re.sub(r"\r?\n(?=[ \t])", "", decoded)
 
 
 @pytest.mark.parametrize(
@@ -161,3 +173,55 @@ def test_create_msg_sender_override(mocker, args, params, expected_from):
     (_, _, msg, _, _, _) = MailSenderNew.create_msg()
 
     assert f"From: {expected_from}" in msg
+
+
+@pytest.mark.parametrize(
+    "subject",
+    [
+        pytest.param(" ".join(f"word{i}" for i in range(300)), id="long_ascii_subject"),
+        pytest.param("日本語の件名テスト、長い件名の折り返し確認。" * 50, id="long_japanese_subject"),
+    ],
+)
+def test_create_msg_folds_long_subject(mocker, subject):
+    """
+    Given:
+        - A Subject longer than the RFC 5322 998-byte line limit (Case A: ASCII, Case B: Japanese).
+    When:
+        - Calling create_msg().
+    Then:
+        - The Subject header is folded into multiple lines.
+        - Every line of the serialized message is at most 998 bytes.
+        - The decoded Subject equals the original input.
+    """
+    assert len(subject.encode()) > RFC5322_MAX_LINE_BYTES
+    mocker.patch.object(demisto, "args", return_value={"to": "test@test.com", "subject": subject, "body": "body"})
+    mocker.patch.object(demisto, "params", return_value={"from": "test@test.com"})
+
+    (_, _, msg, _, _, _) = MailSenderNew.create_msg()
+
+    lines = msg.split("\n")
+    subject_index = next(i for i, line in enumerate(lines) if line.startswith("Subject:"))
+    assert lines[subject_index + 1].startswith((" ", "\t"))
+    assert all(len(line.encode()) <= RFC5322_MAX_LINE_BYTES for line in lines)
+    assert _decode_header_value(msg, "Subject") == subject
+
+
+def test_create_msg_folds_long_to_list(mocker):
+    """
+    Given:
+        - A To list whose joined header value exceeds the RFC 5322 998-byte line limit.
+    When:
+        - Calling create_msg().
+    Then:
+        - Every line of the serialized message is at most 998 bytes.
+        - The decoded To header contains exactly the original addresses.
+        - The returned recipients list is unchanged.
+    """
+    mocker.patch.object(demisto, "args", return_value={"to": ",".join(LONG_TO_LIST), "subject": "s", "body": "body"})
+    mocker.patch.object(demisto, "params", return_value={"from": "test@test.com"})
+
+    (_, _, msg, to, _, _) = MailSenderNew.create_msg()
+
+    assert to == LONG_TO_LIST
+    assert all(len(line.encode()) <= RFC5322_MAX_LINE_BYTES for line in msg.split("\n"))
+    assert [addr for _, addr in getaddresses([_decode_header_value(msg, "To")])] == LONG_TO_LIST

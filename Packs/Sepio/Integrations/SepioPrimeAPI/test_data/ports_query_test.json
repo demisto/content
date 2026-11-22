@@ -225,7 +225,7 @@
         "SwitchIpAddress": "192.168.100.25",
         "SwitchName": "sepio2960g",
         "PortID": "Gi0/17",
-        "Name": "HondaCB500X",
+        "Name": "CB500X",
         "LastUpdate": "2020-06-21T17:02:58.061999",
         "NumberOfMacAddresses": 0,
         "LinkPartners": [],

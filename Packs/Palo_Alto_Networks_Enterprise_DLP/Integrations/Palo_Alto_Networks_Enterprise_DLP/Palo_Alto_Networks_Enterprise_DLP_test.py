@@ -231,6 +231,133 @@ def test_update_incident_with_error_details(requests_mock, mocker):
     )
 
 
+@pytest.mark.parametrize(
+    "region, expected_region",
+    [("US", "us"), ("EU", "eu"), ("SG", "ap"), ("FR", "par"), ("CH", "sui"), ("SA", "sau"), ("ap", "ap")],
+)
+def test_update_incident_translates_region(requests_mock, region, expected_region):
+    """
+    Given:
+        - An incident region as the v4 fetch stores it, or as earlier versions stored it.
+    When:
+        - Running the pan-dlp-update-incident command.
+    Then:
+        - The region is sent in lower case, translated to the region name the feedback API accepts.
+    """
+    requests_mock.post(f"{DLP_URL}public/incident-feedback/abc", status_code=200)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+
+    update_incident_command(
+        client, {"incident_id": "abc", "feedback": "PENDING_RESPONSE", "user_id": "user", "region": region, "dlp_channel": "ngfw"}
+    )
+
+    assert requests_mock.last_request.qs["region"] == [expected_region]
+
+
+def test_update_incident_uses_incident_channel(requests_mock, mocker):
+    """
+    Given:
+        - No dlp_channel argument, as most playbook tasks call the command.
+        - An incident whose PAN DLP Channel field is prisma-access.
+    When:
+        - Running the pan-dlp-update-incident command.
+    Then:
+        - The incident channel is sent as the service name.
+    """
+    mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"pandlpchannel": "prisma-access"}})
+    requests_mock.post(f"{DLP_URL}public/incident-feedback/abc", status_code=200)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+
+    update_incident_command(client, {"incident_id": "abc", "feedback": "PENDING_RESPONSE", "user_id": "user", "region": "us"})
+
+    assert requests_mock.last_request.json() == {"user_id": "user", "report_id": "", "service_name": "prisma-access"}
+
+
+@pytest.mark.parametrize(
+    "dlp_channel, incident, expected_error",
+    [
+        ("saas-api", {}, "Incidents from the saas-api DLP channel do not support feedback updates"),
+        ("", {"CustomFields": {}}, "The dlp_channel argument is required"),
+    ],
+)
+def test_update_incident_invalid_channel(requests_mock, mocker, dlp_channel, incident, expected_error):
+    """
+    Given:
+        - A channel the feedback API rejects, or no channel at all.
+    When:
+        - Running the pan-dlp-update-incident command.
+    Then:
+        - A clear error is raised and no request is sent.
+    """
+    mocker.patch.object(demisto, "incident", return_value=incident)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+
+    with pytest.raises(DemistoException, match=expected_error):
+        update_incident_command(
+            client,
+            {"incident_id": "abc", "feedback": "PENDING_RESPONSE", "user_id": "user", "region": "us", "dlp_channel": dlp_channel},
+        )
+
+    assert not requests_mock.called
+
+
+def test_update_incident_rejected(requests_mock):
+    """
+    Given:
+        - The feedback API rejects the update.
+    When:
+        - Running the pan-dlp-update-incident command.
+    Then:
+        - An error with the API message is raised instead of returning an unsuccessful result.
+    """
+    requests_mock.post(
+        f"{DLP_URL}public/incident-feedback/abc", status_code=400, json={"error": "Wrong region field provided : xx"}
+    )
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+
+    with pytest.raises(DemistoException, match="got status code 400. Wrong region field provided : xx"):
+        update_incident_command(
+            client,
+            {"incident_id": "abc", "feedback": "PENDING_RESPONSE", "user_id": "user", "region": "xx", "dlp_channel": "ngfw"},
+        )
+
+
+@pytest.mark.parametrize(
+    "response, expected_output",
+    [
+        ({"expiration_duration_in_minutes": 30}, {"feedback": "EXCEPTION_GRANTED", "success": True, "duration": "30 minutes"}),
+        ({"expiration_duration_in_minutes": 120}, {"feedback": "EXCEPTION_GRANTED", "success": True, "duration": "2.0 hours"}),
+        ({}, {"feedback": "EXCEPTION_GRANTED", "success": True}),
+    ],
+)
+def test_update_incident_exemption_granted(requests_mock, response, expected_output):
+    """
+    Given:
+        - A granted exemption, with or without an expiration duration in the response.
+    When:
+        - Running the pan-dlp-update-incident command.
+    Then:
+        - The exemption is returned under the Exemption prefix, with the duration when the API returned one.
+    """
+    requests_mock.post(f"{DLP_URL}public/incident-feedback/abc", status_code=200, json=response)
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+
+    result = update_incident_command(
+        client,
+        {
+            "incident_id": "abc",
+            "feedback": "EXCEPTION_GRANTED",
+            "user_id": "user",
+            "region": "us",
+            "report_id": "123",
+            "dlp_channel": "ngfw",
+        },
+    )
+
+    assert result.outputs_prefix == "Exemption"
+    assert result.outputs == expected_output
+
+
 def test_get_dlp_report(requests_mock, mocker):
     report_id = 12345
     requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})

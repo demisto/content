@@ -13,6 +13,9 @@ ignore=BA101
 [file:IAMInitADUser.yml]
 ignore=BA124
 
+[file:ActiveDirectoryQueryGetUser.yml]
+ignore=AG117
+
 [known_words]
 ldap
 tls
