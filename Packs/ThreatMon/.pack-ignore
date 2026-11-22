@@ -1,2 +1,11 @@
 [file:ThreatMon.yml]
 ignore=IN126
+
+[file:incidentfield-ThreatMon_Alarm_Code.json]
+ignore=IF115
+
+[file:incidentfield-ThreatMon_Status.json]
+ignore=IF115
+
+[file:incidentfield-ThreatMon_Category.json]
+ignore=IF115

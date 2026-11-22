@@ -116,7 +116,7 @@
             "type": "user",
             "object": {
                 "email": "jane.smith@company.com", 
-                "name": "Jane Smith",
+                "name": "jane Test",
                 "role": "engineer",
                 "department": "engineering",
                 "team": "platform"
