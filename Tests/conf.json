@@ -5963,6 +5963,8 @@
         }
     ],
     "skipped_tests": {
+        "Gmail Convert Html Test": "Gmail test instance service account key is invalid (invalid_grant: Invalid signature for token), test-module fails before and after content updates - CIAC-12587",
+        "Get Original Email - Gmail v2 - test": "Gmail test instance service account key is invalid (invalid_grant: Invalid signature for token), test-module fails before and after content updates - CIAC-12587",
         "Microsoft_365_Defender-Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-18016",
         "EWS V2 Send Mail Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15571",
         "EWS V2 Send Mail Test 3": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15570",
