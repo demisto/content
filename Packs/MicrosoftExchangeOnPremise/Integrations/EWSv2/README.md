@@ -41,28 +41,31 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 
 ## Configure EWS v2 in Cortex
 
-| **Parameter**                                                                                                                                 | **Required** |
-|-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Email address                                                                                                                                 | True         |
-| Password                                                                                                                                      | True         |
-| Email address from which to fetch incidents                                                                                                   | True         |
-| Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
-| Public Folder                                                                                                                                 | False        |
-| Has impersonation rights                                                                                                                      | False        |
-| Use system proxy settings                                                                                                                     | False        |
-| Fetch incidents                                                                                                                               | False        |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
-| Mark fetched emails as read                                                                                                                   | False        |
-| Incident type                                                                                                                                 | False        |
-| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
-| DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
-| Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
-| Trust any certificate (not secure)                                                                                                            | False        |
-| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
-| Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
-| Max incidents per fetch                                                                                                                       | False        |
-| Run as a separate process (protects against memory depletion)                                                                                 | False        |
-| Skip unparsable emails during fetch incidents                                                                                                 | False        |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Email address |  | True |
+| Password |  | True |
+| Email address from which to fetch incidents | Mailbox to run commands on and to fetch incidents from. | True |
+| Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing) |  | False |
+| Public Folder |  | False |
+| Has impersonation rights |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Mark fetched emails as read |  | False |
+| Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address |  | False |
+| DOMAIN\USERNAME (e.g. DEMISTO.INT\admin) |  | False |
+| Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2013_SP1, 2016, and 2019) |  | False |
+| Trust any certificate (not secure) |  | False |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). |  | False |
+| Timeout (in seconds) for HTTP requests to Exchange Server |  | False |
+| Timeout (in seconds) for fault-tolerant error handling | The maximum wait time \(in seconds\) for automatic retries performed by exchangelib during fault-tolerant error handling. | False |
+| Max incidents per fetch |  | False |
+| Run as a separate process (protects against memory depletion) |  | False |
+| Use legacy attachment name |  |  |
+| Skip unparsable emails during fetch incidents |  | False |
 
 ## Fetched Incidents Data
 

@@ -314,6 +314,7 @@ class EWSClient:
         folder: str = "Inbox",
         is_public_folder: bool = False,
         request_timeout: int = 120,
+        max_wait_timeout: int = 3600,
         mark_as_read: bool = False,
         incident_filter: IncidentFilter = IncidentFilter.RECEIVED_FILTER,
         azure_cloud: Optional[AzureCloud] = None,
@@ -338,6 +339,7 @@ class EWSClient:
         :param folder: Name of the folder from which to fetch incidents
         :param is_public_folder: Public Folder flag
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
+        :param max_wait_timeout: Timeout (in seconds) for fault-tolerant error handling
         :param mark_as_read: Whether to mark fetched incidents as read
         :param incident_filter: The type of time filter to use for incidents (modified or received time)
         :param azure_cloud: (O365 only) The Azure cloud environment for authentication to O365 services
@@ -355,6 +357,7 @@ class EWSClient:
             raise ValueError("Version must be provided if EWS Server is specified.")
 
         BaseProtocol.TIMEOUT = request_timeout  # type: ignore
+        self.max_wait_timeout = max_wait_timeout
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_type = access_type.lower()
@@ -473,7 +476,7 @@ class EWSClient:
             config_args["server"] = self.ews_server
 
         return (
-            Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)),
+            Configuration(**config_args, retry_policy=FaultTolerance(max_wait=self.max_wait_timeout)),
             credentials,
             get_on_prem_build(self.version),
         )
