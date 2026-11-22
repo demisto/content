@@ -61,7 +61,7 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 | Trust any certificate (not secure) |  | False |
 | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). |  | False |
 | Timeout (in seconds) for HTTP requests to Exchange Server |  | False |
-| Timeout (in seconds) for fault-tolerant error handling |  | False |
+| Timeout (in seconds) for fault-tolerant error handling | The maximum wait time \(in seconds\) for automatic retries performed by exchangelib during fault-tolerant error handling. | False |
 | Max incidents per fetch |  | False |
 | Run as a separate process (protects against memory depletion) |  | False |
 | Use legacy attachment name |  |  |

@@ -123,6 +123,7 @@ configuration:
 - defaultvalue: '3600'
   display: Timeout (in seconds) for fault-tolerant error handling
   name: maxWaitTimeout
+  additionalinfo: The maximum wait time (in seconds) for automatic retries performed by exchangelib during fault-tolerant error handling.
   type: 0
   section: Connect
   advanced: true
