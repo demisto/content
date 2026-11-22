@@ -1,3 +1,4 @@
+import shlex
 import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import StringIO
@@ -283,12 +284,14 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
 
     # Create all folders to destination_path in the remote machine
     if destination_dir:
+        # Quote the directory so shell metacharacters in user input cannot inject additional commands.
+        mkdir_command = f"mkdir -p -- {shlex.quote(destination_dir)}"
         try:
-            execute_shell_command(ssh_client, args={"cmd": f"mkdir -p {destination_dir}"})
+            execute_shell_command(ssh_client, args={"cmd": mkdir_command})
         except Exception as e:
             # ignore the error of creating the dir, as sometime is already exist and the error are due to permission
             # otherwise the next operation will fail.
-            demisto.debug(f"Ignoring the error: {e!s}, occurred when run the command: mkdir -p {destination_dir}")
+            demisto.debug(f"Ignoring the error: {e!s}, occurred when run the command: {mkdir_command}")
 
     perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
     return CommandResults(readable_output=f"### The file corresponding to entry ID: {entry_id} was copied to remote host.")
