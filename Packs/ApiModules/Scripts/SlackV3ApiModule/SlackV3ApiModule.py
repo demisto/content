@@ -3885,12 +3885,15 @@ def init_globals(command_name: str = ""):
     PAGINATED_COUNT = int(params.get("paginated_count", "200"))
     ENABLE_DM = params.get("enable_dm", True)
     DEFAULT_PERMITTED_NOTIFICATION_TYPES = ["externalAskSubmit", "externalFormSubmit"]
-    CUSTOM_PERMITTED_NOTIFICATION_TYPES = params.get("permitted_notifications", [])
+    # ConnectUs sends an unfilled field as None, not as a missing key.
+    CUSTOM_PERMITTED_NOTIFICATION_TYPES = params.get("permitted_notifications") or []
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
-    MIRRORING_ENABLED = params.get("mirroring", True)
+    # Mirroring is on unless explicitly disabled. The standard connector does not expose
+    # the checkbox, so it is always on there.
+    MIRRORING_ENABLED = params.get("mirroring") is not False
     FILE_MIRRORING_ENABLED = params.get("enable_outbound_file_mirroring", False)
     LONG_RUNNING_ENABLED = params.get("longRunning", True)
-    DEMISTO_API_KEY = params.get("demisto_api_key", {}).get("password", "")
+    DEMISTO_API_KEY = (params.get("demisto_api_key") or {}).get("password", "")
     demisto_urls = demisto.demistoUrls()
     DEMISTO_URL = demisto_urls.get("server", "")
     IGNORE_RETRIES = params.get("ignore_event_retries", True)

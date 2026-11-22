@@ -1,7 +1,8 @@
 ## Get Your Slack User Token
 This integration uses an Enterprise organization (or Business+) user token (starting with `xoxp-`).
-The same token can also be used for Slack audit log collection, as long as it holds the scopes of
-every capability you enable.
+In the Slack Enterprise connector this is the shared **User OAuth Token**, which also serves SaaS
+posture, identity and data security and Slack audit log collection. It must hold the scopes of every
+capability you enable, including the scopes in the SSPM onboarding documentation.
 
 | Feature | Required scope | Who can create the token |
 |---|---|---|

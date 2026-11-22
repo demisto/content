@@ -1,7 +1,7 @@
 Audit Logs API is only available to Slack workspaces on an Enterprise Grid plan, meaning, this Integration will *not* work for workspaces on a Free, Standard, or Business+ plan. For more information about the Audit Logs API, visit the [Slack API Documentation](https://api.slack.com/admins/audit-logs).
 
 To configure an instance of Slack Event Collector, a Slack **User Token** with the `auditlogs:read` permissions must be obtained.
-The same user token can also be used for Slack user and group provisioning and `slack-user-session-reset`, as long as it also holds the `admin` and `admin.users:write` scopes.
+In the Slack Enterprise connector this is the shared **User OAuth Token**, which also serves SaaS posture, identity and data security, Slack user and group provisioning and `slack-user-session-reset`. It must hold the scopes of every capability you enable (`auditlogs:read` here, `admin` and `admin.users:write` for provisioning, and the scopes in the SSPM onboarding documentation).
 
 ### Obtain a User Token
 **Important**: The following steps must be done by the **Owner** of the Enterprise Grid organization.

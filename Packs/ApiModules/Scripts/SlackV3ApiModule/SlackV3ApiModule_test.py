@@ -6284,3 +6284,46 @@ class TestResolveSlackTokens:
     def test_ucp_empty_envelope_falls_back_to_params(self, ucp_credentials):
         ucp_credentials.return_value = {"type": "passthrough", "passthrough": {"parameters": {}}}
         assert SlackV3.resolve_slack_tokens(self.LEGACY_PARAMS) == ("xoxb-legacy", "xapp-legacy", "xoxp-legacy")
+
+
+class TestInitGlobalsUnsetParams:
+    """
+    ConnectUs sends an unfilled or unexposed field as None, not as a missing key.
+    """
+
+    BASE_PARAMS = {
+        "bot_token": {"password": "xoxb-1"},
+        "app_token": {"password": "xapp-1"},
+    }
+
+    @pytest.fixture
+    def init_with(self, mocker):
+        mocker.patch("SlackV3ApiModule.is_ucp_enabled", return_value=False)
+        mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://server"})
+
+        def _init(**params):
+            mocker.patch.object(demisto, "params", return_value={**self.BASE_PARAMS, **params})
+            SlackV3.init_globals()
+
+        return _init
+
+    def test_none_permitted_notifications_keeps_default_types(self, init_with):
+        init_with(permitted_notifications=None)
+        assert SlackV3.CUSTOM_PERMITTED_NOTIFICATION_TYPES == []
+        assert SlackV3.PERMITTED_NOTIFICATION_TYPES == ["externalAskSubmit", "externalFormSubmit"]
+
+    def test_selected_permitted_notifications_are_added(self, init_with):
+        init_with(permitted_notifications=["taskCompleted"])
+        assert SlackV3.PERMITTED_NOTIFICATION_TYPES == ["externalAskSubmit", "externalFormSubmit", "taskCompleted"]
+
+    @pytest.mark.parametrize(
+        "params, expected",
+        [({}, True), ({"mirroring": None}, True), ({"mirroring": True}, True), ({"mirroring": False}, False)],
+    )
+    def test_mirroring_is_on_unless_explicitly_disabled(self, init_with, params, expected):
+        init_with(**params)
+        assert SlackV3.MIRRORING_ENABLED is expected
+
+    def test_none_demisto_api_key_returns_empty_string(self, init_with):
+        init_with(demisto_api_key=None)
+        assert SlackV3.DEMISTO_API_KEY == ""
