@@ -7601,7 +7601,7 @@ script:
     - contextPath: FileContent.FileUrl
       description: The direct GitHub link to the file.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.11671917
+  dockerimage: demisto/auth-utils:1.0.0.14665672
   isfetch: true
   runonce: false
   script: '-'
