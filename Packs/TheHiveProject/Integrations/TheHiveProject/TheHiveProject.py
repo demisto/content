@@ -315,18 +315,21 @@ def multi_status_observable_results(case_id: str | None, response: dict) -> Comm
     if unexpected_failures:
         raise DemistoException(f"Failed to create observable in case {case_id}: {json.dumps(unexpected_failures)}")
 
-    existing_data = [str((failure.get("object") or {}).get("data", "")) for failure in failures]
+    existing_data = [str(data) for failure in failures if (data := (failure.get("object") or {}).get("data"))]
     readable_parts = []
     if created_observables:
         readable_parts.append(tableToMarkdown("New Observable:", created_observables, ["id", "data", "dataType", "message"]))
     if existing_data:
         readable_parts.append(f"Observable already exists in case {case_id}: {', '.join(existing_data)}")
+    elif failures:
+        readable_parts.append(f"Observable already exists in case {case_id}.")
 
     return CommandResults(
         outputs_prefix="TheHive.Observables",
         outputs_key_field="id",
         outputs=created_observables or None,
         readable_output="\n".join(readable_parts),
+        raw_response=response,
     )
 
 

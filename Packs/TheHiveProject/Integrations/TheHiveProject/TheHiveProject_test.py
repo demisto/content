@@ -373,6 +373,28 @@ def test_create_observable_command_already_exists(requests_mock):
 
     assert response.outputs is None
     assert response.readable_output == "Observable already exists in case 1: example.com"
+    assert response.raw_response == multi_status_response
+
+
+def test_create_observable_command_already_exists_without_data(requests_mock):
+    """
+    Given:
+        - TheHive returns 207 (Multi-Status) with an "already exists" failure that has no observable data.
+    When:
+        - Running thehive-create-observable.
+    Then:
+        - No error is raised and the human readable says the observable already exists, without an empty value.
+    """
+    from TheHiveProject import Client, create_observable_command
+
+    multi_status_response = {"success": [], "failure": [{"type": "CreateError", "message": "Observable already exists"}]}
+    _mock_create_observable_case(requests_mock, 207, multi_status_response)
+    client = Client(base_url="https://test/api", verify=False, headers={"Authorization": "Bearer APIKEY"})
+
+    response = create_observable_command(client, {"id": "1", "data": "example.com", "dataType": "domain"})
+
+    assert response.outputs is None
+    assert response.readable_output == "Observable already exists in case 1."
 
 
 def test_create_observable_command_multi_status_partial_success(requests_mock):
