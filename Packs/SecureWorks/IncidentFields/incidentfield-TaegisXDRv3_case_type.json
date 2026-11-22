@@ -1,0 +1,33 @@
+{
+    "fromVersion": "6.13.0",
+    "id": "incident_taegisxdrcasetype",
+    "version": -1,
+    "modified": "2026-02-03T19:01:45.512553472Z",
+    "name": "Taegis XDR Case Type",
+    "ownerOnly": false,
+    "description": "Taegis XDR Case Type",
+    "cliName": "taegisxdrcasetype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Taegis XDR - Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

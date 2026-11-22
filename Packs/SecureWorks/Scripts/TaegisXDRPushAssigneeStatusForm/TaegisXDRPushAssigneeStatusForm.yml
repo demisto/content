@@ -1,0 +1,17 @@
+commonfields:
+  id: TaegisXDRPushAssigneeStatusForm
+  version: -1
+name: TaegisXDRPushAssigneeStatusForm
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10325753
+tags:
+- incident-action-button
+enabled: true
+comment: "Reads Taegis XDR Requested Assignee and Taegis XDR Requested Status from the incident, pushes to Taegis, then clears those fields. Use in the 'Update in Taegis' section with the two dropdowns."
+runas: DBotRole
+runonce: false
+fromversion: 6.13.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,7 @@
+[
+    {
+        "value": "https:\\/\\/.*\\.secureworks\\.com\\/(share|investigations|alerts|cases|detections)\\/.*",
+        "type": "regex",
+        "reason": "Taegis XDR URLs"
+    }
+]

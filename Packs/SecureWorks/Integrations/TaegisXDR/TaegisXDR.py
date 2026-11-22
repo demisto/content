@@ -15,14 +15,16 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
-ALERT_STATUSES = set((
-    "FALSE_POSITIVE",
-    "NOT_ACTIONABLE",
-    "OPEN",
-    "TRUE_POSITIVE_BENIGN",
-    "TRUE_POSITIVE_MALICIOUS",
-))
-ASSET_SEARCH_FIELDS = ((
+ALERT_STATUSES = set(
+    (
+        "FALSE_POSITIVE",
+        "NOT_ACTIONABLE",
+        "OPEN",
+        "TRUE_POSITIVE_BENIGN",
+        "TRUE_POSITIVE_MALICIOUS",
+    )
+)
+ASSET_SEARCH_FIELDS = (
     "endpoint_type",
     "host_id",
     "hostname",
@@ -33,23 +35,23 @@ ASSET_SEARCH_FIELDS = ((
     "os_version",
     "sensor_version",
     "username",
-))
-COMMENT_TYPES = set((
-    "investigation",
-))
-INVESTIGATION_STATUSES = set((
-    "Open",
-    "Active",
-    "Awaiting Action",
-    "Suspended",
-    "Closed: Authorized Activity",
-    "Closed: Confirmed Security Incident",
-    "Closed: False Positive Alert",
-    "Closed: Inconclusive",
-    "Closed: Informational",
-    "Closed: Not Vulnerable",
-    "Closed: Threat Mitigated",
-))
+)
+COMMENT_TYPES = set(("investigation",))
+INVESTIGATION_STATUSES = set(
+    (
+        "Open",
+        "Active",
+        "Awaiting Action",
+        "Suspended",
+        "Closed: Authorized Activity",
+        "Closed: Confirmed Security Incident",
+        "Closed: False Positive Alert",
+        "Closed: Inconclusive",
+        "Closed: Informational",
+        "Closed: Not Vulnerable",
+        "Closed: Threat Mitigated",
+    )
+)
 INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
@@ -60,6 +62,7 @@ class Client(BaseClient):
     """
     Secureworks Taegis XDR Client class for implementing API logic with Taegis
     """
+
     _auth_header = {"access_token": "None"}
 
     def __init__(
@@ -142,8 +145,7 @@ def create_comment_command(client: Client, env: str, args=None):
     parent_type = args.get("parent_type", "investigation").lower()
     if parent_type not in COMMENT_TYPES:
         raise ValueError(
-            f"The provided comment parent type, {parent_type}, is not valid. "
-            f"Supported Parent Types Values: {COMMENT_TYPES}"
+            f"The provided comment parent type, {parent_type}, is not valid. Supported Parent Types Values: {COMMENT_TYPES}"
         )
 
     query = """
@@ -405,7 +407,7 @@ def fetch_assets_command(client: Client, env: str, args=None):
         "pagination_input": {
             "limit": page_size,
             "offset": page_size * page,
-        }
+        },
     }
 
     # Loop over allowed search fields and add valid search options to the query variables
@@ -528,10 +530,9 @@ def fetch_comments_command(client: Client, env: str, args=None):
 
     parent_type = args.get("parent_type", "investigation")
     if parent_type not in COMMENT_TYPES:
-        raise ValueError((
-            f"The provided comment parent type, {parent_type}, is not valid. "
-            f"Supported Parent Types Values: {parent_type}"
-        ))
+        raise ValueError(
+            (f"The provided comment parent type, {parent_type}, is not valid. Supported Parent Types Values: {parent_type}")
+        )
 
     query = """
     query commentsByParent ($parent_type: String!, $parent_id: String!) {
@@ -553,10 +554,7 @@ def fetch_comments_command(client: Client, env: str, args=None):
     }
     """
 
-    variables = {
-        "parent_id": args.get("parent_id"),
-        "parent_type": parent_type
-    }
+    variables = {"parent_id": args.get("parent_id"), "parent_type": parent_type}
 
     result = client.graphql_run(query=query, variables=variables)
 
@@ -584,9 +582,7 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot fetch endpoint information, missing id")
 
-    variables: Dict[str, Any] = {
-        "id": args.get("id")
-    }
+    variables: Dict[str, Any] = {"id": args.get("id")}
 
     query = """
     query assetEndpointInfo($id: ID!) {
@@ -703,7 +699,7 @@ def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = 
         "orderDirection": "asc",
         "page": 0,
         "perPage": max_fetch,
-        "status": ["Open", "Active", "Awaiting Action"]
+        "status": ["Open", "Active", "Awaiting Action"],
     }
 
     last_run = demisto.getLastRun()
@@ -732,11 +728,9 @@ def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = 
             continue
 
         demisto.debug(f"Found New Investigation: {investigation['description']} ({investigation['id']})")
-        incidents.append({
-            "name": investigation["description"],
-            "occured": investigation["created_at"],
-            "rawJSON": json.dumps(investigation)
-        })
+        incidents.append(
+            {"name": investigation["description"], "occured": investigation["created_at"], "rawJSON": json.dumps(investigation)}
+        )
 
     demisto.debug(f"Located {len(incidents)} Incidents")
 
@@ -938,14 +932,12 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     }
     """
 
-    variables = {
-        "playbookExecutionId": execution_id
-    }
+    variables = {"playbookExecutionId": execution_id}
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        execution = result['data']["playbookExecution"]
+        execution = result["data"]["playbookExecution"]
         execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
     except (KeyError, TypeError):
         raise ValueError(f"Failed to fetch playbook execution: {result['errors'][0]['message']}")
@@ -1035,10 +1027,7 @@ def isolate_asset_command(client: Client, env: str, args=None):
     if not args.get("reason"):
         raise ValueError("Cannot isolate asset, missing reason")
 
-    variables: Dict[str, Any] = {
-        "id": args.get("id"),
-        "reason": args.get("reason")
-    }
+    variables: Dict[str, Any] = {"id": args.get("id"), "reason": args.get("reason")}
 
     query = """
     mutation isolateAsset ($id: ID!, $reason: String!) {
@@ -1077,9 +1066,12 @@ def update_alert_status_command(client: Client, env: str, args=None):
         raise ValueError("Alert status must be defined")
 
     if args.get("status").upper() not in ALERT_STATUSES:
-        raise ValueError((
-            f"The provided status, {args['status']}, is not valid for updating an alert. "
-            f"Supported Status Values: {ALERT_STATUSES}"))
+        raise ValueError(
+            (
+                f"The provided status, {args['status']}, is not valid for updating an alert. "
+                f"Supported Status Values: {ALERT_STATUSES}"
+            )
+        )
 
     variables = {
         "alert_ids": argToList(args.get("ids")),
@@ -1139,9 +1131,7 @@ def update_comment_command(client: Client, env: str, args=None):
     """
     variables = {
         "comment_id": args.get("id"),
-        "comment": {
-            "comment": args.get("comment")
-        },
+        "comment": {"comment": args.get("comment")},
     }
 
     result = client.graphql_run(query=query, variables=variables)
@@ -1189,9 +1179,12 @@ def update_investigation_command(client: Client, env: str, args=None):
             continue
 
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
-            raise ValueError((
-                f"The provided status, {args['status']}, is not valid for updating an investigation. "
-                f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+            raise ValueError(
+                (
+                    f"The provided status, {args['status']}, is not valid for updating an investigation. "
+                    f"Supported Status Values: {INVESTIGATION_STATUSES}"
+                )
+            )
 
         variables["investigation"][field] = args.get(field)
 
@@ -1329,7 +1322,7 @@ def test_module(client: Client) -> str:
 
 
 def generate_id_url(env: str, endpoint: str, element_id: str):
-    element_id: str = element_id.replace('/', '%2F')
+    element_id: str = element_id.replace("/", "%2F")
     return f"{ENV_URLS[env]['xdr']}/{endpoint}/{element_id}"
 
 
@@ -1338,7 +1331,7 @@ def generate_id_url(env: str, endpoint: str, element_id: str):
 
 def main():
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
 
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,

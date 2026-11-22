@@ -1,0 +1,30 @@
+commonfields:
+  id: TaegisXDRAddCommentNote
+  version: -1
+name: TaegisXDRAddCommentNote
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10325753
+tags:
+- incident-action-button
+enabled: true
+comment: "Add a note with tag xdrcomment so it is mirrored to Taegis XDR as a comment. Add as a button on the Taegis XDR Case layout."
+runas: DBotRole
+runonce: false
+fromversion: 6.13.0
+args:
+- name: note
+  required: true
+  description: "Comment text to add as a note (will be mirrored to Taegis XDR as a comment)."
+  isArray: false
+- name: assign_case_to_sophos
+  required: true
+  description: "Assign case back to Sophos MDR team."
+  isArray: false
+  auto: PREDEFINED
+  predefined:
+  - "No"
+  - "Yes"
+tests:
+- No tests (auto formatted)

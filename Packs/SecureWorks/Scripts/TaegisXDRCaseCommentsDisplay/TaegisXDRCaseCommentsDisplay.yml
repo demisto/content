@@ -1,0 +1,32 @@
+commonfields:
+  id: TaegisXDRCaseCommentsDisplay
+  version: -1
+name: TaegisXDRCaseCommentsDisplay
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10325753
+tags:
+- dynamic-section
+enabled: true
+comment: "Dynamic section that renders tag-filtered War Room comments newest-first (author, timestamp, body). Use in place of the built-in invTimeline comments section so the latest comment shows at the top."
+runas: DBotRole
+runonce: false
+fromversion: 6.13.0
+args:
+- name: tags
+  required: false
+  description: "Comma-separated War Room entry tags to display (default: xdrcomment,CommentFromTaegis)."
+  isArray: false
+  defaultValue: "xdrcomment,CommentFromTaegis"
+- name: debug
+  required: false
+  description: "If true, prints the raw getEntries output (for confirming entry field names) instead of the rendered comments."
+  isArray: false
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+scripttarget: 0
+tests:
+- No tests (auto formatted)
