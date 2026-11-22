@@ -5963,6 +5963,7 @@
         }
     ],
     "skipped_tests": {
+        "IBM Resilient Systems Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-19401",
         "Microsoft_365_Defender-Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-18016",
         "EWS V2 Send Mail Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15571",
         "EWS V2 Send Mail Test 3": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15570",
