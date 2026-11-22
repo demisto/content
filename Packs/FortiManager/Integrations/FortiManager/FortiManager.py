@@ -167,6 +167,7 @@ class Client(BaseClient):
             self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/unlock")
         except Exception as e:
             demisto.error(f"Workspace Mode: failed to unlock {workspace_scope}: {e}")
+            demisto.debug(traceback.format_exc())
 
 
 def get_workspace_scope(url: str) -> str | None:
