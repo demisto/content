@@ -821,7 +821,7 @@ def main() -> None:
     adom = demisto.params().get("adom")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    workspace_mode = argToBoolean(demisto.params().get("workspace_mode", False))
+    workspace_mode = argToBoolean(demisto.params().get("workspace_mode") or False)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
