@@ -12,8 +12,8 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: false
-  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
+  required: true
+  additionalinfo: The abuse.ch Auth-Key used to download the URLhaus export.
 - name: feedTags
   display: Tags
   type: 0
@@ -85,6 +85,7 @@ configuration:
   section: Collect
   defaultvalue: '60'
   required: false
+  additionalinfo: The abuse.ch URLhaus export dump is regenerated every 5 minutes. The minimum interval is 5 minutes; instances configured with a lower value must be updated to 5 or more after upgrading.
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
@@ -112,7 +113,7 @@ script:
     - name: limit
       description: Limit of the api request.
     outputs: []
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.16.14740428
   feed: true
   runonce: false
   script: "-"
