@@ -52,12 +52,14 @@ script:
       - 'false'
       required: true
     - defaultValue: 10
-      description: Maximum number of results to return. Maximum is 1000.
+      description: The maximum number of results to return.
       name: limit
-    - description: 'Return alerts triggered at or after this time (UTC). Supports ISO 8601 (e.g., 2026-11-09T00:00:00Z) or relative time (e.g., 3 days). If not set, the API default (about the last 7 days) is used.'
+    - description: 'The start time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T00:00:00Z) or relative time (e.g., 3 days). If not set, the API default (about the last 7 days) is used.'
       name: start_time
-    - description: 'Return alerts triggered at or before this time (UTC). Supports ISO 8601 (e.g., 2026-11-09T23:59:59Z) or relative time (e.g., 1 hour). Requires start_time.'
+      type: date
+    - description: 'The end time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T23:59:59Z) or relative time (e.g., 1 hour). Requires start_time.'
       name: end_time
+      type: date
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
   dockerimage: demisto/python3:3.12.13.10116658

@@ -53,14 +53,14 @@ def test_get_events(mocker):
     from RecordedFutureEventCollector import Client, get_events
 
     client = Client(BASE_URL)
-    mocker.patch("RecordedFutureEventCollector.return_results")
 
     with requests_mock.Mocker() as m:
         m.get(f"{BASE_URL}/alert/search", json=util_load_json("test_data/first_fetch.json"))
 
-        mock_events = get_events(client, {"limit": 2})
+        mock_events, command_results = get_events(client, {"limit": 2})
 
     assert len(mock_events) == 2
+    assert command_results.raw_response == mock_events
 
 
 def test_get_events_time_window(mocker):
@@ -72,7 +72,6 @@ def test_get_events_time_window(mocker):
     """
     from RecordedFutureEventCollector import Client, get_events
 
-    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
     # 120 alerts, one per second from 10:00:00. The window [10:00:10, 10:01:09] holds 60 of them.
     alerts = [make_alert(f"id-{i}", f"2026-11-10T10:{i // 60:02d}:{i % 60:02d}.000Z") for i in range(10, 130)]
     pages = [
@@ -82,7 +81,7 @@ def test_get_events_time_window(mocker):
 
     with requests_mock.Mocker() as m:
         mock_request = m.get(f"{BASE_URL}/alert/search", pages)
-        events = get_events(
+        events, command_results = get_events(
             Client(BASE_URL), {"limit": 1000, "start_time": "2026-11-10T10:00:10Z", "end_time": "2026-11-10T10:01:09Z"}
         )
 
@@ -94,7 +93,7 @@ def test_get_events_time_window(mocker):
     assert [r.qs["from"][0] for r in mock_request.request_history] == ["0", "50"]
     assert [event["id"] for event in events] == [f"id-{i}" for i in range(10, 70)]
 
-    readable = mock_results.call_args[0][0].readable_output
+    readable = command_results.readable_output
     assert "| 60 |" in readable  # alerts in window
     assert "120 - alerts triggered from start_time up to NOW, NOT limited by end_time" in readable
     assert "end_time is applied by the integration" in readable
@@ -108,17 +107,16 @@ def test_get_events_window_larger_than_limit(mocker):
     """
     from RecordedFutureEventCollector import Client, get_events
 
-    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
     alerts = [make_alert(f"id-{i}", f"2026-11-10T10:{i // 60:02d}:{i % 60:02d}.000Z") for i in range(100)]
     pages = [make_page(list(reversed(alerts[i : i + 50]))) for i in range(0, 100, 50)]
 
     with requests_mock.Mocker() as m:
         mock_request = m.get(f"{BASE_URL}/alert/search", pages)
-        events = get_events(Client(BASE_URL), {"limit": 10, "start_time": "2026-11-10T10:00:00Z"})
+        events, command_results = get_events(Client(BASE_URL), {"limit": 10, "start_time": "2026-11-10T10:00:00Z"})
 
     assert mock_request.call_count == 1
     assert [event["id"] for event in events] == [f"id-{i}" for i in range(10)]
-    assert "more than 10 (stopped at the limit)" in mock_results.call_args[0][0].readable_output
+    assert "more than 10 (stopped at the limit)" in command_results.readable_output
 
 
 def test_get_events_end_time_requires_start_time(mocker):
@@ -129,7 +127,6 @@ def test_get_events_end_time_requires_start_time(mocker):
     """
     from RecordedFutureEventCollector import Client, get_events
 
-    mocker.patch("RecordedFutureEventCollector.return_results")
     with requests_mock.Mocker() as m:
         mock_request = m.get(f"{BASE_URL}/alert/search", json={"data": []})
         with pytest.raises(ValueError, match="end_time requires start_time"):
@@ -146,16 +143,15 @@ def test_get_events_time_zone_offset(mocker):
     """
     from RecordedFutureEventCollector import Client, get_events
 
-    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
     with requests_mock.Mocker() as m:
         mock_request = m.get(f"{BASE_URL}/alert/search", **make_page([make_alert("a", "2026-11-09T22:30:00.000Z")]))
-        events = get_events(
+        events, command_results = get_events(
             Client(BASE_URL), {"start_time": "2026-11-10T00:00:00+02:00", "end_time": "2026-11-10T01:00:00+02:00"}
         )
 
     assert mock_request.last_request.qs["triggered"][0].upper() == "[2026-11-09T22:00:00,]"
     assert [event["id"] for event in events] == ["a"]
-    assert "[2026-11-09T22:00:00, 2026-11-09T23:00:00]" in mock_results.call_args[0][0].readable_output
+    assert "[2026-11-09T22:00:00, 2026-11-09T23:00:00]" in command_results.readable_output
 
 
 @pytest.mark.parametrize("limit", [-1, -5])
@@ -167,9 +163,44 @@ def test_get_events_invalid_limit(mocker, limit):
     """
     from RecordedFutureEventCollector import Client, get_events
 
-    mocker.patch("RecordedFutureEventCollector.return_results")
     with pytest.raises(ValueError, match="limit must be a positive number"):
         get_events(Client(BASE_URL), {"limit": limit})
+
+
+def test_get_events_limit_not_capped(mocker):
+    """
+    Given: A limit above MAX_FETCH.
+    When: Running recorded-future-get-events.
+    Then: The limit is not capped, all alerts up to the limit are returned.
+    """
+    from RecordedFutureEventCollector import Client, get_events, MAX_FETCH, PAGE_SIZE
+
+    total = MAX_FETCH + 2 * PAGE_SIZE
+    alerts = [make_alert(f"id-{i:05d}", f"2026-11-10T{i // 3600:02d}:{i // 60 % 60:02d}:{i % 60:02d}.000Z") for i in range(total)]
+    pages = [make_page(list(reversed(alerts[i : i + PAGE_SIZE]))) for i in range(0, total, PAGE_SIZE)] + [make_page([])]
+
+    with requests_mock.Mocker() as m:
+        m.get(f"{BASE_URL}/alert/search", pages)
+        events, _ = get_events(Client(BASE_URL), {"limit": total, "start_time": "2026-11-10T00:00:00Z"})
+
+    assert len(events) == total
+
+
+def test_iter_alert_pages_bounded(mocker):
+    """
+    Given: The API keeps returning the same full page (e.g. it ignores `from`).
+    When: Running recorded-future-get-events.
+    Then: Paging stops after the maximum number of pages instead of looping forever.
+    """
+    from RecordedFutureEventCollector import Client, get_events, PAGE_SIZE
+
+    same_page = [make_alert(f"r-{i}", "2026-11-10T10:00:01.000Z") for i in range(PAGE_SIZE)]
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", **make_page(same_page))
+        events, _ = get_events(Client(BASE_URL), {"limit": 100, "start_time": "2026-11-10T10:00:00Z"})
+
+    assert mock_request.call_count == 100 // PAGE_SIZE + 2
+    assert len(events) == PAGE_SIZE
 
 
 @pytest.mark.parametrize("limit", [-1, -5])
@@ -426,6 +457,7 @@ def test_main(mocker):
     mocker.patch.object(demisto, "command", return_value="recorded-future-get-events")
     mocker.patch.object(demisto, "args", return_value={"should_push_events": True, "limit": 2})
     events = mocker.patch("RecordedFutureEventCollector.send_events_to_xsiam", side_effect=mock_send_events_to_xsiam)
+    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
 
     with requests_mock.Mocker() as m:
         mock_request = m.get(f"{BASE_URL}/alert/search", json=util_load_json("test_data/first_fetch.json"))
@@ -437,4 +469,5 @@ def test_main(mocker):
     assert event.get("_time") == event.get("log", {}).get("triggered")
     assert events.call_args[1].get("vendor") == VENDOR
     assert events.call_args[1].get("product") == PRODUCT
+    assert "Recorded Future get-events summary" in mock_results.call_args[0][0].readable_output
     assert mock_request.last_request.qs == {"orderby": ["triggered"], "direction": ["desc"], "limit": ["50"], "from": ["0"]}

@@ -52,14 +52,14 @@ def get_triggered(event: dict) -> str:
     return ""
 
 
-def parse_limit(value: Any, default: int) -> int:
-    """Returns the limit capped at MAX_FETCH, or `default` when empty or 0. Raises on a negative limit."""
+def parse_limit(value: Any, default: int, max_limit: int | None = None) -> int:
+    """Returns the limit (capped at `max_limit` when given), or `default` when empty or 0. Raises on a negative limit."""
     limit = arg_to_number(value, arg_name="limit")
     if not limit:
         return default
     if limit < 1:
         raise ValueError(f"limit must be a positive number, got {limit}.")
-    return min(limit, MAX_FETCH)
+    return min(limit, max_limit) if max_limit else limit
 
 
 def to_triggered_format(value: datetime | None) -> str:
@@ -84,23 +84,24 @@ def dedupe_and_sort(alerts: list[dict], end: str = "") -> list[dict]:
     return unique_alerts
 
 
-def iter_alert_pages(client: Client, params: dict) -> Iterator[tuple[list[dict], dict]]:
+def iter_alert_pages(client: Client, params: dict, limit: int) -> Iterator[tuple[list[dict], dict]]:
     """Yields (alerts, raw response) per page using `from` paging, until a short page. The caller may stop early.
 
-    The page size is always PAGE_SIZE, so `from` advances in whole pages.
+    The page size is always PAGE_SIZE, so `from` advances in whole pages. Bounded to enough pages for `limit` alerts.
     """
-    offset = 0
-    while True:
+    max_pages = limit // PAGE_SIZE + 2  # Enough pages for `limit` alerts, plus a spare one.
+    for page_number in range(max_pages):
+        offset = page_number * PAGE_SIZE
         response = client.get_alerts({**params, "limit": PAGE_SIZE, "from": offset})
         page = response.get("data") or []
         demisto.debug(f"[Pagination] Got {len(page)} alerts (from={offset}, limit={PAGE_SIZE}).")
         yield page, response
         if len(page) < PAGE_SIZE:
             return
-        offset += PAGE_SIZE
+    demisto.debug(f"[Pagination] Stopped after the maximum of {max_pages} pages.")
 
 
-def add_time_key_to_events(events: list = None):
+def add_time_key_to_events(events: list[dict] | None = None) -> None:
     """
     Adds the _time key to the events.
     Args:
@@ -141,7 +142,7 @@ def test_module(client: Client):
         raise DemistoException(f"Failed due to - {message}")
 
 
-def get_events(client: Client, args: dict) -> list:
+def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     """Gets the alerts in a time window (for debugging and verification).
 
     The API only supports an open start filter (triggered=[start,]), so end_time is applied here and requires
@@ -153,6 +154,7 @@ def get_events(client: Client, args: dict) -> list:
 
     Returns:
         list: The events in the window, oldest first, up to `limit`.
+        CommandResults: The summary and events table.
     """
     limit = parse_limit(args.get("limit"), default=10)
     start = to_triggered_format(arg_to_datetime(args.get("start_time"), arg_name="start_time"))
@@ -168,7 +170,7 @@ def get_events(client: Client, args: dict) -> list:
     alerts: list[dict] = []
     api_total = None
     window_complete = False
-    for page, response in iter_alert_pages(client, params):
+    for page, response in iter_alert_pages(client, params, limit):
         if api_total is None:
             api_total = (response.get("counts") or {}).get("total")
         alerts.extend(page)
@@ -196,9 +198,7 @@ def get_events(client: Client, args: dict) -> list:
     if end:
         hr += "\nNote: end_time is applied by the integration, the Recorded Future API does not support an end time.\n"
     hr += tableToMarkdown(name="Events", t=events)
-    return_results(CommandResults(readable_output=hr, raw_response=events))
-
-    return events
+    return events, CommandResults(readable_output=hr, raw_response=events)
 
 
 def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
@@ -214,14 +214,14 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
         dict: The lastRun object for the next run (empty when no alerts were found).
     """
     last_run = str(kwargs.get("last_run"))
-    max_fetch = parse_limit(kwargs.get("limit"), default=MAX_FETCH)
+    max_fetch = parse_limit(kwargs.get("limit"), default=MAX_FETCH, max_limit=MAX_FETCH)
     last_run_ids = set(demisto.getLastRun().get("last_run_ids") or [])
     demisto.debug(f"[Fetch] Fetching from {last_run}, limit {max_fetch}, {len(last_run_ids)} IDs from the last run.")
 
     # direction=desc returns the oldest alerts after the start time. Observed on the live API, not documented.
     params = {"triggered": f"[{last_run},]", "orderby": "triggered", "direction": "desc"}
     alerts: list[dict] = []
-    for page, _ in iter_alert_pages(client, params):
+    for page, _ in iter_alert_pages(client, params, max_fetch):
         alerts.extend(page)
         if len(alerts) >= max_fetch:
             break
@@ -275,7 +275,8 @@ def main() -> None:
             test_module(client)
 
         elif command == "recorded-future-get-events":
-            events = get_events(client, args)
+            events, command_results = get_events(client, args)
+            return_results(command_results)
             if argToBoolean(args.get("should_push_events", False)):
                 add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
