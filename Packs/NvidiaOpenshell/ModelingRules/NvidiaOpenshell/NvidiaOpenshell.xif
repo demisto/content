@@ -106,8 +106,10 @@ alter
     xdm.source.process.pid        = get_actor_proc_pid,
     xdm.source.process.command_line = get_actor_cmd_line,
     // --- Source user (gateway principal) ---
-    xdm.source.user.identifier    = coalesce(get_actor_user_uid, if(get_user_type_id = 0, null, get_user_uid)),
-    xdm.source.user.username      = if(get_user_type_id = 0 or get_user_name = "unknown", null, get_user_name),
+    xdm.source.user.identifier     = coalesce(get_actor_user_uid, if(get_user_type_id = 0, null, get_user_uid)),
+    xdm.source.identity.identifier = coalesce(get_actor_user_uid, if(get_user_type_id = 0, null, get_user_uid)),
+    xdm.source.user.username       = if(get_user_type_id = 0 or get_user_name = "unknown", null, get_user_name),
+    xdm.source.identity.username   = if(get_user_type_id = 0 or get_user_name = "unknown", null, get_user_name),
     // --- Source IP ---
     xdm.source.ipv4               = if(get_src_ip != null and is_ipv4(get_src_ip), get_src_ip, null),
     xdm.source.ipv6               = if(get_src_ip != null and is_ipv6(get_src_ip), get_src_ip, null),
