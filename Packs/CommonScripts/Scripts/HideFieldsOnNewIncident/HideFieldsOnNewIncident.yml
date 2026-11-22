@@ -16,6 +16,6 @@ args:
 - name: field
   description: Field definition object.
 scripttarget: 0
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.15.14069087
 tests:
 - No tests (auto formatted)
