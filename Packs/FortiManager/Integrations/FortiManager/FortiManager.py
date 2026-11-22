@@ -10,18 +10,21 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 GLOBAL_VAR = "global"
+# JSON-RPC methods that change configuration and require an ADOM lock when Workspace Mode is enabled
+WRITE_METHODS = ("add", "set", "update", "delete", "move", "clone")
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool, adom: str):
+    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool, adom: str, workspace_mode: bool = False):
         super().__init__(base_url=url.rstrip("/"), verify=verify, proxy=proxy, ok_codes=(200, 204))
         handle_proxy()
         self.username = credentials["identifier"]
         self.password = credentials["password"]
         self.session_token = self.get_session_token()
         self.adom = adom
+        self.workspace_mode = workspace_mode
 
     def get_session_token(self, get_new_token: bool = False):
         if get_new_token:
@@ -77,15 +80,18 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix="jsonrpc", json_data=body)
         return response
 
-    def fortimanager_api_call(
+    def fortimanager_request_with_retry(
         self,
         method: str,
         url: str,
-        data_in_list: dict = None,
-        json_data: dict = None,
-        range_info: List = None,
-        other_params: dict = None,
-    ):
+        data_in_list: dict | None = None,
+        json_data: dict | None = None,
+        range_info: List | None = None,
+        other_params: dict | None = None,
+    ) -> dict:
+        """Sends a JSON-RPC request and raises if FortiManager returns a non-zero status code.
+        A session expiration (code -11) is handled by fetching a new token and retrying once.
+        """
         response = self.fortimanager_http_request(
             method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
         )
@@ -100,7 +106,75 @@ class Client(BaseClient):
         if response.get("result")[0].get("status", {}).get("code") != 0:
             raise DemistoException(response.get("result")[0].get("status").get("message"))
 
+        return response
+
+    def fortimanager_api_call(
+        self,
+        method: str,
+        url: str,
+        data_in_list: dict | None = None,
+        json_data: dict | None = None,
+        range_info: List | None = None,
+        other_params: dict | None = None,
+    ):
+        workspace_scope = get_workspace_scope(url) if self.workspace_mode and method in WRITE_METHODS else None
+        if not workspace_scope:
+            response = self.fortimanager_request_with_retry(
+                method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
+            )
+            return response.get("result")[0].get("data")
+
+        self.lock_workspace(workspace_scope)
+        try:
+            response = self.fortimanager_request_with_retry(
+                method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
+            )
+            self.commit_workspace(workspace_scope)
+        finally:
+            self.unlock_workspace(workspace_scope)
+
         return response.get("result")[0].get("data")
+
+    def lock_workspace(self, workspace_scope: str) -> None:
+        """Locks the ADOM so that config changes are accepted when FortiManager Workspace Mode is enabled."""
+        demisto.debug(f"Workspace Mode: locking {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/lock")
+        except DemistoException as e:
+            raise DemistoException(
+                f"Failed to lock {workspace_scope} (FortiManager Workspace Mode). The ADOM may be locked by another "
+                f"administrator - try again later. FortiManager error: {e.message}"
+            )
+
+    def commit_workspace(self, workspace_scope: str) -> None:
+        """Saves the changes made in the locked ADOM."""
+        demisto.debug(f"Workspace Mode: committing {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/commit")
+        except DemistoException as e:
+            raise DemistoException(
+                f"The change was sent, but committing {workspace_scope} failed (FortiManager Workspace Mode). "
+                f"FortiManager error: {e.message}"
+            )
+
+    def unlock_workspace(self, workspace_scope: str) -> None:
+        """Releases the ADOM lock. Never raises, so it doesn't hide the original error of the command."""
+        demisto.debug(f"Workspace Mode: unlocking {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/unlock")
+        except Exception as e:
+            demisto.error(f"Workspace Mode: failed to unlock {workspace_scope}: {e}")
+
+
+def get_workspace_scope(url: str) -> str | None:
+    """Extracts the workspace scope ("adom/<name>" or "global") from a JSON-RPC URL.
+
+    Examples:
+        /pm/config/adom/MyADOM/obj/firewall/address -> adom/MyADOM
+        pm/pkg/global/my_package -> global
+    """
+    match = re.search(r"(?:^|/)pm/(?:config|pkg)/(adom/[^/]+|global)(?:/|$)", url)
+    return match.group(1) if match else None
 
 
 def get_global_or_adom(client: Client, args: dict):
@@ -743,10 +817,13 @@ def main() -> None:
     adom = demisto.params().get("adom")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
+    workspace_mode = argToBoolean(demisto.params().get("workspace_mode", False))
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(url=base_url, credentials=creds, verify=verify_certificate, proxy=proxy, adom=adom)
+        client = Client(
+            url=base_url, credentials=creds, verify=verify_certificate, proxy=proxy, adom=adom, workspace_mode=workspace_mode
+        )
 
         if demisto.command() == "test-module":
             try:
@@ -861,8 +938,8 @@ def main() -> None:
             return_results(install_policy_package_status_command(client, demisto.args()))
 
     # Log exceptions and return errors
-    except Exception:
-        return_error(f"Failed to execute {demisto.command()} command.")
+    except Exception as e:
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e}")
 
 
 """ ENTRY POINT """

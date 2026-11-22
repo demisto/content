@@ -17,6 +17,12 @@ configuration:
   name: adom
   required: true
   type: 0
+- display: Workspace Mode - lock the ADOM before changes
+  name: workspace_mode
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Enable when FortiManager Workspace Mode is set to Normal. Each write command locks the ADOM, applies the change, commits it, and unlocks the ADOM. Workflow mode (changes that require approval) is not supported.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

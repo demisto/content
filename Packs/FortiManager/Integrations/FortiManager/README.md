@@ -22,8 +22,15 @@ For more information about administrator permissions see the [FortiManager docum
 | url | Server URL | True |
 | credentials | Username | True |
 | adom | The instance ADOM | True |
+| workspace_mode | Workspace Mode - lock the ADOM before changes. Enable when FortiManager Workspace Mode is set to Normal. Each write command locks the ADOM, applies the change, commits it, and unlocks the ADOM. Workflow mode is not supported. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+
+### Workspace Mode
+
+When Workspace Mode is enabled on FortiManager, configuration changes are accepted only from a session that locked the ADOM first. Without the lock, write commands fail with the error `no write permission`.
+To use the write commands in this case, enable the **Workspace Mode - lock the ADOM before changes** parameter. Each write command (create, update, delete, move) then locks the ADOM, applies the change, commits it, and unlocks the ADOM. If another administrator holds the ADOM lock, the command fails and can be retried later.
+Workflow mode, where changes require approval, is not supported.
 
 ## Commands
 
