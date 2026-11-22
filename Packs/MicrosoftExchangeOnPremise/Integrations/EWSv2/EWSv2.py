@@ -1714,7 +1714,7 @@ def get_client_from_params(params: dict):
     folder = params.get("folder", "Inbox")
     is_public_folder = params.get("isPublicFolder", False)
     request_timeout = int(params.get("requestTimeout", 120))
-    max_wait_timeout = int(params.get("maxWaitTimeout", 3600))
+    max_wait_timeout = arg_to_number(params.get("maxWaitTimeout")) or 3600
     mark_as_read = params.get("markAsRead", False)
     manual_username = params.get("domainAndUserman", "")
     insecure = params.get("insecure", True)
