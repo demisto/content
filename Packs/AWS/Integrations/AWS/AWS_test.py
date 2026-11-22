@@ -6764,7 +6764,7 @@ def test_route53_resource_record_sets_list_command_success(mocker):
                 "Name": "app.example.com.",
                 "Type": "CNAME",
                 "AliasTarget": {
-                    "HostedZoneId": "Z3AQBSTGFYJSTF",
+                    "HostedZoneId": "Z0000000EXAMPLES3",
                     "DNSName": "mybucket.s3-website-us-east-1.amazonaws.com.",
                     "EvaluateTargetHealth": False,
                 },
@@ -6988,7 +6988,7 @@ def test_route53_resource_record_sets_change_command_upsert_alias(mocker):
         "action": "UPSERT",
         "name": "example.com",
         "type": "A",
-        "alias_target_hosted_zone_id": "Z35SXDOTRQ7X7K",
+        "alias_target_hosted_zone_id": "Z0000000EXAMPLELB",
         "alias_target_dns_name": "my-lb.us-east-1.elb.amazonaws.com",
         "alias_target_evaluate_target_health": "true",
     }
@@ -7004,7 +7004,7 @@ def test_route53_resource_record_sets_change_command_upsert_alias(mocker):
                 "Name": "example.com",
                 "Type": "A",
                 "AliasTarget": {
-                    "HostedZoneId": "Z35SXDOTRQ7X7K",
+                    "HostedZoneId": "Z0000000EXAMPLELB",
                     "DNSName": "my-lb.us-east-1.elb.amazonaws.com",
                     "EvaluateTargetHealth": True,
                 },
@@ -7028,7 +7028,7 @@ def test_route53_resource_record_sets_change_command_alias_default_evaluate_targ
         "action": "CREATE",
         "name": "example.com",
         "type": "A",
-        "alias_target_hosted_zone_id": "Z35SXDOTRQ7X7K",
+        "alias_target_hosted_zone_id": "Z0000000EXAMPLELB",
         "alias_target_dns_name": "my-lb.us-east-1.elb.amazonaws.com",
     }
 

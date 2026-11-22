@@ -7399,12 +7399,12 @@ Retrieves a list of the public and private hosted zones that are associated with
                         "Comment": "Example zone b",
                         "PrivateZone": false
                     },
-                    "Id": "/hostedzone/Z00737611B2SHHCSMDAAY",
+                    "Id": "/hostedzone/Z0000000EXAMPLEB",
                     "Name": "example-b.com.",
                     "ResourceRecordSetCount": 2
                 }
             ],
-            "HostedZonesNextToken": "Z00737611B2SHHCSMDAAY"
+            "HostedZonesNextToken": "Z0000000EXAMPLEB"
         }
     }
 }
@@ -7416,7 +7416,7 @@ Retrieves a list of the public and private hosted zones that are associated with
 >
 >|Id|Name|Resource Record Set Count|Private Zone|Comment|
 >|---|---|---|---|---|
->| /hostedzone/Z00737611B2SHHCSMDAAY | example-b.com. | 2 | false | Example zone b |
+>| /hostedzone/Z0000000EXAMPLEB | example-b.com. | 2 | false | Example zone b |
 
 ### aws-route53-hosted-zones-by-name-list
 
@@ -7468,13 +7468,13 @@ Retrieves a list of the hosted zones associated with the AWS account, sorted in 
                         "Comment": "Example zone a",
                         "PrivateZone": false
                     },
-                    "Id": "/hostedzone/Z0527756206C7VMRR9ARB",
+                    "Id": "/hostedzone/Z0000000EXAMPLEA",
                     "Name": "example-a.com.",
                     "ResourceRecordSetCount": 8
                 }
             ],
             "HostedZonesNextDNSName": "example-b.com.",
-            "HostedZonesNextHostedZoneId": "Z00737611B2SHHCSMDAAY"
+            "HostedZonesNextHostedZoneId": "Z0000000EXAMPLEB"
         }
     }
 }
@@ -7486,7 +7486,7 @@ Retrieves a list of the hosted zones associated with the AWS account, sorted in 
 >
 >|Id|Name|Resource Record Set Count|Private Zone|Comment|
 >|---|---|---|---|---|
->| /hostedzone/Z0527756206C7VMRR9ARB | example-a.com. | 8 | false | Example zone a |
+>| /hostedzone/Z0000000EXAMPLEA | example-a.com. | 8 | false | Example zone a |
 
 ### aws-route53-resource-record-sets-list
 
@@ -7536,7 +7536,7 @@ Lists the resource record sets in a specified hosted zone. Route53 is a global s
 
 #### Command example
 
-```!aws-route53-resource-record-sets-list account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB limit=2```
+```!aws-route53-resource-record-sets-list account_id=123456789012 region=us-east-1 hosted_zone_id=Z0000000EXAMPLEA limit=2```
 
 #### Context Example
 
@@ -7546,22 +7546,22 @@ Lists the resource record sets in a specified hosted zone. Route53 is a global s
         "Route53": {
             "RecordSets": [
                 {
-                    "HostedZoneId": "Z0527756206C7VMRR9ARB",
+                    "HostedZoneId": "Z0000000EXAMPLEA",
                     "Name": "example-a.com.",
                     "ResourceRecords": [
-                        {"Value": "ns-1328.awsdns-38.org."},
-                        {"Value": "ns-1590.awsdns-06.co.uk."},
-                        {"Value": "ns-5.awsdns-00.com."},
-                        {"Value": "ns-812.awsdns-37.net."}
+                        {"Value": "ns-1.awsdns-example.org."},
+                        {"Value": "ns-2.awsdns-example.co.uk."},
+                        {"Value": "ns-3.awsdns-example.com."},
+                        {"Value": "ns-4.awsdns-example.net."}
                     ],
                     "TTL": 172800,
                     "Type": "NS"
                 },
                 {
-                    "HostedZoneId": "Z0527756206C7VMRR9ARB",
+                    "HostedZoneId": "Z0000000EXAMPLEA",
                     "Name": "example-a.com.",
                     "ResourceRecords": [
-                        {"Value": "ns-1328.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"}
+                        {"Value": "ns-1.awsdns-example.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"}
                     ],
                     "TTL": 900,
                     "Type": "SOA"
@@ -7578,12 +7578,12 @@ Lists the resource record sets in a specified hosted zone. Route53 is a global s
 
 #### Human Readable Output
 
->### AWS Route53 Record Sets in hosted zone Z0527756206C7VMRR9ARB
+>### AWS Route53 Record Sets in hosted zone Z0000000EXAMPLEA
 >
 >|Name|Type|TTL|Values|
 >|---|---|---|---|
->| example-a.com. | NS | 172800 | ns-1328.awsdns-38.org., ns-1590.awsdns-06.co.uk., ns-5.awsdns-00.com., ns-812.awsdns-37.net. |
->| example-a.com. | SOA | 900 | ns-1328.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400 |
+>| example-a.com. | NS | 172800 | ns-1.awsdns-example.org., ns-2.awsdns-example.co.uk., ns-3.awsdns-example.com., ns-4.awsdns-example.net. |
+>| example-a.com. | SOA | 900 | ns-1.awsdns-example.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400 |
 
 ### aws-route53-resource-record-sets-change
 
@@ -7624,7 +7624,7 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 
 #### Command example
 
-```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB action=CREATE name=new.example-a.com type=A ttl=300 values=192.0.2.30,192.0.2.31 comment="example create"```
+```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0000000EXAMPLEA action=CREATE name=new.example-a.com type=A ttl=300 values=192.0.2.30,192.0.2.31 comment="example create"```
 
 #### Context Example
 
@@ -7634,9 +7634,9 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
         "Route53": {
             "RecordSetsChange": {
                 "Comment": "example create",
-                "Id": "/change/C0074801Q6AQED8TYW4C",
+                "Id": "/change/C0000000EXAMPLE1",
                 "Status": "PENDING",
-                "SubmittedAt": "2026-11-09T11:42:43"
+                "SubmittedAt": "2024-01-01T12:00:00"
             }
         }
     }
@@ -7649,11 +7649,11 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 >
 >|Id|Status|Submitted At|Comment|
 >|---|---|---|---|
->| /change/C0074801Q6AQED8TYW4C | PENDING | 2026-11-09T11:42:43 | example create |
+>| /change/C0000000EXAMPLE1 | PENDING | 2024-01-01T12:00:00 | example create |
 
 #### Command example
 
-```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB action=CREATE name=www.example-a.com type=A ttl=60 values=192.0.2.20 set_identifier=blue weight=70 comment="example weighted create"```
+```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0000000EXAMPLEA action=CREATE name=www.example-a.com type=A ttl=60 values=192.0.2.20 set_identifier=blue weight=70 comment="example weighted create"```
 
 #### Context Example
 
@@ -7663,9 +7663,9 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
         "Route53": {
             "RecordSetsChange": {
                 "Comment": "example weighted create",
-                "Id": "/change/C0291234351RE9AIEFW57",
+                "Id": "/change/C0000000EXAMPLE2",
                 "Status": "PENDING",
-                "SubmittedAt": "2026-11-12T13:17:43"
+                "SubmittedAt": "2024-01-01T12:05:00"
             }
         }
     }
@@ -7678,4 +7678,4 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 >
 >|Id|Status|Submitted At|Comment|
 >|---|---|---|---|
->| /change/C0291234351RE9AIEFW57 | PENDING | 2026-11-12T13:17:43 | example weighted create |
+>| /change/C0000000EXAMPLE2 | PENDING | 2024-01-01T12:05:00 | example weighted create |
