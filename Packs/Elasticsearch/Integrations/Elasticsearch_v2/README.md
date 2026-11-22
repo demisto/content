@@ -60,7 +60,22 @@ The default fetch behavior. Configure the **Index to fetch incidents from**, **Q
 
 ### Fetch Security Alerts
 
-To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+To fetch security alerts, set the **Index to fetch incidents from** to one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`. Use the **Query String** field (Lucene syntax) to filter the alerts (for example, `*` to fetch all alerts). The **Index time field**, **First fetch timestamp**, and **The maximum number of results per fetch** parameters are applied to the query.
+
+**Note:** When the **Raw Query** field is set, it overrides the **Query String**. The time range, sort, and maximum number of results are not applied to it, and Elasticsearch defaults are used instead (for example, 10 results in relevance order). Because the same alerts are returned in every fetch cycle and are already fetched, no new incidents are created after the first cycle. If you use **Raw Query**, add a time range filter, a sort, and a `size` to the query, for example:
+
+```json
+{
+  "query": {
+    "bool": {
+      "must": [{"match_all": {}}],
+      "filter": [{"range": {"@timestamp": {"gte": "now-15m"}}}]
+    }
+  },
+  "sort": [{"@timestamp": "asc"}],
+  "size": 200
+}
+```
 
 ### Fetch Cases
 

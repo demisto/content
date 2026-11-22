@@ -42,6 +42,10 @@ from Azure import (
     CommandResults,
     DemistoException,
     API_VERSION,
+    NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -63,6 +67,15 @@ from Azure import (
     get_command_and_token_scopes,
     create_set_tags_request_body,
     nsg_security_rules_list_command,
+    sql_servers_list_command,
+    sql_db_list_command,
+    sql_db_server_auditing_settings_list_command,
+    sql_db_audit_policy_create_update_command,
+    sql_db_threat_policy_create_update_command,
+    sql_firewall_rules_list_command,
+    sql_firewall_rule_create_update_command,
+    sql_firewall_rule_delete_command,
+    sql_firewall_rule_replace_command,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -868,6 +881,489 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 
     # Verify results
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
+
+
+def test_sql_servers_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
+    When: sql_servers_list_command is called without resource_group_name in args or params.
+    Then: It returns CommandResults with the servers list, generic title, and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Sql/servers/integration",
+                "name": "integration",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers",
+                "properties": {"state": "Ready", "version": "12.0"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-page-url",
+    }
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+    params_no_rg = {k: v for k, v in mock_params.items() if k != "resource_group_name"}
+
+    result = sql_servers_list_command(client=client, params=params_no_rg, args={})
+
+    servers_key = next(k for k in result.outputs if "Servers" in k and "NextLink" not in k)
+    assert len(result.outputs[servers_key]) == 1
+    assert result.outputs[servers_key][0].get("name") == "integration"
+    assert "SQL Servers List" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("ServersNextToken") == "https://management.azure.com/next-page-url"
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") is None
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers.
+    When: sql_servers_list_command is called with resource_group_name.
+    Then: It passes the resource_group_name to the client and includes it in the table title.
+    """
+    raw = {"value": [{"id": "/sub/rg/srv", "name": "integration", "properties": {"state": "Ready"}}]}
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+
+    result = sql_servers_list_command(
+        client=client, params=mock_params, args={"resource_group_name": mock_params["resource_group_name"]}
+    )
+
+    assert "SQL Servers in resource group" in result.readable_output
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") == mock_params["resource_group_name"]
+
+
+def test_sql_servers_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns an empty value list.
+    When: sql_servers_list_command is called.
+    Then: It returns a no-results readable output with no outputs.
+    """
+    mocker.patch.object(client, "sql_servers_list", return_value={"value": []})
+
+    result = sql_servers_list_command(client=client, params=mock_params, args={})
+
+    assert "No SQL servers found" in result.readable_output
+    assert result.outputs is None
+
+
+def test_sql_db_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns a list of databases with a nextLink.
+    When: sql_db_list_command is called with a server_name.
+    Then: It returns CommandResults with the databases list and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db",
+                "name": "integration-db",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers/databases",
+                "properties": {"status": "Online"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-db-page",
+    }
+    mocker.patch.object(client, "sql_db_list", return_value=raw)
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    db_key = next(k for k in result.outputs if "Databases" in k and "NextLink" not in k)
+    assert len(result.outputs[db_key]) == 1
+    assert result.outputs[db_key][0].get("name") == "integration-db"
+    assert "Databases for server integration" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("DatabasesNextToken") == "https://management.azure.com/next-db-page"
+
+
+def test_sql_db_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns an empty value list.
+    When: sql_db_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_list", return_value={"value": []})
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No databases found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns a list of audit policies with a nextLink.
+    When: sql_db_server_auditing_settings_list_command is called with server_name and db_name.
+    Then: It returns CommandResults with the audit policies and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db/auditingSettings/Default",
+                "name": "Default",
+                "type": "Microsoft.Sql/servers/databases/auditingSettings",
+                "properties": {"state": "Enabled", "retentionDays": 0, "isAzureMonitorTargetEnabled": True},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-audit-page",
+    }
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value=raw)
+
+    args = {"server_name": "integration", "db_name": "integration-db"}
+    result = sql_db_server_auditing_settings_list_command(client=client, params=mock_params, args=args)
+
+    audit_key = next(k for k in result.outputs if "ServerAuditingSettings" in k and "NextToken" not in k)
+    assert len(result.outputs[audit_key]) == 1
+    policy = result.outputs[audit_key][0]
+    assert policy.get("type") == "Microsoft.Sql/servers/databases/auditingSettings"
+    # properties are no longer flattened — they remain nested under 'properties'
+    assert policy.get("properties", {}).get("state") == "Enabled"
+    assert "Database Audit Settings" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("ServerAuditingSettingsNextToken") == "https://management.azure.com/next-audit-page"
+
+
+def test_sql_db_audit_policy_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns an empty value list.
+    When: sql_db_server_auditing_settings_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value={"value": []})
+
+    result = sql_db_server_auditing_settings_list_command(
+        client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"}
+    )
+
+    assert "No audit policies found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_audit_policy_create_update returns an updated policy.
+    When: sql_db_audit_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/auditingSettings/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/auditingSettings",
+        "properties": {"state": "Enabled", "retentionDays": 5, "isAzureMonitorTargetEnabled": True},
+    }
+    mocker.patch.object(client, "sql_db_audit_policy_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "is_azure_monitor_target_enabled": "true",
+    }
+    result = sql_db_audit_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SqlDB.ServerAuditingSettings"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Auditing Settings" in result.readable_output
+    call_kwargs = client.sql_db_audit_policy_create_update.call_args[1]
+    assert call_kwargs["state"] == "Enabled"
+    assert call_kwargs["server_name"] == "integration"
+    assert call_kwargs["db_name"] == "integration-db"
+    # Verify casted arguments: retention_days str→int, is_azure_monitor_target_enabled str→bool
+    assert call_kwargs["retention_days"] == 5
+    assert isinstance(call_kwargs["retention_days"], int)
+    assert call_kwargs["is_azure_monitor_target_enabled"] is True
+    assert isinstance(call_kwargs["is_azure_monitor_target_enabled"], bool)
+
+
+def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_threat_policy_update returns an updated policy.
+    When: sql_db_threat_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix,
+          and the body passed to sql_db_threat_policy_update contains the correct properties.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/securityAlertPolicies/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+        "properties": {"state": "Enabled", "retentionDays": 5, "emailAddresses": ["test1@test.com"]},
+    }
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "email_addresses": "test1@test.com",
+        "email_account_admins": "true",
+    }
+    result = sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Threat Detection Policies" in result.readable_output
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    props = call_kwargs["current"]["properties"]
+    assert props["state"] == "Enabled"
+    assert props["emailAddresses"] == ["test1@test.com"]
+    # Verify casted arguments: retentionDays str→int, emailAccountAdmins str→bool
+    assert props["retentionDays"] == 5
+    assert isinstance(props["retentionDays"], int)
+    assert props["emailAccountAdmins"] is True
+    assert isinstance(props["emailAccountAdmins"], bool)
+
+
+def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, mock_params):
+    """
+    Given: An AzureClient and disabled_alerts set to 'None'.
+    When: sql_db_threat_policy_create_update_command is called.
+    Then: The disabledAlerts in the body passed to sql_db_threat_policy_update is [''] (empty string sentinel).
+    """
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value={"id": "x", "properties": {}})
+
+    args = {"server_name": "srv", "db_name": "db", "state": "Enabled", "disabled_alerts": "None"}
+    sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    assert call_kwargs["current"]["properties"]["disabledAlerts"] == [""]
+
+
+def test_sql_firewall_rule_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns a list of firewall rules with a nextLink.
+    When: sql_firewall_rules_list_command is called without a specific rule name.
+    Then: It returns CommandResults with all rules and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/fw/AllowAll",
+                "name": "AllowAllWindowsAzureIps",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
+            {
+                "id": "/sub/rg/srv/fw/test-rule",
+                "name": "test-rule",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
+        ],
+        "nextLink": "https://management.azure.com/next-fw-page",
+    }
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
+
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    fw_key = next(k for k in result.outputs if "FirewallRule" in k and "NextLink" not in k)
+    assert len(result.outputs[fw_key]) == 2
+    assert result.outputs[fw_key][0].get("name") == "AllowAllWindowsAzureIps"
+    assert "Firewall Rules" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("FirewallRulesNextToken") == "https://management.azure.com/next-fw-page"
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") is None
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns a single firewall rule object.
+    When: sql_firewall_rules_list_command is called with a specific firewall_rule_name.
+    Then: It returns CommandResults with exactly one rule (no nextLink in outputs).
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/test-rule",
+        "name": "test-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args=args)
+
+    # Single-rule path: uses outputs_prefix + outputs_key_field; outputs is the single rule dict
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs.get("name") == "test-rule"
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") == "test-rule"
+
+
+def test_sql_firewall_rule_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns an empty value list.
+    When: sql_firewall_rules_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value={"value": []})
+
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No firewall rules were found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_firewall_rule_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_create_update returns the created rule.
+    When: sql_firewall_rule_create_update_command is called with all required args.
+    Then: It returns CommandResults with a success message and the rule in outputs.
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/new-rule",
+        "name": "new-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rule_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "new-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_create_update_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rule new-rule" in result.readable_output
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    call_kwargs = client.sql_firewall_rule_create_update.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "new-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+
+
+def test_sql_firewall_rule_delete_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_delete succeeds.
+    When: sql_firewall_rule_delete_command is called with server_name and firewall_rule_name.
+    Then: It returns a success readable output confirming deletion.
+    """
+    mocker.patch.object(client, "sql_firewall_rule_delete", return_value=None)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rule_delete_command(client=client, params=mock_params, args=args)
+
+    assert "The firewall rule test-rule has been successfully deleted" in result.readable_output
+    client.sql_firewall_rule_delete.assert_called_once_with(
+        server_name="integration",
+        subscription_id=mock_params["subscription_id"],
+        resource_group_name=mock_params["resource_group_name"],
+        firewall_rule_name="test-rule",
+    )
+
+
+def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_replace returns the updated rules.
+    When: sql_firewall_rule_replace_command is called with rule name and IP addresses.
+    Then: It returns a success message and the rules in outputs.
+    """
+    raw = {
+        "values": [
+            {
+                "id": "/sub/rg/srv/fw/replaced-rule",
+                "name": "replaced-rule",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            }
+        ]
+    }
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "replaced-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "replaced-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+    assert call_kwargs["request_body"] is None
+
+
+def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params, tmp_path):
+    """
+    Given: An AzureClient and an entry_id pointing to a JSON file.
+    When: sql_firewall_rule_replace_command is called with entry_id.
+    Then: The request body is taken from the file and passed to the client.
+    """
+    fw_rules_content = json.dumps(
+        {"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}
+    )
+    tmp_file = tmp_path / "fw_rules.json"
+    tmp_file.write_text(fw_rules_content, encoding="utf-8")
+
+    raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+    mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(tmp_file)})
+
+    args = {"server_name": "integration", "entry_id": "123456"}
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["request_body"] is not None
+    assert "values" in call_kwargs["request_body"]
+
+
+@pytest.mark.parametrize(
+    "extra_arg",
+    [
+        {"firewall_rule_name": "replaced-rule"},
+        {"start_ip_address": "0.0.0.0"},
+        {"end_ip_address": "0.0.0.0"},
+    ],
+)
+def test_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, client, mock_params, extra_arg):
+    """
+    Given: An entry_id together with one of firewall_rule_name / start_ip_address / end_ip_address.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "entry_id": "123456", **extra_arg}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "When 'entry_id' is provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_missing_required_args(mocker, client, mock_params):
+    """
+    Given: No entry_id and missing rule arguments.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "firewall_rule_name": "replaced-rule"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Either 'entry_id' must be provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_invalid_entry_id(mocker, client, mock_params):
+    """
+    Given: An entry_id that does not exist (getFilePath returns an empty dict).
+    When: sql_firewall_rule_replace_command is called with that entry_id.
+    Then: A DemistoException is raised with a clear message.
+    """
+    mocker.patch("Azure.demisto.getFilePath", return_value={})
+
+    args = {"server_name": "integration", "entry_id": "nonexistent@123"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Could not find a file for entry_id" in str(exc.value)
 
 
 def test_aks_clusters_list_command(mocker, client, mock_params):
@@ -2065,8 +2561,72 @@ def test_azure_client_get_rule(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
         "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    client.http_request.assert_called_once_with("GET", full_url=expected_url, params={"api-version": NSG_API_VERSION})
     assert result == mock_response
+
+
+@pytest.mark.parametrize(
+    "method_name, kwargs, expected_api_version",
+    [
+        (
+            "create_or_update_rule",
+            {"security_group": "sg", "rule_name": "r", "properties": {}, "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "get_rule",
+            {"security_group": "sg", "rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "list_security_rules",
+            {"subscription_id": "s", "resource_group_name": "rg", "network_security_group_name": "sg"},
+            NSG_API_VERSION,
+        ),
+        ("list_network_security_groups", {"subscription_id": "s", "resource_group_name": "rg"}, NSG_API_VERSION),
+        (
+            "delete_rule",
+            {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
+        (
+            "storage_blob_service_properties_get_request",
+            {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "storage_blob_containers_create_update_request",
+            {
+                "subscription_id": "s",
+                "resource_group_name": "rg",
+                "args": {"account_name": "acc", "container_name": "c"},
+                "method": "PUT",
+            },
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
+    ],
+)
+def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
+    """
+    Given: An Azure client and an ARM request method that previously relied on the implicit default api-version.
+    When: The request method is called.
+    Then: The api-version is passed explicitly in params and is never embedded in, or left dangling on, the URL.
+    """
+    mock_response = mocker.Mock(status_code=200)
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    getattr(client, method_name)(**kwargs)
+
+    call_kwargs = client.http_request.call_args.kwargs
+    assert call_kwargs["params"]["api-version"] == expected_api_version
+    assert "?" not in call_kwargs["full_url"]
 
 
 def test_azure_client_create_policy_assignment(mocker, client):
@@ -2160,9 +2720,11 @@ def test_azure_client_create_rule_success(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/test-rule?"
+        "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response
     assert result == mock_response
@@ -2223,9 +2785,11 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/complex-rule?"
+        "securityRules/complex-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response contains complex properties
     assert result == mock_response
@@ -5220,7 +5784,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -5661,7 +6229,7 @@ def test_create_network_security_group(mocker, client):
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
-        params={"api-version": "2025-05-01"},
+        params={"api-version": NSG_API_VERSION},
         json_data={"location": "eastus"},
     )
 
@@ -7757,10 +8325,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -7769,11 +8346,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
@@ -14275,37 +14930,37 @@ def test_create_network_interface_command_omits_empty_security_group(mocker):
 # --- Azure Resource Graph (migrated from the AzureResourceGraph pack) ---
 
 
-def test_resource_graph_list_operations_command_success(mocker):
+def test_resource_graph_operations_list_command_success(mocker):
     """
     Given: An Azure client mock returning a list of Resource Graph operations.
-    When: resource_graph_list_operations_command is called.
+    When: resource_graph_operations_list_command is called.
     Then: It returns CommandResults with every operation returned by the API, since the API does not support paging.
     """
-    from Azure import resource_graph_list_operations_command
+    from Azure import resource_graph_operations_list_command
 
     operations_data = util_load_json("test_data/resource_graph_list_operations_response.json")
     mock_client = mocker.Mock()
     mock_client.resource_graph_list_operations.return_value = operations_data
 
-    result = resource_graph_list_operations_command(mock_client, {}, {})
+    result = resource_graph_operations_list_command(mock_client, {}, {})
 
     assert result.outputs_prefix == "Azure.ResourceGraph.Operations"
     assert len(result.outputs) == len(operations_data["value"])
     assert result.outputs[0]["Name"] == "Microsoft.ResourceGraph/operations/read"
 
 
-def test_resource_graph_list_operations_command_no_results(mocker):
+def test_resource_graph_operations_list_command_no_results(mocker):
     """
     Given: An Azure client mock returning an empty operations list.
-    When: resource_graph_list_operations_command is called.
+    When: resource_graph_operations_list_command is called.
     Then: It returns CommandResults with a "no operations found" readable output and no context.
     """
-    from Azure import resource_graph_list_operations_command
+    from Azure import resource_graph_operations_list_command
 
     mock_client = mocker.Mock()
     mock_client.resource_graph_list_operations.return_value = {"value": []}
 
-    result = resource_graph_list_operations_command(mock_client, {}, {})
+    result = resource_graph_operations_list_command(mock_client, {}, {})
 
     assert result.outputs is None
     assert result.readable_output == "No Azure Resource Graph operations were found."

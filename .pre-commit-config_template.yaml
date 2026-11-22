@@ -82,6 +82,7 @@ repos:
     name: Validate README.md files with MDX
     entry: node .hooks/validate-mdx.js
     language: node
+    language_version: lts  # avoid nodeenv picking a pre-release "latest" (e.g. 27.0.0-alpha) which crashes its version parser
     files: "^(.*/)?README\\.md$"
     additional_dependencies:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
@@ -407,6 +408,7 @@ repos:
   rev: v0.17.2
   hooks:
     - id: markdownlint-cli2
+      language_version: lts  # see mdx-validation: pin away from nodeenv "latest"
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
       exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
