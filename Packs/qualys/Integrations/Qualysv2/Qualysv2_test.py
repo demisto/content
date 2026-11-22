@@ -1887,14 +1887,15 @@ def test_iter_host_list_detections_matches_handle_host_list_detection_result(moc
         - The yielded hosts and the captured next_url match handle_host_list_detection_result's output.
     """
     hosts = [{"HOST": _make_host("h1", 1)}, {"HOST": _make_host("h2", 1)}]
-    stream_elements = [("HOST", f"elem{i}") for i in range(len(hosts))] + [("WARNING", "warn")]
+    host_elements = [ElementTree.fromstring(f"<HOST><ID>{host['HOST']['ID']}</ID></HOST>") for host in hosts]
+    stream_elements = [("HOST", element) for element in host_elements] + [("WARNING", "warn")]
 
     mocker.patch("Qualysv2.stream_xml_elements", return_value=iter(stream_elements))
 
     def fake_elem_to_internal(element):
         if element == "warn":
             return {"WARNING": {"URL": "https://qualys/next?id_min=42"}}
-        return hosts[int(str(element).replace("elem", ""))]
+        return hosts[host_elements.index(element)]
 
     mocker.patch("Qualysv2.elem_to_internal", side_effect=fake_elem_to_internal)
 
