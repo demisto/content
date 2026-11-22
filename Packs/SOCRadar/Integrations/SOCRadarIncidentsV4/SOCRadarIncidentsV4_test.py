@@ -643,11 +643,11 @@ def test_sort_alarm_ids_for_storage_keeps_most_recent(mocker):
     When: sort_alarm_ids_for_storage is called.
     Then: The highest (most recent) alarm IDs are kept.
     """
-    import SOCRadarIncidentsV4
+    from SOCRadarIncidentsV4 import sort_alarm_ids_for_storage
 
-    mocker.patch.object(SOCRadarIncidentsV4, "MAX_STORED_ALARM_IDS", 3)
+    mocker.patch("SOCRadarIncidentsV4.MAX_STORED_ALARM_IDS", 3)
 
-    assert SOCRadarIncidentsV4.sort_alarm_ids_for_storage({5, 1, 9, 7, 3}) == [9, 7, 5]
+    assert sort_alarm_ids_for_storage({5, 1, 9, 7, 3}) == [9, 7, 5]
 
 
 def test_search_incidents_sends_approved_at_params(mock_client, mocker):
@@ -1355,15 +1355,15 @@ def test_fetch_approved_alarms_stops_at_page_limit(mocker):
     When: fetch_approved_alarms pages through the check window.
     Then: Paging stops at MAX_APPROVED_CHECK_PAGES and the window is reported as completed.
     """
-    import SOCRadarIncidentsV4
+    from SOCRadarIncidentsV4 import MAX_INCIDENTS_PER_PAGE, fetch_approved_alarms
 
-    mocker.patch.object(SOCRadarIncidentsV4, "MAX_APPROVED_CHECK_PAGES", 3)
-    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(SOCRadarIncidentsV4.MAX_INCIDENTS_PER_PAGE)]
+    mocker.patch("SOCRadarIncidentsV4.MAX_APPROVED_CHECK_PAGES", 3)
+    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(MAX_INCIDENTS_PER_PAGE)]
     client = mocker.Mock()
     client.search_incidents.return_value = {"data": page_alarms, "total_pages": 1000}
     now = datetime.now(UTC)
 
-    incidents, completed = SOCRadarIncidentsV4.fetch_approved_alarms(
+    incidents, completed = fetch_approved_alarms(
         client, now - timedelta(hours=1), now, 10, {alarm["alarm_id"] for alarm in page_alarms}, {}, {}
     )
 

@@ -2,7 +2,13 @@ import pytest
 import json
 from datetime import UTC, datetime, timedelta
 from CommonServerPython import *
-from SOCRadarIncidentsV4MultiTenant import Client, STATUS_REASON_MAP
+from SOCRadarIncidentsV4MultiTenant import (
+    Client,
+    MAX_INCIDENTS_PER_PAGE,
+    STATUS_REASON_MAP,
+    fetch_approved_alarms,
+    sort_alarm_ids_for_storage,
+)
 
 
 @pytest.fixture
@@ -1156,11 +1162,9 @@ def test_sort_alarm_ids_for_storage_keeps_most_recent(mocker):
     When: sort_alarm_ids_for_storage is called.
     Then: The highest (most recent) alarm IDs are kept.
     """
-    import SOCRadarIncidentsV4MultiTenant
+    mocker.patch("SOCRadarIncidentsV4MultiTenant.MAX_STORED_ALARM_IDS", 3)
 
-    mocker.patch.object(SOCRadarIncidentsV4MultiTenant, "MAX_STORED_ALARM_IDS", 3)
-
-    assert SOCRadarIncidentsV4MultiTenant.sort_alarm_ids_for_storage({5, 1, 9, 7, 3}) == [9, 7, 5]
+    assert sort_alarm_ids_for_storage({5, 1, 9, 7, 3}) == [9, 7, 5]
 
 
 def test_search_incidents_retries_on_rate_limit(mock_client, mocker):
@@ -1184,16 +1188,14 @@ def test_fetch_approved_alarms_stops_at_page_limit(mocker):
     When: fetch_approved_alarms pages through two creation windows.
     Then: Paging stops at MAX_APPROVED_CHECK_PAGES per creation window and the check is reported as completed.
     """
-    import SOCRadarIncidentsV4MultiTenant
-
-    mocker.patch.object(SOCRadarIncidentsV4MultiTenant, "MAX_APPROVED_CHECK_PAGES", 3)
-    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(SOCRadarIncidentsV4MultiTenant.MAX_INCIDENTS_PER_PAGE)]
+    mocker.patch("SOCRadarIncidentsV4MultiTenant.MAX_APPROVED_CHECK_PAGES", 3)
+    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(MAX_INCIDENTS_PER_PAGE)]
     client = mocker.Mock()
     client.search_incidents.return_value = {"data": page_alarms, "total_pages": 1000}
     now = datetime.now(UTC)
     creation_windows = [("2024-01-15", "2024-01-15"), ("2024-01-14", "2024-01-14")]
 
-    incidents, completed = SOCRadarIncidentsV4MultiTenant.fetch_approved_alarms(
+    incidents, completed = fetch_approved_alarms(
         client, now - timedelta(hours=1), now, creation_windows, 10, {alarm["alarm_id"] for alarm in page_alarms}, {}, False
     )
 
