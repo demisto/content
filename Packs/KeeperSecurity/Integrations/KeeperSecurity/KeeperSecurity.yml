@@ -53,7 +53,7 @@ script:
   - arguments:
     - description: Maximum number of events to return.
       name: limit
-      defaultValue: "50"
+      defaultvalue: "50"
     - description: Start of the time range, for example "1 hour" or "2024-01-01T00:00:00Z". Defaults to 1 hour ago.
       name: start_date
     - description: End of the time range. Defaults to now.
