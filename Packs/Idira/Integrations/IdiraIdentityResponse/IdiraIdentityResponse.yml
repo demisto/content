@@ -394,6 +394,7 @@ script:
       - password
       - key
     - name: secret
+      secret: true
       description: The password or SSH key value.
     - name: automatic_management_enabled
       description: Whether to enable CPM automatic management.
