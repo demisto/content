@@ -188,7 +188,7 @@ script:
       predefined:
       - contains
       - startswith
-      defaultValue: contains
+      defaultvalue: contains
     - name: safe_name
       description: Filter results to a specific Safe.
     - name: limit
