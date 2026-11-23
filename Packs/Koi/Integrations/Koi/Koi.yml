@@ -12,7 +12,7 @@ configuration:
   required: true
   defaultvalue: https://api.prod.koi.security/
   type: 0
-  additionalinfo: 'The KOI API server URL.'
+  additionalinfo: 'The KOI API server URL. Use https://api.prod.koi.security/ for US tenants and https://api.prod.eu.koi.security/ for EU tenants.'
   section: Connect
 - name: api_key
   display: API Key
