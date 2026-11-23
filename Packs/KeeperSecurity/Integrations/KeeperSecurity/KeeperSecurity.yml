@@ -65,7 +65,7 @@ script:
       predefined:
       - "true"
       - "false"
-    description: "Gets audit events from Keeper Security. This command is used for development and debugging and might create duplicate events when should_push_events is true."
+    description: "Gets audit events from Keeper Security. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism."
     name: keeper-security-get-events
   runonce: false
   isfetchevents: true
