@@ -219,6 +219,35 @@ def test_parse_stix_indicator_multiple_comparisons_and_escaped_quote():
     assert unsupported == []
 
 
+@pytest.mark.parametrize(
+    "pattern, port, expected",
+    [
+        ("ipv4-addr:value = '45.147.99.158'", 8080, "8080"),
+        ("ipv4-addr:value = '45.147.99.158'", "443", "443"),
+        ("ipv4-addr:value = '45.147.99.158'", 0, None),
+        ("ipv4-addr:value = '45.147.99.158'", 70000, None),
+        ("ipv4-addr:value = '45.147.99.158'", "abc", None),
+        ("ipv4-addr:value = '45.147.99.158'", True, None),
+        ("ipv4-addr:value = '45.147.99.158:9090'", 8080, "9090"),
+        ("domain-name:value = '45.147.99.158:9090'", None, "9090"),
+    ],
+)
+def test_parse_stix_indicator_reads_threatmon_port(pattern, port, expected):
+    obj = stix(pattern, NOW)
+    if port is not None:
+        obj["x_threatmon_port"] = port
+    indicator = feed.parse_stix_indicator(obj, "IP Address Indicators with Ports", ["ThreatMon"], None, 3)[0][0]
+    assert indicator["type"] == FeedIndicatorType.IP
+    assert indicator["value"] == "45.147.99.158"
+    assert indicator["fields"].get("port") == expected
+
+
+def test_parse_stix_indicator_ignores_threatmon_port_for_other_types():
+    obj = stix("domain-name:value = 'example.com'", NOW)
+    obj["x_threatmon_port"] = 8080
+    assert "port" not in feed.parse_stix_indicator(obj, "c", ["ThreatMon"], None, 3)[0][0]["fields"]
+
+
 def test_parse_stix_indicator_reports_unsupported():
     obj = stix("mutex:name = 'x'", NOW)
     indicators, unsupported = feed.parse_stix_indicator(obj, "c", ["ThreatMon"], None, 3)
@@ -588,7 +617,9 @@ def test_seen_cache_is_bounded(context, created, mocker):
     server = FakeTaxiiServer(page_size=50)
     server.add(ALL, *[stix(f"domain-name:value = 'old{i}.com'", NOW - timedelta(days=10)) for i in range(20)])
     server.add(ALL, stix("domain-name:value = 'recent.com'", NOW))
-    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "first_fetch": "30 days"}, mocker)
+    # NOW is fixed, so the first fetch window is counted from the real clock to always include the old objects.
+    first_fetch = f"{(datetime.now(UTC) - NOW).days + 30} days"
+    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "first_fetch": first_fetch}, mocker)
 
     assert len(created) == 21
     assert len(feed.SeenCache(context["ctx"]["seen"])) == 1  # old objects can never be re-read, so they are not cached

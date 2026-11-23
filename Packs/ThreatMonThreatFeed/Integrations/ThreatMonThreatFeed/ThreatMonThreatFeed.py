@@ -246,6 +246,17 @@ def as_score(value: Any) -> int | None:
         return None
 
 
+def as_port(value: Any) -> str | None:
+    """Returns the ``x_threatmon_port`` value as a string, or ``None`` when it is not a port number (1-65535)."""
+    if isinstance(value, bool):
+        return None
+    try:
+        port = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    return str(port) if 0 < port < 65536 else None
+
+
 def to_iso(value: Any) -> str | None:
     """Normalizes a timestamp (``2026-11-16T05:12:08.715618+00:00``) to UTC ISO 8601 with a ``Z`` suffix."""
     parsed = parse_stix_time(value) if isinstance(value, str) else None
@@ -381,6 +392,10 @@ def parse_stix_indicator(
         if not indicator_type or not value:
             unsupported.append(f"{object_path}:{property_path}")
             continue
+        if indicator_type == FeedIndicatorType.IP and "port" not in extra_fields:
+            port = as_port(stix_object.get("x_threatmon_port"))
+            if port:
+                extra_fields["port"] = port
 
         fields: dict[str, Any] = {
             "tags": tags,
