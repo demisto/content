@@ -9,7 +9,7 @@ Designed to assist security professionals with security investigations, threat h
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
-| API Key | Anthropic API Key used for the LLM commands \(claude-send-message, claude-check-email-\*, claude-create-soc-email-template\). Generate one at https://console.anthropic.com/keys. | False |
+| API Key | Anthropic API Key used for the LLM commands \(claude-send-message, claude-check-email-\*, claude-create-soc-email-template\). Generate one at https://platform.claude.com/settings/keys. | False |
 | Model | The model that will process the inputs and generate the response. | False |
 | Model (Optional - overrides selected choice) | The model that will process the inputs and generate the response. | False |
 | Max tokens | The maximum number of tokens that can be generated for the response. Required by Anthropic's API \(defaults to 1024\). | True |

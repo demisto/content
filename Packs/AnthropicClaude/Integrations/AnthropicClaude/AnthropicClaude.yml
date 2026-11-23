@@ -20,7 +20,7 @@ configuration:
   required: false
   section: Connect
   type: 9
-  additionalinfo: Anthropic API Key used for the LLM commands (claude-send-message, claude-check-email-*, claude-create-soc-email-template). Generate one at https://console.anthropic.com/keys.
+  additionalinfo: Anthropic API Key used for the LLM commands (claude-send-message, claude-check-email-*, claude-create-soc-email-template). Generate one at https://platform.claude.com/settings/keys.
 - additionalinfo: The model that will process the inputs and generate the response.
   defaultvalue: claude-3-haiku-20240307
   display: Model

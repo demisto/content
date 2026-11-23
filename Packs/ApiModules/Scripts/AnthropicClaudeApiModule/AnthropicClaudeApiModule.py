@@ -63,7 +63,7 @@ class Config:
 
     # Documentation links surfaced in user-facing error messages.
     COMPLIANCE_KEY_DOCS = "https://platform.claude.com/docs/en/manage-claude/compliance-api-access"
-    API_KEY_DOCS = "https://console.anthropic.com/keys"
+    API_KEY_DOCS = "https://platform.claude.com/settings/keys"
 
 
 class UcpIds:
