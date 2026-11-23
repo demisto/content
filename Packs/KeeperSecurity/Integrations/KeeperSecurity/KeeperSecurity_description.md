@@ -6,7 +6,7 @@ The integration uses a Keeper Admin REST API key. Creating a key requires Enterp
 
 1. Log in to the [Keeper Admin Console](https://keepersecurity.com/console/).
 2. Go to **Integrations** > **API Keys** and create a new key with the **SIEM** (read) scope.
-   Alternatively, in Keeper Commander run: `public-api-key generate --name "XSIAM" --integrations "SIEM:1" --expires 1y`
+   Alternatively, in Keeper Commander run: `public-api-key generate --name "Cortex" --integrations "SIEM:1" --expires 1y`
 3. Copy the key (it is shown only once) and paste it in the **API Key** field of the instance configuration.
 
 When the key expires or is revoked, events stop being collected, so choose the expiration accordingly.
