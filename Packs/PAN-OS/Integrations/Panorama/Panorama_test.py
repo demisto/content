@@ -3186,7 +3186,7 @@ def mock_issue_with_underscores():
         "issue_code": "BP-V-1",
         "description": "Log forwarding profile is missing enhanced application logging",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3196,7 +3196,7 @@ def mock_enhanced_log_forwarding_issue_dict():
         "issuecode": "BP-V-1",
         "description": "Log forwarding profile is missing enhanced application logging",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3206,7 +3206,7 @@ def mock_security_zone_no_log_setting_issue_dict():
         "issuecode": "BP-V-7",
         "description": "Security zone has no log forwarding setting",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3216,7 +3216,7 @@ def mock_security_rule_log_settings_issue_dict():
         "issuecode": "BP-V-8",
         "description": "Security rule has no log setting",
         "name": "test-bad-no-lfp",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3226,7 +3226,7 @@ def mock_security_rule_security_profile_group_issue_dict():
         "issuecode": "BP-V-10",
         "description": "Security rule has no security profile group",
         "name": "test-bad-no-spg",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3388,6 +3388,35 @@ class TestTopology:
 
         # Because it's panorama, should be; [shared, device-group, template]
         assert len(result) == 3
+
+    def test_get_containers_only_queries_container_types_each_device_can_have(
+        self, mocker, mock_topology, mock_panorama, mock_firewall
+    ):
+        """
+        Given a topology with a Panorama and a firewall,
+        When listing the object containers,
+        Then Panorama is only asked for device groups, templates and template stacks (it has no vsys),
+        and the firewall is only asked for vsys (it has no device groups, templates or template stacks).
+        This avoids API calls that can never return anything.
+        """
+        firewall_vsys = mock_vsys()[0]
+        device_group_refresh = mocker.patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+        template_refresh = mocker.patch("Panorama.Template.refreshall", return_value=mock_templates())
+        template_stack_refresh = mocker.patch("Panorama.TemplateStack.refreshall", return_value=mock_template_stack())
+        vsys_refresh = mocker.patch("Panorama.Vsys.refreshall", return_value=[firewall_vsys])
+
+        result = mock_topology.get_all_object_containers()
+
+        device_group_refresh.assert_called_once_with(mock_panorama)
+        template_refresh.assert_called_once_with(mock_panorama)
+        template_stack_refresh.assert_called_once_with(mock_panorama)
+        vsys_refresh.assert_called_once_with(mock_firewall)
+
+        assert [device for device, _ in result].count(mock_panorama) == 4  # device group, template, stack, shared
+        assert (mock_firewall, firewall_vsys) in result
+        assert len(result) == 5
+        # The Panorama "shared" container is the Panorama device itself
+        assert (mock_panorama, mock_panorama) in result
 
 
 class TestUtilityFunctions:
@@ -4198,7 +4227,7 @@ def test_panorama_apply_dns_command2(mocker):
 
 class TestHygieneFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
     def test_check_log_forwarding(self, _, __, ___, ____, mock_topology):
@@ -4224,7 +4253,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_vulnerability_profiles(self, _, __, ___, ____, mock_topology):
         """
@@ -4266,7 +4295,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_spyware_profiles(self, _, __, ___, ____, mock_topology):
         """
@@ -4290,7 +4319,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_url_filtering_profiles(self, _, __, ___, ____, mock_topology):
         """

@@ -9875,25 +9875,18 @@ class Topology:
             device_retrieval_func = self.active_top_level_devices  # type: ignore[assignment]
 
         for device in device_retrieval_func(device_filter_string):
-            device_groups = DeviceGroup.refreshall(device)
-            for device_group in device_groups:
-                containers.append((device, device_group))
-
-            templates = Template.refreshall(device)
-            for template in templates:
-                containers.append((device, template))
-
-            template_stacks = TemplateStack.refreshall(device)
-            for template_stack in template_stacks:
-                containers.append((device, template_stack))
-
-            virtual_systems = Vsys.refreshall(device)
-            for virtual_system in virtual_systems:
-                containers.append((device, virtual_system))
-
             if isinstance(device, Panorama):
-                # Add the "shared" device if Panorama. Firewalls will always have vsys1
+                # Panorama has device groups, templates and template stacks, but no vsys of its own.
+                for container_class in (DeviceGroup, Template, TemplateStack):
+                    for container in container_class.refreshall(device):
+                        containers.append((device, container))
+
+                # Add the "shared" device if Panorama.
                 containers.append((device, device))
+            else:
+                # A firewall has vsys, but no device groups, templates or template stacks.
+                for virtual_system in Vsys.refreshall(device):
+                    containers.append((device, virtual_system))
 
         return_containers = []
 
