@@ -195,7 +195,8 @@ def test_module(client: Client) -> str:
 def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
     limit = arg_to_number(args.get("limit")) or 50
     now = datetime.now(UTC)
-    start_date = arg_to_datetime(args.get("start_date") or "1 hour", arg_name="start_date", required=True)
+    start_date = arg_to_datetime(args.get("start_time") or args.get("start_date") or "1 hour", arg_name="start_time", required=True)
+    end_date = arg_to_datetime(args.get("end_time") or args.get("end_date"), arg_name="end_time") or now
     end_date = arg_to_datetime(args.get("end_date"), arg_name="end_date") or now
     assert start_date is not None  # required=True
     events, _, _ = get_audit_logs(
