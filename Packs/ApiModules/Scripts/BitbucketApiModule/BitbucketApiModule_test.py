@@ -1,8 +1,12 @@
+import base64
 import json
 from datetime import datetime
+from unittest.mock import MagicMock
 
+import BitbucketApiModule
+import CommonServerPython
 import pytest
-from Bitbucket import Client
+from BitbucketApiModule import Client, build_client
 from freezegun import freeze_time
 
 
@@ -25,7 +29,7 @@ def test_get_paged_results(mocker, bitbucket_client):
     Then:
         - return a list with all the results after pagination
     """
-    from Bitbucket import get_paged_results
+    from BitbucketApiModule import get_paged_results
 
     get_paged_results_object = util_load_json("test_data/commands_test_data.json").get("get_paged_results")
     response1 = get_paged_results_object.get("response1")
@@ -48,7 +52,7 @@ def test_check_pagination(bitbucket_client):
     Then:
         - return a list with all the results after pagination
     """
-    from Bitbucket import check_pagination
+    from BitbucketApiModule import check_pagination
 
     response = util_load_json("test_data/commands_test_data.json").get("check_pagination").get("response")
     res = response.get("values", [])
@@ -95,7 +99,7 @@ def test_create_pull_request_body(
     Then:
         - check that the function returns the correct body according to the parameters that it gets
     """
-    from Bitbucket import create_pull_request_body
+    from BitbucketApiModule import create_pull_request_body
 
     body = create_pull_request_body(title, source_branch, destination_branch, reviewer_id, description, close_source_branch)
     assert body == expected_body
@@ -112,7 +116,7 @@ def test_project_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from Bitbucket import project_list_command
+    from BitbucketApiModule import project_list_command
 
     args = {"limit": "10", "partial_response": "false"}
     check_pagination_object = util_load_json("test_data/commands_test_data.json").get("check_pagination")
@@ -142,7 +146,7 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
         - The http request is called with the right arguments,
             and returns a command result with the project information.
     """
-    from Bitbucket import project_list_command
+    from BitbucketApiModule import project_list_command
 
     args = {"project_key": "T1", "partial_response": "true"}
     test_json = util_load_json("test_data/commands_test_data.json")
@@ -169,7 +173,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
         - The http request is called with the right arguments,
         and returns a command result with a list of the open branches.
     """
-    from Bitbucket import open_branch_list_command
+    from BitbucketApiModule import open_branch_list_command
 
     response = util_load_json("test_data/commands_test_data.json").get("test_open_branch_list_command")
     mocker.patch.object(bitbucket_client, "get_open_branch_list_request", return_value=response)
@@ -195,7 +199,7 @@ def test_branch_get_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with the branch information.
     """
-    from Bitbucket import branch_get_command
+    from BitbucketApiModule import branch_get_command
 
     args = {"branch_name": "master", "partial_response": "true"}
     test_json = util_load_json("test_data/commands_test_data.json")
@@ -223,7 +227,7 @@ def test_branch_create_command(mocker, bitbucket_client):
         - The http request is called with the right arguments,
         returns a command result with a success message and info about the new branch.
     """
-    from Bitbucket import branch_create_command
+    from BitbucketApiModule import branch_create_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {"name": "test", "target_branch": "master"}
@@ -243,7 +247,7 @@ def test_branch_delete_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from Bitbucket import branch_delete_command
+    from BitbucketApiModule import branch_delete_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {"branch_name": "test"}
@@ -262,7 +266,7 @@ def test_commit_create_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, creates a new file, and returns a success message.
     """
-    from Bitbucket import commit_create_command
+    from BitbucketApiModule import commit_create_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {"message": "message", "branch": "branch", "file_name": "hello.txt", "file_content": "Hello world!"}
@@ -283,7 +287,7 @@ def test_commit_list_command(mocker, bitbucket_client):
         - The http request is called with the right arguments,
             and returns a command result with the relevant commit list.
     """
-    from Bitbucket import commit_list_command
+    from BitbucketApiModule import commit_list_command
 
     args = {"included_branches": "master", "limit": "3", "partial_response": "false"}
     response = util_load_json("test_data/commands_test_data.json").get("test_commit_list_command")
@@ -313,7 +317,7 @@ def test_issue_create_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with a success message.
     """
-    from Bitbucket import issue_create_command
+    from BitbucketApiModule import issue_create_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {
@@ -346,7 +350,7 @@ def test_issue_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with the issue list.
     """
-    from Bitbucket import issue_list_command
+    from BitbucketApiModule import issue_list_command
 
     args = {"limit": "3", "partial_response": "true"}
     test_object = util_load_json("test_data/commands_test_data.json")
@@ -379,7 +383,7 @@ def test_issue_update_command(mocker, bitbucket_client):
         - The http request is called with the right arguments,
         returns a command result with a success message and info about the updated issue.
     """
-    from Bitbucket import issue_update_command
+    from BitbucketApiModule import issue_update_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {
@@ -413,7 +417,7 @@ def test_pull_request_create_command(mocker, bitbucket_client):
         - The http request is called with the right arguments, and returns a command result with info about
             the new PR and a success message.
     """
-    from Bitbucket import pull_request_create_command
+    from BitbucketApiModule import pull_request_create_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {
@@ -447,7 +451,7 @@ def test_pull_request_update_command(mocker, bitbucket_client):
         - The http request is called with the right arguments, and returns a command result with a success message
             and info about the updated PR.
     """
-    from Bitbucket import pull_request_update_command
+    from BitbucketApiModule import pull_request_update_command
 
     args = {
         "title": "PR from test to master",
@@ -477,7 +481,7 @@ def test_issue_comment_create_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with info and a success message.
     """
-    from Bitbucket import issue_comment_create_command
+    from BitbucketApiModule import issue_comment_create_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {"issue_id": "1", "content": "A new bug in line 0"}
@@ -497,7 +501,7 @@ def test_issue_comment_update_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with info and a success message.
     """
-    from Bitbucket import issue_comment_update_command
+    from BitbucketApiModule import issue_comment_update_command
 
     http_request = mocker.patch.object(bitbucket_client, "_http_request")
     args = {"issue_id": "2", "content": "debug issue", "comment_id": "11111"}
@@ -517,7 +521,7 @@ def test_pull_request_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with the PR list.
     """
-    from Bitbucket import pull_request_list_command
+    from BitbucketApiModule import pull_request_list_command
 
     args = {"limit": "2", "partial_response": "false"}
     response = util_load_json("test_data/commands_test_data.json").get("test_pull_request_list_command")
@@ -546,7 +550,7 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result a list of comments of the issue.
     """
-    from Bitbucket import issue_comment_list_command
+    from BitbucketApiModule import issue_comment_list_command
 
     args = {"limit": "2", "issue_id": "8", "partial_response": "false"}
     response = util_load_json("test_data/commands_test_data.json").get("test_issue_comment_list_command")
@@ -573,7 +577,7 @@ def test_pull_request_comment_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with a list of PR comments.
     """
-    from Bitbucket import pull_request_comment_list_command
+    from BitbucketApiModule import pull_request_comment_list_command
 
     args = {"limit": "3", "pull_request_id": "6", "partial_response": "true"}
     test_json = util_load_json("test_data/commands_test_data.json")
@@ -603,7 +607,7 @@ def test_workspace_member_list_command(mocker, bitbucket_client):
     Then:
         - The http request is called with the right arguments, and returns a command result with a list of the members.
     """
-    from Bitbucket import workspace_member_list_command
+    from BitbucketApiModule import workspace_member_list_command
 
     args = {"limit": "2", "partial_response": "true"}
     test_json = util_load_json("test_data/commands_test_data.json")
@@ -632,7 +636,7 @@ def test_pull_request_comment_update_command(mocker, bitbucket_client):
         - The http request is called with the right arguments, and returns a command result with partial information
             about the updated comment.
     """
-    from Bitbucket import pull_request_comment_update_command
+    from BitbucketApiModule import pull_request_comment_update_command
 
     args = {"partial_response": "false"}
     test_json = util_load_json("test_data/commands_test_data.json")
@@ -699,8 +703,8 @@ def integration_context(mocker):
         context.clear()
         context.update(new_context)
 
-    mocker.patch("Bitbucket.get_integration_context", side_effect=_get_integration_context)
-    mocker.patch("Bitbucket.set_integration_context", side_effect=_set_integration_context)
+    mocker.patch("BitbucketApiModule.get_integration_context", side_effect=_get_integration_context)
+    mocker.patch("BitbucketApiModule.set_integration_context", side_effect=_set_integration_context)
     return context
 
 
@@ -717,7 +721,7 @@ class TestOAuthAccessToken:
         Then:
             - A token is minted and persisted with an expiration of now + expires_in - the safety margin.
         """
-        from Bitbucket import set_integration_context
+        from BitbucketApiModule import set_integration_context
         from CommonServerPython import BaseClient
 
         mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
@@ -785,7 +789,7 @@ class TestOAuthAccessToken:
         Then:
             - A client_credentials grant is posted to the Bitbucket token endpoint, authenticated with the client credentials.
         """
-        from Bitbucket import TOKEN_URL
+        from BitbucketApiModule import TOKEN_URL
         from CommonServerPython import BaseClient
 
         base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
@@ -901,7 +905,7 @@ class TestTestModule:
         Then:
             - 'ok' is returned.
         """
-        from Bitbucket import test_module
+        from BitbucketApiModule import test_module
 
         mocker.patch.object(bitbucket_basic_auth_client, "get_project_list_request", return_value={"values": []})
 
@@ -917,7 +921,7 @@ class TestTestModule:
         Then:
             - 'ok' is returned, a token is minted and cached, and the API call carries the Bearer header.
         """
-        from Bitbucket import test_module
+        from BitbucketApiModule import test_module
         from CommonServerPython import BaseClient
 
         base_http_request = mocker.patch.object(BaseClient, "_http_request", side_effect=[OAUTH_TOKEN_RESPONSE, {"values": []}])
@@ -935,7 +939,7 @@ class TestTestModule:
         Then:
             - The underlying error message is surfaced to the user.
         """
-        from Bitbucket import test_module
+        from BitbucketApiModule import test_module
         from CommonServerPython import DemistoException
 
         mocker.patch.object(
@@ -946,3 +950,123 @@ class TestTestModule:
 
         with pytest.raises(Exception, match=r"Error in API call \[401\] - Unauthorized"):
             test_module(bitbucket_basic_auth_client)
+
+
+""" UCP (ATLASSIAN STANDARD CONNECTOR) TESTS """
+
+UCP_SERVER_URL = "https://api.bitbucket.org/2.0"
+
+
+@pytest.fixture
+def ucp_enabled(monkeypatch):
+    """
+    Turns the UCP path on in both the ApiModule and CommonServerPython (BaseClient reads
+    the CommonServerPython globals) and lets the test choose the profile credential.
+    """
+    holder: dict = {"creds": {}}
+    for module in (BitbucketApiModule, CommonServerPython):
+        monkeypatch.setattr(module, "should_use_ucp_auth", lambda: True)
+    monkeypatch.setattr(CommonServerPython, "resolve_ucp_capability", lambda *a, **k: "automation-and-remediation")
+    monkeypatch.setattr(CommonServerPython, "get_ucp_method_unique_id", lambda *a, **k: "method-1")
+    monkeypatch.setattr(CommonServerPython, "get_ucp_credentials", lambda *a, **k: holder["creds"])
+    monkeypatch.setattr(CommonServerPython, "invalidate_ucp_credentials", MagicMock())
+    return holder
+
+
+@pytest.fixture
+def raise_on_return_error(monkeypatch):
+    def fake_return_error(message, *args, **kwargs):
+        raise CommonServerPython.DemistoException(message)
+
+    monkeypatch.setattr(BitbucketApiModule, "return_error", fake_return_error)
+
+
+@pytest.fixture
+def legacy_path(monkeypatch):
+    monkeypatch.setattr(BitbucketApiModule, "should_use_ucp_auth", lambda: False)
+
+
+class TestBuildClient:
+    def test_legacy_basic_auth_builds_client_with_auth_tuple(self, legacy_path, raise_on_return_error):
+        client = build_client({**BASE_PARAMS, "credentials": BASIC_AUTH_CREDENTIALS})
+        assert client._auth == ("user@example.com", "api-token")
+        assert client.use_oauth is False
+
+    def test_legacy_oauth_builds_client_in_oauth_mode(self, legacy_path, raise_on_return_error):
+        client = build_client({**BASE_PARAMS, "client_credentials": OAUTH_CLIENT_CREDENTIALS})
+        assert client._auth is None
+        assert client.use_oauth is True
+        assert client.client_id == "client_id"
+
+    def test_legacy_without_credentials_raises_no_authentication_error(self, legacy_path, raise_on_return_error):
+        with pytest.raises(CommonServerPython.DemistoException, match="No authentication method was configured"):
+            build_client({**BASE_PARAMS, "credentials": None, "client_credentials": None})
+
+    def test_legacy_with_both_methods_raises_both_configured_error(self, legacy_path, raise_on_return_error):
+        params = {**BASE_PARAMS, "credentials": BASIC_AUTH_CREDENTIALS, "client_credentials": OAUTH_CLIENT_CREDENTIALS}
+        with pytest.raises(CommonServerPython.DemistoException, match="Both authentication methods were configured"):
+            build_client(params)
+
+    def test_ucp_without_legacy_credentials_skips_validation(self, ucp_enabled, raise_on_return_error):
+        client = build_client({**BASE_PARAMS, "credentials": None, "client_credentials": None, "repository": None})
+        assert client._auth is None
+        assert client.use_oauth is False
+        assert client.repository == ""
+        assert client.workspace == "workspace"
+
+    def test_ucp_ignores_legacy_credentials(self, ucp_enabled, raise_on_return_error):
+        params = {**BASE_PARAMS, "credentials": BASIC_AUTH_CREDENTIALS, "client_credentials": OAUTH_CLIENT_CREDENTIALS}
+        client = build_client(params)
+        assert client._auth is None
+        assert client.use_oauth is False
+
+
+class TestClientHttpRequestUnderUcp:
+    def test_oauth_client_does_not_mint_its_own_token(self, ucp_enabled, monkeypatch, bitbucket_oauth_client):
+        get_access_token = MagicMock(spec=bitbucket_oauth_client.get_access_token)
+        monkeypatch.setattr(bitbucket_oauth_client, "get_access_token", get_access_token)
+        base_http_request = MagicMock(spec=CommonServerPython.BaseClient._http_request, return_value={"values": []})
+        monkeypatch.setattr(CommonServerPython.BaseClient, "_http_request", base_http_request)
+
+        bitbucket_oauth_client.get_project_list_request(page=1, page_size=1)
+
+        assert get_access_token.call_count == 0
+        assert "headers" not in base_http_request.call_args.kwargs
+
+    def test_plain_profile_sends_basic_auth(self, ucp_enabled, requests_mock):
+        ucp_enabled["creds"] = {"type": "plain", "plain": {"username": "me@acme.com", "password": "app-pass"}}
+        mock = requests_mock.get(f"{UCP_SERVER_URL}/workspaces/workspace/projects/", json={"values": []})
+        client = build_client({**BASE_PARAMS, "server_url": UCP_SERVER_URL})
+
+        client.get_project_list_request(page=1, page_size=1)
+
+        expected = base64.b64encode(b"me@acme.com:app-pass").decode()
+        assert mock.call_count == 1
+        assert mock.last_request.headers["Authorization"] == f"Basic {expected}"
+        assert mock.last_request.headers["Accept"] == "application/json"
+
+    def test_api_key_profile_sends_access_token_as_bearer(self, ucp_enabled, requests_mock):
+        ucp_enabled["creds"] = {"type": "api_key", "api_key": {"key": "access-token"}}
+        mock = requests_mock.get(f"{UCP_SERVER_URL}/workspaces/workspace/projects/", json={"values": []})
+        client = build_client({**BASE_PARAMS, "server_url": UCP_SERVER_URL})
+
+        client.get_project_list_request(page=1, page_size=1)
+
+        assert mock.call_count == 1
+        assert mock.last_request.headers["Authorization"] == "Bearer access-token"
+
+    def test_oauth2_client_credentials_profile_sends_platform_bearer(self, ucp_enabled, requests_mock):
+        ucp_enabled["creds"] = {
+            "type": "oauth2_client_credentials",
+            "oauth2": {"access_token": "platform-token", "token_type": "Bearer"},
+        }
+        token_mock = requests_mock.post(BitbucketApiModule.TOKEN_URL, json=OAUTH_TOKEN_RESPONSE)
+        mock = requests_mock.get(f"{UCP_SERVER_URL}/workspaces/workspace/projects/", json={"values": []})
+        params = {**BASE_PARAMS, "server_url": UCP_SERVER_URL, "client_credentials": OAUTH_CLIENT_CREDENTIALS}
+        client = build_client(params)
+
+        client.get_project_list_request(page=1, page_size=1)
+
+        assert token_mock.call_count == 0
+        assert mock.call_count == 1
+        assert mock.last_request.headers["Authorization"] == "Bearer platform-token"

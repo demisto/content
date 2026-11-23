@@ -1,0 +1,2191 @@
+import base64
+import time
+from unittest.mock import MagicMock, patch
+
+import AtlassianConfluenceCloudApiModule
+import CommonServerPython
+import demistomock as demisto
+import pytest
+from AtlassianConfluenceCloudApiModule import (
+    DEFAULT_GET_EVENTS_LIMIT,
+    MESSAGES,
+    URL_SUFFIX,
+    URL_SUFFIX_V2,
+    Client,
+    create_client,
+    create_oauth_client,
+    fetch_events,
+    get_events,
+    oauth_complete_command,
+    oauth_start_command,
+    oauth_test_command,
+)
+from CommonServerPython import *
+from pytest_mock import MockerFixture
+from test_data import input_data
+
+BASE_URL = "https://dummy.atlassian.com"
+
+client = Client(BASE_URL, True, False, headers={"Accept": "application/json"}, auth=("user", "user123"))
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+collector_test_data = util_load_json("./test_data/collector/api_responses.json")
+
+
+def test_test_module_when_valid_response_is_returned(requests_mock):
+    """
+    To test test_module command when success response come.
+    Given
+        - A valid response
+    When
+        - The status code returned is 200
+    Then
+        - Ensure test module should return success
+    """
+    from AtlassianConfluenceCloudApiModule import test_module
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], status_code=200)
+    assert test_module(client) == "ok"
+
+
+@pytest.mark.parametrize("status_code, error_msg", input_data.exception_handler_params)
+def test_exception_handler(status_code, error_msg, requests_mock):
+    """
+    To test exception handler in various http error code.
+    Given
+        - a dictionary containing http code
+    When
+        - they are the error codes
+    Then
+        - raise DemistoException
+    """
+    requests_mock.get(BASE_URL, status_code=status_code)
+
+    with pytest.raises(DemistoException) as ve:
+        Client.http_request(client, method="GET")
+
+    assert str(ve.value) == error_msg
+
+
+@pytest.mark.parametrize("status_code, error_msg", input_data.exception_handler_forbidden_response)
+def test_exception_handler_when_403_error_occurred(status_code, error_msg, requests_mock, capfd):
+    """
+    To test exception handler when 403 error code occurred.
+    Given
+        - a dictionary containing http error code 403
+    Then
+        - raise DemistoException
+    """
+    api_error_msg = util_load_json("test_data/error_msg_for_403_error_code.json")
+    requests_mock.get(BASE_URL, json=api_error_msg, status_code=status_code)
+    with capfd.disabled():
+        with pytest.raises(DemistoException) as de:
+            Client.http_request(client, method="GET")
+
+        assert str(de.value) == error_msg
+
+
+def test_validate_url():
+    """
+    To test validate_url helper function when empty url is given.
+    Given
+        - whitespaces provided in Site Name
+    Then
+        - Returns the response message of invalid input
+    """
+    from AtlassianConfluenceCloudApiModule import validate_url
+
+    with pytest.raises(ValueError) as ve:
+        validate_url("")
+
+    assert str(ve.value) == "Site Name can not be empty."
+
+
+def test_confluence_cloud_group_list_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_group_list command when valid response return.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        -  Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_group_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "group/group_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "group/group_list_command_context.json"))
+
+    with open(os.path.join("test_data", "group/group_list_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"limit": "2", "access_type": "site-admin"}
+    response = confluence_cloud_group_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Group"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_group_invalid_args)
+def test_confluence_cloud_group_list_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_group_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list group command
+    When
+        - Calling `confluence-cloud-group-list`
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_group_list_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_group_list_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_group_list_command_when_empty_response_is_returned(requests_mock):
+    """
+    Test case scenario for successful execution of confluence_cloud_group_list command with an empty response.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_group_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json={"results": []}, status_code=200)
+    command_results = confluence_cloud_group_list_command(client, {"limit": "0"})
+    assert command_results.readable_output == "No group(s) were found for the given argument(s)."
+
+
+def test_confluence_cloud_content_delete_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_delete command when valid response return.
+    Given:
+        - command arguments for delete content command
+    When:
+        - Calling `confluence-cloud-content-delete` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_delete_command
+
+    requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", status_code=204)
+
+    args = {"content_id": "123"}
+    response = confluence_cloud_content_delete_command(client, args)
+
+    assert response.readable_output == MESSAGES["HR_DELETE_CONTENT"].format("123")
+
+
+@pytest.mark.parametrize("args, error_msg", input_data.delete_content_invalid_args)
+def test_confluence_cloud_content_delete_command_when_invalid_argument_given(args, error_msg):
+    """
+    To test confluence_cloud_content_delete command when invalid argument is provided.
+    Given:
+        - invalid command arguments for delete content command
+    When
+        - Calling `confluence-cloud-content-delete`
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_delete_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_content_delete_command(client, args)
+    assert str(de.value) == error_msg
+
+
+def test_confluence_cloud_content_delete_command_when_api_returns_error(requests_mock, capfd):
+    """
+    To test confluence_cloud_content_delete_command when 400 error code occurred.
+    Given:
+        - invalid command arguments for delete content command
+    When:
+        - Calling `confluence-cloud-content-delete` command
+    Then:
+        - Raise DemistoException
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_delete_command
+
+    api_error_msg = util_load_json("test_data/content_delete/content_delete_command_bad_request_error.json")
+    requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", json=api_error_msg, status_code=400)
+
+    args = {"content_id": "123", "status": "draft"}
+    with capfd.disabled():
+        with pytest.raises(DemistoException) as de:
+            confluence_cloud_content_delete_command(client, args)
+
+        assert str(de.value) == f"{api_error_msg.get('data').get('errors')[0].get('message').get('translation')} \n"
+
+
+def test_confluence_cloud_content_create_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_create command when valid response return.
+    Given:
+        - command arguments for create content command
+    When:
+        - Calling `confluence-cloud-content-create` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
+
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
+    response = confluence_cloud_content_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_create_invalid_args)
+def test_confluence_cloud_content_create_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_content_create command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for create content command
+    When
+        - Calling `confluence-cloud-content-create` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import validate_create_content_args
+
+    with pytest.raises(ValueError) as de:
+        validate_create_content_args(args, is_update=False)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_content_create_command_when_object_not_present(requests_mock):
+    """
+    To test confluence_cloud_content_create command when valid response return.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        -  Returns the response with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
+    response = confluence_cloud_content_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output[1]
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_comment_create_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_comment_create command when valid response return.
+    Given:
+        - command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_comment_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_context.json"))
+
+    with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"container_id": "2031630", "body_value": "hello", "body_representation": "storage"}
+    response = confluence_cloud_comment_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.comment_create_invalid_args)
+def test_confluence_cloud_comment_create_command_when_invalid_args_provided(args, err_msg):
+    """
+    To test confluence_cloud_comment_create command when invalid args are provided.
+    Given:
+        - invalid command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_comment_create_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_comment_create_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_user_list command when valid response return.
+    Given:
+        - command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_user_list_command
+
+    expected_response = util_load_json("test_data/User/user_list_command_response.json")
+    requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json=expected_response, status_code=200)
+    expected_context_output = util_load_json("test_data/User/user_list_command_context.json")
+
+    with open("test_data/User/user_list_command.md") as f:
+        expected_readable_output = f.read()
+
+    args = {"limit": "2", "start": "1"}
+    response = confluence_cloud_user_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.User"
+    assert response.outputs_key_field == "accountId"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_user_invalid_args)
+def test_confluence_cloud_user_list_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_user_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_user_list_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_user_list_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_user_list_command_when_empty_response_is_returned(requests_mock):
+    """
+    Test case scenario for successful execution of confluence_cloud_user_list command with an empty response.
+    Given:
+        - command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_user_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json={"results": []}, status_code=200)
+
+    command_results = confluence_cloud_user_list_command(client, {"limit": "0"})
+
+    assert command_results.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("user(s)")
+
+
+def test_confluence_cloud_content_search_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_search command when valid response return.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_search_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_search/content_search_command_context.json"))
+
+    with open(os.path.join("test_data", "content_search/content_search_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
+    response = confluence_cloud_content_search_command(client, args)
+
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_search_invalid_args)
+def test_confluence_cloud_content_search_command_when_invalid_arguments_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_content_search command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_search_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_content_search_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_search_invalid_arg_value)
+def test_confluence_cloud_content_search_command_when_invalid_argument_value_are_provided(args, err_msg, requests_mock, capfd):
+    """
+    To test confluence_cloud_content_search command when invalid argument value are provided.
+    Given:
+        - invalid command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Raise DemistoException
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_search_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_invalid_query_argument.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], status_code=400, json=expected_response)
+
+    with capfd.disabled():
+        with pytest.raises(DemistoException) as ve:
+            confluence_cloud_content_search_command(client, args)
+        assert str(ve.value) == err_msg
+
+
+def test_confluence_cloud_content_search_command_when_empty_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_search command when empty response returned.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_search_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json={"results": []}, status_code=200)
+
+    args = {"query": "type=page", "limit": 0}
+    response = confluence_cloud_content_search_command(client, args)
+
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("content(s)")
+
+
+def test_confluence_cloud_content_list_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_list command when valid response return.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_list/content_list_command_context.json"))
+
+    with open(os.path.join("test_data", "content_list/content_list_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {
+        "limit": 2,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
+        "space_key": "~680738455",
+        "sort_order": "asc",
+        "sort_key": "id",
+        "status": "current",
+        "creation_date": "6 Aug 2021",
+    }
+    response = confluence_cloud_content_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_content_list_command_when_empty_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_list command when empty response returned.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json={"results": []}, status_code=200)
+
+    args = {"limit": "0"}
+    response = confluence_cloud_content_list_command(client, args)
+
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("content(s)")
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_list_invalid_arg_value)
+def test_confluence_cloud_content_list_command_when_invalid_arguments_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_content_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_list_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_content_list_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_create_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_space_create command when valid response return.
+    Given:
+        - command arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "space_create/space_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "space_create/space_create_command_context.json"))
+
+    with open(os.path.join("test_data", "space_create/space_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {
+        "name": "XSOAR_Project",
+        "unique_key": "XSOAR",
+    }
+    response = confluence_cloud_space_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.create_space_invalid_args)
+def test_confluence_cloud_space_create_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_space_create command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import validate_create_space_args
+
+    with pytest.raises(ValueError) as de:
+        validate_create_space_args(args)
+    assert str(de.value) == err_msg
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.create_space_invalid_permission)
+def test_confluence_cloud_space_create_command_when_invalid_permission_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_space_create command when invalid permissions are provided.
+    Given:
+        - invalid permission arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import validate_permissions
+
+    with pytest.raises(ValueError) as de:
+        validate_permissions(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_create_command_when_valid_permission_are_provided():
+    """
+    To test confluence_cloud_space_create command when valid permissions are provided.
+    Given:
+        - valid permission arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response
+    """
+    from AtlassianConfluenceCloudApiModule import validate_permissions
+
+    args = {"permission_account_id": "123", "permission_group_name": "abc", "permission_operations": "read:space"}
+    expected_result = util_load_json(os.path.join("test_data", "space_create/space_create_valid_permission.json"))
+
+    actual_result = validate_permissions(args)
+    assert expected_result == actual_result
+
+
+def test_confluence_cloud_space_list_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_space_list command when valid response return.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "space_list/space_list_command_context.json"))
+
+    with open(os.path.join("test_data", "space_list/space_list_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"limit": "2", "status": "current", "favourite": "false", "type": "global"}
+    response = confluence_cloud_space_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_space_list_command_when_empty_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_space_list command when empty response returned.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json={"results": []}, status_code=200)
+
+    args = {"limit": "0"}
+    response = confluence_cloud_space_list_command(client, args)
+
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("space(s)")
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_space_invalid_args)
+def test_confluence_cloud_space_list_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_space_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_list_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_space_list_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_content_update_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_update command when valid response return.
+    Given:
+        - command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
+
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
+    response = confluence_cloud_content_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_update_invalid_arg_value)
+def test_confluence_cloud_content_update_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test confluence_cloud_content_update command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_update_command
+
+    with pytest.raises(ValueError) as de:
+        confluence_cloud_content_update_command(client, args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_content_update_command_when_object_not_present(requests_mock):
+    """
+    To test confluence_cloud_content_update command when object is not present in response.
+    Given:
+        - command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response data with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response[0])
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
+    response = confluence_cloud_content_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output[1]
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_comment_create_command_when_object_not_present(requests_mock):
+    """
+    To test confluence_cloud_comment_create command when object not present.
+    Given:
+        - command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response data with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_comment_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
+
+    with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"container_id": "2031630", "body_value": "hello", "body_representation": "storage"}
+    response = confluence_cloud_comment_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output[1]
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock):
+    """
+    To test confluence_cloud_space_list command when key not present.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response data with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_key_not_present_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "space_list/space_list_command_key_not_present_context.json")
+    )
+
+    with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"limit": "2", "status": "current", "favourite": "false", "type": "global"}
+    response = confluence_cloud_space_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_content_search_command_when_object_not_present(requests_mock):
+    """
+    To test confluence_cloud_content_search command when object is not present in response.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response data with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_search_command
+
+    expected_response = util_load_json(
+        os.path.join("test_data", "content_search/content_search_object_not_present_response.json")
+    )
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "content_search/content_search_object_not_present_context.json")
+    )
+
+    with open(os.path.join("test_data", "content_search/content_search_object_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
+    response = confluence_cloud_content_search_command(client, args)
+
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_content_list_command_when_when_object_not_present(requests_mock):
+    """
+    To test confluence_cloud_content_list command when object is not present in response.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response data with some missing values
+    """
+    from AtlassianConfluenceCloudApiModule import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_object_not_present_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "content_list/content_list_object_not_present_context.json")
+    )
+
+    with open(os.path.join("test_data", "content_list/content_list_object_not_present.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {
+        "limit": 2,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
+        "space_key": "~680738455",
+        "sort_order": "asc",
+        "sort_key": "id",
+        "status": "current",
+        "date": "6 Aug 2021",
+    }
+    response = confluence_cloud_content_list_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+def test_fetch_events_empty_last_run(mocker: MockerFixture):
+    """
+    Given:
+        - First time running fetch_events (last_run is empty)
+    When:
+        - The fetch_events function is called with an empty last_run dictionary and a fetch_limit of 100
+    Then:
+        - Ensure the events are returned
+        - Ensure the last_run object is returned correctly
+        - Ensure client.search_events is called with the correct arguments
+    """
+    fetch_limit = 100
+    response = collector_test_data["get-audit-records-no-links"]
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch("demistomock.getLastRun", return_value={})
+    mocker.patch("time.time", return_value=mock_time)
+    mock_search = mocker.patch.object(client, "search_events", return_value=response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+
+    # call
+    actual_events, last_run = fetch_events(client, fetch_limit, {})
+    # assertions
+    mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    assert actual_events == response["results"]
+    assert last_run == {"next_link": None, "end_date": expected_end_date}
+
+
+def test_fetch_events_with_partial_last_run(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a previous end date in last_run but no next_link in last_run
+    When:
+        - There are events to fetch
+    Then:
+        - Ensure client.search_events is called with the correct arguments
+    """
+    fetch_limit = 100
+    last_run = {"end_date": 1670000000}
+    first_page_response = collector_test_data["get-audit-records-no-links"]
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch("time.time", return_value=mock_time)
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = last_run["end_date"] + 1
+
+    actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
+    mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    assert actual_events == first_page_response["results"]
+    assert actual_last_run == {"end_date": expected_end_date, "next_link": None}
+
+
+def test_fetch_events_with_full_last_run(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a last_run that has a next_link and an end_date
+    When:
+        - There are events to fetch
+    Then:
+        - Ensure the events are returned
+        - Ensure the last_run object is returned correctly
+        - Ensure client.search_events is called with the correct arguments
+    """
+    fetch_limit = 100
+    last_run = {"end_date": 1670000000, "next_link": "https://example.com/next-page"}
+    first_page_response = collector_test_data["get-audit-records-no-links"]
+    first_page_results = first_page_response["results"]
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch("time.time", return_value=mock_time)
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = last_run["end_date"] + 1
+
+    actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
+    assert actual_events == first_page_response["results"] * 2
+    assert actual_last_run == {"end_date": int(expected_end_date), "next_link": None}
+    mock_search.assert_has_calls(
+        [
+            mocker.call(limit=fetch_limit, next_link=last_run["next_link"]),
+            mocker.call(
+                limit=fetch_limit - len(first_page_results), start_date=str(expected_start_date), end_date=str(expected_end_date)
+            ),
+        ]
+    )
+
+
+def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a fetch limit the same as the number of events in the first page response
+    When:
+        - The fetch limit is reached
+        - The last response had no next link
+    Then:
+        - search_events is called ONCE with the correct page_size
+        - The returned last_run object contains a next_link property with the value from the response, indicating there are more
+          pages to fetch
+    """
+    first_page_response = collector_test_data["get-audit-records-with-links"]
+    first_page_events = first_page_response["results"]
+    fetch_limit = len(first_page_events)
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch("time.time", return_value=mock_time)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+
+    _, last_run = fetch_events(client, fetch_limit, {})
+    mock_search.assert_called_once_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    assert last_run == {"next_link": first_page_response["_links"]["next"], "end_date": expected_end_date}
+
+
+def test_fetch_events_limit_is_0(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a fetch limit of 0
+    When:
+        - The fetch_events function is called
+    Then:
+        - Ensure client.search_events is not called
+        - Ensure the returned events are empty
+        - Ensure the returned last_run contains no next_link and the end_date is the same as the input last_run
+    """
+    last_run = {"end_date": 1670000000, "next_link": "https://example.com/next-page"}
+
+    # mock values
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events")
+
+    actual_events, actual_last_run = fetch_events(client, 0, last_run)
+
+    mock_search.assert_not_called()
+    assert actual_events == []
+    assert actual_last_run == {"next_link": None, "end_date": last_run["end_date"]}
+
+
+def test_get_events_default_values(mocker: MockerFixture):
+    """
+    Given:
+        - Using default values for start_date, end_date and limit
+
+    When:
+        - Calling get_events
+
+    Then:
+        - Ensure the events are returned
+        - Ensure client.search_events is called with the correct arguments
+    """
+    # mock values
+    mock_time = 1680000000
+    mocker.patch("time.time", return_value=mock_time)
+    mocked_response = collector_test_data["get-audit-records-with-links"]
+    mock_search = mocker.patch.object(client, "search_events", return_value=mocked_response)
+
+    # expected value
+    expected_events = (mocked_response.get("results")) * 2
+    expected_next_link = mocked_response["_links"]["next"]
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+    expected_first_page_size = int(DEFAULT_GET_EVENTS_LIMIT)
+    expected_second_page_size = int(DEFAULT_GET_EVENTS_LIMIT) - 25
+
+    # call
+    actual_events, _ = get_events(client, {})
+
+    # assertions
+    assert actual_events == expected_events
+    mock_search.assert_has_calls(
+        [
+            mocker.call(limit=expected_first_page_size, start_date=str(expected_start_date), end_date=str(expected_end_date)),
+            mocker.call(limit=expected_second_page_size, next_link=expected_next_link),
+        ]
+    )
+
+
+def test_get_events_with_arguments(mocker: MockerFixture):
+    """
+    Given:
+        - Providing start_date, end_date and limit as arguments
+
+    When:
+        - Calling get_events
+
+    Then:
+        - Ensure the events are returned
+        - Ensure client.search_events is called with the correct arguments
+    """
+    args = {"start_date": 1670000000, "end_date": 1680000000, "limit": 50}
+    mocked_response = collector_test_data["get-audit-records-no-links"]
+    mocked_search = mocker.patch.object(client, "search_events", return_value=mocked_response)
+    actual_events, _ = get_events(client, args)
+
+    assert actual_events == mocked_response["results"]
+    mocked_search.assert_called_once_with(limit=int(DEFAULT_GET_EVENTS_LIMIT), start_date="1670000000", end_date="1680000000")
+
+
+def test_confluence_cloud_content_get_command_when_resource_not_found(mocker: MockerFixture):
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_get_command, HTTP_ERROR
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.http_request.side_effect = Exception(HTTP_ERROR[404])
+
+    args = {"content_id": "65639"}
+
+    with pytest.raises(Exception) as de:
+        confluence_cloud_content_get_command(mock_client, args)
+
+    assert str(de.value) == HTTP_ERROR[404]
+
+
+def test_confluence_cloud_content_get_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_get command when valid response return.
+    Given:
+        - command arguments for get content command
+    When:
+        - Calling `confluence-cloud-content-get` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_content_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/test-page-id?expand=body.storage", json=expected_response
+    )
+    expected_context_output = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+
+    with open(os.path.join("test_data", "content_get/content_get_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"content_id": "test-page-id"}
+
+    response = confluence_cloud_content_get_command(client, args)
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
+
+
+class TestOAuthFunctions:
+    """Tests for OAuth-related functions in AtlassianConfluenceCloud."""
+
+    def test_create_oauth_client_basic_auth(self):
+        """Test that create_oauth_client returns None for Basic auth."""
+        params = {"auth_method": "Basic"}
+        result = create_oauth_client(params)
+        assert result is None
+
+    def test_create_oauth_client_default_auth(self):
+        """Test that create_oauth_client returns None when auth_method is not set (defaults to Basic)."""
+        params = {}
+        result = create_oauth_client(params)
+        assert result is None
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    def test_create_oauth_client_oauth(self, mock_set_ctx, mock_get_ctx):
+        """Test that create_oauth_client creates a client for OAuth 2.0."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "test-id", "password": "test-secret"},
+            "cloud_id": "test-cloud-id",
+            "callback_url": "https://localhost/callback",
+            "url": "https://mysite.atlassian.net",
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_oauth_client(params)
+        assert result is not None
+        assert result.client_id == "test-id"
+        assert result.cloud_id == "test-cloud-id"
+
+    def test_create_oauth_client_missing_credentials(self):
+        """Test that create_oauth_client raises error when credentials are missing."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "", "password": ""},
+            "callback_url": "https://localhost/callback",
+        }
+        with pytest.raises(DemistoException, match="Client ID and Client Secret are required"):
+            create_oauth_client(params)
+
+    def test_create_oauth_client_missing_callback(self):
+        """Test that create_oauth_client raises error when callback URL is missing."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "test-id", "password": "test-secret"},
+            "callback_url": "",
+        }
+        with pytest.raises(DemistoException, match="Callback URL is required"):
+            create_oauth_client(params)
+
+    def test_create_client_basic_auth(self):
+        """Test create_client with Basic authentication."""
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)
+
+    def test_create_client_basic_auth_missing_credentials(self):
+        """Test create_client raises error when Basic auth credentials are missing."""
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "Basic",
+            "username": {"identifier": "", "password": ""},
+            "insecure": False,
+            "proxy": False,
+        }
+        with pytest.raises(ValueError, match="Basic authentication requires Email and API Token"):
+            create_client(params)
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_create_client_oauth(self, mock_get_ctx):
+        """Test create_client with OAuth 2.0 uses the correct API gateway base URL."""
+        mock_get_ctx.return_value = {
+            "token": "test-access-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "test-refresh-token",
+        }
+        mock_oauth_client = MagicMock()
+        mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = "test-cloud-id-123"
+        mock_oauth_client.verify = True
+
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "OAuth 2.0",
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params, oauth_client=mock_oauth_client)
+        assert isinstance(result, Client)
+        # Verify the base URL uses the Atlassian API gateway with cloud_id
+        assert result._base_url == "https://api.atlassian.com/ex/confluence/test-cloud-id-123"
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_create_client_oauth_no_cloud_id_raises(self, mock_get_ctx):
+        """Test create_client with OAuth 2.0 raises DemistoException when cloud_id is empty."""
+        mock_get_ctx.return_value = {
+            "token": "test-access-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "test-refresh-token",
+        }
+        mock_oauth_client = MagicMock()
+        mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = ""
+        mock_oauth_client.verify = True
+
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "OAuth 2.0",
+            "insecure": False,
+            "proxy": False,
+        }
+        with pytest.raises(DemistoException, match="Cloud ID is required for OAuth 2.0 authentication"):
+            create_client(params, oauth_client=mock_oauth_client)
+
+    def test_create_client_oauth_request_url(self, requests_mock):
+        """Test that OAuth client builds request URLs correctly with the /ex/confluence/{cloud_id} prefix.
+
+        This validates that the XSOAR urljoin correctly appends url_suffix to the OAuth base URL
+        (which contains a path component) without dropping the /ex/confluence/{cloud_id} segment.
+        """
+        cloud_id = "test-cloud-id-123"
+        oauth_base_url = f"https://api.atlassian.com/ex/confluence/{cloud_id}"
+
+        # Create a Client directly with the OAuth base URL (as create_client does for OAuth)
+        oauth_client_obj = Client(
+            base_url=oauth_base_url,
+            verify=False,
+            proxy=False,
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+        # Register a mock for the expected full URL including /ex/confluence/{cloud_id}
+        expected_url = f"{oauth_base_url}{URL_SUFFIX['CONTENT_SEARCH']}"
+        requests_mock.get(expected_url, json={"results": []}, status_code=200)
+
+        # Make the request
+        oauth_client_obj.http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT_SEARCH"])
+
+        # Verify the request was sent to the correct URL, including the /ex/confluence/{cloud_id} path
+        assert requests_mock.called
+        assert f"/ex/confluence/{cloud_id}/wiki/" in requests_mock.last_request.url
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    def test_oauth_start_command(self, mock_set_ctx, mock_get_ctx):
+        """Test oauth_start_command returns authorization URL."""
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_start_command(oauth_client)
+        assert "Authorization Instructions" in result.readable_output
+        assert "https://auth.atlassian.com/authorize" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    @patch("requests.post")
+    def test_oauth_complete_command(self, mock_post, mock_set_ctx, mock_get_ctx):
+        """Test oauth_complete_command exchanges code for tokens."""
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "access_token": "new-token",
+            "refresh_token": "new-refresh",
+            "expires_in": 3600,
+            "scope": "read:audit-log:confluence",
+        }
+        mock_post.return_value = mock_response
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_complete_command(oauth_client, code="test-code")
+        assert "Successfully authenticated" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context")
+    @patch("requests.get")
+    def test_oauth_test_command_success(self, mock_get, mock_get_ctx):
+        """Test oauth_test_command with valid token."""
+        mock_get_ctx.return_value = {
+            "token": "valid-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "refresh-token",
+        }
+        mock_response = MagicMock()
+        mock_response.json.return_value = [
+            {
+                "id": "cloud-123",
+                "name": "My Site",
+                "url": "https://mysite.atlassian.net",
+                "scopes": ["read:confluence-content.all"],
+            }
+        ]
+        mock_get.return_value = mock_response
+
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_test_command(oauth_client)
+        assert "Authentication successful" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_oauth_test_command_failure(self, mock_get_ctx):
+        """Test oauth_test_command with no token."""
+        mock_get_ctx.return_value = {}
+
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        with pytest.raises(DemistoException, match="Authentication failed"):
+            oauth_test_command(oauth_client)
+
+    def test_create_client_url_normalization(self):
+        """Test that create_client normalizes various URL formats."""
+        params = {
+            "url": "https://mysite.atlassian.net/wiki/",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)
+
+    def test_create_client_site_name_only(self):
+        """Test that create_client handles site name without full URL."""
+        params = {
+            "url": "mysite",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)
+
+
+# --- REST API v2 command tests ---
+
+
+def test_confluence_cloud_page_create_command(requests_mock):
+    """
+    Given: Command arguments for the page-create command.
+    When: Calling `confluence-cloud-page-create`.
+    Then: The response data is returned in the ConfluenceCloud.Page context.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["PAGES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "page_create/page_create_command_context.json"))
+    with open(os.path.join("test_data", "page_create/page_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"space_id": "98765", "title": "XSOAR_Page", "body_value": "<p>Hello</p>"}
+    response = confluence_cloud_page_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Page"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_create_v2_invalid_args)
+def test_confluence_cloud_page_create_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid command arguments for the page-create command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import validate_content_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_content_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_page_list_command(requests_mock):
+    """
+    Given: Command arguments for the page-list command with a single page of results.
+    When: Calling `confluence-cloud-page-list` with a limit larger than the available results.
+    Then: The results are returned and no manual next-page token is emitted (auto-pagination).
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_list/page_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "page_list/page_list_command_context.json"))
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765"})
+
+    assert response.outputs["ConfluenceCloud.Page(val.id == obj.id)"] == expected_context
+    # Auto-pagination replaced the manual cursor output; no PageToken should be emitted.
+    assert "ConfluenceCloud.PageToken.Content(val.name == obj.name)" not in response.outputs
+
+
+def test_confluence_cloud_page_list_command_empty(requests_mock):
+    """
+    Given: A page-list response with no results.
+    When: Calling `confluence-cloud-page-list`.
+    Then: A no-records-found message is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json={"results": []})
+    response = confluence_cloud_page_list_command(client, {})
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("page(s)")
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_list_v2_invalid_args)
+def test_confluence_cloud_page_list_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the page-list command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import CONTENT_V2_CONFIG, validate_content_list_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_content_list_args_v2(args, CONTENT_V2_CONFIG["page"])
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_page_update_command(requests_mock):
+    """
+    Given: Command arguments for the page-update command.
+    When: Calling `confluence-cloud-page-update`.
+    Then: The updated page is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX_V2["PAGES"] + "/12345", json=expected_response)
+
+    args = {"page_id": "12345", "version_number": "2", "title": "XSOAR_Page", "body_value": "<p>Updated</p>"}
+    response = confluence_cloud_page_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Page"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_page_delete_command(requests_mock):
+    """
+    Given: Command arguments for the page-delete command.
+    When: Calling `confluence-cloud-page-delete`.
+    Then: A success message is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_delete_command
+
+    requests_mock.delete(BASE_URL + URL_SUFFIX_V2["PAGES"] + "/12345", status_code=204)
+    response = confluence_cloud_page_delete_command(client, {"page_id": "12345"})
+    assert response.readable_output == MESSAGES["HR_PAGE_DELETE"].format("12345")
+
+
+def test_confluence_cloud_blogpost_create_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-create command.
+    When: Calling `confluence-cloud-blogpost-create`.
+    Then: The response data is returned in the ConfluenceCloud.Blogpost context.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_blogpost_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json=expected_response)
+
+    args = {"space_id": "98765", "title": "XSOAR_Page", "body_value": "<p>Hello</p>"}
+    response = confluence_cloud_blogpost_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Blogpost"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_blogpost_delete_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-delete command.
+    When: Calling `confluence-cloud-blogpost-delete`.
+    Then: A success message is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_blogpost_delete_command
+
+    requests_mock.delete(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"] + "/12345", status_code=204)
+    response = confluence_cloud_blogpost_delete_command(client, {"blogpost_id": "12345"})
+    assert response.readable_output == MESSAGES["HR_BLOGPOST_DELETE"].format("12345")
+
+
+def test_confluence_cloud_footer_comment_create_command(requests_mock):
+    """
+    Given: Command arguments for the footer-comment-create command.
+    When: Calling `confluence-cloud-footer-comment-create`.
+    Then: The response data is returned in the ConfluenceCloud.Comment context.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_footer_comment_create_command
+
+    expected_response = util_load_json(
+        os.path.join("test_data", "footer_comment_create/footer_comment_create_command_response.json")
+    )
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["FOOTER_COMMENTS"], json=expected_response)
+    expected_context = util_load_json(
+        os.path.join("test_data", "footer_comment_create/footer_comment_create_command_context.json")
+    )
+    with open(os.path.join("test_data", "footer_comment_create/footer_comment_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"body_value": "<p>This is a footer comment</p>", "page_id": "12345"}
+    response = confluence_cloud_footer_comment_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.comment_create_v2_invalid_args)
+def test_confluence_cloud_comment_create_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the comment-create commands.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import validate_comment_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_comment_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_list_command_v2(requests_mock):
+    """
+    Given: Command arguments for the space-listv2 command.
+    When: Calling `confluence-cloud-space-listv2`.
+    Then: The space results are returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_list_command_v2
+
+    expected_response = util_load_json(os.path.join("test_data", "space_list_v2/space_list_v2_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["SPACES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "space_list_v2/space_list_v2_command_context.json"))
+    with open(os.path.join("test_data", "space_list_v2/space_list_v2_command.md")) as f:
+        expected_readable_output = f.read()
+
+    response = confluence_cloud_space_list_command_v2(client, {})
+
+    assert response.outputs["ConfluenceCloud.Space(val.id == obj.id)"] == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.space_list_v2_invalid_args)
+def test_confluence_cloud_space_list_command_v2_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the space-listv2 command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import validate_space_list_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_space_list_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_create_command_v2(requests_mock):
+    """
+    Given: Command arguments for the space-createv2 command.
+    When: Calling `confluence-cloud-space-createv2`.
+    Then: The created space is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_space_create_command_v2
+
+    expected_response = util_load_json(os.path.join("test_data", "space_create_v2/space_create_v2_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["SPACES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "space_create_v2/space_create_v2_command_context.json"))
+    with open(os.path.join("test_data", "space_create_v2/space_create_v2_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"name": "XSOAR Space", "key": "XSOAR"}
+    response = confluence_cloud_space_create_command_v2(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.space_create_v2_invalid_args)
+def test_confluence_cloud_space_create_command_v2_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the space-createv2 command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import validate_space_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_space_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_blogpost_list_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-list command with a single page of results.
+    When: Calling `confluence-cloud-blogpost-list`.
+    Then: The results are returned under the Blogpost context and no next-page token is emitted.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_blogpost_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_list/page_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json=expected_response)
+
+    response = confluence_cloud_blogpost_list_command(client, {"space_id": "98765"})
+
+    assert "ConfluenceCloud.Blogpost(val.id == obj.id)" in response.outputs
+    assert len(response.outputs["ConfluenceCloud.Blogpost(val.id == obj.id)"]) == 2
+    assert "ConfluenceCloud.PageToken.Content(val.name == obj.name)" not in response.outputs
+
+
+def test_confluence_cloud_blogpost_list_command_empty(requests_mock):
+    """
+    Given: A blogpost-list response with no results.
+    When: Calling `confluence-cloud-blogpost-list`.
+    Then: A no-records-found message is returned.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_blogpost_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json={"results": []})
+    response = confluence_cloud_blogpost_list_command(client, {})
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("blog post(s)")
+
+
+def test_confluence_cloud_blogpost_update_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-update command.
+    When: Calling `confluence-cloud-blogpost-update`.
+    Then: The updated blogpost is returned under the Blogpost context.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_blogpost_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"] + "/12345", json=expected_response)
+
+    args = {"blogpost_id": "12345", "version_number": "2", "title": "XSOAR_Blogpost", "body_value": "<p>Updated</p>"}
+    response = confluence_cloud_blogpost_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Blogpost"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_page_list_command_auto_paginates_to_limit(requests_mock):
+    """
+    Given: A page-list request with limit=3 and an API that returns 2 results per page with a next cursor.
+    When: Calling `confluence-cloud-page-list`.
+    Then: The command follows the cursor across pages and returns exactly `limit` (3) records.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_list_command
+
+    first_page = {
+        "results": [{"id": "1", "title": "P1"}, {"id": "2", "title": "P2"}],
+        "_links": {"base": f"{BASE_URL}/wiki"},
+    }
+    second_page = {
+        "results": [{"id": "3", "title": "P3"}, {"id": "4", "title": "P4"}],
+        "_links": {"base": f"{BASE_URL}/wiki"},
+    }
+    next_link = f'<{BASE_URL}/wiki/api/v2/pages?cursor=NEXT_CURSOR>; rel="next"'
+    requests_mock.get(
+        BASE_URL + URL_SUFFIX_V2["PAGES"],
+        [
+            {"json": first_page, "headers": {"Link": next_link}},
+            {"json": second_page},
+        ],
+    )
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765", "limit": "3"})
+
+    results = response.outputs["ConfluenceCloud.Page(val.id == obj.id)"]
+    assert [item["id"] for item in results] == ["1", "2", "3"]
+    assert requests_mock.call_count == 2
+
+
+def test_confluence_cloud_page_list_command_stops_when_no_next_cursor(requests_mock):
+    """
+    Given: A page-list request with a large limit but the API returns a single page with no next cursor.
+    When: Calling `confluence-cloud-page-list`.
+    Then: The command returns the available results without issuing further requests.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_page_list_command
+
+    single_page = {"results": [{"id": "1", "title": "P1"}], "_links": {"base": f"{BASE_URL}/wiki"}}
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json=single_page)
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765", "limit": "500"})
+
+    assert len(response.outputs["ConfluenceCloud.Page(val.id == obj.id)"]) == 1
+    assert requests_mock.call_count == 1
+
+
+def test_paginate_v2_results_caps_per_page_request_at_max(requests_mock):
+    """
+    Given: A total limit larger than the API single-page maximum (MAX_LIMIT_V2).
+    When: Calling paginate_v2_results.
+    Then: The first per-page request uses limit=MAX_LIMIT_V2, not the full total.
+    """
+    from AtlassianConfluenceCloudApiModule import MAX_LIMIT_V2, URL_SUFFIX_V2, paginate_v2_results
+
+    page = {"results": [{"id": str(i)} for i in range(MAX_LIMIT_V2)], "_links": {}}
+    next_link = f'<{BASE_URL}/wiki/api/v2/pages?cursor=C2>; rel="next"'
+    last_page = {"results": [{"id": "last"}], "_links": {}}
+    requests_mock.get(
+        BASE_URL + URL_SUFFIX_V2["PAGES"],
+        [
+            {"json": page, "headers": {"Link": next_link}},
+            {"json": last_page},
+        ],
+    )
+
+    results, _ = paginate_v2_results(client, URL_SUFFIX_V2["PAGES"], {}, MAX_LIMIT_V2 + 1)
+
+    assert len(results) == MAX_LIMIT_V2 + 1
+    assert int(requests_mock.request_history[0].qs["limit"][0]) == MAX_LIMIT_V2
+
+
+def test_validate_limit_v2_allows_value_above_previous_cap():
+    """
+    Given: A limit value larger than the old 250 hard cap.
+    When: Calling validate_limit_v2.
+    Then: The value is accepted and returned (the artificial cap was removed).
+    """
+    from AtlassianConfluenceCloudApiModule import validate_limit_v2
+
+    assert validate_limit_v2({"limit": "1000"}) == 1000
+
+
+@pytest.mark.parametrize("bad_limit", ["0", "-5"])
+def test_validate_limit_v2_rejects_non_positive(bad_limit):
+    """
+    Given: A non-positive limit value.
+    When: Calling validate_limit_v2.
+    Then: A ValueError with the INVALID_LIMIT_V2 message is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import validate_limit_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_limit_v2({"limit": bad_limit})
+    assert str(de.value) == MESSAGES["INVALID_LIMIT_V2"].format(int(bad_limit))
+
+
+def test_prepare_space_create_params_v2_invalid_role_assignments():
+    """
+    Given: A role_assignments argument that is not valid JSON.
+    When: Building space-create v2 params.
+    Then: A ValueError with the role_assignments-specific message is raised (not the advanced_permissions one).
+    """
+    from AtlassianConfluenceCloudApiModule import prepare_space_create_params_v2
+
+    args = {"name": "XSOAR Space", "key": "XSOAR", "role_assignments": "not-json"}
+    with pytest.raises(ValueError) as de:
+        prepare_space_create_params_v2(args)
+    assert str(de.value) == MESSAGES["INVALID_ROLE_ASSIGNMENTS_V2"]
+
+
+def test_validate_content_update_args_v2_invalid_status_uses_update_message():
+    """
+    Given: An invalid status on the content-update v2 path.
+    When: Validating update args.
+    Then: The error uses the update-specific message and echoes the received value.
+    """
+    from AtlassianConfluenceCloudApiModule import CONTENT_V2_CONFIG, validate_content_update_args_v2
+
+    args = {"page_id": "12345", "version_number": "2", "status": "archived"}
+    with pytest.raises(ValueError) as de:
+        validate_content_update_args_v2(args, CONTENT_V2_CONFIG["page"])
+    assert str(de.value) == f"{MESSAGES['INVALID_STATUS_UPDATE_V2']} Received: 'archived'."
+
+
+def test_prepare_hr_for_content_v2_handles_null_version():
+    """
+    Given: A content object where the API returned version as null.
+    When: Preparing the human-readable output.
+    Then: No AttributeError is raised and the Version field is empty.
+    """
+    from AtlassianConfluenceCloudApiModule import prepare_hr_for_content_list_v2
+
+    content = [{"id": "1", "title": "P1", "status": "current", "createdAt": "2024-01-01T10:00:00.000Z", "version": None}]
+    # Should not raise AttributeError on null version.
+    hr = prepare_hr_for_content_list_v2(content, "Page")
+    assert "P1" in hr
+
+
+def test_prepare_hr_for_comment_v2_handles_null_version():
+    """
+    Given: A comment object where the API returned version as null.
+    When: Preparing the human-readable output.
+    Then: No AttributeError is raised.
+    """
+    from AtlassianConfluenceCloudApiModule import prepare_hr_for_comment_v2
+
+    comment = {"id": "1", "status": "current", "version": None}
+    # Should not raise AttributeError on null version.
+    prepare_hr_for_comment_v2(comment, "Footer Comment")
+
+
+def test_prepare_cursor_from_link_header():
+    """
+    Given: A requests.Response with a Link header containing a next cursor.
+    When: Calling prepare_cursor_from_link_header.
+    Then: The cursor value is extracted correctly.
+    """
+    from AtlassianConfluenceCloudApiModule import prepare_cursor_from_link_header
+
+    response = MagicMock()
+    response.headers = {"Link": f'<{BASE_URL}/wiki/api/v2/pages?limit=25&cursor=ABC123>; rel="next"'}
+    assert prepare_cursor_from_link_header(response) == "ABC123"
+
+    response.headers = {}
+    assert prepare_cursor_from_link_header(response) == ""
+
+    response.headers = {"Link": f'<{BASE_URL}/wiki/api/v2/pages?cursor=PREV>; rel="prev"'}
+    assert prepare_cursor_from_link_header(response) == ""
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://mysite.atlassian.net/wiki/spaces/TEST/pages/2097159/My+Page", "2097159"),
+        ("https://mysite.atlassian.net/wiki/rest/api/content/12345", "12345"),
+        ("https://mysite.atlassian.net/wiki/pages/viewpage.action?pageId=99999", "99999"),
+        ("https://mysite.atlassian.net/wiki/spaces/DEV/pages/111222/Some+Title?extra=param", "111222"),
+    ],
+)
+def test_extract_content_id_from_url(url: str, expected_id: str):
+    """
+    Given:
+        A Confluence page URL in various supported formats.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        The correct content ID is extracted from the URL.
+    """
+    from AtlassianConfluenceCloudApiModule import _extract_content_id_from_url
+
+    assert _extract_content_id_from_url(url) == expected_id
+
+
+def test_extract_content_id_from_url_invalid():
+    """
+    Given:
+        An unsupported URL format that does not contain a Confluence content ID.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        A ValueError is raised with a descriptive error message.
+    """
+    from AtlassianConfluenceCloudApiModule import _extract_content_id_from_url
+
+    with pytest.raises(ValueError, match="Could not extract content ID from URL"):
+        _extract_content_id_from_url("https://example.com/not-a-confluence-url")
+
+
+def test_generic_file_get_command_success(requests_mock):
+    """
+    Given:
+        A valid Confluence page URL pointing to an existing page.
+    When:
+        Calling the generic-file-get command with the URL.
+    Then:
+        The command returns a FileContent output with the correct title, type, content, and ID.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_generic_file_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/generic_file_get_response.json"))
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage",
+        json=expected_response,
+    )
+
+    args = {"url": "https://dummy.atlassian.net/wiki/spaces/TEST/pages/2097159/test_page"}
+    result = confluence_cloud_generic_file_get_command(client, args)
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs["Id"] == "2097159"
+    assert result.outputs["Title"] == "test_page"
+    assert result.outputs["Type"] == "text/markdown"
+    # Content is the storage-format HTML converted to Markdown.
+    assert isinstance(result.outputs["Content"], str)
+    content = result.outputs["Content"]
+    assert "This is the page content" in content
+    # Assert specific Markdown syntax to ensure the HTML was actually converted to Markdown:
+    # - the <h1> is rendered as a setext heading (underlined with '=').
+    assert "Heading\n=======" in content
+    # - the <li> items are rendered as Markdown bullet-list markers.
+    assert "* Item one" in content
+    assert "* Item two" in content
+    # No raw HTML tags should remain after the conversion.
+    assert "<p>" not in content
+    assert "<h1>" not in content
+    assert "<ul>" not in content
+    assert "<li>" not in content
+    assert result.outputs["Url"] == args["url"]
+
+
+def test_generic_file_get_command_missing_url():
+    """
+    Given:
+        No URL argument provided to the generic-file-get command.
+    When:
+        Calling the generic-file-get command without a URL.
+    Then:
+        A ValueError is raised indicating the url argument is required.
+    """
+    from AtlassianConfluenceCloudApiModule import confluence_cloud_generic_file_get_command
+
+    with pytest.raises(ValueError, match="'url' argument is required"):
+        confluence_cloud_generic_file_get_command(client, {})
+
+
+""" CONNECTUS (UCP) TESTS """
+
+UCP_SITE_PARAMS = {"url": "https://mysite.atlassian.net", "insecure": False, "proxy": False}
+UCP_CREDENTIALS = {
+    "plain": {"type": "plain", "plain": {"username": "me@acme.com", "password": "api-token"}},
+    "oauth2_authorization_code": {
+        "type": "oauth2_authorization_code",
+        "oauth2": {"access_token": "ucp-token", "token_type": "Bearer"},
+    },
+}
+
+
+@pytest.fixture
+def ucp_profile(monkeypatch):
+    """
+    Run the module as if the Atlassian Standard Connector selected a typed
+    connection profile: the real CommonServerPython UCP code path is exercised,
+    only the platform calls are faked.
+    """
+
+    def configure(profile_type: str) -> None:
+        profile = {
+            "method_unique_id": "m1",
+            "type": profile_type,
+            "capability": "automation-and-remediation",
+        }
+        monkeypatch.setattr(CommonServerPython, "_ucp_creds_cache", {})
+        monkeypatch.setattr(demisto, "unifiedConnectorMetadata", lambda: {"connectionProfiles": [profile]})
+        monkeypatch.setattr(demisto, "getUCPCredentials", lambda *args, **kwargs: UCP_CREDENTIALS[profile_type])
+
+    return configure
+
+
+class TestCreateClientUcp:
+    def test_plain_profile_targets_site_without_legacy_auth(self, ucp_profile):
+        ucp_profile("plain")
+        params = UCP_SITE_PARAMS | {"username": {"identifier": "legacy@acme.com", "password": "legacy"}}
+
+        result = create_client(params)
+
+        assert result._base_url == "https://mysite.atlassian.net"
+        assert result._auth is None
+        assert "Authorization" not in result._headers
+
+    def test_plain_profile_sends_basic_auth_from_ucp(self, ucp_profile, requests_mock):
+        ucp_profile("plain")
+        requests_mock.get("https://mysite.atlassian.net" + URL_SUFFIX["CONTENT_SEARCH"], json={"results": []})
+
+        create_client(UCP_SITE_PARAMS).http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT_SEARCH"])
+
+        expected = "Basic " + base64.b64encode(b"me@acme.com:api-token").decode()
+        assert requests_mock.last_request.headers["Authorization"] == expected
+
+    def test_oauth2_profile_targets_api_gateway(self, ucp_profile):
+        ucp_profile("oauth2_authorization_code")
+
+        result = create_client(UCP_SITE_PARAMS | {"cloud_id": "cid-1", "auth_method": "OAuth 2.0"})
+
+        assert result._base_url == "https://api.atlassian.com/ex/confluence/cid-1"
+        assert result._auth is None
+        assert "Authorization" not in result._headers
+
+    def test_oauth2_profile_sends_bearer_from_ucp(self, ucp_profile, requests_mock):
+        ucp_profile("oauth2_authorization_code")
+        url = "https://api.atlassian.com/ex/confluence/cid-1" + URL_SUFFIX["CONTENT_SEARCH"]
+        requests_mock.get(url, json={"results": []})
+
+        client_obj = create_client({"url": None, "cloud_id": "cid-1"})
+        client_obj.http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT_SEARCH"])
+
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer ucp-token"
+        assert requests_mock.last_request.url.startswith(url)
+
+    def test_oauth2_profile_without_cloud_id_raises(self, ucp_profile):
+        ucp_profile("oauth2_authorization_code")
+
+        with pytest.raises(DemistoException, match="Cloud ID"):
+            create_client(UCP_SITE_PARAMS | {"cloud_id": None})
+
+    def test_plain_profile_without_site_or_cloud_id_raises(self, ucp_profile):
+        ucp_profile("plain")
+
+        with pytest.raises(ValueError, match=MESSAGES["REQUIRED_URL_FIELD"]):
+            create_client({"url": None, "cloud_id": None})
+
+
+class TestRunUcpOauthCommand:
+    @pytest.mark.parametrize("command", ["confluence-cloud-oauth-start", "confluence-cloud-oauth-complete"])
+    def test_start_and_complete_raise_not_needed(self, command):
+        with pytest.raises(DemistoException, match="not needed in the Atlassian Standard Connector"):
+            AtlassianConfluenceCloudApiModule.run_ucp_oauth_command(command, UCP_SITE_PARAMS)
+
+    def test_oauth_test_runs_connectivity_check(self, ucp_profile, monkeypatch):
+        ucp_profile("oauth2_authorization_code")
+        results: list = []
+        test_module_mock = MagicMock(spec=AtlassianConfluenceCloudApiModule.test_module, return_value="ok")
+        monkeypatch.setattr(AtlassianConfluenceCloudApiModule, "test_module", test_module_mock)
+        monkeypatch.setattr(AtlassianConfluenceCloudApiModule, "return_results", results.append)
+
+        AtlassianConfluenceCloudApiModule.run_ucp_oauth_command(
+            "confluence-cloud-oauth-test", UCP_SITE_PARAMS | {"cloud_id": "cid-1"}
+        )
+
+        assert results == ["ok"]
+        assert test_module_mock.call_count == 1
+        assert test_module_mock.call_args.args[0]._base_url == "https://api.atlassian.com/ex/confluence/cid-1"
+
+
+class TestRunAtlassianConfluenceCloudIntegrationUcp:
+    @pytest.fixture
+    def run_command(self, monkeypatch):
+        """
+        Run the entry point for a command with OAuth 2.0 legacy params; the legacy
+        OAuth client must never be built under UCP.
+        """
+        outcome: dict = {"results": [], "errors": []}
+        monkeypatch.setattr(AtlassianConfluenceCloudApiModule, "return_results", outcome["results"].append)
+        monkeypatch.setattr(AtlassianConfluenceCloudApiModule, "return_error", outcome["errors"].append)
+        monkeypatch.setattr(
+            AtlassianConfluenceCloudApiModule,
+            "create_oauth_client",
+            MagicMock(side_effect=AssertionError("legacy OAuth client must not be built under UCP")),
+        )
+
+        def run(command: str, params: dict) -> dict:
+            monkeypatch.setattr(demisto, "command", lambda: command)
+            monkeypatch.setattr(demisto, "params", lambda: params)
+            monkeypatch.setattr(demisto, "args", dict)
+            AtlassianConfluenceCloudApiModule.run_atlassian_confluence_cloud_integration()
+            return outcome
+
+        return run
+
+    @pytest.mark.parametrize("command", ["confluence-cloud-oauth-start", "confluence-cloud-oauth-complete"])
+    def test_oauth_start_and_complete_return_not_needed_error(self, ucp_profile, run_command, command):
+        ucp_profile("oauth2_authorization_code")
+
+        outcome = run_command(command, UCP_SITE_PARAMS | {"auth_method": "OAuth 2.0", "cloud_id": "cid-1"})
+
+        assert len(outcome["errors"]) == 1
+        assert "not needed in the Atlassian Standard Connector" in outcome["errors"][0]
+
+    def test_test_module_runs_connectivity_check(self, ucp_profile, run_command, requests_mock):
+        ucp_profile("oauth2_authorization_code")
+        url = "https://api.atlassian.com/ex/confluence/cid-1" + URL_SUFFIX["CONTENT_SEARCH"]
+        requests_mock.get(url, json={"results": []})
+
+        outcome = run_command("test-module", UCP_SITE_PARAMS | {"auth_method": "OAuth 2.0", "cloud_id": "cid-1"})
+
+        assert outcome == {"results": ["ok"], "errors": []}
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer ucp-token"
+
+    def test_fetch_events_uses_ucp_client(self, ucp_profile, run_command, monkeypatch):
+        ucp_profile("plain")
+        fetch_events_mock = MagicMock(spec=fetch_events, return_value=([], {}))
+        monkeypatch.setattr(AtlassianConfluenceCloudApiModule, "fetch_events", fetch_events_mock)
+        monkeypatch.setattr(demisto, "getLastRun", dict)
+
+        outcome = run_command("fetch-events", UCP_SITE_PARAMS | {"max_events_per_fetch": None})
+
+        assert outcome["errors"] == []
+        assert fetch_events_mock.call_count == 1
+        used_client = fetch_events_mock.call_args.args[0]
+        assert used_client._base_url == "https://mysite.atlassian.net"
+        assert used_client._auth is None

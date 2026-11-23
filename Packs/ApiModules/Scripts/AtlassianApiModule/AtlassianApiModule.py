@@ -501,3 +501,129 @@ def create_atlassian_oauth_client(
 
 # Backward-compatible alias for integrations that import by the old name
 create_jira_oauth_client = create_atlassian_oauth_client
+
+
+""" CONNECTUS (UCP) HELPERS """
+# Shared by every Atlassian integration that runs under the Atlassian standard
+# connector. On the UCP path the connector delivers the credential through a typed
+# connection profile (oauth2_*, api_key or plain) instead of demisto.params().
+# BaseClient._http_request applies it on every request; integrations that do not
+# send their requests through BaseClient read it with get_atlassian_ucp_auth().
+
+ATLASSIAN_UCP_AUTH_OAUTH2 = "oauth2"
+ATLASSIAN_UCP_AUTH_API_KEY = "api_key"
+ATLASSIAN_UCP_AUTH_PLAIN = "plain"
+
+
+def get_atlassian_ucp_auth_type() -> str:
+    """
+    Return the credential family of the connection profile selected for this command.
+
+    Returns:
+        "oauth2", "api_key" or "plain" when UCP auth is active, "" otherwise.
+    """
+    if not should_use_ucp_auth():
+        return ""
+    profile_type = ""
+    try:
+        method_unique_id = get_ucp_method_unique_id()
+        for profile in demisto.unifiedConnectorMetadata().get("connectionProfiles") or []:
+            if profile.get("method_unique_id") == method_unique_id:
+                profile_type = profile.get("type") or ""
+                break
+    except Exception as e:  # pragma: no cover - defensive, metadata is platform-provided
+        demisto.debug(f"[UCP][AtlassianApiModule.py] could not resolve the profile type ({e}).")
+    if profile_type.startswith("oauth2"):
+        return ATLASSIAN_UCP_AUTH_OAUTH2
+    if profile_type in (ATLASSIAN_UCP_AUTH_API_KEY, ATLASSIAN_UCP_AUTH_PLAIN):
+        return profile_type
+    # Fall back to the envelope type for profiles the metadata did not describe.
+    credentials = get_ucp_credentials()
+    envelope_type = str(credentials.get("type") or "")
+    return ATLASSIAN_UCP_AUTH_OAUTH2 if envelope_type.startswith("oauth2") else envelope_type
+
+
+def get_atlassian_ucp_auth() -> dict[str, Any]:
+    """
+    Read the UCP credential of the selected connection profile in a flat shape.
+
+    For integrations whose HTTP layer does not go through BaseClient._http_request
+    (so BaseClient cannot inject the credential for them).
+
+    Returns:
+        {"type": "oauth2", "access_token": ..., "token_type": ...}
+        {"type": "api_key", "key": ...}
+        {"type": "plain", "username": ..., "password": ...}
+
+    Raises:
+        UcpException: If the profile type is not one of the three families, or the
+            required secret is empty.
+    """
+    credentials = get_ucp_credentials()
+    envelope_type = str(credentials.get("type") or "")
+    if envelope_type.startswith("oauth2"):
+        data = credentials.get("oauth2", credentials)
+        access_token = data.get("access_token", "")
+        if not access_token:
+            demisto.error("[UCP][AtlassianApiModule.py] access_token is empty in the UCP OAuth2 credentials.")
+            raise UcpException
+        return {
+            "type": ATLASSIAN_UCP_AUTH_OAUTH2,
+            "access_token": access_token,
+            "token_type": data.get("token_type") or "Bearer",
+        }
+    if envelope_type == ATLASSIAN_UCP_AUTH_API_KEY:
+        key = credentials.get("api_key", credentials).get("key", "")
+        if not key:
+            demisto.error("[UCP][AtlassianApiModule.py] the API key is empty in the UCP credentials.")
+            raise UcpException
+        return {"type": ATLASSIAN_UCP_AUTH_API_KEY, "key": key}
+    if envelope_type == ATLASSIAN_UCP_AUTH_PLAIN:
+        data = credentials.get("plain", credentials)
+        username = data.get("username", "")
+        if not username:
+            demisto.error("[UCP][AtlassianApiModule.py] the username is empty in the UCP plain credentials.")
+            raise UcpException
+        return {"type": ATLASSIAN_UCP_AUTH_PLAIN, "username": username, "password": data.get("password", "")}
+    demisto.error(f'[UCP][AtlassianApiModule.py] unsupported credential type "{envelope_type}".')
+    raise UcpException
+
+
+def build_atlassian_ucp_auth_headers() -> tuple[dict[str, str], tuple[str, str] | None]:
+    """
+    Turn the UCP credential into request auth for a client that is not a BaseClient.
+
+    Returns:
+        (headers, basic_auth): an Authorization header for oauth2 / api_key profiles
+        (both are bearer tokens for Atlassian), or a (username, password) tuple for
+        a plain profile.
+    """
+    auth = get_atlassian_ucp_auth()
+    if auth["type"] == ATLASSIAN_UCP_AUTH_OAUTH2:
+        return {"Authorization": f"{auth['token_type']} {auth['access_token']}"}, None
+    if auth["type"] == ATLASSIAN_UCP_AUTH_API_KEY:
+        return {"Authorization": f"Bearer {auth['key']}"}, None
+    return {}, (auth["username"], auth["password"])
+
+
+def resolve_atlassian_cloud_base_url(product: str, cloud_id: str, site_url: str = "") -> str:
+    """
+    Return the REST base URL for an Atlassian Cloud product under the given auth.
+
+    OAuth 2.0 (3LO) tokens are only accepted on the API gateway
+    (https://api.atlassian.com/ex/<product>/<cloud_id>); email + API token (Basic)
+    works on the site URL as well, so the site is used when it is configured.
+
+    Args:
+        product: "jira" or "confluence".
+        cloud_id: The Atlassian site Cloud ID.
+        site_url: The site URL (https://<site>.atlassian.net), used for Basic auth.
+
+    Raises:
+        DemistoException: If the Cloud ID is missing for an OAuth 2.0 profile.
+    """
+    if get_atlassian_ucp_auth_type() == ATLASSIAN_UCP_AUTH_OAUTH2 or not site_url:
+        if not cloud_id:
+            raise DemistoException("The Cloud ID is required for Atlassian Cloud OAuth 2.0. Set it on the connection page.")
+        return f"https://api.atlassian.com/ex/{product}/{cloud_id}"
+    return site_url.rstrip("/")

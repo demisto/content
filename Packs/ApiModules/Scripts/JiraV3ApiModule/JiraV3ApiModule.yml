@@ -1,0 +1,19 @@
+commonfields:
+  id: JiraV3ApiModule
+  version: -1
+name: JiraV3ApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Atlassian Jira v3 code shared by the Atlassian Jira v3 and Atlassian Jira v3 (Standard Connector) integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/btfl-soup:1.0.1.13526390
+fromversion: 6.10.0
+tests:
+- No tests

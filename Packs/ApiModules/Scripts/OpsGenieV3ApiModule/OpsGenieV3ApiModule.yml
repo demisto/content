@@ -1,0 +1,19 @@
+commonfields:
+  id: OpsGenieV3ApiModule
+  version: -1
+name: OpsGenieV3ApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common OpsGenie v3 code shared by the OpsGenie v3 and OpsGenie v3 (Standard Connector) integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 6.10.0
+tests:
+- No tests

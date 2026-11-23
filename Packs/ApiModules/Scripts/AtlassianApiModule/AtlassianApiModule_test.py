@@ -3,7 +3,10 @@
 import time
 from unittest.mock import MagicMock, patch
 
+import AtlassianApiModule
+import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException, UcpException
 
 from AtlassianApiModule import (
     ConfluenceCloudOAuthClient,
@@ -795,3 +798,126 @@ class TestOnPremOAuthBadPaths:
             onprem_client.oauth2_retrieve_access_token(code="auth-code")
 
         assert "Failed to connect to On-Prem OAuth token endpoint" in str(exc_info.value)
+
+
+class TestGetAtlassianUcpAuth:
+    """get_atlassian_ucp_auth() flattens the three UCP envelope families."""
+
+    @pytest.fixture
+    def ucp_credentials(self, monkeypatch):
+        holder: dict = {}
+        monkeypatch.setattr(AtlassianApiModule, "get_ucp_credentials", lambda *a, **k: holder["creds"])
+        return holder
+
+    def test_oauth2_envelope_returns_access_token(self, ucp_credentials):
+        ucp_credentials["creds"] = {"type": "oauth2_authorization_code", "oauth2": {"access_token": "tok"}}
+        assert AtlassianApiModule.get_atlassian_ucp_auth() == {
+            "type": "oauth2",
+            "access_token": "tok",
+            "token_type": "Bearer",
+        }
+
+    def test_api_key_envelope_returns_key(self, ucp_credentials):
+        ucp_credentials["creds"] = {"type": "api_key", "api_key": {"key": "pat"}}
+        assert AtlassianApiModule.get_atlassian_ucp_auth() == {"type": "api_key", "key": "pat"}
+
+    def test_plain_envelope_returns_username_and_password(self, ucp_credentials):
+        ucp_credentials["creds"] = {"type": "plain", "plain": {"username": "me@acme.com", "password": "secret"}}
+        assert AtlassianApiModule.get_atlassian_ucp_auth() == {
+            "type": "plain",
+            "username": "me@acme.com",
+            "password": "secret",
+        }
+
+    @pytest.mark.parametrize(
+        "creds",
+        [
+            {"type": "oauth2", "oauth2": {"access_token": ""}},
+            {"type": "api_key", "api_key": {"key": ""}},
+            {"type": "plain", "plain": {"username": "", "password": "x"}},
+            {"type": "passthrough", "passthrough": {}},
+        ],
+    )
+    def test_empty_secret_or_unknown_type_raises(self, ucp_credentials, creds):
+        ucp_credentials["creds"] = creds
+        with pytest.raises(UcpException):
+            AtlassianApiModule.get_atlassian_ucp_auth()
+
+
+class TestBuildAtlassianUcpAuthHeaders:
+    """build_atlassian_ucp_auth_headers() maps each family onto request auth."""
+
+    @pytest.mark.parametrize(
+        ("auth", "expected"),
+        [
+            (
+                {"type": "oauth2", "access_token": "tok", "token_type": "Bearer"},
+                ({"Authorization": "Bearer tok"}, None),
+            ),
+            ({"type": "api_key", "key": "pat"}, ({"Authorization": "Bearer pat"}, None)),
+            ({"type": "plain", "username": "u", "password": "p"}, ({}, ("u", "p"))),
+        ],
+    )
+    def test_returns_header_or_basic_tuple(self, monkeypatch, auth, expected):
+        monkeypatch.setattr(AtlassianApiModule, "get_atlassian_ucp_auth", lambda: auth)
+        assert AtlassianApiModule.build_atlassian_ucp_auth_headers() == expected
+
+
+class TestGetAtlassianUcpAuthType:
+    """get_atlassian_ucp_auth_type() resolves the family of the selected profile."""
+
+    @pytest.fixture
+    def ucp_profiles(self, monkeypatch):
+        def configure(profile_type: str, enabled: bool = True):
+            monkeypatch.setattr(AtlassianApiModule, "should_use_ucp_auth", lambda: enabled)
+            monkeypatch.setattr(AtlassianApiModule, "get_ucp_method_unique_id", lambda *a, **k: "m1")
+            monkeypatch.setattr(
+                demisto,
+                "unifiedConnectorMetadata",
+                lambda: {"connectionProfiles": [{"method_unique_id": "m1", "type": profile_type}]},
+            )
+
+        return configure
+
+    @pytest.mark.parametrize(
+        ("profile_type", "expected"),
+        [
+            ("oauth2_authorization_code", "oauth2"),
+            ("oauth2_client_credentials", "oauth2"),
+            ("api_key", "api_key"),
+            ("plain", "plain"),
+        ],
+    )
+    def test_returns_profile_family(self, ucp_profiles, profile_type, expected):
+        ucp_profiles(profile_type)
+        assert AtlassianApiModule.get_atlassian_ucp_auth_type() == expected
+
+    def test_returns_empty_when_ucp_is_off(self, ucp_profiles):
+        ucp_profiles("plain", enabled=False)
+        assert AtlassianApiModule.get_atlassian_ucp_auth_type() == ""
+
+    def test_falls_back_to_envelope_type(self, monkeypatch, ucp_profiles):
+        ucp_profiles("")
+        monkeypatch.setattr(AtlassianApiModule, "get_ucp_credentials", lambda *a, **k: {"type": "oauth2"})
+        assert AtlassianApiModule.get_atlassian_ucp_auth_type() == "oauth2"
+
+
+class TestResolveAtlassianCloudBaseUrl:
+    """resolve_atlassian_cloud_base_url() picks the gateway for OAuth, the site for Basic."""
+
+    @pytest.mark.parametrize(
+        ("auth_type", "site_url", "expected"),
+        [
+            ("oauth2", "https://acme.atlassian.net", "https://api.atlassian.com/ex/jira/cid"),
+            ("plain", "https://acme.atlassian.net/", "https://acme.atlassian.net"),
+            ("plain", "", "https://api.atlassian.com/ex/jira/cid"),
+        ],
+    )
+    def test_returns_expected_base_url(self, monkeypatch, auth_type, site_url, expected):
+        monkeypatch.setattr(AtlassianApiModule, "get_atlassian_ucp_auth_type", lambda: auth_type)
+        assert AtlassianApiModule.resolve_atlassian_cloud_base_url("jira", "cid", site_url) == expected
+
+    def test_oauth_without_cloud_id_raises(self, monkeypatch):
+        monkeypatch.setattr(AtlassianApiModule, "get_atlassian_ucp_auth_type", lambda: "oauth2")
+        with pytest.raises(DemistoException, match="Cloud ID"):
+            AtlassianApiModule.resolve_atlassian_cloud_base_url("confluence", "")

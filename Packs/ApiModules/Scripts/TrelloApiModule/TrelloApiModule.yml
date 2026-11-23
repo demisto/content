@@ -1,0 +1,19 @@
+commonfields:
+  id: TrelloApiModule
+  version: -1
+name: TrelloApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Trello code shared by the Trello and Trello (Standard Connector) integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.10.0
+tests:
+- No tests

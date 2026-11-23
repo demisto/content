@@ -1,0 +1,19 @@
+commonfields:
+  id: AtlassianJiraServiceManagementApiModule
+  version: -1
+name: AtlassianJiraServiceManagementApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Atlassian Jira Service Management code shared by the Atlassian Jira Service Management and Atlassian Jira Service Management (Standard Connector) integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 6.10.0
+tests:
+- No tests

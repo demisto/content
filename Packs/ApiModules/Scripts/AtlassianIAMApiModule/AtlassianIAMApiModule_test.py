@@ -1,4 +1,9 @@
-from Attlasian_IAM import Client, get_mapping_fields
+from typing import Any
+
+import AtlassianIAMApiModule
+import demistomock as demisto
+import pytest
+from AtlassianIAMApiModule import Client, UcpRequestContext, build_headers, get_mapping_fields
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -278,3 +283,64 @@ def test_get_mapping_fields_command(mocker):
 
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field1") == "desc1"
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field2") == "desc2"
+
+
+""" UCP (Atlassian Standard Connector) """
+
+
+class TestBuildHeaders:
+    def test_legacy_path_uses_access_token_creds_password(self, monkeypatch):
+        monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: False)
+        headers = build_headers({"access_token_creds": {"password": "scim-key"}, "access_token": "hidden"})
+        assert headers["Authorization"] == "Bearer scim-key"
+
+    def test_legacy_path_falls_back_to_hidden_access_token(self, monkeypatch):
+        monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: False)
+        headers = build_headers({"access_token": "legacy-token"})
+        assert headers["Authorization"] == "Bearer legacy-token"
+
+    def test_legacy_path_tolerates_unbound_access_token_creds(self, monkeypatch):
+        monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: False)
+        headers = build_headers({"access_token_creds": None, "access_token": "legacy-token"})
+        assert headers["Authorization"] == "Bearer legacy-token"
+
+    def test_ucp_path_leaves_authorization_to_profile(self, monkeypatch):
+        monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: True)
+        headers = build_headers({})
+        assert headers == {"Content-Type": "application/json", "Accept": "application/json"}
+
+    def test_ucp_api_key_profile_writes_bearer_header(self, monkeypatch):
+        monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: True)
+        client = Client(base_url="https://api.atlassian.com/", directory_id="d1", headers=build_headers({}))
+        ctx = UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
+        client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "scim-ucp"}}, ctx)
+        assert ctx.headers["Authorization"] == "Bearer scim-ucp"
+
+
+class TestRunAtlassianIamIntegration:
+    @pytest.fixture
+    def run_test_module(self, monkeypatch):
+        captured: dict[str, Any] = {}
+
+        def run(params: dict[str, Any], ucp: bool) -> dict[str, Any]:
+            monkeypatch.setattr(AtlassianIAMApiModule, "should_use_ucp_auth", lambda: ucp)
+            monkeypatch.setattr(demisto, "command", lambda: "test-module")
+            monkeypatch.setattr(demisto, "args", dict)
+            monkeypatch.setattr(demisto, "params", lambda: params)
+            monkeypatch.setattr(AtlassianIAMApiModule, "test_module", lambda client: captured.setdefault("client", client))
+            AtlassianIAMApiModule.run_atlassian_iam_integration()
+            return captured
+
+        return run
+
+    def test_ucp_path_builds_client_without_authorization(self, run_test_module):
+        params = {"url": "https://api.atlassian.com", "directory_id": "d1", "access_token_creds": None}
+        captured = run_test_module(params, ucp=True)
+        assert captured["client"]._base_url == "https://api.atlassian.com/"
+        assert captured["client"].directory_id == "d1"
+        assert "Authorization" not in captured["client"]._headers
+
+    def test_legacy_path_sends_bearer_token(self, run_test_module):
+        params = {"url": "https://api.atlassian.com/", "directory_id": "d1", "access_token_creds": {"password": "k"}}
+        captured = run_test_module(params, ucp=False)
+        assert captured["client"]._headers["Authorization"] == "Bearer k"

@@ -1,0 +1,19 @@
+commonfields:
+  id: AtlassianConfluenceCloudApiModule
+  version: -1
+name: AtlassianConfluenceCloudApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Atlassian Confluence Cloud code shared by the Atlassian Confluence Cloud and Atlassian Confluence Cloud (Standard Connector) integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/btfl-soup:1.0.1.10120494
+fromversion: 6.10.0
+tests:
+- No tests

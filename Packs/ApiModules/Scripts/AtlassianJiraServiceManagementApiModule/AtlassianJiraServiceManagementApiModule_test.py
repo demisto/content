@@ -3,7 +3,7 @@ import os
 from typing import Any
 from unittest.mock import Mock
 
-import AtlassianJiraServiceManagement as JSM
+import AtlassianJiraServiceManagementApiModule as JSM
 import demistomock as demisto
 import pytest
 from CommonServerPython import CommandResults
@@ -673,3 +673,58 @@ def test_jira_asset_attachment_remove_command(mocker: MockerFixture):
     mocked_client = mocker.patch.object(client, "remove_file", return_value={"id": 1})
     JSM.jira_asset_attachment_remove_command(client, {"id": file_id})
     mocked_client.assert_called_with(file_id)
+
+
+""" UCP (Atlassian Standard Connector) """
+
+
+class TestClientInit:
+    def test_legacy_path_sends_bearer_api_key(self, monkeypatch):
+        monkeypatch.setattr(JSM, "should_use_ucp_auth", lambda: False)
+        jsm_client = JSM.Client(base_url="https://url.com", api_key="legacy-key", verify=False, proxy=False)
+        assert jsm_client._headers == {"Accept": "application/json", "Authorization": "Bearer legacy-key"}
+
+    def test_ucp_path_omits_legacy_authorization_header(self, monkeypatch):
+        monkeypatch.setattr(JSM, "should_use_ucp_auth", lambda: True)
+        jsm_client = JSM.Client(base_url="https://url.com", api_key="", verify=False, proxy=False)
+        assert jsm_client._headers == {"Accept": "application/json"}
+
+    def test_ucp_api_key_profile_writes_bearer_header(self, monkeypatch):
+        monkeypatch.setattr(JSM, "should_use_ucp_auth", lambda: True)
+        jsm_client = JSM.Client(base_url="https://url.com", api_key="", verify=False, proxy=False)
+        ctx = JSM.UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
+        jsm_client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "ucp-pat"}}, ctx)
+        assert ctx.headers["Authorization"] == "Bearer ucp-pat"
+        assert ctx.auth is None
+
+
+class TestRunAtlassianJiraServiceManagementIntegration:
+    @pytest.fixture
+    def run_test_module(self, monkeypatch):
+        captured: dict[str, Any] = {}
+
+        def fake_test_module(jsm_client):
+            captured["client"] = jsm_client
+            return "ok"
+
+        def run(params: dict[str, Any], ucp: bool):
+            monkeypatch.setattr(JSM, "should_use_ucp_auth", lambda: ucp)
+            monkeypatch.setattr(demisto, "command", lambda: "test-module")
+            monkeypatch.setattr(demisto, "args", dict)
+            monkeypatch.setattr(demisto, "params", lambda: params)
+            monkeypatch.setattr(JSM, "test_module", fake_test_module)
+            monkeypatch.setattr(JSM, "return_results", lambda result: captured.setdefault("result", result))
+            JSM.run_atlassian_jira_service_management_integration()
+            return captured
+
+        return run
+
+    def test_ucp_path_with_unbound_credentials_builds_client_without_authorization(self, run_test_module):
+        captured = run_test_module({"url": "https://jsm.example.com", "credentials": None}, ucp=True)
+        assert captured["result"] == "ok"
+        assert captured["client"]._base_url == "https://jsm.example.com/rest/assets/1.0/"
+        assert "Authorization" not in captured["client"]._headers
+
+    def test_legacy_path_uses_credentials_password(self, run_test_module):
+        captured = run_test_module({"url": "https://jsm.example.com", "credentials": {"password": "pat"}}, ucp=False)
+        assert captured["client"]._headers["Authorization"] == "Bearer pat"

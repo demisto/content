@@ -1,0 +1,43 @@
+{
+    "name": "Atlassian (Standard Connector)",
+    "description": "Satellite pack of the Atlassian packs used by the Atlassian Standard Connector. Shares its logic with the Jira, Confluence, Atlassian Confluence Cloud, Atlassian Jira Service Management, Bitbucket, Trello, OpsGenie and Atlassian IAM packs through ApiModules.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.15.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-11-22T00:00:00Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Atlassian",
+        "Jira",
+        "Confluence",
+        "Bitbucket",
+        "Trello",
+        "Opsgenie"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "githubUser": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture"
+    ],
+    "hidden": false
+}
