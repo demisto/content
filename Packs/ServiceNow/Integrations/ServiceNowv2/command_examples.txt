@@ -25,3 +25,4 @@
 !servicenow-create-co-from-template template=1234
 !servicenow-generic-api-call method=GET path="/table/table_name"
 !servicenow-delete-file file_sys_id=1234
+!servicenow-create-event node="web-prod-01" type="disk_full" time_of_event="2026-01-01 10:00:00" severity="high" description="Disk usage exceeded 90%."

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The greynoise-timeline output changed from GreyNoise.Timeline.activity to GreyNoise.Timeline.data. The greynoise-similarity command is deprecated, and its output changed to GreyNoise.Similar.message."
+}
