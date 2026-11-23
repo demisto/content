@@ -39,7 +39,7 @@ Gets audit events from Keeper Security. This command is used for development and
 
 There is no context output for this command.
 
-## Notes
+## Known Limitations
 
 - The API does not return an event ID, so events are de-duplicated by a hash of their fields.
 - The API is limited to 10 requests per 10 seconds per API key; the integration paces its requests accordingly.
