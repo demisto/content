@@ -50,6 +50,8 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 - **Reverse Pagination**: Fetches newest incidents first for better performance
 - **Dynamic Content Extraction**: Automatically extracts alarm-specific fields regardless of type
 - **Enhanced Deduplication**: Two-layer protection prevents duplicate incidents
+- **Missed Alarm Checks**: Hourly and four-hourly checks retrieve alarms not captured by the regular fetch cycle, without creating duplicate incidents
+- **Automatic Retries**: Retries on API rate limiting and temporary server errors
 
 ### Technical Improvements
 
