@@ -29,7 +29,7 @@ urllib3.disable_warnings()
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client for the Keeper Security Admin REST API (ARAM events)."""
 
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False) -> None:
