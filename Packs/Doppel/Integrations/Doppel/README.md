@@ -49,6 +49,15 @@ By default, the integration fetches alerts for all Doppel products. To limit the
 - The filter applies to ***fetch-incidents*** only. Mirroring of existing incidents and the ***doppel-get-alerts*** command are not filtered.
 - **Test** checks the selected products against Doppel, so a selection that Doppel rejects fails the test.
 
+## Large alert backlogs
+
+The Doppel API returns up to 50,000 results for one alert search. When a fetch matches more than that (for example, a first fetch with a long *First fetch* value on a large organization, or an instance that was disabled for a long time), Doppel refuses the search with HTTP 422 and the code *result_window_exceeded*.
+
+- The integration then fetches the backlog in smaller time ranges, oldest alerts first, until it has caught up. No alert is skipped and no incident is created twice.
+- The *Number of incidents for each fetch* limit applies to every run, so a large backlog takes several runs. To shorten it, reduce *First fetch* or select products in **Select products to fetch**.
+- Fetch requests are unchanged when Doppel does not refuse the search.
+- The ***doppel-get-alerts*** command does not narrow a search. It returns an error that contains *result_window_exceeded*. Narrow the search with *created_after* and *created_before*, or with *last_activity_timestamp* and *last_activity_before*.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -400,6 +409,7 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | last_activity_timestamp | The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| last_activity_before | The filter for alerts whose last activity (creation or any update) occurred at or before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
@@ -591,6 +601,7 @@ When incidents are mirrored into Cortex XSOAR from Doppel:
 
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
 2. When Doppel revives an alert — moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online — a closed Cortex incident is automatically reopened so the revival is not missed. The reopening process only occurs on a queue transition that occurred after the incident's last sync, so incidents closed by an analyst are not reopened by unrelated alert activity.
+3. If Doppel refuses the search for modified alerts as too large (HTTP 422 *result_window_exceeded*, for example after mirroring was paused for a long time), the integration reads the changes in smaller time ranges within the same mirroring cycle.
 
 **Supported Fields**
 

@@ -399,6 +399,8 @@ script:
       name: created_after
     - description: The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: last_activity_timestamp
+    - description: The filter for alerts whose last activity (creation or any update) occurred at or before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+      name: last_activity_before
     - auto: PREDEFINED
       description: The field to sort the reports by.
       defaultValue: date_sourced

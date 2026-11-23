@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import json
 import time
 import traceback
-from datetime import datetime, UTC
+from datetime import datetime, timedelta, UTC
 
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -45,6 +45,13 @@ MAX_FETCH_PAGES_PER_RUN = 1000
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 # Doppel products selectable in the "Select products to fetch" parameter (keep in sync with Doppel.yml).
 FETCH_PRODUCTS = ("domains", "social_media", "mobile_apps", "ecommerce", "crypto", "email", "paid_ads", "telco", "darkweb")
+# Doppel pages through at most the first 50,000 results of an alert search. It refuses a larger
+# search (a time-filtered search that matches more alerts, or a page offset that reaches the
+# limit) with HTTP 422 and this code in the response body.
+RESULT_WINDOW_EXCEEDED_CODE = "result_window_exceeded"
+# lastRun key that holds the upper time limit of a fetch range while a refused backlog is read.
+# It is written only after Doppel refused a fetch search, and removed once that range is read.
+FETCH_WINDOW_END_KEY = "fetch_window_end"
 
 # Queue states that mean the alert needs attention again. When Doppel's Revival
 # Monitoring reopens an alert (same alert id, no new row), it lands in doppel_review
@@ -621,6 +628,59 @@ def _get_last_fetch_datetime(last_run):
     return last_fetch_datetime
 
 
+def _is_result_window_exceeded(error: Exception) -> bool:
+    """Return True only when Doppel refused an alert search as too large.
+
+    The refusal is HTTP 422 with ``code`` equal to ``result_window_exceeded`` in the JSON body.
+    Any other 422, and every other error, is not a refusal and is handled as before.
+    """
+    response = getattr(error, "res", None)
+    if response is None or getattr(response, "status_code", None) != 422:
+        return False
+    try:
+        body = response.json()
+    except Exception:
+        return False
+    return isinstance(body, dict) and body.get("code") == RESULT_WINDOW_EXCEEDED_CODE
+
+
+def _narrowed_window_end(start: datetime, end: datetime) -> datetime | None:
+    """Return the midpoint of a refused time range in whole seconds.
+
+    Returns None when the range is under two seconds: both ends of a range are inclusive and
+    have a one-second resolution, so such a range cannot be made smaller.
+    """
+    span_seconds = int((end - start).total_seconds())
+    if span_seconds < 2:
+        return None
+    return start + timedelta(seconds=span_seconds // 2)
+
+
+def _window_time(value: datetime) -> datetime:
+    """Return a time as it is sent to the alerts API: no time zone and a one-second resolution."""
+    return value.replace(tzinfo=None, microsecond=0)
+
+
+def _utc_now() -> datetime:
+    """Return the current UTC time in the form used for time ranges."""
+    return _window_time(datetime.now(UTC))
+
+
+def _saved_fetch_window_end(last_run: dict[str, Any], last_fetch_datetime: datetime) -> datetime | None:
+    """Return the upper time limit a previous run saved while reading a refused backlog, if any.
+
+    A value at or before the cursor is ignored: the range it closed has already been read.
+    """
+    raw = last_run.get(FETCH_WINDOW_END_KEY)
+    if not raw:
+        return None
+    try:
+        window_end = datetime.strptime(str(raw), XSOAR_DATE_FORMAT)
+    except ValueError:
+        return None
+    return window_end if window_end > _window_time(last_fetch_datetime) else None
+
+
 def _fetch_products_to_modules(fetch_products: Any) -> str | None:
     """Turn the fetch_products param into the value of the alerts API "modules" filter.
 
@@ -642,9 +702,14 @@ def _fetch_products_to_modules(fetch_products: Any) -> str | None:
     return ",".join(products) or None
 
 
-def _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules: str | None = None):
+def _paginated_call_to_get_alerts(
+    client, page, last_fetch_datetime, modules: str | None = None, created_before: datetime | None = None
+):
     """
     Set the query parameters
+
+    created_before is sent only while a backlog that Doppel refused as too large is read in
+    smaller time ranges. A fetch that is not refused never sends it.
     """
     last_fetch_str: str = last_fetch_datetime.strftime(DOPPEL_API_DATE_FORMAT)
     query_params = {
@@ -657,6 +722,8 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules: st
     if modules:
         # "modules" is sent alone: the API intersects it with "product" when both are present.
         query_params["modules"] = modules
+    if created_before:
+        query_params["created_before"] = created_before.strftime(DOPPEL_API_DATE_FORMAT)
     get_alerts_response = client.get_alerts(params=query_params)
     alerts = get_alerts_response.get("alerts", None)
     return alerts
@@ -814,6 +881,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
     created_before = format_datetime(args.get("created_before"))
     created_after = format_datetime(args.get("created_after"))
     last_activity_timestamp = format_datetime(args.get("last_activity_timestamp"))
+    last_activity_before = format_datetime(args.get("last_activity_before"))
 
     # Extract query parameters directly from arguments
     query_params = {
@@ -823,6 +891,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         "created_before": created_before,
         "created_after": created_after,
         "last_activity_timestamp": last_activity_timestamp,
+        "last_activity_before": last_activity_before,
         "sort_type": args.get("sort_type"),
         "sort_order": args.get("sort_order"),
         "page": args.get("page"),
@@ -836,6 +905,14 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
     try:
         results = client.get_alerts(params=query_params)
     except Exception as exception:
+        if _is_result_window_exceeded(exception):
+            # Callers (for example a script that pages through this command) look for the code in the text.
+            raise DemistoException(
+                f"Doppel refused this alert search as too large ({RESULT_WINDOW_EXCEEDED_CODE}): the search matches "
+                "more than 50,000 alerts, or the requested page is beyond the first 50,000 results. Narrow the search "
+                "with created_after and created_before, or with last_activity_timestamp and last_activity_before, "
+                f"and run the command again. Doppel API response: {str(exception)}"
+            )
         raise Exception(f"No alerts were found with the given parameters :- {str(exception)}.")
     demisto.debug(f"Results received: {results}")
 
@@ -1036,6 +1113,11 @@ def fetch_incidents_command(client: Client, args: dict[str, Any], fetch_products
 
     When fetch_products (the "Select products to fetch" param) is set, the API returns
     only alerts for those products; otherwise the request is unfiltered.
+
+    When Doppel refuses the search as too large (HTTP 422, code result_window_exceeded), the
+    backlog is read in smaller time ranges: created_before is added and the range is halved
+    until Doppel accepts it. The cursor moves past a range only after that range was read to
+    its end. A fetch that is not refused sends the same requests as before.
     """
     demisto.debug("Doppel - Fetching alerts from Doppel.")
     modules = _fetch_products_to_modules(fetch_products)
@@ -1054,22 +1136,63 @@ def fetch_incidents_command(client: Client, args: dict[str, Any], fetch_products
     # prevents re-creating alerts that were already emitted at the boundary second.
     seen_alert_ids = {str(i) for i in recently_seen_ids if i}
     mirroring_object = _get_mirroring_fields()
+    # The upper time limit of the range being read. It is None (no created_before is sent)
+    # unless Doppel refused a search of this backlog as too large, in this run or an earlier one.
+    window_end = _saved_fetch_window_end(last_run, last_fetch_datetime)
+    run_start = _utc_now()
+    # Set when a narrowed range was read to its end and the cursor moved to the end of that range.
+    advanced_cursor: str | None = None
 
     incidents: list[dict[str, Any]] = []
     page = 0
+    requests_sent = 0
     while len(incidents) < fetch_limit:
         if timeout is not None and (time.time() - start_time) > timeout:
             demisto.debug("Doppel - Fetch reached its time budget; progress saved, the next run continues.")
             break
         # Hard safeguard against an unbounded loop (e.g. a misbehaving API that never
         # returns an empty page) when no fetch timeout is configured.
-        if page >= MAX_FETCH_PAGES_PER_RUN:
+        if requests_sent >= MAX_FETCH_PAGES_PER_RUN:
             demisto.debug(f"Doppel - Reached the per-run page ceiling ({MAX_FETCH_PAGES_PER_RUN}); continuing next run.")
             break
-        alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules)
+        requests_sent += 1
+        try:
+            alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime, modules, window_end)
+        except DemistoException as error:
+            if not _is_result_window_exceeded(error):
+                raise
+            range_start = _window_time(last_fetch_datetime)
+            range_end = window_end or run_start
+            narrowed_end = _narrowed_window_end(range_start, range_end)
+            if narrowed_end is None:
+                if incidents or advanced_cursor:
+                    # Keep what this run already read; the next run starts at this range and reports it.
+                    demisto.debug(f"Doppel - The range {range_start} to {range_end} cannot be narrowed; saving progress.")
+                    break
+                raise DemistoException(
+                    f"Doppel refused the alert search as too large ({RESULT_WINDOW_EXCEEDED_CODE}) and the time range "
+                    f"{range_start} to {range_end} (UTC) is under two seconds, so it cannot be narrowed further. "
+                    "More than 50,000 alerts were created in that range and the Doppel API cannot page through them."
+                )
+            demisto.debug(
+                f"Doppel - The alert search from {range_start} to {range_end} was refused as too large "
+                f"({RESULT_WINDOW_EXCEEDED_CODE}); retrying with created_before={narrowed_end}."
+            )
+            window_end = narrowed_end
+            page = 0
+            continue
         if not alerts:
-            demisto.debug("Doppel - No more alerts returned; exiting pagination loop.")
-            break
+            if window_end is None:
+                demisto.debug("Doppel - No more alerts returned; exiting pagination loop.")
+                break
+            # The narrowed range is read to its end, so the cursor moves to the end of that
+            # range and the rest of the backlog is requested with no upper limit again.
+            demisto.debug(f"Doppel - Read the narrowed range up to {window_end}; continuing from there.")
+            last_fetch_datetime = window_end
+            advanced_cursor = window_end.strftime(XSOAR_DATE_FORMAT)
+            window_end = None
+            page = 0
+            continue
         for alert in alerts:
             alert_id = str(alert.get("id") or "")
             if not alert_id or alert_id in seen_alert_ids:
@@ -1085,8 +1208,11 @@ def fetch_incidents_command(client: Client, args: dict[str, Any], fetch_products
     # (never past it), so alerts fetched-but-not-created are simply re-pulled next run
     # instead of being buffered in lastRun. We do NOT skip the boundary second; instead
     # we persist the ids emitted at that second so the inclusive re-pull on the next run
-    # is de-duplicated rather than lost.
+    # is de-duplicated rather than lost. The end of a narrowed range that was read to its end
+    # is a cursor candidate too: without it, a range that holds no new alert would be read again.
     occurred_times = [str(inc["occurred"]) for inc in incidents if inc.get("occurred")]
+    if advanced_cursor:
+        occurred_times.append(advanced_cursor)
     if occurred_times:
         newest_occurred = max(occurred_times)
         next_fetch = newest_occurred
@@ -1101,12 +1227,17 @@ def fetch_incidents_command(client: Client, args: dict[str, Any], fetch_products
         next_fetch = last_run_time
         boundary_ids = [str(i) for i in recently_seen_ids if i]
 
-    demisto.setLastRun(
-        {
-            "last_run": next_fetch,
-            "recently_seen_ids": boundary_ids,
-        }
-    )
+    next_run: dict[str, Any] = {
+        "last_run": next_fetch,
+        "recently_seen_ids": boundary_ids,
+    }
+    if window_end is not None:
+        # A refused backlog is still being read: keep the upper limit reached so far, so the
+        # next run continues from it and does not repeat the refused requests.
+        window_end_str = window_end.strftime(XSOAR_DATE_FORMAT)
+        if not next_fetch or window_end_str > next_fetch:
+            next_run[FETCH_WINDOW_END_KEY] = window_end_str
+    demisto.setLastRun(next_run)
     demisto.debug(f"Doppel - Next cursor: {next_fetch}; boundary ids: {len(boundary_ids)}.")
     # Create incidents in XSOAR (an empty list still registers the run).
     try:
@@ -1120,6 +1251,11 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     """
     Checks for remote modifications since the last update timestamp
     and returns a list of modified incident IDs.
+
+    When Doppel refuses the search as too large (HTTP 422, code result_window_exceeded), the
+    time range is read in parts within this call: the older part gets last_activity_before and
+    is halved until Doppel accepts it, and the newest part keeps no upper limit. A search that
+    is not refused sends the same requests as before.
     """
 
     remote_args = GetModifiedRemoteDataArgs(args)
@@ -1137,26 +1273,68 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         # advances lastUpdate after every cycle regardless of what was returned.
         modified_incident_ids: list[str] = []
         seen_ids: set[str] = set()
+        # range_end is None (no last_activity_before is sent) unless Doppel refused a search
+        # in this call as too large. The server moves lastUpdate forward after this call
+        # whatever it returns, so a refused range is read here, in parts, and not left for later.
+        range_start = _window_time(last_update_datetime)
+        range_end: datetime | None = None
+        run_start = _utc_now()
+        refused = False
+        unread_range = ""
         page = 0
-        while page < MAX_FETCH_PAGES_PER_RUN:
+        requests_sent = 0
+        while requests_sent < MAX_FETCH_PAGES_PER_RUN:
             query_params = {
                 "last_activity_timestamp": last_update,
                 "page": page,
                 "page_size": DOPPEL_MAX_PAGE_SIZE,
             }
-            results = client.get_alerts(params=query_params)
-            alerts = results.get("alerts", [])
-            if not alerts:
-                break
+            if range_end is not None:
+                query_params["last_activity_before"] = range_end.strftime(DOPPEL_API_DATE_FORMAT)
+            requests_sent += 1
+            try:
+                results = client.get_alerts(params=query_params)
+            except DemistoException as error:
+                if not _is_result_window_exceeded(error):
+                    raise
+                refused = True
+                narrowed_end = _narrowed_window_end(range_start, range_end or run_start)
+                if narrowed_end is None:
+                    unread_range = f"{range_start} to {range_end or run_start} (UTC), which is under two seconds"
+                    break
+                demisto.debug(
+                    f"Doppel - The search for modified alerts from {range_start} to {range_end or 'now'} was refused "
+                    f"as too large ({RESULT_WINDOW_EXCEEDED_CODE}); retrying with last_activity_before={narrowed_end}."
+                )
+                range_end = narrowed_end
+                page = 0
+                continue
+            alerts = results.get("alerts") or []
             for alert in alerts:
                 alert_id = str(alert.get("id") or "")
                 if alert_id and alert_id not in seen_ids:
                     seen_ids.add(alert_id)
                     modified_incident_ids.append(alert_id)
-            if len(alerts) < DOPPEL_MAX_PAGE_SIZE:
+            if len(alerts) >= DOPPEL_MAX_PAGE_SIZE:
+                page += 1
+                continue
+            if range_end is None:
                 break
-            page += 1
+            # This part is read to its end. Continue from its end with no upper limit again.
+            range_start = range_end
+            last_update = range_start.strftime(DOPPEL_API_DATE_FORMAT)
+            range_end = None
+            page = 0
+        else:
+            if refused:
+                unread_range = f"from {range_start} (UTC): the limit of {MAX_FETCH_PAGES_PER_RUN} requests was reached"
 
+        if unread_range:
+            demisto.error(
+                f"Doppel - get-modified-remote-data could not read all modified alerts after the search was refused "
+                f"as too large ({RESULT_WINDOW_EXCEEDED_CODE}). Not read: {unread_range}. "
+                f"Returning the {len(modified_incident_ids)} modified alert(s) that were read."
+            )
         demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents. Incidents: {modified_incident_ids}")
         return GetModifiedRemoteDataResponse(modified_incident_ids)
 
