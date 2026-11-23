@@ -1240,13 +1240,6 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
-            "instance_names": "Microsoft SQL instance",
-            "fromversion": "5.0.0",
-            "has_api": false
-        },
-        {
-            "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0",
@@ -5717,13 +5710,6 @@
             ]
         },
         {
-            "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
-            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
-            "fromversion": "5.0.0",
-            "has_api": false
-        },
-        {
             "integrations": "Microsoft Teams via Webhook",
             "playbookID": "Microsoft Teams Webhook - Test"
         },
@@ -5989,6 +5975,7 @@
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
+        "generic-sql-oracle": "Oracle test DB is unreachable from the XSOAR Server Master test server (test-module times out before and after content updates) - CIAC-19318",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "playbook-CiscoWSA_Test": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
