@@ -59,7 +59,7 @@ script:
     - description: End of the time range. Defaults to now.
       name: end_date
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultvalue: "false"
       description: Set this argument to true to create events from the retrieved results, otherwise they are only displayed.
       name: should_push_events
       predefined:
