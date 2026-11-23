@@ -3128,3 +3128,40 @@ def test_get_driveitem_analytics_command_no_data(mocker: MockerFixture):
 
     assert "No analytics data was returned for item item-1" in result.readable_output
     assert "tenant plan" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_auth_id",
+    [
+        ({"_auth_id": "new-id"}, "new-id"),
+        ({"_auth_id": "new-id", "credentials_auth_id": {"password": "masked-id"}}, "new-id"),
+        ({"credentials_auth_id": {"password": "masked-id"}}, "masked-id"),
+        ({"auth_id": "legacy-id"}, "legacy-id"),
+    ],
+)
+def test_run_integration_auth_id_precedence(mocker: MockerFixture, id_params: dict, expected_auth_id: str):
+    """
+    Given:
+        - Different combinations of the plain-text '_auth_id' param, the masked 'credentials_auth_id' param
+          and the legacy 'auth_id' param.
+    When:
+        - run_microsoft_graph_files_integration() is called with the test-module command.
+    Then:
+        - MsGraphClient is instantiated with auth_id by precedence:
+          '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
+    """
+    import MicrosoftGraphFilesApiModule
+
+    params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("MicrosoftGraphFilesApiModule.MsGraphClient")
+    mocker.patch("MicrosoftGraphFilesApiModule.test_function", return_value="ok")
+    mocker.patch.object(MicrosoftGraphFilesApiModule, "return_results")
+    mocker.patch.object(MicrosoftGraphFilesApiModule, "return_error")
+
+    MicrosoftGraphFilesApiModule.run_microsoft_graph_files_integration()
+
+    MicrosoftGraphFilesApiModule.return_error.assert_not_called()
+    assert mock_client_cls.call_args[1]["auth_id"] == expected_auth_id

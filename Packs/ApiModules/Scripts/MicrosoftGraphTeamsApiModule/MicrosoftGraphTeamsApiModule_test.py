@@ -436,3 +436,84 @@ class TestDemistoArgsShape:
         body = dummy.calls[0]["json_data"]
         # dlp_action absent → empty string, still passes verbatim.
         assert body["policyViolation"]["dlpAction"] == ""
+
+
+# ---------------------------------------------------------------------------
+# run_microsoft_graph_teams_integration: Client ID resolution
+# ---------------------------------------------------------------------------
+
+
+def _patch_teams_entrypoint(mocker, params: dict, use_ucp: bool):
+    import MicrosoftGraphTeamsApiModule
+
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(MicrosoftGraphTeamsApiModule, "should_use_ucp_auth", return_value=use_ucp)
+    mocker.patch.object(MicrosoftGraphTeamsApiModule, "test_function")
+    mocker.patch.object(MicrosoftGraphTeamsApiModule, "return_error")
+    return mocker.patch.object(MicrosoftGraphTeamsApiModule, "MsGraphClient")
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_client_id",
+    [
+        ({"_client_id": "new-id"}, "new-id"),
+        ({"_client_id": "new-id", "client_id": "legacy-id"}, "new-id"),
+        ({"client_id": "legacy-id"}, "legacy-id"),
+    ],
+)
+def test_run_integration_client_id_precedence(mocker, id_params, expected_client_id):
+    """
+    Given:
+        - Different combinations of the plain-text '_client_id' param and the legacy 'client_id' param.
+    When:
+        - run_microsoft_graph_teams_integration() is called with the test-module command (non-UCP auth).
+    Then:
+        - MsGraphClient is instantiated with auth_id by precedence: '_client_id' > 'client_id'.
+    """
+    from MicrosoftGraphTeamsApiModule import run_microsoft_graph_teams_integration
+
+    mock_client_cls = _patch_teams_entrypoint(mocker, {"secret": "enc-key", **id_params}, use_ucp=False)
+
+    run_microsoft_graph_teams_integration()
+
+    assert mock_client_cls.call_args[1]["auth_id"] == expected_client_id
+
+
+def test_run_integration_raises_when_client_id_missing_without_ucp(mocker):
+    """
+    Given:
+        - Neither '_client_id' nor 'client_id' is provided, and UCP auth is not in use.
+    When:
+        - run_microsoft_graph_teams_integration() is called.
+    Then:
+        - A DemistoException "Client ID must be provided." is raised and no client is created.
+    """
+    from MicrosoftGraphTeamsApiModule import run_microsoft_graph_teams_integration
+
+    mock_client_cls = _patch_teams_entrypoint(mocker, {"secret": "enc-key"}, use_ucp=False)
+
+    with pytest.raises(DemistoException, match="Client ID must be provided."):
+        run_microsoft_graph_teams_integration()
+    mock_client_cls.assert_not_called()
+
+
+def test_run_integration_skips_client_id_check_with_ucp(mocker):
+    """
+    Given:
+        - Neither '_client_id' nor 'client_id' is provided, and UCP auth is in use.
+    When:
+        - run_microsoft_graph_teams_integration() is called.
+    Then:
+        - No "Client ID must be provided." error is surfaced and the client is created.
+    """
+    import MicrosoftGraphTeamsApiModule
+    from MicrosoftGraphTeamsApiModule import run_microsoft_graph_teams_integration
+
+    mock_client_cls = _patch_teams_entrypoint(mocker, {}, use_ucp=True)
+
+    run_microsoft_graph_teams_integration()
+
+    mock_client_cls.assert_called_once()
+    MicrosoftGraphTeamsApiModule.return_error.assert_not_called()

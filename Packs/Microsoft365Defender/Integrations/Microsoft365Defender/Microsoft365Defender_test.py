@@ -1338,3 +1338,39 @@ def test_update_remote_system_with_entries(mocker):
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_app_id",
+    [
+        ({"client_id": "new-id"}, "new-id"),
+        ({"client_id": "new-id", "creds_client_id": {"password": "masked-id"}}, "new-id"),
+        ({"creds_client_id": {"password": "masked-id"}}, "masked-id"),
+        ({"app_id": "legacy-id", "_app_id": "default-id"}, "legacy-id"),
+        ({"_app_id": "default-id"}, "default-id"),
+    ],
+)
+def test_main_app_id_precedence(mocker, id_params, expected_app_id):
+    """
+    Given:
+      - Different combinations of the plain-text 'client_id' param, the masked 'creds_client_id' param,
+        the legacy 'app_id' param and the '_app_id' default param.
+    When:
+      - main() is called with the test-module command.
+    Then:
+      - Client is instantiated with app_id by precedence:
+        'client_id' > 'creds_client_id.password' > 'app_id' > '_app_id'.
+    """
+    import Microsoft365Defender
+
+    params = {"_tenant_id": "tenant-id", "credentials": {"password": "1234"}, **id_params}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("Microsoft365Defender.Client")
+    mocker.patch("Microsoft365Defender.test_module", return_value="ok")
+    mocker.patch.object(Microsoft365Defender, "return_results")
+
+    main()
+
+    assert mock_client_cls.call_args[1]["app_id"] == expected_app_id

@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The **Application ID or Client ID** parameter is no longer masked and is now displayed as plain text. Instances that were configured with the previously masked **Application ID or Client ID** parameter continue to work, but the visible **Application ID or Client ID** field may appear empty. To display the value, re-enter your Client/Application ID in the **Application ID or Client ID** parameter."
+    "breakingChangesNotes": "The **Application ID or Client ID** parameter is no longer masked and is now displayed as plain text. Instances that were configured with the previously masked **Application ID or Client ID** parameter continue to work, but the visible **Application ID or Client ID** field may appear empty. To display the value, re-enter your Client/Application ID in the **Application ID or Client ID** parameter. For O365 Outlook Mail (Using Graph API) instances created before the credentials parameters were introduced, the visible field may show a previously stored ID, which now takes precedence. Verify that it matches your current Client/Application ID."
 }

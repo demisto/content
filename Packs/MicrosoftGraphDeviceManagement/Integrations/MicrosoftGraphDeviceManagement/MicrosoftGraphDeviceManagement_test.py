@@ -270,3 +270,38 @@ def test_list_managed_devices__with_next_link(mocker):
 
     client.list_managed_devices(2, 1, "https://graph.microsoft.com/v1.0/test_link")
     assert client.ms_client.http_request.call_args[0][1] == "/test_link"
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_auth_id",
+    [
+        ({"_auth_id": "new-id"}, "new-id"),
+        ({"_auth_id": "new-id", "credentials_auth_id": {"password": "masked-id"}}, "new-id"),
+        ({"credentials_auth_id": {"password": "masked-id"}}, "masked-id"),
+        ({"auth_id": "legacy-id"}, "legacy-id"),
+    ],
+)
+def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
+    """
+    Given:
+        - Different combinations of the plain-text '_auth_id' param, the masked 'credentials_auth_id' param
+          and the legacy 'auth_id' param.
+    When:
+        - main() is called with the test-module command.
+    Then:
+        - MsGraphClient is instantiated with auth_and_token_url (3rd positional argument) by precedence:
+          '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
+    """
+    import demistomock as demisto
+    from MicrosoftGraphDeviceManagement import main
+
+    params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "results")
+    mock_client_cls = mocker.patch("MicrosoftGraphDeviceManagement.MsGraphClient")
+
+    main()
+
+    assert mock_client_cls.call_args[0][2] == expected_auth_id

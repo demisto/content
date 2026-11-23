@@ -858,3 +858,41 @@ def test_auth_reset(mocker):
     reset_auth_mock.assert_called_once()
     get_access_token_mock.assert_not_called()
     assert return_results_mock.called
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_auth_id",
+    [
+        ({"_auth_id": "new-id"}, "new-id"),
+        ({"_auth_id": "new-id", "credentials_auth_id": {"password": "masked-id"}}, "new-id"),
+        ({"credentials_auth_id": {"password": "masked-id"}}, "masked-id"),
+        ({"auth_id": "legacy-id"}, "legacy-id"),
+    ],
+)
+def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
+    """
+    Given:
+        - Different combinations of the plain-text '_auth_id' param, the masked 'credentials_auth_id' param
+          and the legacy 'auth_id' param.
+    When:
+        - main() is called with the test-module command.
+    Then:
+        - Client is instantiated with auth_and_token_url by precedence:
+          '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
+    """
+    import demistomock as demisto
+    import MicrosoftManagementActivity
+    from MicrosoftManagementActivity import main
+
+    params = {"enc_key": "client_secret", **id_params}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("MicrosoftManagementActivity.Client")
+    mock_client_cls.return_value.get_access_token_data.return_value = ("token", {"tid": "tenant"})
+    mocker.patch("MicrosoftManagementActivity.test_module", return_value="ok")
+    mocker.patch.object(MicrosoftManagementActivity, "return_results")
+
+    main()
+
+    assert mock_client_cls.call_args[1]["auth_and_token_url"] == expected_auth_id
