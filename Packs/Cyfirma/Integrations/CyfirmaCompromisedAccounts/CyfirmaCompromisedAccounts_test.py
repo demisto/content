@@ -162,7 +162,7 @@ def test_get_incidents_paginates_all_endpoints(client, mocker):
         headers_seen.append(headers)
         return responses.get((path, page), {})
 
-    mocker.patch.object(client, "get", side_effect=fake_get)
+    mocker.patch.object(client, "call_get_request", side_effect=fake_get)
 
     base_params = {"size": 10}
     incidents = client.get_incidents(base_params)
@@ -177,7 +177,7 @@ def test_get_incidents_paginates_all_endpoints(client, mocker):
 def test_get_incidents_stops_at_size_cap(client, mocker):
     get = mocker.patch.object(
         client,
-        "get",
+        "call_get_request",
         return_value={"data": [{"uid": "1"}, {"uid": "2"}, {"uid": "3"}], "metaData": {"isLast": False}},
     )
     incidents = client.get_incidents({"size": 2})
@@ -186,7 +186,7 @@ def test_get_incidents_stops_at_size_cap(client, mocker):
 
 
 def test_get_incidents_zero_size(client, mocker):
-    get = mocker.patch.object(client, "get")
+    get = mocker.patch.object(client, "call_get_request")
     assert client.get_incidents({"size": 0}) == []
     get.assert_not_called()
 
@@ -198,12 +198,12 @@ def test_get_incidents_zero_size(client, mocker):
 
 @pytest.mark.parametrize("exc_msg", ["Forbidden", "Unauthorized"])
 def test_test_module_auth_error(client, mocker, exc_msg):
-    mocker.patch.object(client, "get", side_effect=DemistoException(exc_msg))
+    mocker.patch.object(client, "call_get_request", side_effect=DemistoException(exc_msg))
     assert cf.test_module(client).startswith("Authorization Error")
 
 
 def test_test_module_other_error_reraised(client, mocker):
-    mocker.patch.object(client, "get", side_effect=DemistoException("Server exploded"))
+    mocker.patch.object(client, "call_get_request", side_effect=DemistoException("Server exploded"))
     with pytest.raises(DemistoException):
         cf.test_module(client)
 
@@ -219,12 +219,12 @@ def test_test_module_other_error_reraised(client, mocker):
     ],
 )
 def test_test_module_responses(client, mocker, response, expected):
-    mocker.patch.object(client, "get", return_value=response)
+    mocker.patch.object(client, "call_get_request", return_value=response)
     assert cf.test_module(client) == expected
 
 
 def test_test_module_pings_test_path(client, mocker):
-    get = mocker.patch.object(client, "get", return_value={"isOrgActive": True})
+    get = mocker.patch.object(client, "call_get_request", return_value={"isOrgActive": True})
     cf.test_module(client)
     get.assert_called_once_with(cf._TEST_PATH)
 

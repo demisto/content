@@ -349,6 +349,15 @@ def _parse_days(value: Any, default: int = DEFAULT_FIRST_FETCH_DAYS) -> int:
 class Client(ContentClient):
     """HTTP client for the CYFIRMA threat-intelligence API."""
 
+    def call_get_request(self, end_point: str, params: dict | None = None, headers: dict | None = None) -> dict:
+        """GET request; see ``_request``."""
+        if not headers:
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+        response = self.get(end_point, params=params, headers=headers)
+        if response.status_code == 200 and response.content:
+            return response.json()
+        return {}
+
     def identify_feed_type(self, obj: dict) -> tuple[str, str]:
         """Determine the XSOAR indicator value and type for a STIX object.
 
@@ -545,7 +554,7 @@ class Client(ContentClient):
         headers: dict = {"X-Request-ID": str(uuid.uuid4())}
         request_params = {**params, "page": 0}
         while True:
-            response = self.get(path, params=request_params, headers=headers)
+            response = self.call_get_request(path, params=request_params, headers=headers)
             objects = (response or {}).get("objects") or []
             if not objects:
                 break
@@ -567,7 +576,7 @@ class Client(ContentClient):
         for start in range(0, len(ta_names), TA_SEARCH_CHUNK_SIZE):
             chunk = ta_names[start : start + TA_SEARCH_CHUNK_SIZE]  # noqa: E203
             try:
-                ta_res_data = self.get(_TA_SEARCH_API_PATHS, params={"values": chunk}, headers=headers)
+                ta_res_data = self.call_get_request(_TA_SEARCH_API_PATHS, params={"values": chunk}, headers=headers)
             except Exception as e:
                 demisto.error(f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}")
                 continue
@@ -667,7 +676,7 @@ def test_module(
         )
 
     try:
-        res = client.get(_TEST_PATH)
+        res = client.call_get_request(_TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"

@@ -67,6 +67,15 @@ def parse_date(value: str | None):
 class Client(ContentClient):
     """HTTP client for the CYFIRMA DeCYFIR compromised-accounts API."""
 
+    def call_get_request(self, end_point: str, params: dict | None = None, headers: dict | None = None) -> dict:
+        """GET request; see ``_request``."""
+        if not headers:
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+        response = self.get(end_point, params=params, headers=headers)
+        if response.status_code == 200 and response.content:
+            return response.json()
+        return {}
+
     def populate_custom_fields(self, data: dict) -> dict:
         """Build the compromised-account grid custom field for an alert.
 
@@ -137,7 +146,7 @@ class Client(ContentClient):
                 break
 
             while remaining > 0 and req_params["page"] < req_size:
-                response = self.get(api_path, params=req_params, headers=headers)
+                response = self.call_get_request(api_path, params=req_params, headers=headers)
                 events = response.get("data") or []
                 meta_data = response.get("metaData") or {}
 
@@ -167,7 +176,7 @@ def test_module(client: Client) -> str:
         DemistoException: For errors other than authorization failures.
     """
     try:
-        res = client.get(_TEST_PATH)
+        res = client.call_get_request(_TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"

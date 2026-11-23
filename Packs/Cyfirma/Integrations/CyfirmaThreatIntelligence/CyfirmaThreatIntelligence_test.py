@@ -378,7 +378,7 @@ def test_convert_threat_actor_uses_static_score(client):
 
 
 def test_fetch_all_pages(client, mocker):
-    get = mocker.patch.object(client, "get", side_effect=[{"objects": [1, 2]}, {"objects": [3]}, {"objects": []}])
+    get = mocker.patch.object(client, "call_get_request", side_effect=[{"objects": [1, 2]}, {"objects": [3]}, {"objects": []}])
     feeds: list = []
     params = {"a": 1}
     client.fetch_all_pages(params, "/p", feeds)
@@ -390,7 +390,7 @@ def test_fetch_all_pages(client, mocker):
 
 
 def test_fetch_all_pages_none_response(client, mocker):
-    mocker.patch.object(client, "get", return_value=None)
+    mocker.patch.object(client, "call_get_request", return_value=None)
     feeds: list = []
     client.fetch_all_pages({}, "/p", feeds)
     assert feeds == []
@@ -401,7 +401,7 @@ def test_fetch_threat_actors_data(client, mocker):
     names = [f"ta{i}" for i in range(cf.TA_SEARCH_CHUNK_SIZE + 1)]
     get = mocker.patch.object(
         client,
-        "get",
+        "call_get_request",
         side_effect=[
             {"objects": [{"type": "threat-actor", "name": "ta0"}, {"type": "malware", "name": "m"}]},
             Exception("boom"),
@@ -417,7 +417,7 @@ def test_fetch_threat_actors_data(client, mocker):
 
 
 def test_fetch_threat_actors_data_none_response(client, mocker):
-    mocker.patch.object(client, "get", return_value=None)
+    mocker.patch.object(client, "call_get_request", return_value=None)
     feeds: list = []
     client.fetch_threat_actors_data(["x"], feeds)
     assert feeds == []
@@ -449,7 +449,7 @@ def test_get_feeds(client, mocker, tailored):
             return {"objects": [ta, malware]}
         return {}
 
-    mocker.patch.object(client, "get", side_effect=fake_get)
+    mocker.patch.object(client, "call_get_request", side_effect=fake_get)
 
     res = client.get_feeds(
         first_fetch=5,
@@ -484,12 +484,12 @@ def test_test_module_lookback_too_long(client, ti, vul):
 
 @pytest.mark.parametrize("exc_msg", ["Forbidden", "Unauthorized"])
 def test_test_module_auth_error(client, mocker, exc_msg):
-    mocker.patch.object(client, "get", side_effect=DemistoException(exc_msg))
+    mocker.patch.object(client, "call_get_request", side_effect=DemistoException(exc_msg))
     assert cf.test_module(client, True, True, 60).startswith("Authorization Error")
 
 
 def test_test_module_other_error_reraised(client, mocker):
-    mocker.patch.object(client, "get", side_effect=DemistoException("Server exploded"))
+    mocker.patch.object(client, "call_get_request", side_effect=DemistoException("Server exploded"))
     with pytest.raises(DemistoException):
         cf.test_module(client, True, True, 60)
 
@@ -499,25 +499,25 @@ def test_test_module_other_error_reraised(client, mocker):
     [{}, {"isOrgActive": False}, {"isOrgActive": True, "isCompanyActive": False}],
 )
 def test_test_module_inactive_org(client, mocker, response):
-    mocker.patch.object(client, "get", return_value=response)
+    mocker.patch.object(client, "call_get_request", return_value=response)
     with pytest.raises(DemistoException, match="Not Authorized"):
         cf.test_module(client, True, True, 60)
 
 
 @pytest.mark.parametrize("response", [{"isOrgActive": True, "isCompanyActive": True}, {"isOrgActive": True}])
 def test_test_module_active_org(client, mocker, response):
-    mocker.patch.object(client, "get", return_value=response)
+    mocker.patch.object(client, "call_get_request", return_value=response)
     assert cf.test_module(client, True, True, 60) == "ok"
 
 
 def test_test_module_pings_test_path(client, mocker):
-    get = mocker.patch.object(client, "get", return_value={"isOrgActive": True})
+    get = mocker.patch.object(client, "call_get_request", return_value={"isOrgActive": True})
     cf.test_module(client, True, True, 60)
     get.assert_called_once_with(cf._TEST_PATH)
 
 
 def test_test_module_short_lookback_without_tailoring(client, mocker):
-    mocker.patch.object(client, "get", return_value={"isOrgActive": True})
+    mocker.patch.object(client, "call_get_request", return_value={"isOrgActive": True})
     assert cf.test_module(client, False, False, cf.MAX_DAYS_WITHOUT_TAILORING) == "ok"
 
 

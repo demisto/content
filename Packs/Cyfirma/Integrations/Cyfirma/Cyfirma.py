@@ -134,7 +134,10 @@ class Client(ContentClient):
         """GET request; see ``_request``."""
         if not headers:
             headers = {"X-Request-ID": str(uuid.uuid4())}
-        return self.get(end_point, params=params, headers=headers)
+        response = self.get(end_point, params=params, headers=headers)
+        if response.status_code == 200 and response.content:
+            return response.json()
+        return {}
 
     def call_post_request(self, end_point: str, body: dict | None = None, headers: dict | None = None) -> dict:
         """POST request; see ``_request``."""
