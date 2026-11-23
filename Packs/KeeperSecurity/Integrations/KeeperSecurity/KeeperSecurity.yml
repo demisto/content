@@ -77,6 +77,7 @@ fromversion: 6.8.0
 marketplaces:
 - marketplacev2
 - platform
+- platform
 tests:
 - No tests (auto formatted)
 supportedModules:
