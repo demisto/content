@@ -45,7 +45,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Use this integration to fetch audit events from the Keeper Security Admin REST API as XSIAM events.
+description: Use this integration to fetch audit events from the Keeper Security Admin REST API as Cortex XSIAM events.
 display: Keeper Security
 name: KeeperSecurity
 script:
