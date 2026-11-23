@@ -245,7 +245,7 @@ def main() -> None:  # pragma: no cover
                 max_fetch_limit=arg_to_number(params.get("alerts_max_fetch")) or DEFAULT_MAX_FETCH,
                 first_fetch=first_fetch,
             )
-            demisto.debug(f"Sending {len(events)} events to XSIAM")
+            demisto.info(f"[Fetch] Sending {len(events)} events to XSIAM")
             send_events_to_xsiam(events, VENDOR, PRODUCT)
             demisto.setLastRun(next_run)
         else:
