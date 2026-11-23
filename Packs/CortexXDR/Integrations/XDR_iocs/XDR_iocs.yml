@@ -253,7 +253,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.12.15.14069087
+  dockerimage: demisto/python3:3.12.16.14990175
   feed: true
   runonce: false
   script: '-'

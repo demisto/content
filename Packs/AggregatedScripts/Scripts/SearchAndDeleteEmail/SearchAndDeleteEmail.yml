@@ -171,7 +171,7 @@ dependson:
   - EWS v2|||ews-get-items
   - EWS v2|||ews-get-attachment
   - EWS v2|||ews-delete-items
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.16.14990175
 timeout: 30m0s
 fromversion: 6.10.0
 marketplaces:
