@@ -5,7 +5,7 @@ This integration uses the `GET /api/rest/public/events` endpoint (ARAM Events) a
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The server URL of your Keeper region. For more help, checkout the 'Server Regions' section in the description. | True |
+| Server URL | The server URL of your Keeper region. For more help, check out the 'Server Regions' section in the description. | True |
 | API Key | A Keeper Admin REST API key with the SIEM:1 (read) scope. | True |
 | First fetch time | How far back to fetch events on the first run, for example "1 hour" or "3 days". | False |
 | Maximum number of Alerts to fetch. | The maximum number of events to fetch per run. | False |
