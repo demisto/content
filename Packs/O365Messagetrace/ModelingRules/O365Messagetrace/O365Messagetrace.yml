@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: O365Messagetrace_ModelingRule
+name: O365Messagetrace Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

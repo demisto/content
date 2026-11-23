@@ -1,0 +1,18 @@
+[MODEL: dataset="o365_messagetrace_raw"]
+alter
+    // event
+    xdm.event.id = id,
+    xdm.observer.action = status,
+    xdm.event.outcome = if(status = "delivered", XDM_CONST.OUTCOME_SUCCESS, status = "expanded", XDM_CONST.OUTCOME_SUCCESS, status = "failed", XDM_CONST.OUTCOME_FAILED, status = "pending", XDM_CONST.OUTCOME_UNKNOWN, status = "gettingstatus", XDM_CONST.OUTCOME_UNKNOWN),
+    // email
+    xdm.email.message_id = messageId,
+    xdm.email.subject = subject,
+    xdm.email.sender = senderAddress,
+    xdm.email.recipients = arraycreate(recipientAddress),
+    // source
+    xdm.source.user.email = senderAddress,
+    xdm.source.ipv4 = if(is_ipv4(fromIP), fromIP, null),
+    xdm.source.ipv6 = if(is_ipv6(fromIP), fromIP, null),
+    xdm.source.sent_bytes = to_integer(size),
+    // target
+    xdm.target.user.email = recipientAddress;
