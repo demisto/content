@@ -1,0 +1,232 @@
+id: Sprinklr - Social Account Containment
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Sprinklr - Social Account Containment
+description: Removes a Sprinklr page or ad account from a selected team as a controlled containment action. No change is made
+  unless ConfirmAction is True.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1eb18dd2-129e-4949-bb08-8c11a0789e17
+    type: start
+    task:
+      id: 1eb18dd2-129e-4949-bb08-8c11a0789e17
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: '{"position":{"x":450,"y":40}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 4be7ff20-608c-4450-a361-410a66ad39f1
+    type: condition
+    task:
+      id: 4be7ff20-608c-4450-a361-410a66ad39f1
+      version: -1
+      name: Contain this account?
+      description: Containment runs only after explicit approval.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":190}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '2'
+      '#default#':
+      - '5'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ConfirmAction
+              iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '2':
+    id: '2'
+    taskid: c33a91b2-caa8-4035-a1c4-ff0262a8190f
+    type: condition
+    task:
+      id: c33a91b2-caa8-4035-a1c4-ff0262a8190f
+      version: -1
+      name: Account type
+      description: Select the documented Governance endpoint based on the account kind.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":350}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      ad:
+      - '3'
+      page:
+      - '4'
+      '#default#':
+      - '5'
+    conditions:
+    - label: ad
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AccountKind
+              iscontext: true
+          right:
+            value:
+              simple: ad
+          ignorecase: true
+    - label: page
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AccountKind
+              iscontext: true
+          right:
+            value:
+              simple: page
+          ignorecase: true
+  '3':
+    id: '3'
+    taskid: 6af388d4-b057-41b7-ac07-8810b3bcc3a0
+    type: regular
+    task:
+      id: 6af388d4-b057-41b7-ac07-8810b3bcc3a0
+      version: -1
+      name: Remove ad account from team
+      description: Remove an ad account from the selected team.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-remove-ad-account-from-team
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":180,"y":530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      team_id:
+        complex:
+          root: inputs.TeamID
+      account_id:
+        complex:
+          root: inputs.AccountID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '5'
+  '4':
+    id: '4'
+    taskid: ce849e12-00d7-43c3-8e54-90ab1170a64f
+    type: regular
+    task:
+      id: ce849e12-00d7-43c3-8e54-90ab1170a64f
+      version: -1
+      name: Remove page account from team
+      description: Remove a page account from the selected team.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-remove-page-account-from-team
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":720,"y":530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      team_id:
+        complex:
+          root: inputs.TeamID
+      account_id:
+        complex:
+          root: inputs.AccountID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '5'
+  '5':
+    id: '5'
+    taskid: 7e2a5c77-f9bd-412b-9ef5-bc5f7e11d60a
+    type: title
+    task:
+      id: 7e2a5c77-f9bd-412b-9ef5-bc5f7e11d60a
+      version: -1
+      name: Done
+      description: ''
+      iscommand: false
+      brand: ''
+      type: title
+    separatecontext: false
+    view: '{"position":{"x":450,"y":710}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+inputs:
+- key: TeamID
+  value: {}
+  required: true
+  description: Sprinklr team ID.
+  playbookInputQuery: null
+- key: AccountID
+  value: {}
+  required: true
+  description: Sprinklr page or ad account ID.
+  playbookInputQuery: null
+- key: AccountKind
+  value:
+    simple: page
+  required: true
+  description: 'Account kind: page or ad.'
+  playbookInputQuery: null
+- key: ConfirmAction
+  value:
+    simple: 'False'
+  required: true
+  description: Set to True only after analyst approval.
+  playbookInputQuery: null
+outputs:
+- contextPath: Sprinklr.Response.Action
+  description: Containment action executed.
+  type: string
+fromversion: 8.0.0
+marketplaces:
+- marketplacev2
+- platform

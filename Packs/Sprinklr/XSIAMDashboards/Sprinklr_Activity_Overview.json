@@ -1,0 +1,499 @@
+{
+  "dashboards_data": [
+    {
+      "id": "5d00354e8aa9441793c44cffaed26c2f",
+      "name": "Sprinklr Activity Overview",
+      "description": "Operational overview of Sprinklr events collected into Cortex XSIAM, including volume, channels, status, source accounts and collection freshness.",
+      "status": "ENABLED",
+      "layout": [
+        {
+          "id": "row-1001",
+          "data": [
+            {
+              "key": "xql_1790788796449",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 320,
+                "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_channel\n| sort desc Count\n| view graph type = pie subtype = full xaxis = sprinklr_channel yaxis = Count",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "sprinklr_channel"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "Count"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "key": "xql_1790788796450",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 320,
+                "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_status\n| sort desc Count\n| view graph type = column subtype = grouped xaxis = sprinklr_status yaxis = Count",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "column",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "grouped"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "sprinklr_status"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "Count"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "key": "xql_1790788796451",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.3333333333,
+                "height": 320,
+                "phrase": "dataset = sprinklr_sprinklr_raw\n| comp max(_time) as LastTimeEvent\n| alter nowTime = current_time()\n| alter TimeDiffMinutes = to_integer(timestamp_diff(nowTime, LastTimeEvent, \"MINUTE\"))\n| alter TimeDiffHours = to_float(divide(TimeDiffMinutes, 60))\n| fields TimeDiffHours\n| view graph type = single subtype = standard yaxis = TimeDiffHours seriestitle(\"TimeDiffHours\",\"Hours Since Last Event\")",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "single",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "TimeDiffHours"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [
+                          "TimeDiffHours",
+                          "Hours Since Last Event"
+                        ],
+                        "name": "seriestitle"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1002",
+          "data": [
+            {
+              "key": "xql_1790788796452",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 310,
+                "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| bin _time span=1h\n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"Events\"",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "line",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_time"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "Count"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxistitle",
+                        "value": "\"Time\""
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxistitle",
+                        "value": "\"Events\""
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1003",
+          "data": [
+            {
+              "key": "xql_1790788796453",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 370,
+                "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_account_id, sprinklr_account_type\n| sort desc Count\n| limit 10",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            },
+            {
+              "key": "xql_1790788796454",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 370,
+                "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| fields _time, sprinklr_channel, sprinklr_account_type, sprinklr_account_id, sprinklr_message_type, sprinklr_status, sprinklr_post_id, sprinklr_status_id, sprinklr_permalink\n| sort desc _time\n| limit 50",
+                "time_frame": {
+                  "relativeTime": 86400000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "5d00354e8aa9441793c44cffaed26c2f"
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1790788796449",
+      "title": "Sprinklr Events by Channel",
+      "creation_time": 1790788796449,
+      "description": "Distribution of collected Sprinklr records by channel.",
+      "data": {
+        "width": 33.3333333333,
+        "height": 320,
+        "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_channel\n| sort desc Count\n| view graph type = pie subtype = full xaxis = sprinklr_channel yaxis = Count",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "sprinklr_channel"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "Count"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1790788796450",
+      "title": "Sprinklr Events by Status",
+      "creation_time": 1790788796450,
+      "description": "Distribution of Sprinklr record status values.",
+      "data": {
+        "width": 33.3333333333,
+        "height": 320,
+        "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_status\n| sort desc Count\n| view graph type = column subtype = grouped xaxis = sprinklr_status yaxis = Count",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "column",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "grouped"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "sprinklr_status"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "Count"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1790788796451",
+      "title": "Sprinklr Time Since Last Event",
+      "creation_time": 1790788796451,
+      "description": "Collection freshness measured as hours since the most recent event.",
+      "data": {
+        "width": 33.3333333333,
+        "height": 320,
+        "phrase": "dataset = sprinklr_sprinklr_raw\n| comp max(_time) as LastTimeEvent\n| alter nowTime = current_time()\n| alter TimeDiffMinutes = to_integer(timestamp_diff(nowTime, LastTimeEvent, \"MINUTE\"))\n| alter TimeDiffHours = to_float(divide(TimeDiffMinutes, 60))\n| fields TimeDiffHours\n| view graph type = single subtype = standard yaxis = TimeDiffHours seriestitle(\"TimeDiffHours\",\"Hours Since Last Event\")",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "single",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "standard"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "TimeDiffHours"
+              }
+            },
+            {
+              "func": {
+                "args": [
+                  "TimeDiffHours",
+                  "Hours Since Last Event"
+                ],
+                "name": "seriestitle"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1790788796452",
+      "title": "Sprinklr Event Volume",
+      "creation_time": 1790788796452,
+      "description": "Collected Sprinklr event volume over time.",
+      "data": {
+        "width": 100,
+        "height": 310,
+        "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| bin _time span=1h\n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"Events\"",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "line",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_time"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "Count"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxistitle",
+                "value": "\"Time\""
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxistitle",
+                "value": "\"Events\""
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1790788796453",
+      "title": "Top Sprinklr Accounts",
+      "creation_time": 1790788796453,
+      "description": "Top source account IDs by collected record volume.",
+      "data": {
+        "width": 50,
+        "height": 370,
+        "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| comp count() as Count by sprinklr_account_id, sprinklr_account_type\n| sort desc Count\n| limit 10",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1790788796454",
+      "title": "Recent Sprinklr Activity",
+      "creation_time": 1790788796454,
+      "description": "Most recent collected Sprinklr records with channel, account, status and permalink.",
+      "data": {
+        "width": 50,
+        "height": 370,
+        "phrase": "config timeframe = 7d\n| dataset = sprinklr_sprinklr_raw\n| fields _time, sprinklr_channel, sprinklr_account_type, sprinklr_account_id, sprinklr_message_type, sprinklr_status, sprinklr_post_id, sprinklr_status_id, sprinklr_permalink\n| sort desc _time\n| limit 50",
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [
+          "sprinklr_sprinklr_raw"
+        ],
+        "query_uses_library": false
+      }
+    }
+  ],
+  "fromVersion": "6.10.0",
+  "supportedModules": [
+    "xsiam"
+  ]
+}
