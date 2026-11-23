@@ -30,7 +30,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: The time range to look back when fetching events on the first run (e.g., "1 hour" or "3 days").
-- display: Maximum number of Alerts to fetch.
+- display: Maximum number of events to fetch
   name: alerts_max_fetch
   type: 0
   section: Collect
