@@ -1,6 +1,6 @@
 {
     "name": "Cisco Meraki (Standard Connector)",
-    "description": "Satellite pack of Cisco Meraki used for the Standard Connector deployment. Shares core logic with the Cisco Meraki pack via the CiscoMerakiApiModule and CiscoMerakiEventCollectorApiModule.",
+    "description": "Satellite pack of Cisco Meraki used for the Standard Connector deployment. Shares core logic with the Cisco Meraki pack via the CiscoMerakiApiModule.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.15.0",

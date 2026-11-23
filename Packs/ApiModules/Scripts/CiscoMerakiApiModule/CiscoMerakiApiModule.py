@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any, TypeVar
 from urllib.parse import urlencode, urlparse
 
-""" Shared Meraki authentication and transport (used by Cisco Meraki v2 and the Cisco Meraki Event Collector) """
+""" Shared Meraki authentication and transport (Cisco Meraki v2 and the Cisco Meraki Event Collector (Standard Connector)) """
 
 MERAKI_OAUTH_AUTHORIZE_URL = "https://as.meraki.com/oauth/authorize"
 MERAKI_OAUTH_TOKEN_URL = "https://as.meraki.com/oauth/token"
@@ -47,11 +47,6 @@ CISCO_MERAKI_V2_OAUTH_SCOPES = [
     "sdwan:config:read",
     "sdwan:config:write",
     "wireless:config:read",
-]
-CISCO_MERAKI_COLLECTOR_OAUTH_SCOPES = [
-    "dashboard:general:config:read",
-    "dashboard:general:telemetry:read",
-    "sdwan:telemetry:read",
 ]
 
 
@@ -333,16 +328,6 @@ class MerakiBaseClient(BaseClient):
             self.token_manager.invalidate_access_token()
             kwargs["headers"] = {**base_headers, **self._legacy_auth_headers()}
             return super()._http_request(*args, **kwargs)
-
-    def get_page(self, url_suffix: str, params: dict[str, Any] | None = None) -> tuple[Any, dict[str, Any]]:
-        """GET the first page of a paginated endpoint.
-
-        Returns:
-            tuple[Any, dict[str, Any]]: The JSON body and the relationship links of the response.
-        """
-        response: requests.Response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="response")
-        demisto.debug(f"[API] GET {url_suffix} returned {response.status_code}; next page available: {'next' in response.links}.")
-        return response.json(), response.links
 
     def call_link(self, url: str) -> tuple[Any, dict[str, Any]]:
         """Call a relationship link (e.g. `rel=next`) returned by a previous response.

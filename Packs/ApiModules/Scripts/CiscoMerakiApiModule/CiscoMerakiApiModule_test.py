@@ -1845,23 +1845,19 @@ def test_call_link_rejects_foreign_url(mock_client):
         mock_client.call_link("https://evil.example.com/api/v1/organizations")
 
 
-def test_get_page_and_call_link_return_links(requests_mock, mock_client):
+def test_call_link_returns_body_and_links(requests_mock, mock_client):
     """
-    Given: A first page with a rel=next link.
-    When:  Getting the page and then following the link.
-    Then:  Both return the JSON body and the relationship links.
+    Given: A relationship link whose response has a further rel=next link.
+    When:  Following the link.
+    Then:  The JSON body and the relationship links are returned.
     """
-    next_url = f"{BASE_URL}/organizations?startingAfter=abc"
-    requests_mock.get(f"{BASE_URL}/organizations", json=[{"id": "1"}], headers={"Link": f'<{next_url}>; rel="next"'})
-    requests_mock.get(next_url, json=[{"id": "2"}], complete_qs=True)
+    link = f"{BASE_URL}/organizations?startingAfter=abc"
+    next_url = f"{BASE_URL}/organizations?startingAfter=def"
+    requests_mock.get(link, json=[{"id": "2"}], headers={"Link": f'<{next_url}>; rel="next"'}, complete_qs=True)
 
-    page, links = mock_client.get_page("organizations")
-    assert page == [{"id": "1"}]
-    assert links["next"]["url"] == next_url
-
-    page, links = mock_client.call_link(links["next"]["url"])
+    page, links = mock_client.call_link(link)
     assert page == [{"id": "2"}]
-    assert "next" not in links
+    assert links["next"]["url"] == next_url
 
 
 def test_auth_reset_under_ucp_requires_oauth(mocker):
