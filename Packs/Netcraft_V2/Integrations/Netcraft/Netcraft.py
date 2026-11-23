@@ -923,11 +923,14 @@ def limit_results(response: list[dict], args: dict) -> list[dict]:
     """Truncates a non-paginated list response according to the `limit` and `all_results` arguments."""
     if argToBoolean(args.get("all_results", False)):
         return response
-    return response[: arg_to_number(args.get("limit")) or 50]
+    limit = arg_to_number(args.get("limit"))
+    if limit is not None and limit <= 0:
+        raise DemistoException("limit must be greater than 0.")
+    return response[: limit if limit is not None else 50]
 
 
 def impersonation_target_list_command(args: dict, client: Client) -> CommandResults:
-    response = client.impersonation_target_list({"region": args.get("region") or PARAMS["region"]})
+    response = client.impersonation_target_list({"region": args.get("region") or PARAMS.get("region")})
     response = limit_results(response, args)
     return CommandResults(
         outputs_prefix="Netcraft.ImpersonationTarget",
@@ -948,6 +951,7 @@ def impersonation_target_profile_list_command(args: dict, client: Client) -> Com
     response = limit_results(response, args)
     return CommandResults(
         outputs_prefix="Netcraft.ImpersonationTargetProfile",
+        outputs_key_field="profile",
         outputs=response,
         readable_output=tableToMarkdown(
             "Netcraft Impersonation Target Profiles",

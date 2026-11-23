@@ -597,8 +597,27 @@ def test_impersonation_target_profile_list_command(mocker):
     assert request.call_args.kwargs["params"] == {"id": "5880"}
     assert result.outputs == profiles[:1]
     assert result.outputs_prefix == "Netcraft.ImpersonationTargetProfile"
+    assert result.outputs_key_field == "profile"
     assert "### Netcraft Impersonation Target Profiles" in result.readable_output
     assert "| facebook | https://www.facebook.com/john.doe |" in result.readable_output
+
+
+@pytest.mark.parametrize("limit", ["0", "-1"])
+def test_limit_results_invalid_limit(limit):
+    """
+    Given:
+        - A "limit" argument that is zero or negative.
+
+    When:
+        - Truncating a list response with limit_results.
+
+    Then:
+        - A DemistoException is raised instead of silently falling back or slicing from the end.
+    """
+    from Netcraft import limit_results
+
+    with pytest.raises(DemistoException, match="limit must be greater than 0."):
+        limit_results(list(IMPERSONATION_TARGETS), {"limit": limit, "all_results": "false"})
 
 
 def test_submission_list_command(mocker):

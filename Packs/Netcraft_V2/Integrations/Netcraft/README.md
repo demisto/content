@@ -67,7 +67,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 | customer_label | A free-text field which can be used to keep track of particular attacks. | Optional |
 | tags | A comma-separated list of tags to apply to the attack. | Optional |
 | region | The name of the region to create a takedown under.<br/>If not provided, the region specified in the instance configuration will be used.<br/>. | Optional |
-| impersonation_target_id | The ID of the impersonation target to attach to the takedown.<br/>Required by the API for social media impersonation attacks.<br/>Run the command "netcraft-impersonation-target-list" to get the list of valid IDs.<br/>. | Optional |
+| impersonation_target_id | The ID of the impersonation target to attach to the takedown.<br/>Required by the API for social media impersonation attacks.<br/>Run the command "netcraft-impersonation-target-list" to get the list of valid IDs. | Optional |
 
 #### Context Output
 
@@ -985,13 +985,31 @@ Get the impersonation targets (e.g., executives or brand entities) available to 
 
 ```!netcraft-impersonation-target-list limit=2```
 
+#### Context Example
+
+```json
+{
+    "Netcraft": {
+        "ImpersonationTarget": {
+            "has_detection": false,
+            "id": "1234",
+            "name": "Example Name",
+            "regions": [
+                "example_region"
+            ],
+            "role": "CEO"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Netcraft Impersonation Targets
 >
 >|ID|Name|Role|Has Detection|Regions|
 >|---|---|---|---|---|
->| 5880 | John Doe | COO | true | example_region |
+>| 1234 | Example Name | CEO | false | example_region |
 
 ### netcraft-impersonation-target-profile-list
 
@@ -1019,7 +1037,20 @@ Get the known social media profiles of an impersonation target.
 
 #### Command example
 
-```!netcraft-impersonation-target-profile-list impersonation_target_id=5880```
+```!netcraft-impersonation-target-profile-list impersonation_target_id=1234```
+
+#### Context Example
+
+```json
+{
+    "Netcraft": {
+        "ImpersonationTargetProfile": {
+            "platform": "facebook",
+            "profile": "https://www.example.com/example-profile"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -1027,7 +1058,7 @@ Get the known social media profiles of an impersonation target.
 >
 >|Platform|Profile|
 >|---|---|
->| facebook | https://www.facebook.com/example-profile |
+>| facebook | https://www.example.com/example-profile |
 
 ### netcraft-submission-list
 
