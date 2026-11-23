@@ -1,4 +1,4 @@
-Use this integration to fetch audit events from the Keeper Security Admin REST API as XSIAM events.
+Use this integration to fetch audit events from the Keeper Security Admin REST API as Cortex XSIAM events.
 This integration uses the `GET /api/rest/public/events` endpoint (ARAM Events) and authenticates with an Admin REST API key.
 
 ## Configure Keeper Security Event Collector in Cortex
