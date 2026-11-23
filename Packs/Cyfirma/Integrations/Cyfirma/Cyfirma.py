@@ -10,13 +10,9 @@ from typing import Any
 
 import dateparser
 import demistomock as demisto
-import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
 from CommonServerUserPython import *  # noqa
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from ContentClientApiModule import *
 
 """ CONSTANTS """
 
@@ -31,8 +27,8 @@ TEST_PATH = "/foo/ping"
 TAKE_DOWN_LIST_API_PATH = "/td"
 TAKE_DOWN_INITIATE_API_PATH = "/td/initiate"
 
-INCIDENT_SEARCH_PATH = "/al/search"
-INCIDENT_STATUS_CHANGE_PATH = "/al/update/status"
+# INCIDENT_SEARCH_PATH = "/al/search"
+# INCIDENT_STATUS_CHANGE_PATH = "/al/update/status"
 
 _API_PATHS = {
     "AS": "/al/as",
@@ -70,8 +66,6 @@ _SKIP_FIELDS = frozenset(
     }
 )
 
-_RETRY_STATUSES = (502, 503, 504)
-_MAX_RETRIES = 3
 
 """ HELPERS """
 
@@ -133,55 +127,26 @@ def _parse_date(value: str | None):
     return dateparser.parse(value) if value else None
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """HTTP client for the CYFIRMA API."""
 
-    def _request(
-        self,
-        method: str,
-        end_point: str,
-        params: dict | None = None,
-        body: dict | None = None,
-    ) -> dict:
-        """Perform an HTTP request with retries on transient gateway errors.
-
-        Args:
-            method: HTTP method (GET, POST, PUT).
-            end_point: URL suffix appended to the client's base URL.
-            params: Optional query-string parameters.
-            body: Optional JSON request body.
-
-        Returns:
-            The decoded JSON body, or an empty dict if the response is not a 200 or has no content.
-
-        Raises:
-            DemistoException: On HTTP errors (after retrying 502/503/504 up to 3 times).
-        """
-        response = self._http_request(
-            method=method,
-            url_suffix=end_point,
-            params=params,
-            json_data=body,
-            resp_type="response",
-            retries=_MAX_RETRIES,
-            status_list_to_retry=_RETRY_STATUSES,
-            raise_on_status=True,
-        )
-        if response.status_code == 200 and response.content:
-            return response.json()
-        return {}
-
-    def call_get_request(self, end_point: str, params: dict | None = None) -> dict:
+    def call_get_request(self, end_point: str, params: dict | None = None, headers: dict | None = None) -> dict:
         """GET request; see ``_request``."""
-        return self._request("GET", end_point, params=params)
+        if not headers:
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+        return self.get(end_point, params=params, headers=headers)
 
-    def call_post_request(self, end_point: str, body: dict | None = None) -> dict:
+    def call_post_request(self, end_point: str, body: dict | None = None, headers: dict | None = None) -> dict:
         """POST request; see ``_request``."""
-        return self._request("POST", end_point, body=body)
+        if not headers:
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+        return self.post(end_point, json_data=body, headers=headers)
 
-    def call_put_request(self, end_point: str, body: dict | None = None) -> dict:
+    def call_put_request(self, end_point: str, body: dict | None = None, headers: dict | None = None) -> dict:
         """PUT request; see ``_request``."""
-        return self._request("PUT", end_point, body=body)
+        if not headers:
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+        return self.put(end_point, json_data=body, headers=headers)
 
     # ---- incident building ----
     def _populate_custom_fields(self, data: dict) -> dict:
@@ -324,7 +289,7 @@ class Client(BaseClient):
             "CustomFields": self._populate_custom_fields(data=event),
         }
 
-    def get_incidents(self, params: dict, alerts_to_fetch: dict) -> list:
+    def get_incidents(self, req_params: dict, alerts_to_fetch: dict) -> list:
         """Fetch all pages of alerts for every enabled alert type and build incidents.
 
         Args:
@@ -336,18 +301,34 @@ class Client(BaseClient):
             A list of XSOAR incident dicts.
         """
         incidents: list = []
+        req_size = req_params.get("size", 0)
+        req_params["page"] = 0
 
         for alert_type in (t for t, enabled in alerts_to_fetch.items() if enabled):
-            request_params = {**params, "page": 0}
             end_point = _API_PATHS[alert_type]
-            self._headers["X-Request-Id"] = str(uuid.uuid4())  # type: ignore[index]
+            headers = {"X-Request-ID": str(uuid.uuid4())}
 
-            while True:
-                response = self.call_get_request(end_point=end_point, params=request_params)
-                incidents.extend(self._build_incident_json(event) for event in response.get("data", []))
+            remaining = req_size - len(incidents)
+
+            if remaining <= 0:
+                break
+
+            while remaining > 0 and req_params["page"] < req_size:
+                response = self.call_get_request(end_point=end_point, params=req_params, headers=headers)
+                events = response.get("data") or []
+                meta_data = response.get("metaData") or {}
+
+                incidents.extend(self._build_incident_json(event) for event in events[:remaining])
+                remaining = req_size - len(incidents)
                 if response.get("metaData", {}).get("isLast", True):
                     break
-                request_params["page"] += 1
+
+                total_pages = meta_data.get("totalPages")
+                next_page = req_params["page"] + 1
+                if not events or meta_data.get("isLast", True) or (total_pages is not None and next_page >= total_pages):
+                    break
+
+                req_params["page"] = next_page
 
         return incidents
 
@@ -364,7 +345,8 @@ class Client(BaseClient):
         params = {"objectId": alert_id}
         if comment:
             params["assetComment"] = comment
-        return self.call_post_request(end_point=TAKE_DOWN_INITIATE_API_PATH, body=params)
+        headers = {"X-Request-ID": str(uuid.uuid4())}
+        return self.call_post_request(end_point=TAKE_DOWN_INITIATE_API_PATH, body=params, headers=headers)
 
     def take_down_list_data(self, domain: str, page: str, size: str) -> list:
         """Retrieve a page of existing take-down tickets.
@@ -380,7 +362,8 @@ class Client(BaseClient):
         params = {"page": page, "size": size}
         if domain:
             params["domains"] = domain
-        res = self.call_get_request(end_point=TAKE_DOWN_LIST_API_PATH, params=params)
+        headers = {"X-Request-ID": str(uuid.uuid4())}
+        res = self.call_get_request(end_point=TAKE_DOWN_LIST_API_PATH, params=params, headers=headers)
         return res.get("data", []) if isinstance(res, dict) else []
 
 
@@ -404,9 +387,10 @@ def test_module(client: Client) -> str:
         raise
 
     if not res or not res.get("isOrgActive", False):
-        return "Not Authorized"
+        raise DemistoException("Not Authorized")
     if "isCompanyActive" in res and not res.get("isCompanyActive", False):
-        return "Not Authorized"
+        raise DemistoException("Not Authorized")
+
     return "ok"
 
 
@@ -464,7 +448,7 @@ def take_down_list_command_results(data: list, title: str) -> CommandResults:
     )
 
 
-def initiate_take_down_request(client: Client) -> CommandResults:
+def initiate_take_down_request(client: Client, args: dict) -> CommandResults:
     """Command ``cyfirma-takedown-initiate``: create a take-down request for an alert.
 
     Command args:
@@ -480,7 +464,7 @@ def initiate_take_down_request(client: Client) -> CommandResults:
     Raises:
         DemistoException: If ``alert_id`` is not provided.
     """
-    args = demisto.args()
+
     alert_id = args.get("alert_id")
     if not alert_id:
         raise DemistoException("alert_id is required.")
@@ -510,7 +494,7 @@ def initiate_take_down_request(client: Client) -> CommandResults:
     )
 
 
-def get_take_down_list(client: Client) -> CommandResults:
+def get_take_down_list(client: Client, args: dict) -> CommandResults:
     """Command ``cyfirma-takedown-list``: list take-down tickets.
 
     Command args:
@@ -524,7 +508,7 @@ def get_take_down_list(client: Client) -> CommandResults:
     Returns:
         CommandResults built by ``take_down_list_command_results``.
     """
-    args = demisto.args()
+
     domain = args.get("domain", "")
     size = args.get("size", "50")
     page = args.get("page", "0")
@@ -536,7 +520,7 @@ def get_take_down_list(client: Client) -> CommandResults:
     )
 
 
-def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
+def fetch_incidents(client: Client, first_fetch: str, max_fetch: int, params: dict, last_run: dict) -> None:
     """Fetch new alerts since the last run and push them to XSOAR as incidents.
 
     The last-run timestamp is captured *before* querying the API (in UTC) so alerts
@@ -550,8 +534,6 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
     Raises:
         DemistoException: If ``first_fetch`` cannot be parsed.
     """
-    params = demisto.params()
-    last_run = demisto.getLastRun() or {}
 
     alerts_to_fetch = {
         alert_type: argToBoolean(params.get(param, False))
@@ -563,15 +545,14 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
     if after is None:
         raise DemistoException(f"Invalid 'First fetch' value: {first_fetch!r}")
 
-    next_run_from = datetime.now()
+    next_run_from = datetime.now(timezone.utc)
 
     request_params = {
-        "page": 0,
         "size": max_fetch,
         "after": int(after.timestamp() * 1000),
         "includeThirdParty": argToBoolean(params.get("includeThirdParty", False)),
     }
-    incidents = client.get_incidents(params=request_params, alerts_to_fetch=alerts_to_fetch)
+    incidents = client.get_incidents(req_params=request_params, alerts_to_fetch=alerts_to_fetch)
 
     demisto.incidents(incidents)
     demisto.setLastRun({"last_fetch": next_run_from.strftime(DATE_FORMAT)})
@@ -601,13 +582,15 @@ def main() -> None:
     """Read integration parameters, build the client and dispatch the invoked command."""
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args() or {}
+    last_run = demisto.getLastRun() or {}
 
     api_url = params.get("url", "").rstrip("/")
-    api_key = (params.get("api_key") or {}).get("password")
+    api_key = ((params.get("api_key") or {}).get("password") or "").strip()
     if not api_url or not api_key:
         return_error("Server URL and API Key are required.")
 
-    max_fetch = int(params.get("max_fetch") or DEFAULT_MAX_FETCH)
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
@@ -615,30 +598,33 @@ def main() -> None:
     demisto.info(f"Command being called is {command}")
 
     try:
+        api_path = urljoin(f"{api_url}/{_BASE_PREFIX_PATH.lstrip('/')}")
         client = Client(
-            base_url=urljoin(api_url, _BASE_PREFIX_PATH),
+            base_url=api_path,
             verify=verify_certificate,
-            headers={"X-Api-Key": api_key, "X-App-Name": "PALO_ALTO_XSOAR_V2_AL"},
             proxy=proxy,
+            headers={"X-App-Name": "PALO_ALTO_XSOAR_V2_AL"},
+            auth_handler=APIKeyAuthHandler(key=api_key, header_name="X-Api-Key"),
         )
 
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-incidents":
-            fetch_incidents(client, first_fetch, max_fetch)
+            fetch_incidents(client, first_fetch, max_fetch, params, last_run)
         elif command == "cyfirma-takedown-initiate":
-            return_results(initiate_take_down_request(client))
+            return_results(initiate_take_down_request(client, args))
         elif command == "cyfirma-takedown-list":
-            return_results(get_take_down_list(client))
+            return_results(get_take_down_list(client, args))
         elif command == "cyfirma-alert-parser":
             command_alertdetailextraction()
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         if "Forbidden" in str(e):
             return_error("Authorization Error: make sure API Key is correctly set")
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e}", error=str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

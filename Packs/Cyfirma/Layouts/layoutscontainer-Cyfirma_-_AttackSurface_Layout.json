@@ -2,32 +2,10 @@
     "id": "CYFIRMA - AttackSurface Layout",
     "version": -1,
     "fromVersion": "6.0.0",
-    "cacheVersn": 0,
-    "modified": "2026-10-23T14:55:04.982691369Z",
-    "sizeInBytes": 0,
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "definitionId": "",
-    "isOverridable": false,
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "CYFIRMA - AttackSurface Layout",
-    "description": "",
-    "prevName": "CYFIRMA - AttackSurface Layout",
     "system": false,
-    "locked": false,
     "group": "incident",
-    "detached": false,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -1517,7 +1495,6 @@
             }
         ]
     },
-    "details": null,
     "close": {
         "sections": [
             {
@@ -2694,8 +2671,5 @@
             }
         ]
     },
-    "quickViewV2": null,
-    "mobile": null,
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null
+    "description": ""
 }

@@ -41,7 +41,7 @@ def test_first_of():
         (60, (2, "Suspicious")),
         (50, (2, "Suspicious")),
         (10, (1, "Benign")),
-        (None, (1, "Benign")),
+        (0, (0, "Unknown")),
         ("abc", (1, "Benign")),
         ({}, (1, "Benign")),
     ],
@@ -116,12 +116,20 @@ def test_location_value():
 def test_get_ti_ext_id():
     assert cf.get_ti_ext_id(cf.LABEL_VULNERABILITY) == cf.VUL_EXTENSION_ID
     assert cf.get_ti_ext_id(cf.LABEL_THREAT_ACTOR) == cf.TA_EXTENSION_ID
+    assert cf.get_ti_ext_id(cf.LABEL_MALWARE) == cf.MALWARE_EXTENSION_ID
     assert cf.get_ti_ext_id("unknown") == cf.INDICATOR_EXTENSION_ID
 
 
 @pytest.mark.parametrize(
     "value, expected",
-    [("30 days", 30), ("7", 7), (15, 15), (None, 60), ("", 60), ("abc", 60)],
+    [
+        ("30 days", 30),
+        ("7", 7),
+        (15, 15),
+        (None, cf.DEFAULT_FIRST_FETCH_DAYS),
+        ("", cf.DEFAULT_FIRST_FETCH_DAYS),
+        ("abc", cf.DEFAULT_FIRST_FETCH_DAYS),
+    ],
 )
 def test_parse_days(value, expected):
     assert cf._parse_days(value) == expected
@@ -174,34 +182,6 @@ def test_identify_bare_observable(client):
 def test_identify_unknown_type(client):
     assert client.identify_feed_type({"type": "weird"}) == ("", "")
     assert client.identify_feed_type({}) == ("", "")
-
-
-# ----------------------------------------------------------------------------------------------
-# Client.call_api
-# ----------------------------------------------------------------------------------------------
-
-
-def test_call_api_ok(client, mocker):
-    resp = mocker.Mock(status_code=200, content=b"{}")
-    resp.json.return_value = {"objects": [1]}
-    http = mocker.patch.object(client, "_http_request", return_value=resp)
-
-    assert client.call_api("/x", params={"a": 1}) == {"objects": [1]}
-    kwargs = http.call_args.kwargs
-    assert kwargs["url_suffix"] == "/x"
-    assert kwargs["params"] == {"a": 1}
-    assert kwargs["retries"] == 3
-    assert kwargs["status_list_to_retry"] == (502, 503, 504)
-
-
-def test_call_api_empty_content(client, mocker):
-    mocker.patch.object(client, "_http_request", return_value=mocker.Mock(status_code=200, content=b""))
-    assert client.call_api("/x") == {}
-
-
-def test_call_api_non_200(client, mocker):
-    mocker.patch.object(client, "_http_request", return_value=mocker.Mock(status_code=204, content=b"x"))
-    assert client.call_api("/x") == {}
 
 
 # ----------------------------------------------------------------------------------------------
@@ -307,7 +287,7 @@ def test_convert_indicator_monitor_no_extension_no_reputation(client):
     assert fields["geocountry"] == ""
     assert fields["trafficlightprotocol"] == ""
     assert fields["confidence"] == 0
-    assert res["score"] == 1
+    assert res["score"] == 0
 
 
 def _vuln(version, **ext):
@@ -393,21 +373,24 @@ def test_convert_threat_actor_uses_static_score(client):
 
 # ----------------------------------------------------------------------------------------------
 # Client.fetch_all_pages / fetch_threat_actors_data / get_feeds
+# (the client now issues requests through ``Client.get`` instead of the old ``call_api``)
 # ----------------------------------------------------------------------------------------------
 
 
 def test_fetch_all_pages(client, mocker):
-    call = mocker.patch.object(client, "call_api", side_effect=[{"objects": [1, 2]}, {"objects": [3]}, {"objects": []}])
+    get = mocker.patch.object(client, "get", side_effect=[{"objects": [1, 2]}, {"objects": [3]}, {"objects": []}])
     feeds: list = []
     params = {"a": 1}
     client.fetch_all_pages(params, "/p", feeds)
     assert feeds == [1, 2, 3]
-    assert call.call_count == 3
+    assert get.call_count == 3
+    assert all(c.args == ("/p",) for c in get.call_args_list)
+    assert all("X-Request-ID" in c.kwargs["headers"] for c in get.call_args_list)
     assert params == {"a": 1}  # caller's dict untouched
 
 
 def test_fetch_all_pages_none_response(client, mocker):
-    mocker.patch.object(client, "call_api", return_value=None)
+    mocker.patch.object(client, "get", return_value=None)
     feeds: list = []
     client.fetch_all_pages({}, "/p", feeds)
     assert feeds == []
@@ -416,9 +399,9 @@ def test_fetch_all_pages_none_response(client, mocker):
 def test_fetch_threat_actors_data(client, mocker):
     err = mocker.patch.object(demisto, "error")
     names = [f"ta{i}" for i in range(cf.TA_SEARCH_CHUNK_SIZE + 1)]
-    call = mocker.patch.object(
+    get = mocker.patch.object(
         client,
-        "call_api",
+        "get",
         side_effect=[
             {"objects": [{"type": "threat-actor", "name": "ta0"}, {"type": "malware", "name": "m"}]},
             Exception("boom"),
@@ -427,13 +410,14 @@ def test_fetch_threat_actors_data(client, mocker):
     feeds: list = []
     client.fetch_threat_actors_data(names, feeds)
     assert feeds == [{"type": "malware", "name": "m"}]
-    assert call.call_count == 2
-    assert call.call_args_list[0].kwargs["params"] == {"values": names[: cf.TA_SEARCH_CHUNK_SIZE]}
+    assert get.call_count == 2
+    assert get.call_args_list[0].args == (cf._TA_SEARCH_API_PATHS,)
+    assert get.call_args_list[0].kwargs["params"] == {"values": names[: cf.TA_SEARCH_CHUNK_SIZE]}
     err.assert_called_once()
 
 
 def test_fetch_threat_actors_data_none_response(client, mocker):
-    mocker.patch.object(client, "call_api", return_value=None)
+    mocker.patch.object(client, "get", return_value=None)
     feeds: list = []
     client.fetch_threat_actors_data(["x"], feeds)
     assert feeds == []
@@ -455,17 +439,17 @@ def test_get_feeds(client, mocker, tailored):
 
     calls: list = []
 
-    def fake_call_api(end_point, params=None):
-        calls.append((end_point, dict(params or {})))
-        if end_point == ioc_path and (params or {}).get("page") == 0:
+    def fake_get(path, params=None, headers=None, **kwargs):
+        calls.append((path, dict(params or {})))
+        if path == ioc_path and (params or {}).get("page") == 0:
             return {"objects": [indicator, dict(indicator), ta, rel_ok, rel_bad, unknown]}
-        if end_point == vul_path and (params or {}).get("page") == 0:
+        if path == vul_path and (params or {}).get("page") == 0:
             return {"objects": [vuln]}
-        if end_point == cf._TA_SEARCH_API_PATHS:
+        if path == cf._TA_SEARCH_API_PATHS:
             return {"objects": [ta, malware]}
         return {}
 
-    mocker.patch.object(client, "call_api", side_effect=fake_call_api)
+    mocker.patch.object(client, "get", side_effect=fake_get)
 
     res = client.get_feeds(
         first_fetch=5,
@@ -480,7 +464,6 @@ def test_get_feeds(client, mocker, tailored):
     assert ioc_path in paths
     assert vul_path in paths
     assert (cf._TA_SEARCH_API_PATHS, {"values": ["APT1"]}) in calls
-    assert "X-Request-ID" in client._headers
 
     # 4 unique convertible objects (indicator, TA, vuln, malware) + 1 relationship
     assert len(res) == 5
@@ -501,33 +484,40 @@ def test_test_module_lookback_too_long(client, ti, vul):
 
 @pytest.mark.parametrize("exc_msg", ["Forbidden", "Unauthorized"])
 def test_test_module_auth_error(client, mocker, exc_msg):
-    mocker.patch.object(client, "call_api", side_effect=DemistoException(exc_msg))
+    mocker.patch.object(client, "get", side_effect=DemistoException(exc_msg))
     assert cf.test_module(client, True, True, 60).startswith("Authorization Error")
 
 
 def test_test_module_other_error_reraised(client, mocker):
-    mocker.patch.object(client, "call_api", side_effect=DemistoException("Server exploded"))
+    mocker.patch.object(client, "get", side_effect=DemistoException("Server exploded"))
     with pytest.raises(DemistoException):
         cf.test_module(client, True, True, 60)
 
 
 @pytest.mark.parametrize(
-    "response, expected",
-    [
-        ({}, "Not Authorized"),
-        ({"isOrgActive": False}, "Not Authorized"),
-        ({"isOrgActive": True, "isCompanyActive": False}, "Not Authorized"),
-        ({"isOrgActive": True, "isCompanyActive": True}, "ok"),
-        ({"isOrgActive": True}, "ok"),
-    ],
+    "response",
+    [{}, {"isOrgActive": False}, {"isOrgActive": True, "isCompanyActive": False}],
 )
-def test_test_module_responses(client, mocker, response, expected):
-    mocker.patch.object(client, "call_api", return_value=response)
-    assert cf.test_module(client, True, True, 60) == expected
+def test_test_module_inactive_org(client, mocker, response):
+    mocker.patch.object(client, "get", return_value=response)
+    with pytest.raises(DemistoException, match="Not Authorized"):
+        cf.test_module(client, True, True, 60)
+
+
+@pytest.mark.parametrize("response", [{"isOrgActive": True, "isCompanyActive": True}, {"isOrgActive": True}])
+def test_test_module_active_org(client, mocker, response):
+    mocker.patch.object(client, "get", return_value=response)
+    assert cf.test_module(client, True, True, 60) == "ok"
+
+
+def test_test_module_pings_test_path(client, mocker):
+    get = mocker.patch.object(client, "get", return_value={"isOrgActive": True})
+    cf.test_module(client, True, True, 60)
+    get.assert_called_once_with(cf._TEST_PATH)
 
 
 def test_test_module_short_lookback_without_tailoring(client, mocker):
-    mocker.patch.object(client, "call_api", return_value={"isOrgActive": True})
+    mocker.patch.object(client, "get", return_value={"isOrgActive": True})
     assert cf.test_module(client, False, False, cf.MAX_DAYS_WITHOUT_TAILORING) == "ok"
 
 
@@ -594,7 +584,7 @@ def test_build_result_indicator():
         {"type": "indicator", "pattern": "", "confidence": None},  # unknown type, no extensions
     ]
     res = cf.build_result(data, cf.LABEL_INDICATOR, "Title")
-    assert res.outputs_prefix == "CYFIRMA.Indicator"
+    assert res.outputs_prefix == "Cyfirma.Indicator"
     assert res.outputs_key_field == "value"
     assert res.raw_response == data
     assert isinstance(res.outputs, list)
@@ -604,8 +594,9 @@ def test_build_result_indicator():
     assert first["score"] == 3
     assert first["threat_actor"] == ["APT1"]
     assert first["vendors"] == {"x": 1}
+    assert first["action"] == "BLOCK"
     assert second["type"] == "Unknown"
-    assert second["score"] == 1
+    assert second["score"] == 0
     assert "Title" in res.readable_output
 
 
@@ -620,7 +611,7 @@ def test_build_result_vulnerability():
         {"name": "CVE-2024-2"},
     ]
     res = cf.build_result(data, cf.LABEL_VULNERABILITY, "T")
-    assert res.outputs_prefix == "CYFIRMA.Vulnerability"
+    assert res.outputs_prefix == "Cyfirma.Vulnerability"
     assert isinstance(res.outputs, list)
     assert res.outputs[0]["value"] == "CVE-2024-1"
     assert res.outputs[0]["type"] == "CVE"
@@ -634,9 +625,7 @@ def test_build_result_vulnerability():
 def test_build_result_threat_actor():
     data = [{"name": "APT1", "confidence": 80, "extensions": {cf.TA_EXTENSION_ID: {"motivation": "money"}}}]
     res = cf.build_result(data, cf.LABEL_THREAT_ACTOR, "T")
-    assert res is not None
-    assert res.outputs_prefix == "CYFIRMA.ThreatActor"
-    assert res.outputs is not None
+    assert res.outputs_prefix == "Cyfirma.ThreatActor"
     assert isinstance(res.outputs, list)
     output = res.outputs[0]
     assert isinstance(output, dict)
@@ -653,7 +642,7 @@ def test_build_result_malware():
         }
     ]
     res = cf.build_result(data, cf.LABEL_MALWARE, "T")
-    assert res.outputs_prefix == "CYFIRMA.Malware"
+    assert res.outputs_prefix == "Cyfirma.Malware"
     assert isinstance(res.outputs, list)
     out = res.outputs[0]
     assert isinstance(out, dict)
@@ -669,25 +658,25 @@ def test_build_result_malware():
 
 
 def test_fetch_feeds_by_type(client, mocker):
-    call = mocker.patch.object(
+    get = mocker.patch.object(
         client,
-        "call_api",
+        "get",
         return_value={"objects": [{"type": "indicator", "pattern": "[ipv4-addr:value = '1.1.1.1']", "confidence": 90}]},
     )
     res = cf.fetch_feeds_by_type(client, "ip")
-    call.assert_called_once_with(cf._IOC_API_PATHS, params={"types": ["ip"]})
+    get.assert_called_once_with(cf._IOC_API_PATHS, params={"types": ["ip"]})
     assert isinstance(res.outputs, list)
     assert res.outputs[0]["value"] == "1.1.1.1"
     assert "Type: ip" in res.readable_output
 
 
 def test_fetch_feeds_by_type_no_objects(client, mocker):
-    mocker.patch.object(client, "call_api", return_value={})
+    mocker.patch.object(client, "get", return_value={})
     assert cf.fetch_feeds_by_type(client, "ip").readable_output == "For current request no data found."
 
 
 def test_fetch_feeds_by_type_error(client, mocker):
-    mocker.patch.object(client, "call_api", side_effect=RuntimeError("boom"))
+    mocker.patch.object(client, "get", side_effect=RuntimeError("boom"))
     err = mocker.patch.object(demisto, "error")
     with pytest.raises(RuntimeError):
         cf.fetch_feeds_by_type(client, "ip")
@@ -706,7 +695,7 @@ def test_feed_search_invalid_type(client):
 
 @pytest.mark.parametrize("response", [{}, None, {"other": 1}])
 def test_feed_search_no_objects_key(client, mocker, response):
-    mocker.patch.object(client, "call_api", return_value=response)
+    mocker.patch.object(client, "get", return_value=response)
     res = cf.feed_search(client, cf.LABEL_INDICATOR, {"value": "x"})
     assert res.readable_output == "No results found for the given search criteria."
 
@@ -721,9 +710,9 @@ def test_feed_search_no_objects_key(client, mocker, response):
     ],
 )
 def test_feed_search_success(client, mocker, search_type, param_name, path):
-    call = mocker.patch.object(client, "call_api", return_value={"objects": [{"name": "n", "confidence": 90}]})
+    get = mocker.patch.object(client, "get", return_value={"objects": [{"name": "n", "confidence": 90}]})
     res = cf.feed_search(client, search_type, {"value": "needle"})
-    call.assert_called_once_with(end_point=path, params={param_name: ["needle"]})
+    get.assert_called_once_with(path, params={param_name: ["needle"]})
     assert res.outputs_prefix == cf._OUTPUT_PREFIXES[search_type]
     assert "needle" in res.readable_output
 
@@ -738,11 +727,13 @@ BASE_PARAMS = {"url": "https://api.cyfirma.test/", "api_key": {"password": "k"}}
 @pytest.fixture
 def main_env(mocker):
     mocker.patch.object(demisto, "info")
-    mocks = {
+    mocker.patch.object(demisto, "debug")
+    return {
         "return_results": mocker.patch.object(cf, "return_results"),
         "return_error": mocker.patch.object(cf, "return_error", side_effect=SystemExit),
+        "client_cls": mocker.patch.object(cf, "Client"),
+        "auth_handler": mocker.patch.object(cf, "APIKeyAuthHandler"),
     }
-    return mocks
 
 
 def _setup(mocker, params, command, args=None):
@@ -759,6 +750,18 @@ def test_main_missing_credentials(mocker, main_env, params):
     with pytest.raises(SystemExit):
         cf.main()
     main_env["return_error"].assert_called_once_with("Server URL and API Key are required.")
+
+
+def test_main_builds_client(mocker, main_env):
+    _setup(mocker, BASE_PARAMS, "test-module")
+    mocker.patch.object(cf, "test_module", return_value="ok")
+    cf.main()
+    main_env["auth_handler"].assert_called_once_with(key="k", header_name="X-Api-Key")
+    kwargs = main_env["client_cls"].call_args.kwargs
+    assert kwargs["base_url"].rstrip("/") == BASE_URL
+    assert kwargs["verify"] is True
+    assert kwargs["proxy"] is False
+    assert kwargs["auth_handler"] is main_env["auth_handler"].return_value
 
 
 def test_main_test_module(mocker, main_env):
@@ -795,6 +798,9 @@ def test_main_fetch_indicators(mocker, main_env):
     assert kwargs["feed_reputation"] == "Good"
     assert kwargs["fetch_tailored_indicators"] is False
     assert kwargs["fetch_tailored_vulnerabilities"] is False
+    client_kwargs = main_env["client_cls"].call_args.kwargs
+    assert client_kwargs["verify"] is False
+    assert client_kwargs["proxy"] is True
 
 
 @pytest.mark.parametrize("command, feed_type", list(cf._TYPE_COMMANDS.items()))
@@ -816,11 +822,19 @@ def test_main_search_commands(mocker, main_env, command, search_type):
     main_env["return_results"].assert_called_once_with("RES")
 
 
-def test_main_unknown_command(mocker):
-    mocker.patch.object(demisto, "info")
-    err = mocker.patch.object(cf, "return_error")
+def test_main_forbidden_error(mocker, main_env):
+    _setup(mocker, BASE_PARAMS, "test-module")
+    mocker.patch.object(cf, "test_module", side_effect=Exception("403 Forbidden"))
+    with pytest.raises(SystemExit):
+        cf.main()
+    main_env["return_error"].assert_called_once_with("Authorization Error: make sure API Key is correctly set")
+
+
+def test_main_unknown_command(mocker, main_env):
+    main_env["return_error"].side_effect = None
     _setup(mocker, BASE_PARAMS, "bogus-command")
     cf.main()
-    err.assert_called_once()
-    assert "bogus-command" in err.call_args.args[0]
-    assert "not implemented" in err.call_args.args[0]
+    main_env["return_error"].assert_called_once()
+    message = main_env["return_error"].call_args.args[0]
+    assert "bogus-command" in message
+    assert "not implemented" in message

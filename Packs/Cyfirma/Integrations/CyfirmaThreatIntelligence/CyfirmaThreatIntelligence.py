@@ -10,15 +10,15 @@ import uuid
 from typing import Any
 
 import demistomock as demisto
-import urllib3
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 from CommonServerUserPython import *  # noqa
+from ContentClientApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 """ CONSTANTS """
+
 
 INTEGRATION_NAME = "CYFIRMA"
 
@@ -27,8 +27,7 @@ LABEL_VULNERABILITY = "Vulnerability"
 LABEL_THREAT_ACTOR = "ThreatActor"
 LABEL_MALWARE = "Malware"
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-DEFAULT_FIRST_FETCH_DAYS = 60
+DEFAULT_FIRST_FETCH_DAYS = 15
 MAX_DAYS_WITHOUT_TAILORING = 2
 TA_SEARCH_CHUNK_SIZE = 10
 INDICATOR_BATCH_SIZE = 2500
@@ -60,10 +59,10 @@ _EXTENSION_IDS = {
 }
 
 _OUTPUT_PREFIXES = {
-    LABEL_INDICATOR: "CYFIRMA.Indicator",
-    LABEL_VULNERABILITY: "CYFIRMA.Vulnerability",
-    LABEL_THREAT_ACTOR: "CYFIRMA.ThreatActor",
-    LABEL_MALWARE: "CYFIRMA.Malware",
+    LABEL_INDICATOR: "Cyfirma.Indicator",
+    LABEL_VULNERABILITY: "Cyfirma.Vulnerability",
+    LABEL_THREAT_ACTOR: "Cyfirma.ThreatActor",
+    LABEL_MALWARE: "Cyfirma.Malware",
 }
 
 # search type -> (search path, query-string parameter name)
@@ -237,17 +236,21 @@ def confidence_to_score(confidence: Any) -> tuple[int, str]:
         confidence: Confidence value; None or non-numeric values are treated as 0.
 
     Returns:
-        ``(score, verdict)``: >=80 -> (3, "Malicious"), >=50 -> (2, "Suspicious"), else (1, "Benign").
+        ``(score, verdict)``: >=80 -> (3, "Malicious"), >=50 -> (2, "Suspicious"), >=10 -> (1, "Benign"), 0 -> (0, "Unknown").
     """
+
     try:
-        value = int(confidence or 0)
+        value = int(confidence)
     except (TypeError, ValueError):
-        value = 0
+        return 1, "Benign"
+
     if value >= 80:
         return 3, "Malicious"
     if value >= 50:
         return 2, "Suspicious"
-    return 1, "Benign"
+    if value >= 10:
+        return 1, "Benign"
+    return 0, "Unknown"
 
 
 def parse_pattern(pattern: str) -> tuple[str, str, dict[str, str]]:
@@ -343,7 +346,7 @@ def _parse_days(value: Any, default: int = DEFAULT_FIRST_FETCH_DAYS) -> int:
     return int(match.group()) if match else default
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """HTTP client for the CYFIRMA threat-intelligence API."""
 
     def identify_feed_type(self, obj: dict) -> tuple[str, str]:
@@ -378,32 +381,6 @@ class Client(BaseClient):
             )
 
         return "", ""
-
-    def call_api(self, end_point: str, params: dict | None = None) -> dict:
-        """Perform a GET request with retries on transient gateway errors.
-
-        Args:
-            end_point: URL suffix appended to the base URL.
-            params: Optional query-string parameters.
-
-        Returns:
-            Decoded JSON body, or an empty dict when the response has no content.
-
-        Raises:
-            DemistoException: On HTTP errors (after retrying 502/503/504 up to 3 times).
-        """
-        response = self._http_request(
-            url_suffix=end_point,
-            params=params,
-            resp_type="response",
-            method="GET",
-            retries=3,
-            status_list_to_retry=(502, 503, 504),
-            raise_on_status=True,
-        )
-        if response.status_code == 200 and response.content:
-            return response.json()
-        return {}
 
     def build_relationships(self, feed_rel_obj: dict, feed_objs: dict) -> dict:
         """Convert a STIX relationship object into an XSOAR relationship.
@@ -565,9 +542,10 @@ class Client(BaseClient):
             path: Endpoint to query.
             feeds: List that the returned STIX objects are appended to.
         """
+        headers: dict = {"X-Request-ID": str(uuid.uuid4())}
         request_params = {**params, "page": 0}
         while True:
-            response = self.call_api(path, params=request_params)
+            response = self.get(path, params=request_params, headers=headers)
             objects = (response or {}).get("objects") or []
             if not objects:
                 break
@@ -585,10 +563,11 @@ class Client(BaseClient):
             ta_names: Threat actor names to look up.
             feeds: List that the additional STIX objects are appended to.
         """
+        headers: dict = {"X-Request-ID": str(uuid.uuid4())}
         for start in range(0, len(ta_names), TA_SEARCH_CHUNK_SIZE):
             chunk = ta_names[start : start + TA_SEARCH_CHUNK_SIZE]  # noqa: E203
             try:
-                ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
+                ta_res_data = self.get(_TA_SEARCH_API_PATHS, params={"values": chunk}, headers=headers)
             except Exception as e:
                 demisto.error(f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}")
                 continue
@@ -622,7 +601,6 @@ class Client(BaseClient):
             "lookBackDays": int(first_fetch),
             "delta": True,
         }
-        self._headers["X-Request-ID"] = str(uuid.uuid4())  # type: ignore[index]
 
         ioc_suffix = _TAILORED_PATHS if fetch_tailored_indicators else _ALL_PATHS
         vul_suffix = _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
@@ -689,16 +667,16 @@ def test_module(
         )
 
     try:
-        res = client.call_api(end_point=_TEST_PATH)
+        res = client.get(_TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
-        raise
+        raise e
 
     if not res or not res.get("isOrgActive", False):
-        return "Not Authorized"
+        raise DemistoException("Not Authorized")
     if "isCompanyActive" in res and not res.get("isCompanyActive", False):
-        return "Not Authorized"
+        raise DemistoException("Not Authorized")
     return "ok"
 
 
@@ -908,7 +886,7 @@ def fetch_feeds_by_type(client: Client, feed_type: str) -> CommandResults:
         Exception: Errors are logged (with traceback) and re-raised.
     """
     try:
-        response = client.call_api(_IOC_API_PATHS, params={"types": [feed_type]})
+        response = client.get(_IOC_API_PATHS, params={"types": [feed_type]})
         return build_result(
             data=response.get("objects", []),
             data_type=LABEL_INDICATOR,
@@ -940,7 +918,7 @@ def feed_search(client: Client, search_type: str, args: dict) -> CommandResults:
         raise ValueError(f"Invalid search type: {search_type}")
 
     path, param_name = _SEARCH_CONFIG[search_type]
-    search_response = client.call_api(end_point=path, params={param_name: [search_value]})
+    search_response = client.get(path, params={param_name: [search_value]})
 
     if not search_response or "objects" not in search_response:
         return CommandResults(readable_output="No results found for the given search criteria.")
@@ -956,9 +934,10 @@ def main() -> None:
     """Read integration parameters, build the client and dispatch the invoked command."""
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args() or {}
 
     api_url = params.get("url", "").rstrip("/")
-    api_key = (params.get("api_key") or {}).get("password")
+    api_key = ((params.get("api_key") or {}).get("password") or "").strip()
     if not api_url or not api_key:
         return_error("Server URL and API Key are required.")
 
@@ -975,15 +954,16 @@ def main() -> None:
     demisto.info(f"Command being called is {command}")
 
     try:
+        api_path = urljoin(f"{api_url}/{_BASE_PREFIX_PATH.lstrip('/')}")
         client = Client(
-            base_url=urljoin(api_url, _BASE_PREFIX_PATH),
+            base_url=api_path,
             verify=verify_cert,
-            headers={"X-Api-Key": api_key, "X-App-Name": "PALO_ALTO_XSOAR_V2_TI"},
             proxy=proxy,
+            headers={"X-App-Name": "PALO_ALTO_XSOAR_V2_TI"},
+            auth_handler=APIKeyAuthHandler(key=api_key, header_name="X-Api-Key"),
         )
 
         if command == "test-module":
-            # The original also called demisto.results(), which duplicated the output.
             return_results(
                 test_module(
                     client,
@@ -1005,12 +985,15 @@ def main() -> None:
         elif command in _TYPE_COMMANDS:
             return_results(fetch_feeds_by_type(client, _TYPE_COMMANDS[command]))
         elif command in _SEARCH_COMMANDS:
-            return_results(feed_search(client, _SEARCH_COMMANDS[command], demisto.args()))
+            return_results(feed_search(client, _SEARCH_COMMANDS[command], args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+        demisto.debug(traceback.format_exc())
+        if "Forbidden" in str(e):
+            return_error("Authorization Error: make sure API Key is correctly set")
+        return_error(f"Failed to execute {command} command.\nError:\n{e}", error=str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

@@ -9,15 +9,13 @@ from typing import Any
 
 import dateparser
 import demistomock as demisto
-import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
 from CommonServerUserPython import *  # noqa
+from ContentClientApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 """ CONSTANTS """
+
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = 100
@@ -66,34 +64,8 @@ def parse_date(value: str | None):
     return dateparser.parse(value) if value else None
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """HTTP client for the CYFIRMA DeCYFIR compromised-accounts API."""
-
-    def call_api(self, end_point: str, params: dict | None = None) -> dict:
-        """Perform a GET request with retries on transient gateway errors.
-
-        Args:
-            end_point: URL suffix appended to the client's base URL.
-            params: Optional query-string parameters.
-
-        Returns:
-            The decoded JSON body, or an empty dict if the response has no content.
-
-        Raises:
-            DemistoException: On HTTP errors (after retrying 502/503/504 up to 3 times).
-        """
-        response = self._http_request(
-            url_suffix=end_point,
-            params=params,
-            resp_type="response",
-            method="GET",
-            retries=3,
-            status_list_to_retry=(502, 503, 504),
-            raise_on_status=True,
-        )
-        if response.status_code == 200 and response.content:
-            return response.json()
-        return {}
 
     def populate_custom_fields(self, data: dict) -> dict:
         """Build the compromised-account grid custom field for an alert.
@@ -127,42 +99,57 @@ class Client(BaseClient):
         """
 
         occurred_date = parse_date(event.get("lastModifiedDate") or event.get("createdDate"))
+        breach_date = parse_date(event.get("compromisedDetails", {}).get("breachDate", ""))
 
         return {
             "type": event.get("categoryLabel", ""),
             "name": event.get("title", ""),
             "occurred": occurred_date.strftime(DATE_FORMAT) if occurred_date else None,
+            "datetimeofthebreach": breach_date.strftime(DATE_FORMAT) if breach_date else None,
             "severity": IncidentSeverity.CRITICAL,
             "rawJSON": json.dumps(event),
             "category": event.get("category", ""),
-            "subcategory": event.get("subCategory", ""),
+            "subCategory": event.get("subCategory", ""),
             "dbotMirrorId": event.get("uid", ""),
             "sourceBrand": "CYFIRMA",
             "labels": [],
             "CustomFields": self.populate_custom_fields(data=event),
         }
 
-    def get_incidents(self, params: dict) -> list:
+    def get_incidents(self, req_params: dict) -> list:
         """Fetch every page of every compromised-account endpoint and build incidents.
 
         Args:
-            params: Base query parameters (size, after, includeThirdParty, ...). Not modified.
+            req_params: Base query parameters (size, after, includeThirdParty, ...). Not modified.
 
         Returns:
             A list of XSOAR incident dicts.
         """
         incidents: list = []
+        req_size = req_params.get("size", 0)
+        req_params["page"] = 0
 
         for api_path in _API_PATHS.values():
-            request_params = {**params, "page": 0}
-            self._headers["X-Request-Id"] = str(uuid.uuid4())  # type: ignore[index]
+            headers = {"X-Request-ID": str(uuid.uuid4())}
+            remaining = req_size - len(incidents)
 
-            while True:
-                response = self.call_api(end_point=api_path, params=request_params)
-                incidents.extend(self.build_incident_json(event) for event in response.get("data", []))
-                if response.get("metaData", {}).get("isLast", True):
+            if remaining <= 0:
+                break
+
+            while remaining > 0 and req_params["page"] < req_size:
+                response = self.get(api_path, params=req_params, headers=headers)
+                events = response.get("data") or []
+                meta_data = response.get("metaData") or {}
+
+                incidents.extend(self.build_incident_json(event) for event in events[:remaining])
+                remaining = req_size - len(incidents)
+
+                total_pages = meta_data.get("totalPages")
+                next_page = req_params["page"] + 1
+                if not events or meta_data.get("isLast", True) or (total_pages is not None and next_page >= total_pages):
                     break
-                request_params["page"] += 1
+
+                req_params["page"] = next_page
 
         return incidents
 
@@ -180,7 +167,7 @@ def test_module(client: Client) -> str:
         DemistoException: For errors other than authorization failures.
     """
     try:
-        res = client.call_api(_TEST_PATH)
+        res = client.get(_TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
@@ -193,7 +180,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
+def fetch_incidents(client: Client, first_fetch: str, max_fetch: int, params: dict, last_run: dict) -> None:
     """Fetch new alerts since the last run and push them to XSOAR as incidents.
 
     The last-run timestamp is captured in UTC *before* querying the API so alerts created
@@ -204,26 +191,23 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
         client: Configured API client.
         first_fetch: Relative or absolute start time used on the first run (e.g. "90 days").
         max_fetch: Page size used when querying alerts.
+        params: Integration parameters.
 
     Raises:
         DemistoException: If ``first_fetch`` cannot be parsed.
     """
-    params = demisto.params()
-    last_run = demisto.getLastRun() or {}
-
     after = parse_date(last_run.get("last_fetch") or first_fetch)
     if after is None:
         raise DemistoException(f"Invalid 'First fetch' value: {first_fetch!r}")
 
-    next_run_from = datetime.now()
+    next_run_from = datetime.now(timezone.utc)
 
     request_params = {
-        "page": 0,
         "size": max_fetch,
         "after": int(after.timestamp() * 1000),
         "includeThirdParty": argToBoolean(params.get("includeThirdPartyCompromisedAccounts", False)),
     }
-    incidents = client.get_incidents(params=request_params)
+    incidents = client.get_incidents(req_params=request_params)
 
     demisto.incidents(incidents)
     demisto.setLastRun({"last_fetch": next_run_from.strftime(DATE_FORMAT)})
@@ -233,13 +217,14 @@ def main() -> None:
     """Read integration parameters, build the client and dispatch the invoked command."""
     params = demisto.params()
     command = demisto.command()
+    last_run = demisto.getLastRun() or {}
 
     api_url = params.get("url", "").rstrip("/")
-    api_key = (params.get("api_key") or {}).get("password")
+    api_key = ((params.get("api_key") or {}).get("password") or "").strip()
     if not api_url or not api_key:
         return_error("Server URL and API Key are required.")
 
-    max_fetch = int(params.get("max_fetch") or DEFAULT_MAX_FETCH)
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
@@ -247,24 +232,27 @@ def main() -> None:
     demisto.info(f"Command being called is {command}")
 
     try:
+        api_path = urljoin(f"{api_url}/{_BASE_PREFIX_PATH.lstrip('/')}")
         client = Client(
-            base_url=urljoin(api_url, _BASE_PREFIX_PATH),
+            base_url=api_path,
             verify=verify_certificate,
-            headers={"X-Api-Key": api_key, "X-App-Name": "PALO_ALTO_XSOAR_V2_CA"},
             proxy=proxy,
+            headers={"X-App-Name": "PALO_ALTO_XSOAR_V2_AL"},
+            auth_handler=APIKeyAuthHandler(key=api_key, header_name="X-Api-Key"),
         )
 
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-incidents":
-            fetch_incidents(client, first_fetch, max_fetch)
+            fetch_incidents(client, first_fetch, max_fetch, params, last_run)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         if "Forbidden" in str(e):
             return_error("Authorization Error: make sure API Key is correctly set")
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e}", error=str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

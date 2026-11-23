@@ -102,3 +102,5 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.12.15.14069087
 runas: DBotWeakRole
+tests:
+- No tests (auto formatted)

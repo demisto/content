@@ -48,48 +48,50 @@ enabled: true
 fromversion: 5.0.0
 outputs:
 - contextPath: Cyfirma.Alert.Alertid
-  description: Alert ID
+  description: Alert ID.
   type: string
 - contextPath: Cyfirma.Alert.Severity
-  description: Severity
+  description: Severity.
   type: string
 - contextPath: Cyfirma.Alert.Category
-  description: Category
+  description: Category.
   type: string
 - contextPath: Cyfirma.Alert.Subcategory
-  description: Subcategory
+  description: Subcategory.
   type: string
 - contextPath: Cyfirma.Alert.Description
-  description: Description
+  description: Description.
   type: string
 - contextPath: Cyfirma.Alert.Ip
-  description: IP address
+  description: IP address.
   type: string
 - contextPath: Cyfirma.Alert.Domain
-  description: Domain
+  description: Domain.
   type: string
 - contextPath: Cyfirma.Alert.Subdomain
-  description: Subdomain
+  description: Subdomain.
   type: string
 - contextPath: Cyfirma.Alert.Assettype
   type: string
 - contextPath: Cyfirma.Alert.Assetvalue
-  description: AssetValue
+  description: AssetValue.
   type: string
 - contextPath: Cyfirma.Alert.Source
-  description: Source
+  description: Source.
   type: string
 - contextPath: Cyfirma.Alert.Impact
-  description: Impact
+  description: Impact.
   type: string
 - contextPath: Cyfirma.Alert.Domainsquatting
-  description: Domain Squatting
+  description: Domain Squatting.
   type: string
 - contextPath: Cyfirma.Alert.Objectid
-  description: Object ID
+  description: Object ID.
   type: string
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.12.14.13919218
 runas: DBotWeakRole
+tests:
+- No tests (auto formatted)

@@ -4,8 +4,8 @@ description: CYFIRMA is an AI-powered Preemptive External Threat Landscape Manag
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: Cyfirma Threat Intelligence
   version: -1
@@ -88,15 +88,20 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- name: feedReliability
+  display: Source Reliability
+  type: 15
+  required: true
+  additionalinfo: Reliability of the source providing the intelligence data
+- name: feedExpirationInterval
+  display: ''
+  type: 1
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
+  type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 script:
-  feed: true
-  isfetch: false
-  runonce: false
-  script: '-'
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.12.13.8428455
-commands:
+  commands:
   - name: cyfirma-ip-get
     description: Retrieves IP indicators from CYFIRMA.
     outputs:
@@ -119,7 +124,7 @@ commands:
       description: Security vendor detections for the indicator.
       type: Unknown
     - contextPath: Cyfirma.Indicator.action
-      description: Security vendor detections for the indicator.
+      description: The recommended action for the indicator.
       type: String
 
   - name: cyfirma-domain-get
@@ -144,7 +149,7 @@ commands:
       description: Security vendor detections for the indicator.
       type: Unknown
     - contextPath: Cyfirma.Indicator.action
-      description: Security vendor detections for the indicator.
+      description: The recommended action for the indicator.
       type: String
 
   - name: cyfirma-url-get
@@ -169,7 +174,7 @@ commands:
       description: Security vendor detections for the indicator.
       type: Unknown
     - contextPath: Cyfirma.Indicator.action
-      description: Security vendor detections for the indicator.
+      description: The recommended action for the indicator.
       type: String
 
   - name: cyfirma-file-get
@@ -194,7 +199,7 @@ commands:
       description: Security vendor detections for the indicator.
       type: Unknown
     - contextPath: Cyfirma.Indicator.action
-      description: Security vendor detections for the indicator.
+      description: The recommended action for the indicator.
       type: String
 
   - name: cyfirma-ioc-search-get
@@ -223,7 +228,7 @@ commands:
       description: Security vendor detections for the indicator.
       type: Unknown
     - contextPath: Cyfirma.Indicator.action
-      description: Security vendor detections for the indicator.
+      description: The recommended action for the indicator.
       type: String
 
   - name: cyfirma-threat-actor-search-get
@@ -358,6 +363,13 @@ commands:
       description: Vendors affected by the vulnerability.
       type: Unknown
   
+  feed: true
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.162.0.14169403
 fromversion: 6.9.0
 marketplaces:
 - xsoar

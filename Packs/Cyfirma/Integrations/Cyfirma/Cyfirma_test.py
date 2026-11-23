@@ -2,11 +2,11 @@
 
 import re
 from datetime import datetime, UTC
-from unittest.mock import MagicMock
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException, IncidentSeverity
+
 
 import Cyfirma
 
@@ -140,7 +140,7 @@ def test_parse_date_absolute():
 
 
 def test_parse_date_relative():
-    assert _parse_date("3 days") is not None
+    assert _parse_date("3 days ago") is not None
 
 
 def test_parse_date_invalid():
@@ -152,52 +152,26 @@ def test_parse_date_invalid():
 # ----------------------------------------------------------------------------
 
 
-def _response(status=200, content=b'{"ok": true}', json_data=None):
-    resp = MagicMock()
-    resp.status_code = status
-    resp.content = content
-    resp.json.return_value = json_data if json_data is not None else {"ok": True}
-    return resp
-
-
-def test_request_success(client, mocker):
-    http = mocker.patch.object(Client, "_http_request", return_value=_response())
-    assert client._request("GET", "/x", params={"a": 1}) == {"ok": True}
-    kwargs = http.call_args.kwargs
-    assert kwargs["method"] == "GET"
-    assert kwargs["url_suffix"] == "/x"
-    assert kwargs["params"] == {"a": 1}
-    assert kwargs["status_list_to_retry"] == (502, 503, 504)
-    assert kwargs["retries"] == 3
-
-
-@pytest.mark.parametrize(
-    "resp",
-    [
-        _response(status=204, content=b""),
-        _response(status=200, content=b""),
-        _response(status=201),
-    ],
-)
-def test_request_returns_empty_dict_when_not_200_or_no_content(client, mocker, resp):
-    mocker.patch.object(Client, "_http_request", return_value=resp)
-    assert client._request("GET", "/x") == {}
-
-
-def test_request_propagates_errors(client, mocker):
-    mocker.patch.object(Client, "_http_request", side_effect=DemistoException("boom"))
-    with pytest.raises(DemistoException):
-        client._request("GET", "/x")
-
-
 def test_call_get_post_put_delegate(client, mocker):
-    req = mocker.patch.object(Client, "_request", return_value={"r": 1})
+    get = mocker.patch.object(Client, "get", return_value={"r": 1})
+    post = mocker.patch.object(Client, "post", return_value={"r": 1})
+    put = mocker.patch.object(Client, "put", return_value={"r": 1})
     assert client.call_get_request("/g", params={"p": 1}) == {"r": 1}
-    req.assert_called_with("GET", "/g", params={"p": 1})
+    assert get.call_args.args == ("/g",)
+    assert get.call_args.kwargs["params"] == {"p": 1}
+    assert "X-Request-ID" in get.call_args.kwargs["headers"]
     assert client.call_post_request("/p", body={"b": 1}) == {"r": 1}
-    req.assert_called_with("POST", "/p", body={"b": 1})
+    assert post.call_args.args == ("/p",)
+    assert post.call_args.kwargs["json_data"] == {"b": 1}
     assert client.call_put_request("/u", body={"b": 2}) == {"r": 1}
-    req.assert_called_with("PUT", "/u", body={"b": 2})
+    assert put.call_args.args == ("/u",)
+    assert put.call_args.kwargs["json_data"] == {"b": 2}
+
+
+def test_call_request_keeps_custom_headers(client, mocker):
+    get = mocker.patch.object(Client, "get", return_value={})
+    client.call_get_request("/g", headers={"X-Request-ID": "fixed"})
+    assert get.call_args.kwargs["headers"] == {"X-Request-ID": "fixed"}
 
 
 # ----------------------------------------------------------------------------
@@ -362,11 +336,22 @@ def test_get_incidents_paginates(client, sample_alert, mocker):
             {"data": [sample_alert], "metaData": {"isLast": True}},
         ],
     )
-    incidents = client.get_incidents({"size": 1, "after": 0}, {"AS": True, "BI": False})
+    # "size" is both the page size and the cap on total incidents, so it must be >= 2 to get two pages
+    incidents = client.get_incidents({"size": 2, "after": 0}, {"AS": True, "BI": False})
     assert len(incidents) == 2
     assert get.call_count == 2
     assert all(c.kwargs["end_point"] == "/al/as" for c in get.call_args_list)
-    assert "X-Request-Id" in client._headers
+
+
+def test_get_incidents_respects_max_size(client, sample_alert, mocker):
+    get = mocker.patch.object(
+        Client,
+        "call_get_request",
+        return_value={"data": [sample_alert, sample_alert, sample_alert], "metaData": {"isLast": False}},
+    )
+    incidents = client.get_incidents({"size": 2}, {"AS": True})
+    assert len(incidents) == 2
+    assert get.call_count == 1
 
 
 def test_get_incidents_multiple_types(client, sample_alert, mocker):
@@ -375,7 +360,7 @@ def test_get_incidents_multiple_types(client, sample_alert, mocker):
         "call_get_request",
         return_value={"data": [sample_alert], "metaData": {"isLast": True}},
     )
-    incidents = client.get_incidents({}, {"AS": True, "BI": True, "DW": True, "SP": True})
+    incidents = client.get_incidents({"size": 10}, {"AS": True, "BI": True, "DW": True, "SP": True})
     assert len(incidents) == 4
     assert [c.kwargs["end_point"] for c in get.call_args_list] == [
         "/al/as",
@@ -385,15 +370,22 @@ def test_get_incidents_multiple_types(client, sample_alert, mocker):
     ]
 
 
+def test_get_incidents_zero_size_fetches_nothing(client, mocker):
+    get = mocker.patch.object(Client, "call_get_request")
+    assert client.get_incidents({}, {"AS": True}) == []
+    get.assert_not_called()
+
+
 def test_get_incidents_nothing_enabled(client, mocker):
     get = mocker.patch.object(Client, "call_get_request")
-    assert client.get_incidents({}, {"AS": False}) == []
+    assert client.get_incidents({"size": 10}, {"AS": False}) == []
     get.assert_not_called()
 
 
 def test_get_incidents_empty_response_stops(client, mocker):
-    mocker.patch.object(Client, "call_get_request", return_value={})
-    assert client.get_incidents({}, {"AS": True}) == []
+    get = mocker.patch.object(Client, "call_get_request", return_value={})
+    assert client.get_incidents({"size": 10}, {"AS": True}) == []
+    assert get.call_count == 1
 
 
 def test_initiate_take_down_with_comment(client, mocker):
@@ -402,19 +394,28 @@ def test_initiate_take_down_with_comment(client, mocker):
     post.assert_called_once_with(
         end_point="/td/initiate",
         body={"objectId": "A1", "assetComment": "please remove"},
+        headers={"X-Request-ID": post.call_args.kwargs["headers"]["X-Request-ID"]},
     )
 
 
 def test_initiate_take_down_without_comment(client, mocker):
     post = mocker.patch.object(Client, "call_post_request", return_value={})
     client.initiate_take_down("A1")
-    post.assert_called_once_with(end_point="/td/initiate", body={"objectId": "A1"})
+    post.assert_called_once_with(
+        end_point="/td/initiate",
+        body={"objectId": "A1"},
+        headers={"X-Request-ID": post.call_args.kwargs["headers"]["X-Request-ID"]},
+    )
 
 
 def test_take_down_list_data_with_domain(client, mocker):
     get = mocker.patch.object(Client, "call_get_request", return_value={"data": [{"ticketId": "T1"}]})
     assert client.take_down_list_data("example.com", "0", "10") == [{"ticketId": "T1"}]
-    get.assert_called_once_with(end_point="/td", params={"page": "0", "size": "10", "domains": "example.com"})
+    get.assert_called_once_with(
+        end_point="/td",
+        params={"page": "0", "size": "10", "domains": "example.com"},
+        headers={"X-Request-ID": get.call_args.kwargs["headers"]["X-Request-ID"]},
+    )
 
 
 def test_take_down_list_data_without_domain(client, mocker):
@@ -465,8 +466,10 @@ def test_test_module_other_error_is_raised(client, mocker):
     [{}, {"isOrgActive": False}, {"isOrgActive": True, "isCompanyActive": False}],
 )
 def test_test_module_not_authorized(client, mocker, response):
+    # test_module raises (rather than returns) when the org/company is not active
     mocker.patch.object(Client, "call_get_request", return_value=response)
-    assert Cyfirma.test_module(client) == "Not Authorized"
+    with pytest.raises(DemistoException, match="Not Authorized"):
+        Cyfirma.test_module(client)
 
 
 # ----------------------------------------------------------------------------
@@ -525,13 +528,12 @@ def test_take_down_list_command_results_missing_fields():
 
 
 def test_initiate_take_down_request_success(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1", "comment": "c"})
     init = mocker.patch.object(
         Client,
         "initiate_take_down",
         return_value={"status": "success", "data": {"takeDownId": "TD-1"}},
     )
-    result = initiate_take_down_request(client)
+    result = initiate_take_down_request(client, {"alert_id": "A1", "comment": "c"})
     init.assert_called_once_with("A1", "c")
     assert result.outputs == {
         "take_down_id": "TD-1",
@@ -541,17 +543,15 @@ def test_initiate_take_down_request_success(client, mocker):
     assert "TD-1" in result.readable_output
 
 
-def test_initiate_take_down_request_missing_alert_id(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={})
+def test_initiate_take_down_request_missing_alert_id(client):
     with pytest.raises(DemistoException, match="alert_id is required"):
-        initiate_take_down_request(client)
+        initiate_take_down_request(client, {})
 
 
 def test_initiate_take_down_request_no_data(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
     mocker.patch.object(Client, "initiate_take_down", return_value={})
     with pytest.raises(DemistoException, match="No data returned"):
-        initiate_take_down_request(client)
+        initiate_take_down_request(client, {"alert_id": "A1"})
 
 
 @pytest.mark.parametrize(
@@ -564,40 +564,35 @@ def test_initiate_take_down_request_no_data(client, mocker):
     ],
 )
 def test_initiate_take_down_request_failure_status(client, mocker, response, reason):
-    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
     mocker.patch.object(Client, "initiate_take_down", return_value=response)
     with pytest.raises(DemistoException, match=reason):
-        initiate_take_down_request(client)
+        initiate_take_down_request(client, {"alert_id": "A1"})
 
 
 @pytest.mark.parametrize("data", [None, "string", {}, {"takeDownId": ""}])
 def test_initiate_take_down_request_missing_ticket_id(client, mocker, data):
-    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
     mocker.patch.object(Client, "initiate_take_down", return_value={"status": "SUCCESS", "data": data})
     with pytest.raises(DemistoException, match="no ticket ID"):
-        initiate_take_down_request(client)
+        initiate_take_down_request(client, {"alert_id": "A1"})
 
 
 def test_get_take_down_list_defaults(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={})
     lst = mocker.patch.object(Client, "take_down_list_data", return_value=[TICKET])
-    result = get_take_down_list(client)
+    result = get_take_down_list(client, {})
     lst.assert_called_once_with("", "0", "50")
     assert "Domain: All, Page: 0, Size: 50" in result.readable_output
 
 
 def test_get_take_down_list_with_args(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={"domain": "bad.com", "size": "10", "page": "2"})
     lst = mocker.patch.object(Client, "take_down_list_data", return_value=[TICKET])
-    result = get_take_down_list(client)
+    result = get_take_down_list(client, {"domain": "bad.com", "size": "10", "page": "2"})
     lst.assert_called_once_with("bad.com", "2", "10")
     assert "Domain: bad.com, Page: 2, Size: 10" in result.readable_output
 
 
 def test_get_take_down_list_no_data(client, mocker):
-    mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(Client, "take_down_list_data", return_value=[])
-    assert get_take_down_list(client).readable_output == "No data found for current request."
+    assert get_take_down_list(client, {}).readable_output == "No data found for current request."
 
 
 # ----------------------------------------------------------------------------
@@ -614,18 +609,15 @@ def _patch_demisto_fetch(mocker, params, last_run):
 
 
 def test_fetch_incidents_first_run(client, mocker):
-    incidents, set_last_run = _patch_demisto_fetch(
-        mocker,
-        {
-            "fetchAttackSurface": True,
-            "fetchBrandExposure": "true",
-            "includeThirdParty": False,
-        },
-        None,
-    )
+    params = {
+        "fetchAttackSurface": True,
+        "fetchBrandExposure": "true",
+        "includeThirdParty": False,
+    }
+    incidents, set_last_run = _patch_demisto_fetch(mocker, params, None)
     get = mocker.patch.object(Client, "get_incidents", return_value=[{"name": "x"}])
 
-    fetch_incidents(client, "3 days", 50)
+    fetch_incidents(client, "3 days ago", 50, params, {})
 
     kwargs = get.call_args.kwargs
     assert kwargs["alerts_to_fetch"] == {
@@ -634,10 +626,10 @@ def test_fetch_incidents_first_run(client, mocker):
         "DW": False,
         "SP": False,
     }
-    assert kwargs["params"]["size"] == 50
-    assert kwargs["params"]["page"] == 0
-    assert kwargs["params"]["includeThirdParty"] is False
-    assert isinstance(kwargs["params"]["after"], int)
+    # fetch_incidents passes the query parameters as ``req_params`` (the page is added later by get_incidents)
+    assert kwargs["req_params"]["size"] == 50
+    assert kwargs["req_params"]["includeThirdParty"] is False
+    assert isinstance(kwargs["req_params"]["after"], int)
     incidents.assert_called_once_with([{"name": "x"}])
     saved = set_last_run.call_args.args[0]["last_fetch"]
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", saved)
@@ -647,11 +639,17 @@ def test_fetch_incidents_uses_last_run(client, mocker):
     _patch_demisto_fetch(mocker, {"includeThirdParty": True}, {"last_fetch": "2026-01-01T00:00:00Z"})
     get = mocker.patch.object(Client, "get_incidents", return_value=[])
 
-    fetch_incidents(client, "3 days", 10)
+    fetch_incidents(
+        client,
+        "3 days ago",
+        10,
+        {"includeThirdParty": True},
+        {"last_fetch": "2026-01-01T00:00:00Z"},
+    )
 
     expected = int(datetime(2026, 1, 1, tzinfo=UTC).timestamp() * 1000)
-    assert get.call_args.kwargs["params"]["after"] == expected
-    assert get.call_args.kwargs["params"]["includeThirdParty"] is True
+    assert get.call_args.kwargs["req_params"]["after"] == expected
+    assert get.call_args.kwargs["req_params"]["includeThirdParty"] is True
 
 
 def test_fetch_incidents_invalid_first_fetch(client, mocker):
@@ -659,7 +657,13 @@ def test_fetch_incidents_invalid_first_fetch(client, mocker):
     mocker.patch.object(Cyfirma, "_parse_date", return_value=None)
     get = mocker.patch.object(Client, "get_incidents")
     with pytest.raises(DemistoException, match="Invalid 'First fetch'"):
-        fetch_incidents(client, "garbage", 10)
+        fetch_incidents(
+            client,
+            "garbage",
+            10,
+            {"includeThirdParty": True},
+            {},
+        )
     get.assert_not_called()
 
 
@@ -720,7 +724,9 @@ def _run_main(mocker, command, params=None, args=None):
     mocker.patch.object(demisto, "params", return_value=VALID_PARAMS if params is None else params)
     mocker.patch.object(demisto, "command", return_value=command)
     mocker.patch.object(demisto, "args", return_value=args or {})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
     Cyfirma.main()
 
 
@@ -738,23 +744,24 @@ def test_main_builds_client_with_expected_arguments(mocker):
     params = {**VALID_PARAMS, "insecure": True, "proxy": True}
     _run_main(mocker, "test-module", params=params)
     kwargs = client_cls.call_args.kwargs
-    assert kwargs["base_url"] == "https://api.example.com/api/ex/v3/da"
+    assert kwargs["base_url"] == "https://api.example.com/api/ex/v3/da/"
     assert kwargs["verify"] is False
     assert kwargs["proxy"] is True
-    assert kwargs["headers"]["X-Api-Key"] == "secret"
+    assert kwargs["headers"]["X-App-Name"] == "PALO_ALTO_XSOAR_V2_AL"
+    assert "auth_handler" in kwargs
 
 
 def test_main_fetch_incidents_uses_defaults(mocker):
     fetch = mocker.patch.object(Cyfirma, "fetch_incidents")
     _run_main(mocker, "fetch-incidents")
-    assert fetch.call_args.args[1:] == ("60 days", 100)
+    assert fetch.call_args.args[1:3] == ("60 days", 100)
 
 
 def test_main_fetch_incidents_custom_params(mocker):
     fetch = mocker.patch.object(Cyfirma, "fetch_incidents")
     params = {**VALID_PARAMS, "max_fetch": "25", "first_fetch": " 7 days "}
     _run_main(mocker, "fetch-incidents", params=params)
-    assert fetch.call_args.args[1:] == ("7 days", 25)
+    assert fetch.call_args.args[1:3] == ("7 days", 25)
 
 
 def test_main_takedown_initiate(mocker):

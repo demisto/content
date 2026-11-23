@@ -41,46 +41,48 @@ fromversion: 5.0.0
 enabled: true
 outputs:
 - contextPath: Cyfirma.CA.Uid
-  description: ID
+  description: ID.
   type: string
 - contextPath: Cyfirma.CA.Category
-  description: Category
+  description: Category.
   type: string
 - contextPath: Cyfirma.CA.Subcategory
-  description: Subcategory
+  description: Subcategory.
   type: string
 - contextPath: Cyfirma.CA.Description
-  description: Description
+  description: Description.
   type: string
 - contextPath: Cyfirma.CA.Ip
-  description: IP address
+  description: IP address.
   type: string
 - contextPath: Cyfirma.CA.Url
-  description: Url
+  description: Url.
   type: string
 - contextPath: Cyfirma.CA.Source
-  description: Source
+  description: Source.
   type: string
 - contextPath: Cyfirma.CA.Computername
-  description: Computername
+  description: Computername.
   type: string
 - contextPath: Cyfirma.CA.Breachdate
-  description: Breachdate
+  description: Breachdate.
   type: unknown
 - contextPath: Cyfirma.CA.Stealerfamily
-  description: Stealerfamily
+  description: Stealerfamily.
   type: string
 - contextPath: Cyfirma.CA.User
-  description: User
+  description: User.
   type: string
 - contextPath: Cyfirma.CA.Email
-  description: Email
+  description: Email.
   type: string
 - contextPath: Cyfirma.CA.Password
-  description: Password
+  description: Password.
   type: string
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.12.14.13919218
 runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
