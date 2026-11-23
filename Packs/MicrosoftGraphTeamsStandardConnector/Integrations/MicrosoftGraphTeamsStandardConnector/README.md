@@ -6,7 +6,7 @@ This integration is configured automatically as part of the Microsoft 365 Standa
 | --- | --- | --- |
 | Server URL | The Microsoft Graph server URL. | False |
 | Tenant ID | The Microsoft Entra ID tenant ID of the registered application. | True |
-| Client ID | The application \(client\) ID of the registered application. | False |
+| Client ID | The application \(client\) ID of the registered application. | True |
 | Client Secret | The client secret of the registered application. | True |
 | Trust any certificate (not secure) | Whether to trust any certificate presented by the server. | False |
 | Use system proxy settings | Whether to route requests through the system proxy. | False |

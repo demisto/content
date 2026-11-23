@@ -8,7 +8,7 @@ This is a long-running integration. For more information about long-running inte
 | --- | --- | --- |
 | Server URL |  | True |
 | Tenant ID | Token or Tenant ID - see Detailed Instructions \(?\) | True |
-| Client ID | ID or Client ID - see Detailed Instructions \(?\) | False |
+| Client ID | ID or Client ID - see Detailed Instructions \(?\) | True |
 | Client Secret | Key or Client Secret - see Detailed Instructions \(?\) | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
