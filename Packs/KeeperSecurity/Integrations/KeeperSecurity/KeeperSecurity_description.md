@@ -22,7 +22,7 @@ Use the URL of the region that hosts your account:
 - CA Instance: <https://keepersecurity.ca>
 - JP Instance: <https://keepersecurity.jp>
 
-## Upgrading from the previous (Commander based) version
+## Upgrading from the previous (Commander-based) version
 
 The previous version authenticated with a username and password and a device registration flow. That flow, and the
 `keeper-security-register-*` commands, were removed. Replace the username and password with an API key as described above.
