@@ -5981,6 +5981,7 @@
         "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
+        "QualysVulnerabilityManagement-Test": "The Qualys test account expired (This account has expired) - CRTX-301180",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
         "Autofocus Query Samples, Sessions and Tags Test Playbook": "The pack is deprecated",
