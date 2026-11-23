@@ -8,9 +8,9 @@
         "AUTO_UPDATE_DOCKER_REVIEWER": "The GitHub username for auto-update-docker PRs reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "kamalq97"
+        "JasBeilin"
     ],
-    "CONTRIBUTION_TL": "kamalq97",
+    "CONTRIBUTION_TL": "JasBeilin",
     "CONTRIBUTION_SECURITY_REVIEWER": ["Benimanela"],
     "CONTRIBUTION_DOCKERFILES_REVIEWER": "shmuel44",
     "MAPPING_REVIEWER": ["OBavly"],
