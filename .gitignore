@@ -126,4 +126,4 @@ cooc_command_examples.txt
 .worktree-context/
 
 # Beel folder
-.beel/
+.beel//Tests

@@ -438,6 +438,91 @@
                 "type": "warRoom"
             },
             {
+				"hidden": false,
+				"id": "jptsnik1fj",
+				"name": "Workplan Analyzer",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": true,
+						"i": "jptsnik1fj-4d7955f5-021d-4c4b-ab2b-0837960868a8",
+						"items": [
+							{
+								"args": {
+									"attach_report": {
+										"simple": "false",
+										"userMarkedRequired": true
+									},
+									"large_io_threshold_kb": {
+										"simple": "100",
+										"userMarkedRequired": true
+									},
+									"slow_task_threshold_seconds": {
+										"simple": "15",
+										"userMarkedRequired": true
+									},
+									"top_n": {
+										"simple": "5",
+										"userMarkedRequired": true
+									},
+									"workplan_id": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"endCol": 4,
+								"fieldId": "",
+								"height": 26,
+								"id": "7afe8d85-4895-4596-a90f-33635eb2be28",
+								"index": 0,
+								"name": "Analyze a workplan",
+								"scriptId": "HealthcheckWorkplanAnalyzer",
+								"sectionItemType": "button",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "jptsnik1fj-e95170a4-c276-4bac-9e1d-05e15a124c64",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "healthcheckworkplanreport",
+								"height": 52,
+								"id": "07154a3d-aa74-4e95-9696-908bf18c8a70",
+								"index": 0,
+								"listId": "jptsnik1fj-e95170a4-c276-4bac-9e1d-05e15a124c64",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 1
+					}
+				],
+				"type": "custom"
+			},
+            {
                 "hidden": true,
                 "id": "resolution",
                 "name": "Resolution",
