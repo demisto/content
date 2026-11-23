@@ -2114,7 +2114,7 @@ script:
     hidden: true
     quickaction: true
     outputs: []
-  dockerimage: demisto/auth-utils:1.0.0.13804971
+  dockerimage: demisto/auth-utils:1.0.0.14665672
   isfetch: true
   ismappable: true
   isremotesyncin: true
