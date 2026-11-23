@@ -22,7 +22,7 @@ configuration:
   section: Connect
   displaypassword: API Key
   hiddenusername: true
-  additionalinfo: A Keeper Admin REST API key with the SIEM:1 (read) scope.
+  additionalinfo: The Keeper Admin REST API key with the SIEM:1 (read) scope.
 - defaultvalue: "1 hour"
   display: First fetch time
   name: first_fetch
