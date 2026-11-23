@@ -1,6 +1,8 @@
 """Tests for the tLab Anti-APT Sandbox integration."""
 
 import json
+import re
+import yaml
 from pathlib import Path
 import pytest
 import TLabAntiAPTSandbox as sandbox
@@ -19,7 +21,6 @@ from TLabAntiAPTSandbox import (
     COMPLETENESS_COMPLETE,
     COMPLETENESS_EMPTY,
     COMPLETENESS_PARTIAL,
-    DEFAULT_SEVERITY_MAP,
     NON_ERROR_REJECTIONS,
     REJECTION_MESSAGES,
     REPORT_TYPE_DROPPED,
@@ -44,8 +45,8 @@ from TLabAntiAPTSandbox import (
     select_main_report,
     validate_sort,
     verdict_to_dbot_score,
-    verdict_to_severity,
 )
+import base64
 import time
 
 BASE = "https://tlab.example.com"
@@ -110,7 +111,7 @@ def test_test_module_logs_when_the_role_cannot_fetch_artifacts(client, params, r
 
 def test_test_module_surfaces_connectivity_failure(client, params, requests_mock):
     requests_mock.get(f"{BASE}/auth/test", status_code=500, text="boom")
-    with pytest.raises(Exception, match="Could not reach"):
+    with pytest.raises(DemistoException, match="Could not reach"):
         sandbox.test_module_command(client, params)
 
 
@@ -144,7 +145,7 @@ def test_submit_file_adds_the_incident_id_as_provenance(client, params, mocker, 
 
 
 def test_submit_file_requires_an_entry_id(client, params):
-    with pytest.raises(Exception, match="entry_id is required"):
+    with pytest.raises(DemistoException, match="entry_id is required"):
         sandbox.submit_file_command(client, {}, params)
 
 
@@ -242,37 +243,21 @@ def test_requested_but_not_run_is_surfaced(client, params, requests_mock):
     assert "did not run" in results.readable_output
 
 
-def test_poll_schedules_next_run_when_supported(client, params, requests_mock, mocker):
+def test_poll_schedules_next_run(client, params, requests_mock, mocker):
     requests_mock.get(f"{BASE}/public/request_status/acc", json=load("request_status_processing"))
-    mocker.patch.object(sandbox, "supports_scheduled_commands", return_value=True)
     results = sandbox.poll_status_command(client, {"access_code": "acc"}, params)
     assert results.scheduled_command is not None
 
 
 def test_poll_returns_immediately_when_terminal(client, params, requests_mock, mocker):
     requests_mock.get(f"{BASE}/public/request_status/acc", json=load("request_status_complete_malware"))
-    mocker.patch.object(sandbox, "supports_scheduled_commands", return_value=True)
     results = sandbox.poll_status_command(client, {"access_code": "acc"}, params)
     assert results.scheduled_command is None
     assert results.outputs["Verdict"] == "MALWARE"
 
 
-def test_poll_falls_back_to_blocking_below_6_2(client, params, requests_mock, mocker):
-    # Servers below 6.2.0 cannot schedule commands, so the loop runs inline.
-    requests_mock.get(
-        f"{BASE}/public/request_status/acc",
-        [{"json": load("request_status_processing")}, {"json": load("request_status_complete_malware")}],
-    )
-    mocker.patch.object(sandbox, "supports_scheduled_commands", return_value=False)
-    mocker.patch("TLabAntiAPTSandbox.time.sleep")
-    results = sandbox.poll_status_command(
-        client, {"access_code": "acc", "interval_in_seconds": "1", "timeout_in_seconds": "60"}, params
-    )
-    assert results.outputs["Verdict"] == "MALWARE"
-
-
 def test_poll_requires_an_access_code(client, params):
-    with pytest.raises(Exception, match="access_code is required"):
+    with pytest.raises(DemistoException, match="access_code is required"):
         sandbox.poll_status_command(client, {}, params)
 
 
@@ -280,7 +265,6 @@ def test_detonate_submits_then_polls(client, params, mocker, requests_mock, tmp_
     sample = tmp_path / "a.exe"
     sample.write_bytes(b"MZ")
     mocker.patch.object(sandbox.demisto, "getFilePath", return_value={"path": str(sample), "name": "a.exe"})
-    mocker.patch.object(sandbox, "supports_scheduled_commands", return_value=True)
     requests_mock.post(f"{BASE}/analyzes/file", json=load("submit_accepted"))
     requests_mock.get(f"{BASE}/public/request_status/acc-123", json=load("request_status_complete_malware"))
 
@@ -293,7 +277,6 @@ def test_detonate_rerun_skips_submission(client, params, requests_mock, mocker):
     # not submit the sample a second time.
     submit = requests_mock.post(f"{BASE}/analyzes/file", json=load("submit_accepted"))
     requests_mock.get(f"{BASE}/public/request_status/acc-123", json=load("request_status_complete_malware"))
-    mocker.patch.object(sandbox, "supports_scheduled_commands", return_value=True)
 
     sandbox.detonate_command(client, {"access_code": "acc-123"}, params, "file")
     assert submit.call_count == 0
@@ -367,7 +350,7 @@ def test_pcap_json_sends_json_accept(client, params, requests_mock):
 
 def test_pcap_respects_the_size_limit(client, params, requests_mock):
     requests_mock.get(f"{BASE}/dyn_reports/5/pcap", content=b"x" * (3 * 1024 * 1024))
-    with pytest.raises(Exception, match="exceeds the configured limit"):
+    with pytest.raises(DemistoException, match="exceeds the configured limit"):
         sandbox.get_pcap_command(client, {"dyn_report_id": "5"}, {**params, "max_artifact_size_mb": 1})
 
 
@@ -398,15 +381,11 @@ def test_list_sources(client, requests_mock):
 
 
 def _yml_commands() -> set:
-    import yaml
-
     spec = yaml.safe_load((Path(__file__).parent / "TLabAntiAPTSandbox.yml").read_text())
     return {c["name"] for c in spec["script"]["commands"]}
 
 
 def _implemented_commands() -> set:
-    import re
-
     source = (Path(__file__).parent / "TLabAntiAPTSandbox.py").read_text()
     return set(re.findall(r'command == "([a-z0-9-]+)"', source))
 
@@ -425,8 +404,6 @@ def test_every_implemented_command_is_declared():
 
 
 def test_polling_commands_declare_the_polling_flag():
-    import yaml
-
     spec = yaml.safe_load((Path(__file__).parent / "TLabAntiAPTSandbox.yml").read_text())
     polling = {c["name"] for c in spec["script"]["commands"] if c.get("polling")}
     # Without polling: true the server never re-runs the command, so a
@@ -435,8 +412,6 @@ def test_polling_commands_declare_the_polling_flag():
 
 
 def test_polling_commands_hide_the_internal_polling_argument():
-    import yaml
-
     spec = yaml.safe_load((Path(__file__).parent / "TLabAntiAPTSandbox.yml").read_text())
     for command in spec["script"]["commands"]:
         if not command.get("polling"):
@@ -492,9 +467,6 @@ def make_client(auth_mode=AUTH_SOURCE_KEY, secret="key", username="", auth_url="
         verify=False,
         auth_url=auth_url,
     )
-
-
-# ---------------------------------------------------------------- verdicts
 
 
 def test_normalize_verdict_accepts_both_vocabularies():
@@ -645,32 +617,6 @@ def test_unknown_can_be_reported_as_benign_when_configured():
 
 
 @pytest.mark.parametrize(
-    "verdict,score,present,escalate,expected",
-    [
-        (VERDICT_MALWARE, 90, True, 0, 3),
-        (VERDICT_SUSPICIOUS, 60, True, 0, 2),
-        (VERDICT_WHITELIST, 0, True, 0, 0.5),
-        (VERDICT_MALWARE, 96, True, 95, 4),  # escalated
-        (VERDICT_MALWARE, 94, True, 95, 3),  # below the threshold
-        (VERDICT_MALWARE, 0, False, 95, 3),  # escalation needs a score
-        (VERDICT_SUSPICIOUS, 99, True, 95, 2),  # escalation is malware-only
-        ("BOGUS", 0, False, 0, 1),  # unmapped falls back to Low
-    ],
-)
-def test_verdict_to_severity(verdict, score, present, escalate, expected):
-    assert verdict_to_severity(verdict, score, present, DEFAULT_SEVERITY_MAP, escalate) == expected
-
-
-def test_informational_severity_survives_as_float():
-    # 0.5 is Informational on the XSOAR scale; an int anywhere in the path
-    # would silently drop it to 0.
-    assert verdict_to_severity(VERDICT_WHITELIST) == 0.5
-
-
-# ------------------------------------------------------------------- dates
-
-
-@pytest.mark.parametrize(
     "value,expected_iso",
     [
         (1774512000000, "2026-03-26T08:00:00Z"),  # milliseconds
@@ -693,9 +639,6 @@ def test_epoch_to_datetime_returns_utc():
     assert parsed is not None
     assert parsed.tzinfo is not None
     assert parsed.year == 2026
-
-
-# -------------------------------------------------------------- rejections
 
 
 def test_rejection_table_covers_every_documented_code():
@@ -740,12 +683,9 @@ def test_rejection_exception_keeps_the_raw_code():
     assert "URL is not valid" in str(exc)
 
 
-# ------------------------------------------------------------------ sorting
-
-
 def test_create_time_sort_is_rejected_before_the_request_leaves():
     # The server does not reject it — it silently reorders by update_time DESC.
-    with pytest.raises(Exception) as err:
+    with pytest.raises(DemistoException) as err:
         validate_sort("createTime,asc")
     assert "createTime" in str(err.value)
 
@@ -753,9 +693,6 @@ def test_create_time_sort_is_rejected_before_the_request_leaves():
 @pytest.mark.parametrize("sort", ["", "sampleReportId,asc", "updateTime,desc", "reportTime,asc", "sampleScore,desc", "size,asc"])
 def test_valid_sort_keys_pass(sort):
     validate_sort(sort)
-
-
-# ------------------------------------------------------- main report choice
 
 
 def test_select_main_report_prefers_explicit_main_type():
@@ -782,9 +719,6 @@ def test_select_main_report_falls_back_to_root_then_score():
     assert select_main_report([]) is None
 
 
-# ------------------------------------------------------------------ submit
-
-
 def test_submit_form_repeats_analysis_types_and_brackets_properties():
     settings = SubmitSettings(
         analysis_types=["STAT_ANALYSIS", "DYN_ANALYSIS"],
@@ -805,17 +739,17 @@ def test_submit_form_repeats_analysis_types_and_brackets_properties():
 
 
 def test_submit_settings_validate_client_side():
-    with pytest.raises(Exception, match="3600"):
+    with pytest.raises(DemistoException, match="3600"):
         SubmitSettings(research_time=99999)
-    with pytest.raises(Exception, match="positive"):
+    with pytest.raises(DemistoException, match="positive"):
         SubmitSettings(research_time=0)
-    with pytest.raises(Exception, match="50 characters"):
+    with pytest.raises(DemistoException, match="50 characters"):
         SubmitSettings(env_preset="x" * 51)
-    with pytest.raises(Exception, match="200 characters"):
+    with pytest.raises(DemistoException, match="200 characters"):
         SubmitSettings(command_line_args="x" * 201)
-    with pytest.raises(Exception, match="at least one|At least one"):
+    with pytest.raises(DemistoException, match="at least one|At least one"):
         SubmitSettings(analysis_types=[])
-    with pytest.raises(Exception, match="2 and 150"):
+    with pytest.raises(DemistoException, match="2 and 150"):
         SubmitSettings(tags=["x"])
 
 
@@ -823,9 +757,6 @@ def test_submit_form_booleans_are_lowercase_strings():
     form = dict(SubmitSettings(enable_network=True, extract_archive=False).to_form())
     assert form["dynAnalysisSettings.enableNetwork"] == "true"
     assert form["extractArchive"] == "false"
-
-
-# ------------------------------------------------------------------- auth
 
 
 def test_auth_header_per_mode(requests_mock):
@@ -875,7 +806,7 @@ def test_sign_in_token_is_cached(requests_mock, mocker):
 def test_sign_in_failure_is_reported_clearly(requests_mock, mocker):
     mocker.patch("TLabAntiAPTSandbox.demisto.getIntegrationContext", return_value={})
     requests_mock.post(f"{BASE}/auth/sign_in", json={"successful": False})
-    with pytest.raises(Exception, match="username and password"):
+    with pytest.raises(DemistoException, match="username and password"):
         make_client(AUTH_SIGN_IN, secret="pw", username="user").whoami()
 
 
@@ -889,59 +820,8 @@ def test_client_header_uses_type_semicolon_name(requests_mock):
 
 def test_401_message_explains_the_internal_token_restriction(requests_mock):
     requests_mock.get(f"{BASE}/auth/test", status_code=401, text="nope")
-    with pytest.raises(Exception, match="127.0.0.1"):
+    with pytest.raises(DemistoException, match="127.0.0.1"):
         make_client(AUTH_INTERNAL).whoami()
-
-
-def test_403_message_explains_the_role_restriction(requests_mock):
-    # Internal tokens authenticate but GET /sample_reports has no branch for
-    # the external_service role, so a correct token still gets 403.
-    requests_mock.get(f"{BASE}/sample_reports", status_code=403, text="Forbidden")
-    with pytest.raises(Exception, match="external_service"):
-        make_client().list_sample_reports()
-
-
-# ------------------------------------------------------------------ paging
-
-
-def test_list_sample_reports_sends_repeated_array_filters(requests_mock):
-    requests_mock.get(f"{BASE}/sample_reports", json={"content": [], "last": True})
-    make_client().list_sample_reports(
-        min_report_id=412840,
-        completeness=["COMPLETE", "PARTIALLY_COMPLETE"],
-        file_verdicts=["MALWARE", "SUSPICIOUS"],
-        root_only=True,
-    )
-    query = requests_mock.last_request.qs
-    assert query["minreportid"] == ["412840"]
-    assert sorted(query["completeness"]) == ["complete", "partially_complete"]
-    assert sorted(query["fileverdict"]) == ["malware", "suspicious"]
-    assert query["rootonly"] == ["true"]
-    assert query["sort"] == ["samplereportid,asc"]
-
-
-def test_iter_sample_reports_stops_on_short_page(requests_mock):
-    requests_mock.get(
-        f"{BASE}/sample_reports",
-        [
-            {"json": {"content": [{"sampleReportId": i} for i in range(3)], "last": False}},
-            {"json": {"content": [{"sampleReportId": 99}], "last": False}},
-        ],
-    )
-    rows = list(make_client().iter_sample_reports(page_size=3, max_pages=10))
-    assert [r["sampleReportId"] for r in rows] == [0, 1, 2, 99]
-
-
-def test_iter_sample_reports_respects_max_pages(requests_mock):
-    requests_mock.get(
-        f"{BASE}/sample_reports",
-        json={"content": [{"sampleReportId": 1}, {"sampleReportId": 2}], "last": False},
-    )
-    rows = list(make_client().iter_sample_reports(page_size=2, max_pages=3))
-    assert len(rows) == 6
-
-
-# ----------------------------------------------------------- public routes
 
 
 def test_request_status_sends_no_authorization_header(requests_mock):
@@ -957,15 +837,6 @@ def test_request_status_early_verdict_flag(requests_mock):
     assert requests_mock.last_request.qs["earlyverdict"] == ["true"]
 
 
-def test_request_status_batch_posts_a_bare_array(requests_mock):
-    requests_mock.post(f"{BASE}/public/request_status/batch", json=[])
-    make_client().request_status_batch(["a", "b"])
-    assert requests_mock.last_request.json() == ["a", "b"]
-
-
-# --------------------------------------------------------------- artifacts
-
-
 def test_download_sends_an_explicit_accept_header(requests_mock):
     # DynReportsController maps two handlers to {id}/pcap that differ only by
     # produces, so '*/*' resolves in a Spring-version-dependent way.
@@ -977,7 +848,7 @@ def test_download_sends_an_explicit_accept_header(requests_mock):
 
 def test_download_aborts_when_the_artifact_exceeds_the_limit(requests_mock):
     requests_mock.get(f"{BASE}/dyn_reports/5/memory_dump", content=b"x" * 5000)
-    with pytest.raises(Exception, match="exceeds the configured limit"):
+    with pytest.raises(DemistoException, match="exceeds the configured limit"):
         make_client().download("/dyn_reports/5/memory_dump", "application/octet-stream", max_bytes=1000)
 
 
@@ -986,18 +857,14 @@ def test_download_without_a_limit_returns_everything(requests_mock):
     assert len(make_client().download("/x", "application/json", max_bytes=0)) == 5000
 
 
-# ------------------------------------------------------- tlab-auth account
-
 AUTH = "https://tlab.example.com:8002/api"  # derived from BASE: the omni-center portal
 
 
 def jwt(exp: float) -> str:
     """Unsigned JWT with an exp claim — the client never verifies signatures."""
-    import base64
-    import json as _json
 
     def b64(obj):
-        return base64.urlsafe_b64encode(_json.dumps(obj).encode()).decode().rstrip("=")
+        return base64.urlsafe_b64encode(json.dumps(obj).encode()).decode().rstrip("=")
 
     return f"{b64({'alg': 'HS256'})}.{b64({'exp': exp, 'sub': 'svc'})}.sig"
 
@@ -1129,7 +996,7 @@ def test_tlab_account_wrong_password_is_tried_once(requests_mock, context):
     # the account lockout in tlab-auth.
     login = requests_mock.post(f"{AUTH}/auth/login", status_code=401, json={"message": "invalid login or password"})
 
-    with pytest.raises(Exception, match="invalid login or password"):
+    with pytest.raises(DemistoException, match="invalid login or password"):
         make_client(AUTH_TLAB_ACCOUNT, secret="bad", username="svc").whoami()
     assert login.call_count == 1
 
@@ -1146,7 +1013,7 @@ def test_tlab_account_relogs_when_the_account_changes(requests_mock, context):
 
 def test_tlab_account_without_any_host_explains_itself(context):
     client = TLabClient(base_url="", auth_mode=AUTH_TLAB_ACCOUNT, credentials={"identifier": "svc", "password": "pw"})
-    with pytest.raises(Exception, match="Auth server URL"):
+    with pytest.raises(DemistoException, match="Auth server URL"):
         client.whoami()
 
 

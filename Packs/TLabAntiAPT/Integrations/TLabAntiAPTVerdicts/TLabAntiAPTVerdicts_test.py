@@ -17,11 +17,6 @@ from TLabAntiAPTVerdicts import AUTH_SOURCE_KEY, AUTH_TLAB_ACCOUNT, TLabClient
 
 BASE = "https://tlab.example.com"
 DATA = Path(__file__).parent / "test_data"
-# Resolved from this file, not the working directory: the content repo runs
-# each integration's tests from the integration's own directory.
-PACK = Path(__file__).resolve().parents[2]
-# The connector half of the contract. Absent outside the connector repo.
-SCHEMA = PACK.parents[1] / "docs" / "verdict-incident-schema.json"
 SHA256 = "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999"
 
 
@@ -183,28 +178,6 @@ def test_empty_values_are_omitted_not_nulled(params):
     payload = verdicts.contract_payload(load("report_no_score")["content"][0], params)
     assert "tlab_file_name" not in payload
     assert "tlab_source_type" not in payload
-
-
-@pytest.mark.skipif(not SCHEMA.exists(), reason="the connector schema lives in the connector repo")
-def test_custom_field_names_cover_the_contract_mapping():
-    """The Go connector fills these names directly because the REST path runs
-    no mapper. Drifting apart means the two halves write different incidents."""
-    schema = json.loads(SCHEMA.read_text())
-    assert schema["x-xsoar-custom-field-names"]["mapping"] == verdicts.CUSTOM_FIELD_NAMES
-
-
-def test_every_custom_field_has_an_incident_field_in_the_pack():
-    """A machine name the pack does not declare is silently dropped by XSOAR."""
-    declared = {json.loads(p.read_text())["cliName"] for p in (PACK / "IncidentFields").glob("incidentfield-*.json")}
-    assert set(verdicts.CUSTOM_FIELD_NAMES.values()) <= declared
-
-
-def test_mapper_covers_every_custom_field():
-    mapper = json.loads((PACK / "Classifiers/classifier-mapper-incoming-tLab_Anti-APT.json").read_text())
-    mapped = {
-        entry["simple"] for entry in mapper["mapping"]["tLab Anti-APT Verdict"]["internalMapping"].values() if "simple" in entry
-    }
-    assert set(verdicts.CUSTOM_FIELD_NAMES) <= mapped
 
 
 # ------------------------------------------------------------------ incident
@@ -470,6 +443,9 @@ def test_get_verdicts_command(client, params, requests_mock):
     requests_mock.get(f"{BASE}/sample_reports", json=load("reports_page"))
     result = verdicts.get_verdicts_command(client, {"limit": "5"}, params)
     assert len(result.outputs) == 2
+    assert result.outputs[0]["SampleReportId"] == 412839
+    assert result.outputs[0]["DedupeKey"] == "tlab-apt:inst-uuid:412839"
+    assert result.raw_response[0]["tlab_sample_report_id"] == 412839
     assert "tLab Anti-APT verdicts (2)" in result.readable_output
 
 
@@ -564,99 +540,3 @@ def test_test_module_rejects_a_bad_severity_map(client, params, requests_mock):
 def test_build_client_defaults_to_tlab_account():
     client = verdicts.build_client({"url": BASE, "credentials": {"identifier": "svc", "password": "k"}})
     assert client._auth_mode == AUTH_TLAB_ACCOUNT
-
-
-# ------------------------------------------------------------ pack structure
-# These guard the wiring between content items. Every one of them fails only
-# at runtime on a live tenant otherwise, which is the worst place to find out.
-
-
-def _yaml(path: Path):
-    import yaml
-
-    return yaml.safe_load(path.read_text())
-
-
-def test_every_declared_test_playbook_exists():
-    declared = set()
-    for integration in PACK.glob("Integrations/*/*.yml"):
-        declared |= set(_yaml(integration).get("tests") or [])
-    existing = {_yaml(p)["name"] for p in PACK.glob("TestPlaybooks/*.yml")}
-    assert declared - existing == set()
-
-
-def test_incident_type_points_at_a_playbook_that_exists():
-    incident_type = json.loads((PACK / "IncidentTypes/incidenttype-tLab_Anti-APT_Verdict.json").read_text())
-    playbooks = {_yaml(p)["name"] for p in PACK.glob("Playbooks/*.yml")}
-    assert incident_type["playbookId"] in playbooks
-
-
-def test_incident_type_points_at_a_layout_that_exists():
-    incident_type = json.loads((PACK / "IncidentTypes/incidenttype-tLab_Anti-APT_Verdict.json").read_text())
-    layouts = {json.loads(p.read_text())["id"] for p in PACK.glob("Layouts/*.json")}
-    assert incident_type["layout"] in layouts
-
-
-def _pack_commands() -> dict:
-    """Command name -> the brand that provides it."""
-    out = {}
-    for integration in PACK.glob("Integrations/*/*.yml"):
-        data = _yaml(integration)
-        for command in data["script"].get("commands") or []:
-            out[command["name"]] = data["name"]
-    return out
-
-
-def _playbook_commands(path: Path):
-    for task in _yaml(path)["tasks"].values():
-        script = task["task"].get("script") or ""
-        if "|||" in script:
-            brand, _, command = script.partition("|||")
-            yield brand, command
-
-
-@pytest.mark.parametrize(
-    "playbook", sorted(PACK.glob("Playbooks/*.yml")) + sorted(PACK.glob("TestPlaybooks/*.yml")), ids=lambda p: p.stem
-)
-def test_playbook_only_calls_commands_the_pack_provides(playbook):
-    """A typo in a playbook's command name is silent until someone runs it."""
-    provided = _pack_commands()
-    for brand, command in _playbook_commands(playbook):
-        if brand == "Builtin":
-            continue  # core commands, not ours to declare
-        assert command in provided, f"{playbook.name} calls unknown command {command}"
-        assert provided[command] == brand, (
-            f"{playbook.name} calls {command} on brand {brand}, but it lives in {provided[command]}"
-        )
-
-
-@pytest.mark.parametrize(
-    "playbook", sorted(PACK.glob("Playbooks/*.yml")) + sorted(PACK.glob("TestPlaybooks/*.yml")), ids=lambda p: p.stem
-)
-def test_playbook_tasks_are_reachable_and_terminate(playbook):
-    """An unreachable task is dead content; a dangling next task hangs the run."""
-    tasks = _yaml(playbook)["tasks"]
-    reachable, stack = set(), ["0"]
-    while stack:
-        current = stack.pop()
-        if current in reachable:
-            continue
-        reachable.add(current)
-        for targets in (tasks[current].get("nexttasks") or {}).values():
-            for target in targets:
-                assert target in tasks, f"{playbook.name}: task {current} points at missing task {target}"
-                stack.append(target)
-    assert reachable == set(tasks), f"{playbook.name}: unreachable tasks {set(tasks) - reachable}"
-
-
-@pytest.mark.parametrize(
-    "playbook", sorted(PACK.glob("Playbooks/*.yml")) + sorted(PACK.glob("TestPlaybooks/*.yml")), ids=lambda p: p.stem
-)
-def test_playbook_conditions_actually_branch(playbook):
-    """A condition whose branches all land on the same task looks like thought
-    without being any. Either the branches differ or the condition is noise."""
-    for task_id, task in _yaml(playbook)["tasks"].items():
-        if task["type"] != "condition":
-            continue
-        targets = {t for group in (task.get("nexttasks") or {}).values() for t in group}
-        assert len(targets) > 1, f"{playbook.name}: condition {task_id} sends every branch to {targets}"

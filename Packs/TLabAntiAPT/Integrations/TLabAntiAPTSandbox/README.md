@@ -19,20 +19,14 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Analysis priority | Queue priority of submissions from this instance. A command's analysis_priority argument overrides it. | False |
 | Environment preset | Leave empty to let the server pick an environment by file type. Maximum 50 characters. | False |
 | Dynamic analysis time (seconds) | Maximum 3600 seconds, enforced by the server. | False |
-| Enable network during dynamic analysis | Whether the sample may reach the network during dynamic analysis. Off by default; a command's enable_network argument overrides it. The pack's detonation playbooks turn it on. | False |
-| Accept an early verdict | Finalize once static and antivirus analysis complete, without waiting for dynamic analysis. | False |
-| Suspicious score threshold | Mirrors the product default. Scores from this value up to the malicious threshold are Suspicious. | False |
-| Malicious score threshold | Mirrors the product default \(analysisService.minMaliciousScore\). | False |
+| Enable network during dynamic analysis | Whether the sample may reach the network during dynamic analysis. A command's enable_network argument overrides it; the pack's detonation playbooks turn it on. | False |
+| Accept an early verdict | Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis. | False |
+| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. | False |
+| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. | False |
 | Source reliability | Reliability attached to every DBotScore this integration produces. | False |
 | Maximum artifact size (MB) | Downloads larger than this are aborted rather than buffered. | False |
 | PDF render timeout (seconds) | The PDF endpoint renders synchronously and has no status endpoint, so a large report can take a while. | False |
 | tLab web UI base URL | Used only to build human-readable report links in command output. | False |
-
-## Analysis types
-
-The server modifies the requested analysis set: `AV_ANALYSIS` is always added,
-and `DYN_ANALYSIS` is removed on a LITE license or with the `mailer` preset. When
-that happens, command output lists the difference under `RequestedButNotRun`.
 
 ## Commands
 
@@ -993,3 +987,11 @@ There are no input arguments for this command.
 >|SourceId|Type|Uid|
 >|---|---|---|
 >| 12 | Cortex XSOAR | u |
+
+## Known Limitations
+
+### Analysis types
+
+The server modifies the requested analysis set: `AV_ANALYSIS` is always added,
+and `DYN_ANALYSIS` is removed on a LITE license or with the `mailer` preset. When
+that happens, command output lists the difference under `RequestedButNotRun`.

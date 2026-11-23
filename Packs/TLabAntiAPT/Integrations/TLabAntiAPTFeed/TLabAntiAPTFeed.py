@@ -13,6 +13,8 @@ infrastructure, and analysts stop trusting the source.
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
+from datetime import datetime, timedelta, UTC
+import traceback
 import ipaddress
 import re
 import base64
@@ -21,8 +23,9 @@ import hashlib
 import json
 import time
 import urllib.parse
-from collections.abc import Iterator
 from typing import Any
+import dateparser
+import requests
 
 
 # ---------------------------------------------------------------------------
@@ -108,47 +111,16 @@ def lookback_hours(params: dict) -> int:
     return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
 
 
-COMPLETENESS_EMPTY = "EMPTY"
-COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
 
-REQUEST_STATUS_UNKNOWN = "UNKNOWN"
-REQUEST_STATUS_WAITING = "WAITING_FOR_PROCESSING"
-REQUEST_STATUS_PROCESSING = "PROCESSING"
-REQUEST_STATUS_ACCEPTED = "ACCEPTED"
 REQUEST_STATUS_REJECTED = "REJECTED"
 
-REPORT_TYPE_MAIN = "MAIN"
-REPORT_TYPE_DROPPED = "DROPPED"
-REPORT_TYPE_EMBEDDED = "EMBEDDED"
-REPORT_TYPE_COMMAND_LINES = "COMMAND_LINES"
-REPORT_TYPE_SANITIZED = "SANITIZED"
-REPORT_TYPE_DOWNLOADED_FROM_LINK = "DOWNLOADED_FROM_LINK"
-
-# The source type must be sent by the enum NAME: Spring form-binds by name,
-# while the same enum is serialized outwards through @JsonValue as a display
-# code ("Cortex XSOAR"). The two never round-trip.
-SOURCE_TYPE_NAME = "CORTEX_XSOAR"
-SOURCE_TYPE_DISPLAY = "Cortex XSOAR"
 
 # Only these sort keys exist in SampleReportRepositoryImpl.COMMON_SORTS. An
 # unknown key is NOT rejected: the query silently falls back to
 # "ORDER BY update_time DESC", which quietly reverses the order a cursor
 # depends on. "createTime" looks valid and is the usual trap.
 ALLOWED_SORT_FIELDS = {"reportTime", "updateTime", "sampleReportId", "sampleScore", "size"}
-
-
-def stored_file_verdict(value: Any) -> str | None:
-    """The verdict stored against a file, or None when nobody has set one.
-
-    ``FileDto.fileVerdict`` is not the analysis result: tlab-server writes it
-    only through the manual ``POST /files/{sha256|id}/verdict`` routes, and no
-    analysis step ever updates it. Its default is UNKNOWN, which next to a
-    MALWARE analysis reads as a contradiction, so an unset value is dropped from
-    outputs instead of being shown.
-    """
-    text = str(value or "").strip().upper()
-    return None if text in ("", "UNKNOWN") else text
 
 
 def normalize_verdict(raw: Any) -> str:
@@ -268,20 +240,6 @@ def _stat_and_av_done(report: dict) -> bool:
     return {"STAT_ANALYSIS", "AV_ANALYSIS"}.issubset(names)
 
 
-def is_terminal(completeness: str, verdict: str) -> bool:
-    """Whether polling can stop.
-
-    COMPLETE is always terminal. PARTIALLY_COMPLETE is terminal only when the
-    verdict is already actionable — for example when the antivirus fired before
-    dynamic analysis finished.
-    """
-    if completeness == COMPLETENESS_COMPLETE:
-        return True
-    if completeness == COMPLETENESS_PARTIAL:
-        return verdict in ACTIONABLE_VERDICTS
-    return False
-
-
 def verdict_to_dbot_score(verdict: str, unknown_is_benign: bool = False) -> int:
     """Canonical verdict -> DBotScore (0 Unknown, 1 Good, 2 Suspicious, 3 Bad)."""
     if verdict == VERDICT_MALWARE:
@@ -291,35 +249,6 @@ def verdict_to_dbot_score(verdict: str, unknown_is_benign: bool = False) -> int:
     if verdict in (VERDICT_OK, VERDICT_CLEAN, VERDICT_WHITELIST):
         return Common.DBotScore.GOOD
     return Common.DBotScore.GOOD if unknown_is_benign else Common.DBotScore.NONE
-
-
-# XSOAR severity scale: 0 Unknown, 0.5 Informational, 1 Low, 2 Medium,
-# 3 High, 4 Critical.
-DEFAULT_SEVERITY_MAP = {
-    VERDICT_MALWARE: 3,
-    VERDICT_SUSPICIOUS: 2,
-    VERDICT_OK: 1,
-    VERDICT_CLEAN: 1,
-    VERDICT_WHITELIST: 0.5,
-    VERDICT_UNKNOWN: 1,
-}
-
-
-def verdict_to_severity(
-    verdict: str,
-    score: float = 0.0,
-    score_present: bool = False,
-    severity_map: dict | None = None,
-    escalate_score: float = 0.0,
-) -> float:
-    """Canonical verdict -> XSOAR severity, with optional escalation."""
-    table = severity_map or DEFAULT_SEVERITY_MAP
-    # An unmapped verdict must not break the flow: Low is visible in a queue
-    # without raising an alarm.
-    severity = table.get(verdict, 1)
-    if escalate_score and verdict == VERDICT_MALWARE and score_present and score >= escalate_score:
-        return 4
-    return float(severity)
 
 
 # --------------------------------------------------------------------------
@@ -348,7 +277,7 @@ def epoch_to_datetime(value: Any) -> datetime | None:
         return None
     if number < _EPOCH_MILLIS_FLOOR:
         number *= 1000
-    return datetime.fromtimestamp(number / 1000.0, tz=timezone.utc)
+    return datetime.fromtimestamp(number / 1000.0, tz=UTC)
 
 
 def epoch_to_iso(value: Any) -> str | None:
@@ -407,7 +336,7 @@ class TLabRejection(Exception):
         super().__init__(describe_rejection(code, message))
 
 
-def _raise_auth_error(response) -> None:
+def _raise_auth_error(response: requests.Response) -> None:
     body: dict = {}
     with contextlib.suppress(Exception):
         body = response.json() or {}
@@ -455,6 +384,16 @@ _FALLBACK_TOKEN_LIFETIME = 900
 # The omni-center site that tlab-omni-center-frontend installs into nginx listens
 # on 8002 with TLS and proxies /api/ to tlab-auth (127.0.0.1:8033).
 OMNI_PORTAL_TLS_PORT = 8002
+
+
+def read_cache(key: str) -> dict:
+    """One entry of the integration context, where tokens are cached between runs."""
+    return (demisto.getIntegrationContext() or {}).get(key) or {}
+
+
+def write_cache(key: str, value: dict) -> None:
+    """Store one entry, keeping the rest of the context (fetch cursors live there too)."""
+    merge_integration_context(**{key: value})
 
 
 def default_auth_url(server_url: str) -> str:
@@ -553,8 +492,7 @@ class TLabClient(BaseClient):
 
     def _sign_in_token(self, force: bool = False) -> str:
         """Return a legacy token, reusing the cached one until it nearly expires."""
-        context = demisto.getIntegrationContext() or {}
-        cached = context.get(_TOKEN_CACHE_KEY) or {}
+        cached = read_cache(_TOKEN_CACHE_KEY)
         expires_at = cached.get("expires_at") or 0
         if not force and cached.get("value") and time.time() < expires_at - _TOKEN_SKEW_SECONDS:
             return cached["value"]
@@ -573,11 +511,10 @@ class TLabClient(BaseClient):
             raise DemistoException("tLab Anti-APT returned no token for the given credentials.")
         expiration = (response.get("token") or {}).get("expirationTime") or 0
         parsed = epoch_to_datetime(expiration)
-        context[_TOKEN_CACHE_KEY] = {
-            "value": token,
-            "expires_at": parsed.timestamp() if parsed else time.time() + 3600,
-        }
-        demisto.setIntegrationContext(context)
+        write_cache(
+            _TOKEN_CACHE_KEY,
+            {"value": token, "expires_at": parsed.timestamp() if parsed else time.time() + 3600},
+        )
         return token
 
     # -- tlab-auth session ---------------------------------------------------
@@ -594,8 +531,7 @@ class TLabClient(BaseClient):
                 "tLab Anti-APT: set the Auth server URL (tlab-auth), e.g. https://<tlab-host>/api, "
                 "or a Server URL with a host name to derive it from."
             )
-        context = demisto.getIntegrationContext() or {}
-        session = context.get(_SESSION_CACHE_KEY) or {}
+        session = read_cache(_SESSION_CACHE_KEY)
         if session.get("owner") != self._session_owner():
             session = {}
 
@@ -614,13 +550,15 @@ class TLabClient(BaseClient):
         access = tokens.get("access") or ""
         if not access:
             raise DemistoException("tLab Anti-APT: tlab-auth returned no access token.")
-        context[_SESSION_CACHE_KEY] = {
-            "owner": self._session_owner(),
-            "access": access,
-            "refresh": tokens.get("refresh") or "",
-            "expires_at": jwt_expiry(access) or time.time() + _FALLBACK_TOKEN_LIFETIME,
-        }
-        demisto.setIntegrationContext(context)
+        write_cache(
+            _SESSION_CACHE_KEY,
+            {
+                "owner": self._session_owner(),
+                "access": access,
+                "refresh": tokens.get("refresh") or "",
+                "expires_at": jwt_expiry(access) or time.time() + _FALLBACK_TOKEN_LIFETIME,
+            },
+        )
         return access
 
     def _auth_post(self, path: str, body: dict) -> dict:
@@ -670,7 +608,7 @@ class TLabClient(BaseClient):
         with_auth: bool = True,
         timeout: int | None = None,
         retry_on_401: bool = True,
-    ):
+    ) -> Any:
         """One request, translating tLab's failure modes into readable errors."""
         # Headers (and with them any login) are built outside the try: a 401
         # from tlab-auth itself must not trigger the retry below, or a wrong
@@ -710,7 +648,7 @@ class TLabClient(BaseClient):
                 )
             raise
 
-    def _error_handler(self, response) -> None:
+    def _error_handler(self, response: requests.Response) -> None:
         status = response.status_code
         body = ""
         # Diagnostics must never mask the real error.
@@ -801,308 +739,17 @@ class TLabClient(BaseClient):
             check_min_report_id_applied(payload, min_report_id)
         return payload
 
-    def iter_sample_reports(self, page_size: int = 50, max_pages: int = 20, **kwargs) -> Iterator[dict]:
-        """Walk pages until a short page, an empty page or max_pages."""
-        for page in range(max_pages):
-            payload = self.list_sample_reports(page=page, size=page_size, **kwargs)
-            content = payload.get("content") or []
-            yield from content
-            if len(content) < page_size or payload.get("last"):
-                return
-        demisto.debug(f"tLab: stopped paging at max_pages={max_pages}; more results may exist")
-
-    def get_sample_report(self, sample_report_id: int) -> dict:
-        """Full report. Only this endpoint carries dynReportSummary and
-        statReportSummary — the public request-status endpoint returns a
-        SampleReportShortBean, which has neither."""
-        return self.request("GET", f"/sample_reports/{sample_report_id}")
-
     def get_threat_indicators(self, sample_report_id: int) -> dict:
         return self.request("GET", f"/sample_reports/{sample_report_id}/threat_indicators")
 
     def get_attack_matrix(self, sample_report_id: int) -> dict:
         return self.request("GET", f"/sample_reports/{sample_report_id}/attack_matrix")
 
-    def get_archive_password(self, sample_report_id: int) -> dict:
-        return self.request("GET", f"/sample_reports/{sample_report_id}/archive_password")
-
-    def get_stat_report(self, stat_report_id: int) -> dict:
-        return self.request("GET", f"/stat_reports/{stat_report_id}")
-
-    def get_dyn_report(self, dyn_report_id: int) -> dict:
-        return self.request("GET", f"/dyn_reports/{dyn_report_id}")
-
-    def get_file_by_hash(self, sha256: str) -> dict:
-        return self.request("GET", f"/files/{sha256}")
-
-    def hash_search(self, hash_type: str, hash_part: str) -> Any:
-        """Prefix search over stored hashes.
-
-        This is the safe route for an MD5 lookup: ``fileHashMd5`` exists as a
-        report filter but is absent from the server's allow-list for the
-        company_admin and user roles, so it is silently dropped rather than
-        rejected and the query then matches everything.
-        """
-        return self.request("GET", "/files/hash_search", params={"hashType": hash_type, "hashPart": hash_part})
-
-    def list_indicator_codes(self) -> Any:
-        """Catalogue of indicator codes, usable with the report ``indicators`` filter."""
-        return self.request("GET", "/report_indicators")
-
-    def whoami(self) -> dict:
-        """Identity and role of the token owner — used by test-module."""
-        return self.request("GET", "/auth/test")
-
-    def list_sources(self) -> Any:
-        return self.request("GET", "/sources")
-
-    def list_env_presets(self, scope: str = "global") -> Any:
-        return self.request("GET", f"/ex_env/presets/{scope}")
-
     # -- public endpoints (no authentication required) -----------------------
-
-    def request_status(self, access_code: str, early_verdict: bool = False) -> dict:
-        """Poll a submission. ``/public/**`` needs no credentials at all."""
-        params = {"earlyVerdict": "true"} if early_verdict else None
-        return self.request("GET", f"/public/request_status/{access_code}", params=params, with_auth=False)
-
-    def request_status_batch(self, access_codes: list) -> Any:
-        """Status for many submissions in one call. Body is a bare JSON array."""
-        return self._http_request(
-            method="POST",
-            url_suffix="/public/request_status/batch",
-            json_data=access_codes,
-            headers={"Accept": "application/json", **self._client_header()},
-            resp_type="json",
-            error_handler=self._error_handler,
-        )
 
     # -- submission ---------------------------------------------------------
 
-    def submit(
-        self,
-        analysis_source: str,
-        settings: "SubmitSettings",
-        file_path: str | None = None,
-        file_name: str | None = None,
-        url: str | None = None,
-        additional_files: list | None = None,
-    ) -> dict:
-        """POST /analyzes/{file|url}.
-
-        The body is multipart and several keys repeat (``analysisTypes``,
-        ``properties[...]``, ``tags[n].name``), so it is built as a list of
-        tuples rather than a dict.
-        """
-        form = settings.to_form()
-        if url:
-            form.append(("url", url))
-
-        files = None
-        handles = []
-        try:
-            if file_path:
-                handle = open(file_path, "rb")  # noqa: SIM115 - closed in finally
-                handles.append(handle)
-                files = [("analysisFile", (file_name or os.path.basename(file_path), handle))]
-                for extra in additional_files or []:
-                    extra_handle = open(extra["path"], "rb")  # noqa: SIM115
-                    handles.append(extra_handle)
-                    files.append(("additionalFiles", (extra["name"], extra_handle)))
-
-            response = self.request(
-                "POST",
-                f"/analyzes/{analysis_source}",
-                data=form,
-                files=files,
-                timeout=settings.submit_timeout,
-            )
-        finally:
-            for handle in handles:
-                handle.close()
-
-        rejection = response.get("rejectionCode")
-        status = response.get("analysisRequestStatus")
-        if status == REQUEST_STATUS_REJECTED and rejection and rejection not in NON_ERROR_REJECTIONS:
-            raise TLabRejection(rejection, response.get("message") or "", response)
-        return response
-
     # -- artifacts ----------------------------------------------------------
-
-    def download(
-        self,
-        url_suffix: str,
-        accept: str,
-        max_bytes: int,
-        params: Any = None,
-        with_auth: bool = True,
-        method: str = "GET",
-        json_data: Any = None,
-        timeout: int | None = None,
-    ) -> bytes:
-        """Stream a binary artifact, refusing to buffer more than max_bytes.
-
-        ``accept`` is always explicit: DynReportsController has two handlers
-        mapped to ``{id}/pcap`` that differ only by ``produces``, so ``*/*``
-        resolves in a Spring-version-dependent way.
-        """
-        response = self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=json_data,
-            headers=self._build_headers({"Accept": accept}, with_auth=with_auth),
-            resp_type="response",
-            stream=True,
-            timeout=timeout,
-            error_handler=self._error_handler,
-        )
-        chunks = []
-        total = 0
-        for chunk in response.iter_content(chunk_size=65536):
-            if not chunk:
-                continue
-            total += len(chunk)
-            if max_bytes and total > max_bytes:
-                response.close()
-                raise DemistoException(
-                    f"The artifact exceeds the configured limit of {max_bytes} bytes. "
-                    "Raise the limit in the integration settings or fetch it from the tLab UI."
-                )
-            chunks.append(chunk)
-        return b"".join(chunks)
-
-
-class SubmitSettings:
-    """Form fields of AnalysisSettingsBean.
-
-    Client-side validation exists so that an operator gets a sentence instead of
-    a Spring 400 blob.
-    """
-
-    MAX_RESEARCH_TIME = 3600
-    MAX_PRESET_NAME = 50
-    MAX_COMMAND_LINE = 200
-    MAX_UAS_SCRIPT = 10000
-
-    def __init__(
-        self,
-        analysis_types: list | None = None,
-        analysis_priority: str = "LOW",
-        research_time: int = 120,
-        env_preset: str = "",
-        user_preset: bool = False,
-        enable_network: bool = False,
-        create_dump: bool = False,
-        enable_acceleration: bool = False,
-        enable_antievasion: bool = False,
-        use_original_filename: bool = True,
-        command_line_args: str = "",
-        uas_script: str = "",
-        extract_archive: bool = True,
-        include_archive_siblings: bool = True,
-        archive_password: str = "",
-        ignore_whitelist: bool = False,
-        static_prefilter: bool = False,
-        public_access: bool = False,
-        main_filename: str = "",
-        tags: list | None = None,
-        properties: dict | None = None,
-        source_type: str = SOURCE_TYPE_NAME,
-        source_uid: str = "",
-        submit_timeout: int = 120,
-    ):
-        # None means "use the default"; an empty list is an operator error.
-        self.analysis_types = ["STAT_ANALYSIS", "DYN_ANALYSIS"] if analysis_types is None else list(analysis_types)
-        self.analysis_priority = analysis_priority
-        self.research_time = int(research_time)
-        self.env_preset = env_preset
-        self.user_preset = user_preset
-        self.enable_network = enable_network
-        self.create_dump = create_dump
-        self.enable_acceleration = enable_acceleration
-        self.enable_antievasion = enable_antievasion
-        self.use_original_filename = use_original_filename
-        self.command_line_args = command_line_args
-        self.uas_script = uas_script
-        self.extract_archive = extract_archive
-        self.include_archive_siblings = include_archive_siblings
-        self.archive_password = archive_password
-        self.ignore_whitelist = ignore_whitelist
-        self.static_prefilter = static_prefilter
-        self.public_access = public_access
-        self.main_filename = main_filename
-        self.tags = tags or []
-        self.properties = properties or {}
-        self.source_type = source_type
-        self.source_uid = source_uid
-        self.submit_timeout = submit_timeout
-        self.validate()
-
-    def validate(self) -> None:
-        if not self.analysis_types:
-            raise DemistoException("At least one analysis type must be selected.")
-        if self.research_time > self.MAX_RESEARCH_TIME:
-            raise DemistoException(f"research_time must not exceed {self.MAX_RESEARCH_TIME} seconds (tLab Anti-APT limit).")
-        if self.research_time <= 0:
-            raise DemistoException("research_time must be a positive number of seconds.")
-        if len(self.env_preset) > self.MAX_PRESET_NAME:
-            raise DemistoException(f"env_preset must not exceed {self.MAX_PRESET_NAME} characters.")
-        if len(self.command_line_args) > self.MAX_COMMAND_LINE:
-            raise DemistoException(f"command_line_args must not exceed {self.MAX_COMMAND_LINE} characters.")
-        if len(self.uas_script) > self.MAX_UAS_SCRIPT:
-            raise DemistoException(f"uas_script must not exceed {self.MAX_UAS_SCRIPT} characters.")
-        for tag in self.tags:
-            if not 2 <= len(str(tag)) <= 150:
-                raise DemistoException(f"Each tag must be between 2 and 150 characters: {tag!r}")
-
-    def to_form(self) -> list:
-        """Build the multipart body.
-
-        Note that the server mutates the request: AV_ANALYSIS is always added,
-        and DYN_ANALYSIS is stripped on a LITE license or the ``mailer`` preset.
-        A request asking for dynamic analysis can therefore come back static
-        only — commands surface that as RequestedButNotRun.
-        """
-        form: list[tuple[str, Any]] = []
-        for analysis_type in self.analysis_types:
-            form.append(("analysisTypes", analysis_type))
-        form.append(("analysisPriority", self.analysis_priority))
-        form.append(("dynAnalysisSettings.researchTime", str(self.research_time)))
-        if self.env_preset:
-            form.append(("dynAnalysisSettings.envPresetName", self.env_preset))
-        form.extend(
-            [
-                ("dynAnalysisSettings.userPreset", _bool(self.user_preset)),
-                ("dynAnalysisSettings.enableNetwork", _bool(self.enable_network)),
-                ("dynAnalysisSettings.createDump", _bool(self.create_dump)),
-                ("dynAnalysisSettings.enableAcceleration", _bool(self.enable_acceleration)),
-                ("dynAnalysisSettings.enableAntievasion", _bool(self.enable_antievasion)),
-                ("dynAnalysisSettings.useOriginalFilename", _bool(self.use_original_filename)),
-                ("extractArchive", _bool(self.extract_archive)),
-                ("includeArchiveSiblings", _bool(self.include_archive_siblings)),
-                ("ignoreWhitelist", _bool(self.ignore_whitelist)),
-                ("staticPrefilter", _bool(self.static_prefilter)),
-                ("publicAccess", _bool(self.public_access)),
-            ]
-        )
-        if self.command_line_args:
-            form.append(("dynAnalysisSettings.commandLineArgs", self.command_line_args))
-        if self.uas_script:
-            form.append(("dynAnalysisSettings.uasScript", self.uas_script))
-        if self.archive_password:
-            form.append(("archiveSettings.password", self.archive_password))
-        if self.main_filename:
-            form.append(("mainFilename", self.main_filename))
-        if self.source_type:
-            form.append(("source.sourceType", self.source_type))
-        if self.source_uid:
-            form.append(("source.sourceUid", self.source_uid))
-        for index, tag in enumerate(self.tags):
-            form.append((f"tags[{index}].name", str(tag)))
-        for key, value in self.properties.items():
-            form.append((f"properties[{key}]", str(value)))
-        return form
 
 
 def check_min_report_id_applied(payload: Any, min_report_id: int) -> None:
@@ -1138,10 +785,6 @@ def merge_integration_context(**changes: Any) -> None:
     demisto.setIntegrationContext(context)
 
 
-def _bool(value: Any) -> str:
-    return "true" if value else "false"
-
-
 def validate_sort(sort: str) -> None:
     """Reject a sort key the server would silently ignore."""
     if not sort:
@@ -1153,94 +796,6 @@ def validate_sort(sort: str) -> None:
             f"to 'ORDER BY update_time DESC', which reverses the order a cursor depends on. "
             f"Allowed: {', '.join(sorted(ALLOWED_SORT_FIELDS))}."
         )
-
-
-HASH_LENGTHS = {32: "md5", 40: "sha1", 64: "sha256"}
-
-
-def hash_type_of(value: str) -> str:
-    """Return md5, sha1 or sha256 for a full hex hash, or '' when it is neither.
-
-    Partial hashes are refused on purpose: the server's hash filters are prefix
-    matches, so a short value would quietly match unrelated samples.
-    """
-    candidate = (value or "").strip().lower()
-    if not candidate or any(c not in "0123456789abcdef" for c in candidate):
-        return ""
-    return HASH_LENGTHS.get(len(candidate), "")
-
-
-def report_matches_hash(report: dict, hash_type: str, expected: str) -> bool:
-    """Verify a report really belongs to the requested hash.
-
-    Two server behaviours make this necessary: the hash filters are prefix
-    matches OR'd against the archive's own hash, and filters outside the
-    role allow-list are silently ignored rather than rejected. Either one can
-    return a report for a different sample.
-    """
-    file_dto = report.get("file") or {}
-    actual = str(file_dto.get({"md5": "hashMd5", "sha1": "hashSha1", "sha256": "hashSha256"}[hash_type]) or "")
-    return actual.lower() == (expected or "").lower()
-
-
-def select_main_report(reports: list) -> dict | None:
-    """Pick the report a submission is really about.
-
-    A submission can yield several reports: archive members plus cached linked
-    reports. Prefer an explicit MAIN type, then a root report, then the highest
-    score, then the lowest id so the choice is stable.
-    """
-    if not reports:
-        return None
-    main = [r for r in reports if r.get("sampleReportType") == REPORT_TYPE_MAIN]
-    if main:
-        return sorted(main, key=lambda r: r.get("sampleReportId") or 0)[0]
-    roots = [r for r in reports if not r.get("parentReportId")]
-    pool = roots or reports
-    return sorted(pool, key=lambda r: (-(r.get("sampleScore") or -1), r.get("sampleReportId") or 0))[0]
-
-
-# --------------------------------------------------------------------------
-# Polling
-# --------------------------------------------------------------------------
-def supports_scheduled_commands() -> bool:
-    """Scheduled commands need server 6.2.0."""
-    try:
-        return ScheduledCommand.supports_polling()
-    except Exception:  # noqa: BLE001 - older servers raise rather than return False
-        return False
-
-
-def schedule_next_poll(command: str, args: dict, interval: int, timeout: int) -> ScheduledCommand:
-    """Build the follow-up run of a polling command."""
-    next_args = dict(args)
-    next_args["polling"] = True
-    return ScheduledCommand(
-        command=command,
-        next_run_in_seconds=interval,
-        args=next_args,
-        timeout_in_seconds=timeout,
-    )
-
-
-def blocking_poll(check, interval: int, timeout: int):
-    """Fallback for servers below 6.2.0 that cannot schedule commands.
-
-    This holds an engine worker for the duration, which is why callers cap the
-    timeout and the documentation steers 6.0 users towards submit plus a
-    separate status command.
-    """
-    deadline = time.time() + timeout
-    while True:
-        done, result = check()
-        if done:
-            return result
-        if time.time() + interval >= deadline:
-            raise DemistoException(
-                f"Timed out after {timeout} seconds waiting for the tLab Anti-APT verdict. "
-                "The analysis may still be running; query it later with the status command."
-            )
-        time.sleep(interval)
 
 
 # ---------------------------------------------------------------------------
@@ -1644,12 +1199,8 @@ def extract_attack_patterns(matrix: dict) -> list:
 
 
 def build_relationships(sample_sha256: str, indicators: list, enabled: bool) -> None:
-    """Attach relationships from the sample to everything seen with it.
-
-    Relationships require server 6.2.0, so this degrades to a no-op rather than
-    failing the fetch on an older instance.
-    """
-    if not enabled or not sample_sha256 or not supports_relationships():
+    """Attach relationships from the sample to everything seen with it."""
+    if not enabled or not sample_sha256:
         return
     for indicator in indicators:
         name = _relationship_name(indicator["type"])
@@ -1675,13 +1226,6 @@ def _relationship_name(indicator_type: str) -> str | None:
     if indicator_type == FeedIndicatorType.File:
         return EntityRelationship.Relationships.DROPS
     return EntityRelationship.Relationships.RELATED_TO
-
-
-def supports_relationships() -> bool:
-    try:
-        return is_demisto_version_ge("6.2.0")
-    except Exception:  # noqa: BLE001 - older servers raise instead of returning False
-        return False
 
 
 _LEVEL_ORDER = ["INFO", "SUSPICIOUS", "MALICIOUS"]
@@ -1730,7 +1274,7 @@ def discovery_page(client: TLabClient, cursor: int, size: int, params: dict) -> 
 
 def maturation_page(client: TLabClient, lookback_hours: int, size: int, params: dict) -> dict:
     """Reports touched recently, to catch analyses that completed late."""
-    since = datetime.now(timezone.utc) - timedelta(hours=max(1, lookback_hours))
+    since = datetime.now(UTC) - timedelta(hours=max(1, lookback_hours))
     return client.list_sample_reports(
         page=0,
         size=size,
@@ -1922,7 +1466,7 @@ def get_indicators_command(client: TLabClient, args: dict, params: dict) -> Comm
     ]
     return CommandResults(
         outputs_prefix=OUTPUT_INDICATOR,
-        outputs_key_field="Value",
+        outputs_key_field="value",
         outputs=indicators or None,
         raw_response=indicators,
         readable_output=tableToMarkdown(
@@ -1983,7 +1527,7 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as exc:  # noqa: BLE001 - XSOAR requires a single catch-all in main
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command}. Error: {exc}")
+        return_error(f"Failed to execute {command}. Error: {exc}", error=exc)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

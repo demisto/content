@@ -15,19 +15,11 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Trust any certificate (not secure) | Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed. | False |
 | Client name | Sent as the X-Client header. | False |
 | Source reliability | Reliability attached to every DBotScore this integration produces. | False |
-| Report completeness to consider | Only reports with these completeness values are used for reputation. Defaults to COMPLETE so a partial analysis does not produce a verdict. | False |
+| Report completeness to consider | Only reports with these completeness values are used for reputation, so that a partial analysis does not produce a verdict. | False |
 | Reports per hash | How many past analyses to return per hash. The newest is used for the verdict. | False |
-| Treat an unknown verdict as benign | Off by default. "tLab has no record" is not the same statement as "this file is benign", and a Good score would suppress other vendors' findings. | False |
-| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default. | False |
-| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default. | False |
-
-## Search filters and roles
-
-`tlab-search-reports` accepts filters that the server applies only for accounts
-with the `admin` or `developer` role: verdict, score level, source, root-only,
-minimum report ID, minimum score and file name. With a lower role these are
-discarded without an error, so a narrow query silently returns everything. The
-command adds a warning to its output whenever one of them is used.
+| Treat an unknown verdict as benign | Whether to give files tLab has never analyzed a Good score instead of Unknown. "tLab has no record" is not the same statement as "this file is benign", and a Good score would suppress other vendors' findings. | False |
+| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. | False |
+| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. | False |
 
 ## Commands
 
@@ -416,3 +408,13 @@ List the indicator code catalog, usable with the indicators filter of tlab-searc
 >|---|---|---|
 >| STAT_ANALYSIS | 9 | PUBLIC_SIGNATURES |
 >| DYN_ANALYSIS | 6 | INET_CONNECT |
+
+## Known Limitations
+
+### Search filters and roles
+
+`tlab-search-reports` accepts filters that the server applies only for accounts
+with the `admin` or `developer` role: verdict, score level, source, root-only,
+minimum report ID, minimum score and file name. With a lower role these are
+discarded without an error, so a narrow query silently returns everything. The
+command adds a warning to its output whenever one of them is used.

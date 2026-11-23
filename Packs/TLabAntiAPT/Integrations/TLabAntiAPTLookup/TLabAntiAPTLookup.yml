@@ -5,7 +5,7 @@ commonfields:
   id: TLabAntiAPTLookup
   version: -1
 description: Look up file reputation and past analyses in tLab Anti-APT without submitting anything.
-fromversion: 6.0.0
+fromversion: 6.2.0
 configuration:
 - name: url
   display: Server URL
@@ -67,7 +67,7 @@ configuration:
   - F - Reliability cannot be judged
 - name: completeness
   display: Report completeness to consider
-  additionalinfo: Only reports with these completeness values are used for reputation. Defaults to COMPLETE so a partial analysis does not produce a verdict.
+  additionalinfo: "Only reports with these completeness values are used for reputation, so that a partial analysis does not produce a verdict."
   defaultvalue: COMPLETE
   type: 16
   required: false
@@ -80,19 +80,19 @@ configuration:
   required: false
 - name: unknown_is_benign
   display: Treat an unknown verdict as benign
-  additionalinfo: Off by default. "tLab has no record" is not the same statement as "this file is benign", and a Good score would suppress other vendors' findings.
+  additionalinfo: "Whether to give files tLab has never analyzed a Good score instead of Unknown. \"tLab has no record\" is not the same statement as \"this file is benign\", and a Good score would suppress other vendors' findings."
   defaultvalue: 'false'
   type: 8
   required: false
 - name: score_threshold_suspicious
   display: Suspicious score threshold
-  additionalinfo: Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default.
+  additionalinfo: "Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed."
   defaultvalue: '50'
   type: 0
   required: false
 - name: score_threshold_malicious
   display: Malicious score threshold
-  additionalinfo: Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default.
+  additionalinfo: "Scores at or above this value are Malicious. Fractional values are allowed."
   defaultvalue: '85'
   type: 0
   required: false

@@ -271,5 +271,5 @@
     "name": "tLab Anti-APT Verdict",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }

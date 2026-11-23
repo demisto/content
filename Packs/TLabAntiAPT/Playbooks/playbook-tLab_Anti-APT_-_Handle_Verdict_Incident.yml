@@ -374,7 +374,7 @@ outputs:
 - contextPath: TLabAntiAPT.ThreatIndicators
   description: Threat indicators observed during analysis.
   type: Unknown
-fromversion: 6.0.0
+fromversion: 6.2.0
 tags:
 - TIM
 - Malware

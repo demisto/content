@@ -8,13 +8,15 @@ tLab Anti-APT is an on-premises malware analysis platform by tLab Technologies. 
 performs static, dynamic, antivirus and MITRE ATT&CK analysis and returns a
 score-based verdict per sample.
 
+The pack requires Cortex XSOAR 6.2.0 or later.
+
 ## What does this pack do?
 
 | Integration | Purpose | Minimum tLab role |
 | --- | --- | --- |
 | tLab Anti-APT Sandbox | Detonation, polling, reports, artifacts | admin or developer for artifacts; user to submit |
 | tLab Anti-APT Lookup | File reputation and past analyses, read only | user |
-| tLab Anti-APT Feed | Sandbox observables as Threat Intel Management indicators | user |
+| tLab Anti-APT Feed | Sandbox observables as Threat Intel Management indicators | admin or developer |
 | tLab Anti-APT Verdicts | Finished analyses as incidents (pull mode) | admin or developer, see below |
 
 ### Playbooks
@@ -26,9 +28,11 @@ score-based verdict per sample.
 | tLab Anti-APT - File Reputation | Sub-playbook. Asks what tLab already knows, without submitting. Run it before a detonation: a sample already analyzed needs no second analysis. |
 | tLab Anti-APT - Handle Verdict Incident | Triage. Default playbook for the tLab Anti-APT Verdict incident type. Enriches, then closes benign analyses and leaves the rest for an analyst. |
 
+For more information, visit the [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/playbooks/playbooks-overview) and the [tLab Anti-APT - Handle Verdict Incident README](Playbooks/playbook-tLab_Anti-APT_-_Handle_Verdict_Incident_README.md).
+
 The detonation sub-playbooks do not loop. Polling lives inside the command, which
-on Cortex XSOAR 6.2.0 and later suspends the task and resumes on a schedule rather than
-holding a worker for the length of an analysis.
+suspends the task and resumes on a schedule rather than holding a worker for the
+length of an analysis.
 
 The split is driven by roles rather than tidiness. An instance is the unit of
 credential in Cortex XSOAR, so keeping lookup separate means enrichment playbooks can
@@ -146,9 +150,6 @@ recomputed score.
   endpoint that enumerates them is the admin-only dynamic report.
 * **PDF rendering is synchronous** with no status endpoint, so a large report
   can approach the command timeout. The render timeout is configurable.
-* **Polling on servers below Cortex XSOAR 6.2.0** cannot use scheduled commands and
-  falls back to an inline loop that holds a worker. On those servers prefer
-  `tlab-submit-file` followed by a scheduled `tlab-get-submission-status`.
 
 ## Air-gapped installation
 

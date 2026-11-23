@@ -9,7 +9,7 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Server URL | Base URL of the tLab Anti-APT sandbox API \(tlab-server\). Through the tLab web server use https://&lt;tlab-host&gt;/api; for a direct connection use http://&lt;tlab-host&gt;:8080. | True |
 | Auth server URL (tlab-auth) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
 | Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself. | True |
-| Credentials | Login and password of a tLab account \(tLab account mode\). This integration only reads, so a restricted account is sufficient. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. | True |
+| Credentials | Login and password of a tLab account \(tLab account mode\) with the admin or developer role. This integration only reads, but for other roles the server silently ignores the report filters it relies on. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. | True |
 | Password / source key / internal token | The password of the tLab account, or the source key or internal token, depending on the authentication mode. | True |
 | Use system proxy settings | Whether to use the Cortex XSOAR server's system proxy settings. | False |
 | Trust any certificate (not secure) | Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed. | False |
@@ -27,14 +27,14 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Reports per fetch | Upper bound on sample reports processed per run. Each report costs one or two extra API calls, so raising this raises load on tlab-server proportionally. | False |
 | First sample report id | Lowest sample report id to fetch. Takes effect on the next fetch, also when fetching has already started - raise it to skip a backfill. Leave empty to start from the beginning of history, which on a long-running installation can be a very large backfill. | False |
 | Late completion lookback (hours) | The sandbox finishes analyses out of id order, so a report can complete after a higher-numbered one already did. Each run also re-scans reports updated within this window to catch them. Set to 0 to disable. | False |
-| Include partially complete reports | Off by default. A partial report's observables are a snapshot that will still change, so the indicators it yields can contradict the finished report minutes later. | False |
-| Fetch MITRE ATT&amp;CK techniques | Creates Attack Pattern indicators from the attack matrix. Costs one extra API call per report. | False |
-| Create relationships | Links each sample to the indicators observed with it. Requires Cortex XSOAR 6.2.0 or later; on older servers this is silently skipped. | False |
-| Record observed file names | File names are not emitted as indicators, because nothing can match on them. When enabled they are attached to the sample indicator's Associated File Names field instead. | False |
-| Include private and reserved addresses | Off by default. A sandbox VM's traffic is mostly RFC1918, link-local and multicast noise, and publishing that as threat intel is actively harmful. | False |
+| Include partially complete reports | Whether to include partially complete reports. A partial report's observables are a snapshot that will still change, so the indicators it yields can contradict the finished report minutes later. | False |
+| Fetch MITRE ATT&amp;CK techniques | Whether to create Attack Pattern indicators from the attack matrix. Costs one extra API call per report. | False |
+| Create relationships | Whether to link each sample to the indicators observed with it. | False |
+| Record observed file names | Whether to record observed file names on the sample indicator's Associated File Names field. File names are never emitted as indicators, because nothing can match on them. | False |
+| Include private and reserved addresses | Whether to include private, link-local and multicast addresses. A sandbox VM's traffic is mostly RFC1918 noise, and publishing that as threat intel is actively harmful. | False |
 | Excluded networks | CIDR blocks never emitted as indicators. Add the sandbox's own simulated network ranges here. Leave empty to use the built-in private and reserved list. | False |
-| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default. | False |
-| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default. | False |
+| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. | False |
+| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. | False |
 
 ## Commands
 
@@ -69,7 +69,7 @@ Preview indicators without creating them in Threat Intel Management and without 
 #### Context Example
 ```json
 {
-    "TLabAntiAPT.Indicator(val.Value && val.Value == obj.Value)": [
+    "TLabAntiAPT.Indicator(val.value && val.value == obj.value)": [
         {
             "value": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
             "type": "File",

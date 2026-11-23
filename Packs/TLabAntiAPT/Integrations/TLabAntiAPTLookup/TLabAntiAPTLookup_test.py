@@ -1,12 +1,16 @@
 """Tests for the tLab Anti-APT Lookup integration."""
 
 import json
+import re
+import yaml
+from CommonServerPython import DemistoException
 from pathlib import Path
-
 import pytest
-
 import TLabAntiAPTLookup as lookup
-from TLabAntiAPTLookup import AUTH_SOURCE_KEY, TLabClient
+from TLabAntiAPTLookup import (
+    AUTH_SOURCE_KEY,
+    TLabClient,
+)
 
 BASE = "https://tlab.example.com"
 DATA = Path(__file__).parent / "test_data"
@@ -124,7 +128,7 @@ def test_multiple_hashes_return_one_result_each(client, params, requests_mock):
 
 
 def test_file_argument_is_required(client, params):
-    with pytest.raises(Exception, match="file argument is required"):
+    with pytest.raises(DemistoException, match="file argument is required"):
         lookup.file_reputation_command(client, {}, params)
 
 
@@ -158,7 +162,7 @@ def test_scan_result_reports_a_miss_without_failing(client, params, requests_moc
 
 
 def test_scan_result_rejects_an_undeterminable_hash(client, params):
-    with pytest.raises(Exception, match="Could not determine the hash type"):
+    with pytest.raises(DemistoException, match="Could not determine the hash type"):
         lookup.scan_result_command(client, {"hash": "abc"}, params)
 
 
@@ -185,7 +189,7 @@ def test_unset_file_verdict_is_not_shown(client, params, requests_mock):
 
 
 def test_file_info_requires_a_full_sha256(client, params):
-    with pytest.raises(Exception, match="full 64-character"):
+    with pytest.raises(DemistoException, match="full 64-character"):
         lookup.file_info_command(client, {"sha256": "aaaa"}, params)
 
 
@@ -194,7 +198,7 @@ def test_file_info_requires_a_full_sha256(client, params):
 
 def test_search_reports_rejects_the_create_time_sort(client, params):
     # The server ignores this key silently and reorders by update_time DESC.
-    with pytest.raises(Exception, match="createTime"):
+    with pytest.raises(DemistoException, match="createTime"):
         lookup.search_reports_command(client, {"sort": "createTime,asc"}, params)
 
 
@@ -222,12 +226,12 @@ def test_role_safe_and_admin_only_filter_sets_do_not_overlap():
 
 
 def test_hash_search_requires_three_characters(client):
-    with pytest.raises(Exception, match="at least 3 characters"):
+    with pytest.raises(DemistoException, match="at least 3 characters"):
         lookup.hash_search_command(client, {"hash_type": "md5", "hash_part": "ab"})
 
 
 def test_hash_search_rejects_an_unknown_type(client):
-    with pytest.raises(Exception, match="hash_type must be"):
+    with pytest.raises(DemistoException, match="hash_type must be"):
         lookup.hash_search_command(client, {"hash_type": "crc32", "hash_part": "abcd"})
 
 
@@ -265,14 +269,10 @@ def test_test_module_reports_identity(client, requests_mock):
 
 
 def _yml():
-    import yaml
-
     return yaml.safe_load((Path(__file__).parent / "TLabAntiAPTLookup.yml").read_text())
 
 
 def _implemented_commands() -> set:
-    import re
-
     source = (Path(__file__).parent / "TLabAntiAPTLookup.py").read_text()
     return set(re.findall(r'command == "([a-z0-9-]+)"', source))
 
@@ -311,3 +311,41 @@ def test_sort_argument_warns_about_create_time():
     command = next(c for c in _yml()["script"]["commands"] if c["name"] == "tlab-search-reports")
     sort_arg = next(a for a in command["arguments"] if a["name"] == "sort")
     assert "createTime" in sort_arg["description"]
+
+
+# ===========================================================================
+# Shared tLab Anti-APT client (the block every integration carries)
+# ===========================================================================
+def make_client(auth_mode=AUTH_SOURCE_KEY, secret="key", username="", auth_url=""):
+    return TLabClient(
+        base_url=BASE,
+        auth_mode=auth_mode,
+        credentials={"identifier": username, "password": secret},
+        client_name="xsoar",
+        verify=False,
+        auth_url=auth_url,
+    )
+
+
+def test_403_message_explains_the_role_restriction(requests_mock):
+    # Internal tokens authenticate but GET /sample_reports has no branch for
+    # the external_service role, so a correct token still gets 403.
+    requests_mock.get(f"{BASE}/sample_reports", status_code=403, text="Forbidden")
+    with pytest.raises(DemistoException, match="external_service"):
+        make_client().list_sample_reports()
+
+
+def test_list_sample_reports_sends_repeated_array_filters(requests_mock):
+    requests_mock.get(f"{BASE}/sample_reports", json={"content": [], "last": True})
+    make_client().list_sample_reports(
+        min_report_id=412840,
+        completeness=["COMPLETE", "PARTIALLY_COMPLETE"],
+        file_verdicts=["MALWARE", "SUSPICIOUS"],
+        root_only=True,
+    )
+    query = requests_mock.last_request.qs
+    assert query["minreportid"] == ["412840"]
+    assert sorted(query["completeness"]) == ["complete", "partially_complete"]
+    assert sorted(query["fileverdict"]) == ["malware", "suspicious"]
+    assert query["rootonly"] == ["true"]
+    assert query["sort"] == ["samplereportid,asc"]

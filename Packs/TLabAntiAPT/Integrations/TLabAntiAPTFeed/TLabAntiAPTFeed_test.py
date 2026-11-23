@@ -201,15 +201,7 @@ def test_extract_attack_patterns_ignores_malformed_ids():
 # ------------------------------------------------------------------ relationships
 
 
-def test_relationships_skipped_on_old_server(mocker, params):
-    mocker.patch.object(feed, "supports_relationships", return_value=False)
-    indicators = [{"value": "evil.example.com", "type": FeedIndicatorType.Domain}]
-    feed.build_relationships(SHA256, indicators, True)
-    assert "relationships" not in indicators[0]
-
-
-def test_relationships_built(mocker):
-    mocker.patch.object(feed, "supports_relationships", return_value=True)
+def test_relationships_built():
     indicators = [
         {"value": "evil.example.com", "type": FeedIndicatorType.Domain},
         {"value": "T1071", "type": feed.ATTACK_PATTERN_TYPE},

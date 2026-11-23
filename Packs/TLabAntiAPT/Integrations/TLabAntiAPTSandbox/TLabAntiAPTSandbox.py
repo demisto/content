@@ -7,14 +7,18 @@ resulting reports and artifacts into the war room.
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
+import json
+import traceback
+from typing import Any
 import base64
 import contextlib
 import hashlib
-import json
+import os
 import time
 import urllib.parse
-from collections.abc import Iterator
-from typing import Any
+from datetime import datetime, UTC
+import dateparser
+import requests
 
 
 # ---------------------------------------------------------------------------
@@ -68,9 +72,6 @@ ACTIONABLE_VERDICTS = {
 DEFAULT_SUSPICIOUS_FROM = 50.0
 DEFAULT_MALICIOUS_FROM = 85.0
 
-# Default of the "Late completion lookback (hours)" parameter in the yml files.
-DEFAULT_LOOKBACK_HOURS = 24
-
 
 def score_thresholds(params: dict) -> tuple[float, float]:
     """Read the suspicious and malicious score thresholds from the instance.
@@ -94,28 +95,14 @@ def score_thresholds(params: dict) -> tuple[float, float]:
     )
 
 
-def lookback_hours(params: dict) -> int:
-    """Read the late completion lookback. Unset means the yml default; 0 disables it."""
-    value = arg_to_number(params.get("maturation_lookback_hours"), arg_name="maturation_lookback_hours")
-    return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
-
-
 COMPLETENESS_EMPTY = "EMPTY"
 COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
 
-REQUEST_STATUS_UNKNOWN = "UNKNOWN"
-REQUEST_STATUS_WAITING = "WAITING_FOR_PROCESSING"
-REQUEST_STATUS_PROCESSING = "PROCESSING"
-REQUEST_STATUS_ACCEPTED = "ACCEPTED"
 REQUEST_STATUS_REJECTED = "REJECTED"
 
 REPORT_TYPE_MAIN = "MAIN"
 REPORT_TYPE_DROPPED = "DROPPED"
-REPORT_TYPE_EMBEDDED = "EMBEDDED"
-REPORT_TYPE_COMMAND_LINES = "COMMAND_LINES"
-REPORT_TYPE_SANITIZED = "SANITIZED"
-REPORT_TYPE_DOWNLOADED_FROM_LINK = "DOWNLOADED_FROM_LINK"
 
 # The source type must be sent by the enum NAME: Spring form-binds by name,
 # while the same enum is serialized outwards through @JsonValue as a display
@@ -285,35 +272,6 @@ def verdict_to_dbot_score(verdict: str, unknown_is_benign: bool = False) -> int:
     return Common.DBotScore.GOOD if unknown_is_benign else Common.DBotScore.NONE
 
 
-# XSOAR severity scale: 0 Unknown, 0.5 Informational, 1 Low, 2 Medium,
-# 3 High, 4 Critical.
-DEFAULT_SEVERITY_MAP = {
-    VERDICT_MALWARE: 3,
-    VERDICT_SUSPICIOUS: 2,
-    VERDICT_OK: 1,
-    VERDICT_CLEAN: 1,
-    VERDICT_WHITELIST: 0.5,
-    VERDICT_UNKNOWN: 1,
-}
-
-
-def verdict_to_severity(
-    verdict: str,
-    score: float = 0.0,
-    score_present: bool = False,
-    severity_map: dict | None = None,
-    escalate_score: float = 0.0,
-) -> float:
-    """Canonical verdict -> XSOAR severity, with optional escalation."""
-    table = severity_map or DEFAULT_SEVERITY_MAP
-    # An unmapped verdict must not break the flow: Low is visible in a queue
-    # without raising an alarm.
-    severity = table.get(verdict, 1)
-    if escalate_score and verdict == VERDICT_MALWARE and score_present and score >= escalate_score:
-        return 4
-    return float(severity)
-
-
 # --------------------------------------------------------------------------
 # Dates
 # --------------------------------------------------------------------------
@@ -340,7 +298,7 @@ def epoch_to_datetime(value: Any) -> datetime | None:
         return None
     if number < _EPOCH_MILLIS_FLOOR:
         number *= 1000
-    return datetime.fromtimestamp(number / 1000.0, tz=timezone.utc)
+    return datetime.fromtimestamp(number / 1000.0, tz=UTC)
 
 
 def epoch_to_iso(value: Any) -> str | None:
@@ -399,7 +357,7 @@ class TLabRejection(Exception):
         super().__init__(describe_rejection(code, message))
 
 
-def _raise_auth_error(response) -> None:
+def _raise_auth_error(response: requests.Response) -> None:
     body: dict = {}
     with contextlib.suppress(Exception):
         body = response.json() or {}
@@ -447,6 +405,21 @@ _FALLBACK_TOKEN_LIFETIME = 900
 # The omni-center site that tlab-omni-center-frontend installs into nginx listens
 # on 8002 with TLS and proxies /api/ to tlab-auth (127.0.0.1:8033).
 OMNI_PORTAL_TLS_PORT = 8002
+
+
+def source_reliability(params: dict) -> str:
+    """The instance's Source Reliability, B when unset."""
+    return DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("reliability") or DBotScoreReliability.B)
+
+
+def read_cache(key: str) -> dict:
+    """One entry of the integration context, where tokens are cached between runs."""
+    return (demisto.getIntegrationContext() or {}).get(key) or {}
+
+
+def write_cache(key: str, value: dict) -> None:
+    """Store one entry, keeping the rest of the context (fetch cursors live there too)."""
+    merge_integration_context(**{key: value})
 
 
 def default_auth_url(server_url: str) -> str:
@@ -545,8 +518,7 @@ class TLabClient(BaseClient):
 
     def _sign_in_token(self, force: bool = False) -> str:
         """Return a legacy token, reusing the cached one until it nearly expires."""
-        context = demisto.getIntegrationContext() or {}
-        cached = context.get(_TOKEN_CACHE_KEY) or {}
+        cached = read_cache(_TOKEN_CACHE_KEY)
         expires_at = cached.get("expires_at") or 0
         if not force and cached.get("value") and time.time() < expires_at - _TOKEN_SKEW_SECONDS:
             return cached["value"]
@@ -565,11 +537,10 @@ class TLabClient(BaseClient):
             raise DemistoException("tLab Anti-APT returned no token for the given credentials.")
         expiration = (response.get("token") or {}).get("expirationTime") or 0
         parsed = epoch_to_datetime(expiration)
-        context[_TOKEN_CACHE_KEY] = {
-            "value": token,
-            "expires_at": parsed.timestamp() if parsed else time.time() + 3600,
-        }
-        demisto.setIntegrationContext(context)
+        write_cache(
+            _TOKEN_CACHE_KEY,
+            {"value": token, "expires_at": parsed.timestamp() if parsed else time.time() + 3600},
+        )
         return token
 
     # -- tlab-auth session ---------------------------------------------------
@@ -586,8 +557,7 @@ class TLabClient(BaseClient):
                 "tLab Anti-APT: set the Auth server URL (tlab-auth), e.g. https://<tlab-host>/api, "
                 "or a Server URL with a host name to derive it from."
             )
-        context = demisto.getIntegrationContext() or {}
-        session = context.get(_SESSION_CACHE_KEY) or {}
+        session = read_cache(_SESSION_CACHE_KEY)
         if session.get("owner") != self._session_owner():
             session = {}
 
@@ -606,13 +576,15 @@ class TLabClient(BaseClient):
         access = tokens.get("access") or ""
         if not access:
             raise DemistoException("tLab Anti-APT: tlab-auth returned no access token.")
-        context[_SESSION_CACHE_KEY] = {
-            "owner": self._session_owner(),
-            "access": access,
-            "refresh": tokens.get("refresh") or "",
-            "expires_at": jwt_expiry(access) or time.time() + _FALLBACK_TOKEN_LIFETIME,
-        }
-        demisto.setIntegrationContext(context)
+        write_cache(
+            _SESSION_CACHE_KEY,
+            {
+                "owner": self._session_owner(),
+                "access": access,
+                "refresh": tokens.get("refresh") or "",
+                "expires_at": jwt_expiry(access) or time.time() + _FALLBACK_TOKEN_LIFETIME,
+            },
+        )
         return access
 
     def _auth_post(self, path: str, body: dict) -> dict:
@@ -662,7 +634,7 @@ class TLabClient(BaseClient):
         with_auth: bool = True,
         timeout: int | None = None,
         retry_on_401: bool = True,
-    ):
+    ) -> Any:
         """One request, translating tLab's failure modes into readable errors."""
         # Headers (and with them any login) are built outside the try: a 401
         # from tlab-auth itself must not trigger the retry below, or a wrong
@@ -702,7 +674,7 @@ class TLabClient(BaseClient):
                 )
             raise
 
-    def _error_handler(self, response) -> None:
+    def _error_handler(self, response: requests.Response) -> None:
         status = response.status_code
         body = ""
         # Diagnostics must never mask the real error.
@@ -730,79 +702,6 @@ class TLabClient(BaseClient):
 
     # -- reports ------------------------------------------------------------
 
-    def list_sample_reports(
-        self,
-        page: int = 0,
-        size: int = 50,
-        sort: str = "sampleReportId,asc",
-        min_report_id: int | None = None,
-        date_from: str | None = None,
-        date_to: str | None = None,
-        completeness: list | None = None,
-        status: list | None = None,
-        file_verdicts: list | None = None,
-        score_levels: list | None = None,
-        file_types: list | None = None,
-        source_ids: list | None = None,
-        tags: list | None = None,
-        indicators: list | None = None,
-        root_only: bool | None = None,
-        file_hash_sha256: str | None = None,
-        file_hash_sha1: str | None = None,
-        min_score: float | None = None,
-        file_name: str | None = None,
-    ) -> dict:
-        """One page of GET /sample_reports.
-
-        The sort key is validated before the request leaves: the server does not
-        reject an unknown key, it silently reorders the result set.
-        """
-        validate_sort(sort)
-        params: list[tuple[str, Any]] = [("page", page), ("size", size), ("sort", sort)]
-        if min_report_id is not None:
-            # The filter is applied as ``sample_report_id >= n``, so a cursor
-            # must send "last seen + 1" rather than the last seen id.
-            params.append(("minReportId", min_report_id))
-        for key, value in (
-            ("dateFrom", date_from),
-            ("dateTo", date_to),
-            ("fileHashSha256", file_hash_sha256),
-            ("fileHashSha1", file_hash_sha1),
-            ("minScore", min_score),
-            ("fileName", file_name),
-        ):
-            if value not in (None, ""):
-                params.append((key, value))
-        if root_only is not None:
-            params.append(("rootOnly", str(bool(root_only)).lower()))
-        # Array filters travel as repeated parameters, which is how Spring binds them.
-        for key, values in (
-            ("completeness", completeness),
-            ("status", status),
-            ("fileVerdict", file_verdicts),
-            ("scoreLevel", score_levels),
-            ("fileType", file_types),
-            ("sourceId", source_ids),
-            ("tags", tags),
-            ("indicators", indicators),
-        ):
-            for item in values or []:
-                params.append((key, item))
-        payload = self.request("GET", "/sample_reports", params=params)
-        if min_report_id:
-            check_min_report_id_applied(payload, min_report_id)
-        return payload
-
-    def iter_sample_reports(self, page_size: int = 50, max_pages: int = 20, **kwargs) -> Iterator[dict]:
-        """Walk pages until a short page, an empty page or max_pages."""
-        for page in range(max_pages):
-            payload = self.list_sample_reports(page=page, size=page_size, **kwargs)
-            content = payload.get("content") or []
-            yield from content
-            if len(content) < page_size or payload.get("last"):
-                return
-        demisto.debug(f"tLab: stopped paging at max_pages={max_pages}; more results may exist")
-
     def get_sample_report(self, sample_report_id: int) -> dict:
         """Full report. Only this endpoint carries dynReportSummary and
         statReportSummary — the public request-status endpoint returns a
@@ -814,32 +713,6 @@ class TLabClient(BaseClient):
 
     def get_attack_matrix(self, sample_report_id: int) -> dict:
         return self.request("GET", f"/sample_reports/{sample_report_id}/attack_matrix")
-
-    def get_archive_password(self, sample_report_id: int) -> dict:
-        return self.request("GET", f"/sample_reports/{sample_report_id}/archive_password")
-
-    def get_stat_report(self, stat_report_id: int) -> dict:
-        return self.request("GET", f"/stat_reports/{stat_report_id}")
-
-    def get_dyn_report(self, dyn_report_id: int) -> dict:
-        return self.request("GET", f"/dyn_reports/{dyn_report_id}")
-
-    def get_file_by_hash(self, sha256: str) -> dict:
-        return self.request("GET", f"/files/{sha256}")
-
-    def hash_search(self, hash_type: str, hash_part: str) -> Any:
-        """Prefix search over stored hashes.
-
-        This is the safe route for an MD5 lookup: ``fileHashMd5`` exists as a
-        report filter but is absent from the server's allow-list for the
-        company_admin and user roles, so it is silently dropped rather than
-        rejected and the query then matches everything.
-        """
-        return self.request("GET", "/files/hash_search", params={"hashType": hash_type, "hashPart": hash_part})
-
-    def list_indicator_codes(self) -> Any:
-        """Catalogue of indicator codes, usable with the report ``indicators`` filter."""
-        return self.request("GET", "/report_indicators")
 
     def whoami(self) -> dict:
         """Identity and role of the token owner — used by test-module."""
@@ -857,17 +730,6 @@ class TLabClient(BaseClient):
         """Poll a submission. ``/public/**`` needs no credentials at all."""
         params = {"earlyVerdict": "true"} if early_verdict else None
         return self.request("GET", f"/public/request_status/{access_code}", params=params, with_auth=False)
-
-    def request_status_batch(self, access_codes: list) -> Any:
-        """Status for many submissions in one call. Body is a bare JSON array."""
-        return self._http_request(
-            method="POST",
-            url_suffix="/public/request_status/batch",
-            json_data=access_codes,
-            headers={"Accept": "application/json", **self._client_header()},
-            resp_type="json",
-            error_handler=self._error_handler,
-        )
 
     # -- submission ---------------------------------------------------------
 
@@ -1147,34 +1009,6 @@ def validate_sort(sort: str) -> None:
         )
 
 
-HASH_LENGTHS = {32: "md5", 40: "sha1", 64: "sha256"}
-
-
-def hash_type_of(value: str) -> str:
-    """Return md5, sha1 or sha256 for a full hex hash, or '' when it is neither.
-
-    Partial hashes are refused on purpose: the server's hash filters are prefix
-    matches, so a short value would quietly match unrelated samples.
-    """
-    candidate = (value or "").strip().lower()
-    if not candidate or any(c not in "0123456789abcdef" for c in candidate):
-        return ""
-    return HASH_LENGTHS.get(len(candidate), "")
-
-
-def report_matches_hash(report: dict, hash_type: str, expected: str) -> bool:
-    """Verify a report really belongs to the requested hash.
-
-    Two server behaviours make this necessary: the hash filters are prefix
-    matches OR'd against the archive's own hash, and filters outside the
-    role allow-list are silently ignored rather than rejected. Either one can
-    return a report for a different sample.
-    """
-    file_dto = report.get("file") or {}
-    actual = str(file_dto.get({"md5": "hashMd5", "sha1": "hashSha1", "sha256": "hashSha256"}[hash_type]) or "")
-    return actual.lower() == (expected or "").lower()
-
-
 def select_main_report(reports: list) -> dict | None:
     """Pick the report a submission is really about.
 
@@ -1195,14 +1029,6 @@ def select_main_report(reports: list) -> dict | None:
 # --------------------------------------------------------------------------
 # Polling
 # --------------------------------------------------------------------------
-def supports_scheduled_commands() -> bool:
-    """Scheduled commands need server 6.2.0."""
-    try:
-        return ScheduledCommand.supports_polling()
-    except Exception:  # noqa: BLE001 - older servers raise rather than return False
-        return False
-
-
 def schedule_next_poll(command: str, args: dict, interval: int, timeout: int) -> ScheduledCommand:
     """Build the follow-up run of a polling command."""
     next_args = dict(args)
@@ -1213,26 +1039,6 @@ def schedule_next_poll(command: str, args: dict, interval: int, timeout: int) ->
         args=next_args,
         timeout_in_seconds=timeout,
     )
-
-
-def blocking_poll(check, interval: int, timeout: int):
-    """Fallback for servers below 6.2.0 that cannot schedule commands.
-
-    This holds an engine worker for the duration, which is why callers cap the
-    timeout and the documentation steers 6.0 users towards submit plus a
-    separate status command.
-    """
-    deadline = time.time() + timeout
-    while True:
-        done, result = check()
-        if done:
-            return result
-        if time.time() + interval >= deadline:
-            raise DemistoException(
-                f"Timed out after {timeout} seconds waiting for the tLab Anti-APT verdict. "
-                "The analysis may still be running; query it later with the status command."
-            )
-        time.sleep(interval)
 
 
 # ---------------------------------------------------------------------------
@@ -1248,11 +1054,9 @@ OUTPUT_ATTACK = "TLabAntiAPT.AttackMatrix"
 OUTPUT_PRESET = "TLabAntiAPT.EnvPreset"
 OUTPUT_SOURCE = "TLabAntiAPT.Source"
 
-# Polling defaults. The blocking fallback used on servers below 6.2.0 holds an
-# engine worker, so it is capped far lower than the scheduled path.
+# Polling defaults for the scheduled status command.
 DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 1800
-BLOCKING_TIMEOUT_CAP = 600
 
 
 # --------------------------------------------------------------------------
@@ -1512,11 +1316,15 @@ def submit_file_command(client: TLabClient, args: dict, params: dict) -> Command
     if not entry_id:
         raise DemistoException("entry_id is required: it identifies the war room file to submit.")
     file_info = demisto.getFilePath(entry_id)
+    if not file_info or not file_info.get("path"):
+        raise DemistoException(f"Entry {entry_id} not found or has no file.")
     file_name = args.get("file_name") or file_info.get("name")
 
     additional = []
     for extra_id in argToList(args.get("additional_files_entry_ids")):
         extra = demisto.getFilePath(extra_id)
+        if not extra or not extra.get("path"):
+            raise DemistoException(f"Entry {extra_id} not found or has no file.")
         additional.append({"path": extra["path"], "name": extra["name"]})
 
     settings = submit_settings_from_args(args, params)
@@ -1616,17 +1424,13 @@ def resolve_status(client: TLabClient, access_code: str, args: dict, params: dic
         outputs=outputs,
         raw_response=status,
         readable_output=analysis_readable(outputs),
-        indicator=build_file_indicator(outputs, params.get("reliability") or DBotScoreReliability.B),
+        indicator=build_file_indicator(outputs, source_reliability(params)),
     )
     return terminal, results
 
 
 def poll_status_command(client: TLabClient, args: dict, params: dict) -> CommandResults:
-    """Poll a submission to a terminal verdict.
-
-    Scheduled commands need server 6.2.0. Below that the loop runs inline,
-    which holds a worker, so the timeout is capped.
-    """
+    """Poll a submission to a terminal verdict with scheduled commands."""
     access_code = args.get("access_code")
     if not access_code:
         raise DemistoException("access_code is required.")
@@ -1637,18 +1441,8 @@ def poll_status_command(client: TLabClient, args: dict, params: dict) -> Command
     if terminal:
         return results
 
-    if supports_scheduled_commands():
-        results.scheduled_command = schedule_next_poll("tlab-get-submission-status", args, interval, timeout)
-        return results
-
-    capped = min(timeout, BLOCKING_TIMEOUT_CAP)
-    demisto.debug(f"tLab: server does not support scheduled commands; polling inline for up to {capped}s")
-
-    def check():
-        done, res = resolve_status(client, access_code, args, params)
-        return done, res
-
-    return blocking_poll(check, interval, capped)
+    results.scheduled_command = schedule_next_poll("tlab-get-submission-status", args, interval, timeout)
+    return results
 
 
 def detonate_command(client: TLabClient, args: dict, params: dict, kind: str) -> CommandResults:
@@ -1680,7 +1474,7 @@ def get_report_command(client: TLabClient, args: dict, params: dict) -> CommandR
         outputs=outputs,
         raw_response=report,
         readable_output=analysis_readable(outputs),
-        indicator=build_file_indicator(outputs, params.get("reliability") or DBotScoreReliability.B),
+        indicator=build_file_indicator(outputs, source_reliability(params)),
     )
 
 
@@ -1787,7 +1581,7 @@ def get_pcap_command(client: TLabClient, args: dict, params: dict) -> Any:
         )
 
     data = client.download(f"/dyn_reports/{dyn_report_id}/pcap", "application/octet-stream", max_bytes=max_bytes)
-    return fileResult(f"tlab_{dyn_report_id}.pcap", data, file_type=EntryType.FILE)
+    return fileResult(f"tlab_{dyn_report_id}.pcap", data, file_type=EntryType.ENTRY_INFO_FILE)
 
 
 def get_report_pdf_command(client: TLabClient, args: dict, params: dict) -> Any:
@@ -1895,11 +1689,11 @@ def main() -> None:
             return_results(list_sources_command(client))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
-    except TLabRejection as rejection:
-        return_error(str(rejection))
     except Exception as exc:  # noqa: BLE001 - XSOAR requires a single catch-all in main
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command}. Error: {exc}")
+        # A rejection already reads as a complete sentence for the analyst.
+        message = str(exc) if isinstance(exc, TLabRejection) else f"Failed to execute {command}. Error: {exc}"
+        return_error(message, error=exc)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
