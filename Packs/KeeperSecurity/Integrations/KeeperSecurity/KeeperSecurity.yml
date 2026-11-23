@@ -60,7 +60,7 @@ script:
       name: end_date
     - auto: PREDEFINED
       defaultvalue: "false"
-      description: Set this argument to true to create events from the retrieved results, otherwise they are only displayed.
+      description: Whether to create events from the retrieved results instead of only displaying them.
       name: should_push_events
       predefined:
       - "true"
