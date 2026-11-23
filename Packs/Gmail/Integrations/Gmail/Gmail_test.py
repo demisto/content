@@ -1236,3 +1236,54 @@ class TestValidateGmailMessageId:
         """Test that angle brackets alone are rejected."""
         with pytest.raises(ValueError, match="Invalid Gmail message ID"):
             validate_gmail_message_id("<some_id>")
+
+
+@pytest.mark.parametrize(
+    "function_name, function_args",
+    [
+        ("forwarding_address_list", ("user@example.com",)),
+        ("forwarding_address_get", ("user@example.com", "forward@example.com")),
+        ("get_autoreply", ("user@example.com",)),
+    ],
+)
+def test_read_only_settings_commands_request_minimal_scope(mocker, function_name, function_args):
+    """
+    Given:
+        - A read-only Gmail settings function (forwarding addresses list/get, autoreply get).
+    When:
+        - The function builds the Gmail service.
+    Then:
+        - Only the gmail.settings.basic scope is requested, so a service account that was not
+          granted https://mail.google.com/ in domain-wide delegation can still run the command.
+    """
+    import Gmail
+
+    mocked_get_service = mocker.patch.object(Gmail, "get_service")
+
+    getattr(Gmail, function_name)(*function_args)
+
+    requested_scopes = mocked_get_service.call_args.kwargs.get("additional_scopes") or mocked_get_service.call_args.args[2]
+    assert requested_scopes == ["https://www.googleapis.com/auth/gmail.settings.basic"]
+
+
+def test_get_credentials_does_not_accumulate_scopes(mocker):
+    """
+    Given:
+        - Two consecutive get_credentials calls with different additional scopes.
+    When:
+        - Building credentials for each call.
+    Then:
+        - The second call does not carry over the first call's scopes, and the module-level SCOPES is unchanged.
+    """
+    import Gmail
+
+    mocker.patch.object(Gmail, "PRIVATE_KEY_CONTENT", "{}")
+    mocked_from_info = mocker.patch.object(Gmail.service_account.Credentials, "from_service_account_info")
+    original_scopes = list(Gmail.SCOPES)
+
+    Gmail.get_credentials(additional_scopes=["scope-a"], delegated_user="user@example.com")
+    Gmail.get_credentials(additional_scopes=["scope-b"], delegated_user="user@example.com")
+
+    with_scopes_calls = mocked_from_info.return_value.with_scopes.call_args_list
+    assert with_scopes_calls[1].args[0] == [*original_scopes, "scope-b"]
+    assert original_scopes == Gmail.SCOPES
