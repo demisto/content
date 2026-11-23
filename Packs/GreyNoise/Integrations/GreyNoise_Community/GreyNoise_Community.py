@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 
 import copy
 import traceback
+from typing import Any
 
 import requests
 import urllib3  # type: ignore
@@ -80,6 +81,7 @@ IP_CONTEXT_HEADERS = [
     "Tor",
     "Last Seen Timestamp",
 ]
+BUSINESS_SERVICE_LICENSE_MESSAGE = "Business Service Intelligence data is not available with the current license."
 RIOT_HEADERS = [
     "IP",
     "Business Service",
@@ -210,11 +212,11 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> tuple[int, str]:
+def get_ip_reputation_score(classification: str | None) -> tuple[int, str]:
     """Get DBot score and human-readable of score.
 
-    :type classification: ``str``
-    :param classification: classification of ip provided from GreyNoise.
+    :type classification: ``str | None``
+    :param classification: classification of ip provided from GreyNoise. A missing value is Unknown.
 
     :return: tuple of dbot score and it's readable form.
     :rtype: ``tuple``
@@ -267,6 +269,54 @@ def test_module(client: Client) -> str:
     return client.authenticate()
 
 
+def business_service_is_unlicensed(business_service: Any) -> bool:
+    """Return whether Business Service Intelligence was withheld by the license.
+
+    A null ``found`` value means the current license does not include this data.
+    A false value means the IP is not a business service.
+
+    :type business_service: ``Any``
+    :param business_service: ``business_service_intelligence`` object from a v3 IP response.
+
+    :return: True when ``found`` is null.
+    :rtype: ``bool``
+    """
+    return isinstance(business_service, dict) and "found" in business_service and business_service.get("found") is None
+
+
+def business_service_not_associated_heading(ip: str, unlicensed: bool) -> str:
+    """Heading for an IP that is not returned as a business service."""
+    if unlicensed:
+        return f"### IP: {ip} {BUSINESS_SERVICE_LICENSE_MESSAGE}\n"
+    return f"### IP: {ip} Not Associated with a Business Service\n"
+
+
+def normalize_business_service_intelligence(api_response: dict) -> dict:
+    """Copy business service intelligence and record whether the IP was found.
+
+    A null ``found`` value means Business Service Intelligence is not included in
+    the current license. Missing or empty objects, and ``found: false``, mean the
+    IP is not a business service.
+
+    :type api_response: ``dict``
+    :param api_response: IP lookup response from GreyNoise.
+
+    :return: Business service intelligence with ``address`` and either ``riot`` or a license status.
+    :rtype: ``dict``
+    """
+    raw_business_service = api_response.get("business_service_intelligence")
+    if not isinstance(raw_business_service, dict):
+        raw_business_service = {}
+
+    riot_response = copy.deepcopy(raw_business_service)
+    if business_service_is_unlicensed(riot_response):
+        riot_response["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
+    else:
+        riot_response["riot"] = riot_response.get("found", False)
+    riot_response["address"] = api_response.get("ip")
+    return riot_response
+
+
 @exception_handler
 @logger
 def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[CommandResults]:
@@ -297,25 +347,33 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             demisto.debug(f"Error in ip_reputation_command: {e}")
             raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-        if "internet_scanner_intelligence" in api_response:
-            response = copy.deepcopy(api_response["internet_scanner_intelligence"])
-            response["seen"] = response.get("found", False)
-            response["address"] = api_response["ip"]
-            response["ip"] = api_response["ip"]
-            riot_response = copy.deepcopy(api_response["business_service_intelligence"])
-            riot_response["riot"] = riot_response.get("found", False)
-            riot_response["address"] = api_response["ip"]
+        scanner_intelligence = api_response.get("internet_scanner_intelligence")
+        if isinstance(scanner_intelligence, dict):
+            response = copy.deepcopy(scanner_intelligence)
+            found = response.get("found", False)
+            response["seen"] = False if found is None else found
+            response["address"] = api_response.get("ip")
+            response["ip"] = api_response.get("ip")
+            riot_response = normalize_business_service_intelligence(api_response)
         else:
-            response = {}
-            riot_response = {}
+            response = {
+                "seen": False,
+                "address": api_response.get("ip"),
+                "ip": api_response.get("ip"),
+            }
+            riot_response = normalize_business_service_intelligence(api_response)
 
         original_response = copy.deepcopy(api_response)
         tmp_response = get_ip_context_data([response])
-        response = remove_empty_elements(response)
+        response = remove_empty_elements(response) or {}
 
-        riot_response = remove_empty_elements(riot_response)
+        riot_response = remove_empty_elements(riot_response) or {}
+        is_business_service = bool(riot_response.get("riot"))
+        business_service_unlicensed = bool(riot_response.get("business_service_status"))
+        business_service_display = riot_response.get("business_service_status", riot_response.get("riot"))
+        is_internet_scanner = bool(response.get("seen"))
 
-        if riot_response["riot"]:
+        if is_business_service:
             if riot_response.get("trust_level") == "1":
                 riot_response["classification"] = "benign"
                 riot_response["trust_level"] = "1 - Reasonably Ignore"
@@ -327,10 +385,11 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 riot_response["trust_level"] = "3 - Context Only"
             if riot_response.get("logo_url", "") != "":
                 del riot_response["logo_url"]
-            if original_response.get("business_service_intelligence", {}).get("logo_url", "") != "":
-                del original_response["business_service_intelligence"]["logo_url"]
+            business_service = original_response.get("business_service_intelligence")
+            if isinstance(business_service, dict) and business_service.get("logo_url", "") != "":
+                del business_service["logo_url"]
 
-        if response["seen"] and response.get("classification") == "malicious":
+        if is_internet_scanner and response.get("classification") == "malicious":
             malicious_description = "This IP has been observed scanning the internet in a malicious manner."
         else:
             malicious_description = ""
@@ -341,8 +400,11 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         if "ip" in output_response:
             output_response["address"] = output_response["ip"]
             del output_response["ip"]
+        output_business_service = output_response.get("business_service_intelligence")
+        if business_service_is_unlicensed(output_business_service):
+            output_business_service["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
 
-        if response["seen"] and not riot_response["riot"]:
+        if is_internet_scanner and not is_business_service:
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
             human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
@@ -350,9 +412,9 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
             )
 
-            riot_tmp_response = {"IP": riot_response.get("address"), "Business Service": riot_response.get("riot")}
+            riot_tmp_response = {"IP": riot_response.get("address"), "Business Service": business_service_display}
 
-            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
+            human_readable += business_service_not_associated_heading(ip, business_service_unlicensed)
             human_readable += tableToMarkdown(
                 name="GreyNoise Business Service Intelligence Lookup",
                 t=riot_tmp_response,
@@ -395,7 +457,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if riot_response["riot"] and not response["seen"]:
+        if is_business_service and not is_internet_scanner:
             riot_tmp_response = {
                 "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
                 "Business Service": riot_response.get("riot"),
@@ -445,7 +507,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if response["seen"] and riot_response["riot"]:
+        if is_internet_scanner and is_business_service:
             combo_response = response.copy()
             combo_response.update(riot_response)
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
@@ -506,12 +568,12 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if not response["seen"] and not riot_response["riot"]:
+        if not is_internet_scanner and not is_business_service:
             combo_response = response.copy()
             combo_response.update(riot_response)
             combo_tmp_response = {
                 "IP": combo_response.get("address"),
-                "Business Service": combo_response.get("riot"),
+                "Business Service": combo_response.get("business_service_status", combo_response.get("riot")),
                 "Internet Scanner": combo_response.get("seen"),
             }
 
@@ -536,7 +598,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 removeNull=True,
             )
 
-            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
+            human_readable += business_service_not_associated_heading(ip, bool(combo_response.get("business_service_status")))
             human_readable += tableToMarkdown(
                 name="GreyNoise Business Service Intelligence Lookup",
                 t=combo_tmp_response,

@@ -25,16 +25,20 @@ def test_set_limit(address, expected):
     [
         ("00:16:45:00:46:91", ""),
         ('"1:2:3:4:5:6:7:8', "1:2:3:4:5:6:7:8"),
+        ("2001:DB8:ABCD:EF01:0000:0000:0000:0001", "2001:DB8:ABCD:EF01:0000:0000:0000:0001"),
+        ("2001:db8:abcd:ef01:0000:0000:0000:0001", "2001:db8:abcd:ef01:0000:0000:0000:0001"),
+        ('"FE80::ABCD:EF01', "FE80::ABCD:EF01"),
     ],
 )
 def test_main(mocker, address, expected):
     """
     Given:
-        - MAC Address as input
+        - MAC Address, IPv6 with a leading char, or IPv6 with uppercase hex chars as input
     When:
         - Running the script
     Then:
         - Ensure the MAC address is caught as invalid IPv6 and returns array with empty string
+        - Ensure valid IPv6 addresses are returned unchanged (uppercase A-F hex chars are preserved)
     """
     mocker.patch.object(demisto, "args", return_value={"input": address})
     mocker.patch.object(demisto, "results")
