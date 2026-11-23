@@ -1,11 +1,11 @@
+import time
+import traceback
+from typing import Any
 from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from ContentClientApiModule import *  # noqa: F401
 
 """
 Idira Identity Response Actions
@@ -44,6 +44,10 @@ class Config:
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60  # 6 hours
     CACHE_BUFFER_SECONDS = 60
 
+    # Retries for response actions (token and Feature Adoption calls are single-attempt).
+    ACTION_RETRIES = 3
+    RETRY_INITIAL_DELAY_SECONDS = 2.0
+
 
 # Integration-context cache keys for the OAuth2 token.
 ACCESS_TOKEN = "access_token"
@@ -53,7 +57,6 @@ VALID_UNTIL = "valid_until"
 # Identity workforce user states (SetUserState).
 STATE_LOCKED = "Locked"
 STATE_DISABLED = "Disabled"
-STATE_EXPIRED = "Expired"
 STATE_NONE = "None"
 
 # SIA access-policy status values (disable-access-policy).
@@ -108,12 +111,25 @@ def _extract_user_id(response: dict[str, Any]) -> str:
         raise DemistoException("Unexpected GetUserByName response: not a JSON object.")
 
     result = response.get("Result")
-    if not result or not result.get("Uuid"):
+    if not isinstance(result, dict) or not result.get("Uuid"):
         raise DemistoException(
             "Could not resolve user unique ID from GetUserByName response. "
             f"Response keys: {list(response.keys())}. Verify the response shape against your tenant Swagger."
         )
-    return result.get("Uuid")
+    return str(result["Uuid"])
+
+
+def _status_code(error: Exception) -> int | None:
+    """Return the HTTP status code carried by a ContentClient error, if any."""
+    return getattr(getattr(error, "response", None), "status_code", None)
+
+
+class AuthTokenError(DemistoException):
+    """Raised when the OAuth2 token request fails; keeps the HTTP status for callers."""
+
+    def __init__(self, message: str, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
 
 
 def _identity_success(response: dict[str, Any]) -> bool:
@@ -135,7 +151,7 @@ def _identity_success(response: dict[str, Any]) -> bool:
 # region Client
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Idira Identity Response API client.
 
     Holds a single ISPSS Bearer token (cached in integration context) and calls
@@ -155,7 +171,19 @@ class Client(BaseClient):
         sia_url: str = "",
         usage_reporting_enabled: bool = True,
     ):
-        super().__init__(base_url=identity_url, verify=verify, proxy=proxy)
+        super().__init__(
+            base_url=identity_url,
+            verify=verify,
+            proxy=proxy,
+            # Single attempt by default; response actions opt in to retries per call.
+            retry_policy=RetryPolicy(  # type: ignore[call-arg]
+                max_attempts=1, initial_delay=Config.RETRY_INITIAL_DELAY_SECONDS, multiplier=2.0
+            ),
+            client_name="IdiraIdentityResponseClient",
+            diagnostic_mode=is_debug_mode(),
+            # A fresh event loop is used per sync call; close the HTTP client after each one.
+            reuse_client=False,
+        )
         self.usage_reporting_enabled = usage_reporting_enabled
         self.identity_url = identity_url.rstrip("/")
         self.token_url = f"{self.identity_url}/oauth2/platformtoken"
@@ -203,17 +231,22 @@ class Client(BaseClient):
         except DemistoException as error:
             error_msg = str(error)
             demisto.error(f"[Token Request] Failed: {error_msg}")
-            raise DemistoException(f"Failed to obtain access token: {error_msg}")
+            raise AuthTokenError(f"Failed to obtain access token: {error_msg}", status_code=_status_code(error))
 
         access_token = token_response.get(ACCESS_TOKEN)
         if not access_token:
             raise DemistoException("Failed to obtain access token. Response missing access_token.")
 
-        token_expires_in = token_response.get(EXPIRES_IN, Config.DEFAULT_TOKEN_TTL_SECONDS)
+        try:
+            token_expires_in = int(token_response.get(EXPIRES_IN, Config.DEFAULT_TOKEN_TTL_SECONDS))
+        except (ValueError, TypeError):
+            demisto.debug(f"[Token Request] Invalid {EXPIRES_IN} value; using the default TTL.")
+            token_expires_in = Config.DEFAULT_TOKEN_TTL_SECONDS
         token_valid_until = current_timestamp + token_expires_in - Config.CACHE_BUFFER_SECONDS
         demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
 
-        set_integration_context({ACCESS_TOKEN: access_token, VALID_UNTIL: str(token_valid_until)})
+        cached_context.update({ACCESS_TOKEN: access_token, VALID_UNTIL: str(token_valid_until)})
+        set_integration_context(cached_context)
         return access_token
 
     def _clear_cached_token(self) -> None:
@@ -223,7 +256,29 @@ class Client(BaseClient):
         context.pop(VALID_UNTIL, None)
         set_integration_context(context)
 
-    def _request(
+    @staticmethod
+    def _map_http_error(error: DemistoException) -> DemistoException | None:
+        """Translate a failed HTTP call into an actionable error, or None if the status isn't mapped."""
+        status_code = _status_code(error)
+        if status_code == 401:
+            return DemistoException(
+                f"Authentication failed: {error}. Verify Client ID / Client Secret and that the "
+                "service account uses ISPSS (Bearer) auth."
+            )
+        if status_code == 403:
+            return DemistoException(
+                f"Insufficient permissions: {error}. Identity workforce actions require "
+                "system-administrator or user-management rights."
+            )
+        if status_code == 404:
+            return DemistoException(
+                f"Target not found: {error}. Re-run idira-identity-response-get-user-by-name to resolve the user unique ID."
+            )
+        if status_code == 429:
+            return DemistoException(f"Rate limited: {error}. Retry later; do not retry in a tight loop.")
+        return None
+
+    def _authenticated_request(
         self,
         method: str,
         full_url: str,
@@ -231,7 +286,7 @@ class Client(BaseClient):
         params: dict[str, Any] | None = None,
         _is_retry: bool = False,
     ) -> Any:
-        """Execute an authenticated request and map.
+        """Execute an authenticated request and map HTTP errors to actionable messages.
 
         Returns the parsed JSON body (``{}`` for 204/empty). A 409 is treated as
         an idempotent success and returns ``{"status_code": 409}`` so callers can
@@ -253,33 +308,17 @@ class Client(BaseClient):
                 headers=headers,
                 resp_type="response",
                 ok_codes=(200, 201, 202, 204, 409),
-                retries=3,
-                backoff_factor=2,
+                retries=Config.ACTION_RETRIES,
             )
         except DemistoException as error:
-            error_msg = str(error)
-            if "401" in error_msg and not _is_retry:
+            if _status_code(error) == 401 and not _is_retry:
                 # Token may have been revoked server-side before local expiry.
                 demisto.debug("[HTTP Error] 401 received; clearing cached token and retrying once.")
                 self._clear_cached_token()
-                return self._request(method, full_url, json_data=json_data, params=params, _is_retry=True)
-            if "401" in error_msg:
-                raise DemistoException(
-                    f"Authentication failed: {error_msg}. Verify Client ID / Client Secret and that the "
-                    "service account uses ISPSS (Bearer) auth."
-                )
-            if "403" in error_msg:
-                raise DemistoException(
-                    f"Insufficient permissions: {error_msg}. Identity workforce actions require "
-                    "system-administrator or user-management rights."
-                )
-            if "404" in error_msg:
-                raise DemistoException(
-                    f"Target not found: {error_msg}. Re-run idira-identity-response-get-user-by-name to "
-                    "resolve the user unique ID."
-                )
-            if "429" in error_msg:
-                raise DemistoException(f"Rate limited: {error_msg}. Retry later; do not retry in a tight loop.")
+                return self._authenticated_request(method, full_url, json_data=json_data, params=params, _is_retry=True)
+            mapped_error = self._map_http_error(error)
+            if mapped_error:
+                raise mapped_error from error
             raise
 
         status_code = http_response.status_code
@@ -334,7 +373,9 @@ class Client(BaseClient):
         method: str = "POST",
     ) -> Any:
         """Call an Idira Identity endpoint (host https://<tenant>.id.cyberark.cloud)."""
-        return self._request(method=method, full_url=f"{self.identity_url}{path}", json_data=json_data, params=params)
+        return self._authenticated_request(
+            method=method, full_url=f"{self.identity_url}{path}", json_data=json_data, params=params
+        )
 
     def privilege_cloud_request(
         self,
@@ -354,7 +395,7 @@ class Client(BaseClient):
                 "(e.g., https://<subdomain>.privilegecloud.cyberark.cloud)."
             )
         full_url = f"{self.privilege_cloud_url}/PasswordVault/API{path}"
-        return self._request(method=method, full_url=full_url, json_data=json_data, params=params)
+        return self._authenticated_request(method=method, full_url=full_url, json_data=json_data, params=params)
 
     def sia_request(
         self,
@@ -374,7 +415,7 @@ class Client(BaseClient):
                 "instance configuration (e.g., https://<subdomain>.dpa.cyberark.cloud)."
             )
         full_url = f"{self.sia_url}/api{path}"
-        return self._request(method=method, full_url=full_url, json_data=json_data, params=params)
+        return self._authenticated_request(method=method, full_url=full_url, json_data=json_data, params=params)
 
 
 # endregion
@@ -387,9 +428,8 @@ def test_module(client: Client) -> str:
     try:
         client._get_access_token()
         return "ok"
-    except Exception as error:
-        error_msg = str(error)
-        if "401" in error_msg or "403" in error_msg:
+    except AuthTokenError as error:
+        if error.status_code in (401, 403):
             return "Authorization Error: verify Identity URL, Client ID, and Client Secret."
         raise
 
@@ -502,6 +542,8 @@ def get_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
         "safeName": args.get("safe_name"),
         "limit": arg_to_number(args.get("limit")) or 50,
     }
+    if params["limit"] <= 0:
+        raise DemistoException("limit must be greater than 0.")
     params = {key: value for key, value in params.items() if value not in (None, "")}
     response = client.privilege_cloud_request("/Accounts", params=params, method="GET")
 
@@ -688,28 +730,50 @@ def vault_account_command(client: Client, args: dict[str, Any]) -> CommandResult
 # --- Secure Infrastructure Access: access policy ---------------------------
 
 
-def disable_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Revoke standing/JIT access by disabling a SIA access policy.
+# Fields returned by GET /access-policies/{id} that the PUT schema (UpdateVmPolicyDto) does not accept.
+POLICY_READ_ONLY_FIELDS = ("activationType",)
 
-    Reversible: re-run with ``status=Enabled``.
+
+def _set_access_policy_status(client: Client, policy_id: str, status: str) -> CommandResults:
+    """Set an access policy's status, preserving every other field.
+
+    The SIA update endpoint replaces the whole policy, so the current policy is fetched first and
+    sent back with only ``status`` changed. A partial body would wipe the policy's rules and targets.
     """
-    policy_id = args["policy_id"]
-    policy_name = args["policy_name"]
-    status = args.get("status", POLICY_STATUS_DISABLED)
-    response = client.sia_request(
-        f"/access-policies/{policy_id}",
-        {"policyId": policy_id, "policyName": policy_name, "status": status},
-        method="PUT",
-    )
+    policy = client.sia_request(f"/access-policies/{policy_id}", method="GET")
+    if not isinstance(policy, dict) or not policy.get("policyName"):
+        raise DemistoException(f"Could not read access policy {policy_id}: unexpected response from the SIA API.")
 
-    outputs = {"PolicyId": policy_id, "PolicyName": policy_name, "Status": status, "Success": True}
+    update_body = {key: value for key, value in policy.items() if key not in POLICY_READ_ONLY_FIELDS}
+    update_body["policyId"] = policy_id
+    update_body["status"] = status
+    response = client.sia_request(f"/access-policies/{policy_id}", update_body, method="PUT")
+
+    policy_name = policy["policyName"]
+    outputs = {
+        "PolicyId": policy_id,
+        "PolicyName": policy_name,
+        "PreviousStatus": policy.get("status"),
+        "Status": status,
+        "Success": True,
+    }
     return CommandResults(
         outputs_prefix="IdiraIdentityResponse.AccessPolicy",
         outputs_key_field="PolicyId",
         outputs=outputs,
-        readable_output=tableToMarkdown(f"Access policy {policy_id} set to {status}", outputs),
+        readable_output=tableToMarkdown(f"Access policy {policy_name} ({policy_id}) set to {status}", outputs),
         raw_response=response,
     )
+
+
+def disable_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Revoke standing/JIT access by disabling a SIA access policy. Reversible with enable-access-policy."""
+    return _set_access_policy_status(client, args["policy_id"], POLICY_STATUS_DISABLED)
+
+
+def enable_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Reverse a disable by setting the policy status back to Enabled."""
+    return _set_access_policy_status(client, args["policy_id"], POLICY_STATUS_ENABLED)
 
 
 # endregion
@@ -739,6 +803,7 @@ COMMAND_MAP: dict[str, Any] = {
     "idira-identity-response-vault-account": vault_account_command,
     # Secure Infrastructure Access
     "idira-identity-response-disable-access-policy": disable_access_policy_command,
+    "idira-identity-response-enable-access-policy": enable_access_policy_command,
 }
 
 
@@ -748,6 +813,7 @@ def main() -> None:
     demisto.debug(f"{INTEGRATION_NAME}: command '{command}'")
 
     params = demisto.params()
+    args = demisto.args()
     identity_url = (params.get("identity_url") or "").strip().rstrip("/")
     client_id = (params.get("client_id") or "").strip()
     client_secret = (params.get("credentials") or {}).get("password", "")
@@ -779,7 +845,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in COMMAND_MAP:
-            results = COMMAND_MAP[command](client, demisto.args())
+            results = COMMAND_MAP[command](client, args)
             client.report_adoption_event()  # only reached when the command succeeded
             return_results(results)
         else:

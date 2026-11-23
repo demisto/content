@@ -14,4 +14,5 @@
 !idira-identity-response-rotate-credential account_id=12_34
 !idira-identity-response-verify-credential account_id=12_34
 !idira-identity-response-vault-account platform_id=WinServerLocal safe_name=IncidentResponse name=risky-admin address=10.0.0.5 username=admin
-!idira-identity-response-disable-access-policy policy_id=00000000-0000-0000-0000-000000000000 policy_name="Prod SSH Access"
+!idira-identity-response-disable-access-policy policy_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-enable-access-policy policy_id=00000000-0000-0000-0000-000000000000

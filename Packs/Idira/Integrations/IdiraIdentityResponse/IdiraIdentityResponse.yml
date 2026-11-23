@@ -1,8 +1,8 @@
+name: IdiraIdentityResponse
+display: Idira Identity Response
 commonfields:
   id: IdiraIdentityResponse
   version: -1
-name: IdiraIdentityResponse
-display: Idira Identity Response
 category: Identity and Access Management
 provider: Idira
 description: Trigger identity (workforce) response actions in the Idira Identity Security Platform - lock, disable, or unlock a user, force logout, expire a password, and remove a privileged role - as part of a detection-to-containment playbook.
@@ -40,15 +40,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: The Idira Secure Infrastructure Access host (e.g., https://abc1234.dpa.cyberark.cloud). Required only for the disable-access-policy command.
-- name: insecure
-  display: Trust any certificate (not secure)
-  required: false
-  type: 8
-  defaultvalue: "false"
-  section: Connect
-  advanced: true
-  additionalinfo: When selected, the integration will not verify SSL certificates.
+  additionalinfo: The Idira Secure Infrastructure Access host (e.g., https://abc1234.dpa.cyberark.cloud). Required only for the disable-access-policy and enable-access-policy commands.
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -57,6 +49,14 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: When selected, the integration will use the system proxy settings.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration will not verify SSL certificates.
 - name: disable_usage_reporting
   display: Disable usage reporting
   required: false
@@ -418,30 +418,42 @@ script:
       description: Whether the account was vaulted.
       type: Boolean
   - name: idira-identity-response-disable-access-policy
-    description: Revokes standing or just-in-time access by disabling a Secure Infrastructure Access (SIA) policy. Reversible by setting status to Enabled. Requires the SIA URL.
+    description: Revokes standing or just-in-time access by disabling a Secure Infrastructure Access (SIA) policy. All other policy settings are preserved. Reversible with idira-identity-response-enable-access-policy. Requires the SIA URL.
     arguments:
     - name: policy_id
       description: The policy UUID (from the SIA access-policies list).
       required: true
-    - name: policy_name
-      description: The policy name (1-200 characters).
-      required: true
-    - name: status
-      description: The status to set on the policy.
-      auto: PREDEFINED
-      predefined:
-      - Disabled
-      - Enabled
-      - Draft
-      - Expired
-      - Irrelevant
-      defaultValue: Disabled
     outputs:
     - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyId
       description: The policy UUID.
       type: String
     - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyName
       description: The policy name.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PreviousStatus
+      description: The policy status before the action.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.Status
+      description: The status the policy was set to.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.Success
+      description: Whether the action succeeded.
+      type: Boolean
+  - name: idira-identity-response-enable-access-policy
+    description: Restores access by enabling a previously disabled Secure Infrastructure Access (SIA) policy. All other policy settings are preserved. Requires the SIA URL.
+    arguments:
+    - name: policy_id
+      description: The policy UUID (from the SIA access-policies list).
+      required: true
+    outputs:
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyId
+      description: The policy UUID.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PolicyName
+      description: The policy name.
+      type: String
+    - contextPath: IdiraIdentityResponse.AccessPolicy.PreviousStatus
+      description: The policy status before the action.
       type: String
     - contextPath: IdiraIdentityResponse.AccessPolicy.Status
       description: The status the policy was set to.
@@ -453,7 +465,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.8927230
+  dockerimage: demisto/fastapi:0.125.0.12689358
 fromversion: 8.11.0
 supportlevelheader: xsoar
 marketplaces:

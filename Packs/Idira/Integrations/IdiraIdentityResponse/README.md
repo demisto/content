@@ -16,7 +16,7 @@ The integration uses the OAuth 2.0 **client-credentials** flow against `https://
 | Client ID | Service username without domain (configured as an OAuth confidential client). | True |
 | Client Secret | Service user password for OAuth2 client_credentials authentication. | True |
 | Privilege Cloud URL | The Idira Privilege Cloud PVWA host (e.g., `https://abc1234.privilegecloud.cyberark.cloud`). Required only for the account, session, and credential commands. | False |
-| Secure Infrastructure Access (SIA) URL | The Idira SIA host (e.g., `https://abc1234.dpa.cyberark.cloud`). Required only for the disable-access-policy command. | False |
+| Secure Infrastructure Access (SIA) URL | The Idira SIA host (e.g., `https://abc1234.dpa.cyberark.cloud`). Required only for the disable-access-policy and enable-access-policy commands. | False |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
 | Disable usage reporting | When selected, the integration does not send usage events \(command executed, integration version\) to Palo Alto Networks. | False |
@@ -208,15 +208,23 @@ These commands require the **Secure Infrastructure Access (SIA) URL** parameter 
 
 ### idira-identity-response-disable-access-policy
 
-Revokes standing or just-in-time access by disabling a SIA access policy. Reversible by setting `status=Enabled`.
+Revokes standing or just-in-time access by disabling a SIA access policy. The current policy is read first and written back with only its status changed, so all other settings are preserved. Reversible with `idira-identity-response-enable-access-policy`.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | The policy UUID. | Required |
-| policy_name | The policy name (1–200 characters). | Required |
-| status | The status to set: `Disabled` (default), `Enabled`, `Draft`, `Expired`, or `Irrelevant`. | Optional |
 
-**Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `Status`, `Success`).
+**Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `PreviousStatus`, `Status`, `Success`).
+
+### idira-identity-response-enable-access-policy
+
+Restores access by enabling a previously disabled SIA access policy. All other policy settings are preserved.
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy UUID. | Required |
+
+**Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `PreviousStatus`, `Status`, `Success`).
 
 ## Error handling
 
