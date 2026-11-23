@@ -447,6 +447,89 @@
 				],
 				"type": "custom"
 			},
+            {
+                "hidden": false,
+                "id": "kezuy7egmq",
+                "name": "Workplan Analyzer",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": true,
+                        "i": "kezuy7egmq-08671e39-fb41-489a-b134-7cea4b542774",
+                        "items": [
+                            {
+                                "args": {
+                                    "attach_report": {
+                                        "simple": "false",
+                                        "userMarkedRequired": true
+                                    },
+                                    "large_io_threshold_kb": {
+                                        "simple": "100",
+                                        "userMarkedRequired": true
+                                    },
+                                    "slow_task_threshold_seconds": {
+                                        "simple": "15",
+                                        "userMarkedRequired": true
+                                    },
+                                    "top_n": {
+                                        "simple": "5",
+                                        "userMarkedRequired": true
+                                    },
+                                    "workplan_id": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 26,
+                                "id": "3eeee6e6-bb9c-4a4c-a41d-479b4d9c6b53",
+                                "index": 0,
+                                "name": "Analyze a workplan",
+                                "scriptId": "HealthcheckWorkplanAnalyzer",
+                                "sectionItemType": "button",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "kezuy7egmq-45af0263-a3b9-4a98-b988-a5e8f84e1ab5",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckworkplanreport",
+                                "height": 106,
+                                "id": "f31c1a31-6063-4053-a24e-f849f35c3d2a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 1
+                    }
+                ],
+                "type": "custom"
+            },
 			{
 				"id": "warRoom",
 				"name": "War Room",

@@ -1,0 +1,39 @@
+args:
+- description: The Workplan ID to analyze. Enter the Incident ID (Cortex XSOAR) or the Issue ID (Cortex XSIAM) whose workplan should be analyzed. If not provided, the current incident/issue is used.
+  name: workplan_id
+- defaultValue: '100'
+  description: Task input/output size threshold in KB. Tasks with inputs or outputs larger than this value are reported.
+  name: large_io_threshold_kb
+- defaultValue: '15'
+  description: Slow task threshold in seconds. Tasks that ran longer than this value are reported.
+  name: slow_task_threshold_seconds
+- defaultValue: '5'
+  description: Number of items to display in the "Top N" tables.
+  name: top_n
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to attach the report to the War Room as a Markdown (.md) file.
+  name: attach_report
+  predefined:
+  - 'true'
+  - 'false'
+comment: Analyzes the health of an incident's or issue's workplan (structure, large inputs/outputs, common scripts and subplaybooks, loops, slow tasks, and skewed conditional tasks) and produces a Markdown health report. The workplan is retrieved using the Core REST API (core-api-get) command.
+commonfields:
+  id: HealthcheckWorkplanAnalyzer
+  version: -1
+name: HealthcheckWorkplanAnalyzer
+script: '-'
+tags:
+- HealthCheck
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.11879924
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

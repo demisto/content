@@ -9,7 +9,7 @@ def main():
         ctx = demisto.context()
         incident = demisto.incidents()[0]
 
-        main = {"incident": incident, "ctx": ctx, "cases": {}}
+        main = {"incident": incident, "ctx": ctx, "tenantID": demisto.args().get("tenantID"), "cases": {}}
 
         # Get case creation amounts
         # Calculate exact epoch timestamps (in milliseconds) as required by the XSIAM API

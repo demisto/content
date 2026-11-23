@@ -1,4 +1,4 @@
-# System Diagnostics and Health Check (Version 3.5.0)
+# System Diagnostics and Health Check (Version 3.5.1)
 
 The **System Diagnostics and Health Check** pack automatically reviews your platform configuration, server operations, and content health to detect issues and enforce best practices across Palo Alto Networks Cortex environments.
 
@@ -6,7 +6,7 @@ Starting with **Version 3.5.0**, the pack introduces comprehensive support for *
 
 ---
 
-## What's New in Version 3.5.0
+## What's New in Version 3.5.1
 
 * **Cortex XSIAM Support**: End-to-end health evaluation for XSIAM environments.
 * **Dedicated Platform Playbooks**:
@@ -17,6 +17,7 @@ Starting with **Version 3.5.0**, the pack introduces comprehensive support for *
   * **Agent and Asset Dashboard**: Evaluates endpoint policy distribution, default policy saturation, scan states, auto-upgrade configurations, and disabled EDR protections.
   * **Ingestion / Integration Dashboard**: Monitors identity ingestion (CIE), reporting freshness, playbook task failure rates, and authentication, network, and SaaS audit data feeds.
   * **Issues / Cases Dashboard**: Detects correlation engine imbalances, noisy detection categories, and unprevented security issues.
+* **Workplan Analyzing**: A script that takes a given incident \ issue and analyzes its' workplan for potential issues. Intended for large\ slow incidents and performance issues.
 
 ---
 
