@@ -1,0 +1,117 @@
+name: OpenAIWorkspaceStandardConnector
+display: ChatGPT Workspace (Standard Connector)
+category: Messaging and Conferencing
+provider: OpenAI
+sectionorder:
+- Connect
+- Collect
+description: Collect ChatGPT Compliance logs from a ChatGPT workspace. This integration is configured automatically as part of the OpenAI Standard Connector. Do not configure it directly - set it up from the connector page instead.
+commonfields:
+  id: OpenAIWorkspaceStandardConnector
+  version: -1
+configuration:
+- display: Organization ID
+  name: organization_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: The OpenAI Organization ID (org-...). Sent as the OpenAI-Organization header on API Platform requests.
+- display: ChatGPT Server URL
+  name: chatgpt_api_url
+  type: 0
+  required: false
+  defaultvalue: https://api.chatgpt.com
+  section: Connect
+  additionalinfo: The base URL for the ChatGPT Platform Compliance APIs.
+- display: Compliance API Key
+  name: compliance_api_key
+  type: 14
+  required: false
+  section: Connect
+  additionalinfo: The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.
+- display: Workspace ID
+  name: workspace_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: The Compliance workspace UUID (for example, 4a4676f3-3d74-4723-b696-c93e6d01078a). Required when fetching Compliance event types.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Events types to fetch
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  section: Collect
+  options: &id001
+  - Conversation Messages
+  - Apps
+  - Apps Auth
+  - Compliance Audit
+  - Auth
+  - Codex
+  - ChatGPT
+  - Codex Security
+  - Workspace Agents
+  defaultvalue: Conversation Messages,Apps,Apps Auth,Compliance Audit,Auth,Codex,ChatGPT,Codex Security,Workspace Agents
+  additionalinfo: The ChatGPT Compliance event types to fetch.
+- display: Maximum number of Compliance events per fetch
+  name: compliance_max_fetch
+  type: 0
+  required: false
+  defaultvalue: '900'
+  section: Collect
+  additionalinfo: The maximum number of Compliance events to return per fetch.
+script:
+  commands:
+  - name: openai-workspace-get-events
+    description: Manually retrieves ChatGPT Compliance log events from OpenAI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: event_type
+      description: A comma-separated list of event types to retrieve. If not specified, uses the value configured in the integration parameters.
+      auto: PREDEFINED
+      isArray: true
+      predefined: *id001
+    - name: limit
+      description: The maximum number of events to return per stream.
+      defaultValue: '50'
+    - name: start_time
+      description: The lookback start time for the fetch. Supports ISO 8601 or relative time (for example, "3 days ago", "2099-01-01T00:00:00Z").
+    - name: should_push_events
+      description: Whether retrieved events are also ingested by Cortex.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: OpenAI.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: OpenAI.Event._event_type
+      description: The upstream event_type for Compliance events. Left empty for Audit events.
+      type: String
+    - contextPath: OpenAI.Event.source_log_type
+      description: The source log type used by downstream parsing rules.
+      type: String
+    - contextPath: OpenAI.Event._time
+      description: The event timestamp in ISO 8601 format.
+      type: Date
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/parse-emails:0.2.0.12624354
+  isfetchevents: true
+fromversion: 8.15.0
+tests:
+- No tests
+marketplaces:
+- platform
