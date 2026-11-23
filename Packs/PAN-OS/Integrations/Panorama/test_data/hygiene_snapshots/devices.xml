@@ -1,0 +1,22 @@
+<response status="success">
+  <result>
+    <devices>
+      <entry name="FW1">
+        <serial>FW1</serial>
+        <connected>yes</connected>
+        <sw-version>10.2.0</sw-version>
+      </entry>
+      <entry name="FW-PASSIVE">
+        <serial>FW-PASSIVE</serial>
+        <connected>yes</connected>
+        <sw-version>10.2.0</sw-version>
+        <ha><state>passive</state><peer><serial>FW-ACTIVE-PEER</serial></peer></ha>
+      </entry>
+      <entry name="FW-DISCONNECTED">
+        <serial>FW-DISCONNECTED</serial>
+        <connected>no</connected>
+        <sw-version>10.2.0</sw-version>
+      </entry>
+    </devices>
+  </result>
+</response>

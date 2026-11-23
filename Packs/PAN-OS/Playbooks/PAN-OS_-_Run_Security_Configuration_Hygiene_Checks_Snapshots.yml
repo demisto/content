@@ -1,0 +1,478 @@
+description: 'POC (CRTX-291227). Same checks and outputs as ''PAN-OS - Run Security Configuration Hygiene Checks'', split into atomic commands: each pan-os-hygiene-get-snapshot task makes exactly one PAN-OS API call and stores the result as a file, and pan-os-hygiene-evaluate-snapshots runs the six existing hygiene checks on those files with no API calls.
+
+
+  API calls: 2 + 2 per connected firewall.
+
+
+  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance connected to Panorama.'
+id: PAN-OS - Run Security Configuration Hygiene Checks (Snapshots)
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - targetDevice
+  name: General (Inputs group)
+inputs:
+- description: 'The serial number of a specific firewall to target (Used when connected to Panorama) [Optional].
+
+
+    When connected to Panorama, leaving this blank will run the checks against Panorama configuration as well as all currently connected managed firewalls.'
+  key: targetDevice
+  playbookInputQuery:
+  required: false
+  value: {}
+name: PAN-OS - Run Security Configuration Hygiene Checks (Snapshots)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - PANOS.ConfigurationHygiene.Summary
+  - PANOS.ConfigurationHygiene.Result
+outputs:
+- contextPath: PANOS.ConfigurationHygiene.Summary
+  description: A list of hygiene check summaries (constructed as dictionaries) describing the overall result of hygiene checks and how many issues of each type were found, if any.
+  type: unknown
+- contextPath: PANOS.ConfigurationHygiene.Result
+  description: A list of hygiene check results (constructed as dictionaries) including a description of the issue found, the configuration location (container name), and the name of the object affected by the issue.
+  type: unknown
+starttaskid: '0'
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2100,\n      \"width\": 900,\n      \"x\": 449,\n      \"y\": -150\n    }\n  }\n}"
+fromversion: 6.10.0
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 257a493e-7e6a-4096-8f4d-62a0dcbab700
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 257a493e-7e6a-4096-8f4d-62a0dcbab700
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": -150\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 463a7f89-e3ed-4010-bc9e-d65b77f345e3
+      description: Indicates completion of security configuration hygiene checks playbook
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 463a7f89-e3ed-4010-bc9e-d65b77f345e3
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 1850\n  }\n}"
+  '16':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: PANOS
+      value:
+        complex:
+          root: PANOS
+          transformers:
+          - operator: StringifyArray
+          - args:
+              regex:
+                value:
+                  simple: \x{274c}
+              replaceWith:
+                value:
+                  simple: Failed
+            operator: replaceMatch
+          - args:
+              regex:
+                value:
+                  simple: \x{2714}\x{fe0f}
+              replaceWith:
+                value:
+                  simple: Passed
+            operator: replaceMatch
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Replace unicode in Summary result values with string.
+      id: 9d6d73d6-89fb-497e-8823-3cfcdb98fb7e
+      iscommand: false
+      name: Set check results to Passed or Failed
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9d6d73d6-89fb-497e-8823-3cfcdb98fb7e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 659,\n    \"y\": 1660\n  }\n}"
+  '17':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d1e2d280-74cd-4d30-843b-1e94876794ad
+      description: Conditional task to check if PANOS key exists.
+      iscommand: false
+      name: Were any results obtained?
+      type: condition
+      version: -1
+    taskid: d1e2d280-74cd-4d30-843b-1e94876794ad
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 1480\n  }\n}"
+  '19':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '20'
+      'yes':
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 453ebb29-65cb-40b3-a7bc-00c26048955e
+      iscommand: false
+      name: Is the Panorama integration enabled?
+      description: Check if an active Panorama integration instance is configured and available.
+      type: condition
+      version: -1
+    taskid: 453ebb29-65cb-40b3-a7bc-00c26048955e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 27.25\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Please configure and enable an instance of the Panorama integration.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry for no active Panorama integration instances found.
+      id: a5e72e6f-8c87-44f2-869c-3dfa3c639331
+      iscommand: false
+      name: No active Panorama Integration instance
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: a5e72e6f-8c87-44f2-869c-3dfa3c639331
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 917.75,\n    \"y\": 216\n  }\n}"
+  '30':
+    id: '30'
+    taskid: 874a03fd-7678-48d8-a194-d73243a09cef
+    type: regular
+    task:
+      id: 874a03fd-7678-48d8-a194-d73243a09cef
+      version: -1
+      name: Snapshot managed devices
+      description: 'One API call: show devices all.'
+      script: Panorama|||pan-os-hygiene-get-snapshot
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      snapshot_type:
+        simple: devices
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: aac346e6-e9b3-4269-970d-48ee66d0556f
+    type: regular
+    task:
+      id: aac346e6-e9b3-4269-970d-48ee66d0556f
+      version: -1
+      name: Snapshot Panorama configuration
+      description: 'One API call: the Panorama candidate configuration.'
+      script: Panorama|||pan-os-hygiene-get-snapshot
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      snapshot_type:
+        simple: panorama-config
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 580\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: cc3d286d-8413-4330-9b64-3648409a08da
+    type: condition
+    task:
+      id: cc3d286d-8413-4330-9b64-3648409a08da
+      version: -1
+      name: Any connected firewalls?
+      description: Checks whether Panorama manages connected, HA-active firewalls.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '35'
+      'yes':
+      - '33'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value: &id001
+              simple: ${PANOS.HygieneSnapshot.Firewalls}
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 760\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: fc551659-fbcf-4a8c-842f-06a3c6028b21
+    type: regular
+    task:
+      id: fc551659-fbcf-4a8c-842f-06a3c6028b21
+      version: -1
+      name: Snapshot firewall configuration
+      description: 'One API call per firewall: the firewall virtual systems configuration.'
+      script: Panorama|||pan-os-hygiene-get-snapshot
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      snapshot_type:
+        simple: firewall-config
+      target: *id001
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 940\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '34':
+    id: '34'
+    taskid: 6258a0f5-b802-450a-89dd-2c2820a35eaf
+    type: regular
+    task:
+      id: 6258a0f5-b802-450a-89dd-2c2820a35eaf
+      version: -1
+      name: Snapshot firewall pushed template
+      description: 'One API call per firewall: show config pushed-template.'
+      script: Panorama|||pan-os-hygiene-get-snapshot
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      snapshot_type:
+        simple: pushed-template
+      target: *id001
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 1120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+      forEach: true
+  '35':
+    id: '35'
+    taskid: 84858dc6-560d-4e9b-aa73-8445b8a3833a
+    type: regular
+    task:
+      id: 84858dc6-560d-4e9b-aa73-8445b8a3833a
+      version: -1
+      name: Evaluate hygiene checks
+      description: Runs all six hygiene checks on the snapshots. No API calls.
+      script: Panorama|||pan-os-hygiene-evaluate-snapshots
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      entry_ids:
+        complex:
+          root: File
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: startWith
+              right:
+                value:
+                  simple: panos_hygiene_snapshot_
+          accessor: EntryID
+      device_filter_string:
+        simple: ${inputs.targetDevice}
+      return_nonconforming_profiles:
+        simple: 'yes'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 449,\n    \"y\": 1300\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+tests:
+- No tests (auto formatted)

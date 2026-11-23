@@ -1,0 +1,15 @@
+<response status="success">
+  <result>
+    <config>
+      <devices>
+        <entry>
+          <vsys>
+            <entry name="vsys1">
+              <zone><entry name="z-pushed"/></zone>
+            </entry>
+          </vsys>
+        </entry>
+      </devices>
+    </config>
+  </result>
+</response>

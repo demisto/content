@@ -10167,3 +10167,281 @@ def test_panorama_upload_content_update_file_command_uses_basename(mocker):
     assert copy_mock.call_args[0][1] == "firmware.bin"
     # Assert os.remove was called
     remove_mock.assert_called_once_with("firmware.bin")
+
+
+# --- Hygiene snapshots (pan-os-hygiene-get-snapshot / pan-os-hygiene-evaluate-snapshots) ---
+HYGIENE_SNAPSHOTS_DIR = "test_data/hygiene_snapshots"
+HYGIENE_FIREWALL_SERIAL = "FW1"
+HYGIENE_SNAPSHOT_FIXTURES = {
+    "1@inv": ("devices", "panorama", "devices.xml"),
+    "2@inv": ("panorama-config", "panorama", "panorama_config.xml"),
+    "3@inv": ("firewall-config", HYGIENE_FIREWALL_SERIAL, "firewall_config.xml"),
+    "4@inv": ("pushed-template", HYGIENE_FIREWALL_SERIAL, "pushed_template.xml"),
+}
+HYGIENE_EXPECTED_SUMMARY = {
+    ("BP-V-1", 0),
+    ("BP-V-2", 1),
+    ("BP-V-3", 1),
+    ("BP-V-4", 1),
+    ("BP-V-5", 1),
+    ("BP-V-6", 1),
+    ("BP-V-7", 2),
+    ("BP-V-8", 1),
+    ("BP-V-9", 2),
+    ("BP-V-10", 2),
+}
+
+
+HYGIENE_PANOS_CLASSES = (
+    "LogForwardingProfile",
+    "LogForwardingProfileMatchList",
+    "VulnerabilityProfile",
+    "AntiSpywareProfile",
+    "URLFilteringProfile",
+    "Zone",
+    "SecurityRule",
+)
+
+
+@pytest.fixture
+def real_panos_object_methods(monkeypatch):
+    # TestHygieneFunctions assigns MagicMocks onto these classes (e.g. SecurityRule.refreshall) without restoring them.
+    # The snapshot evaluation must use the real pan-os-python methods, so drop any leaked mock for this test only.
+    import Panorama
+
+    for class_name in HYGIENE_PANOS_CLASSES:
+        panos_class = getattr(Panorama, class_name)
+        for attribute in ("refreshall", "apply"):
+            if isinstance(panos_class.__dict__.get(attribute), MagicMock):
+                monkeypatch.delattr(panos_class, attribute)
+
+
+def mock_hygiene_snapshot_files(mocker, fixtures: dict) -> None:
+    from Panorama import hygiene_snapshot_file_name
+
+    file_infos = {
+        entry_id: {"name": hygiene_snapshot_file_name(snapshot_type, target), "path": f"{HYGIENE_SNAPSHOTS_DIR}/{file_name}"}
+        for entry_id, (snapshot_type, target, file_name) in fixtures.items()
+    }
+    mocker.patch.object(demisto, "getFilePath", side_effect=lambda entry_id: file_infos[entry_id])
+    mocker.patch.object(demisto, "params", return_value=integration_panorama_params)
+
+
+def test_hygiene_snapshot_file_name_round_trips():
+    # given
+    from Panorama import hygiene_snapshot_file_name, parse_hygiene_snapshot_file_name
+
+    file_name = hygiene_snapshot_file_name("firewall-config", "007051000263049")
+
+    # when
+    parsed = parse_hygiene_snapshot_file_name(file_name)
+
+    # then
+    assert file_name == "panos_hygiene_snapshot_firewall-config_007051000263049.xml"
+    assert parsed == ("firewall-config", "007051000263049")
+
+
+def test_parse_hygiene_snapshot_file_name_accepts_collapsed_or_doubled_underscores():
+    # given
+    from Panorama import parse_hygiene_snapshot_file_name
+
+    # when / then: the platform may collapse repeated underscores in stored file names
+    assert parse_hygiene_snapshot_file_name("panos_hygiene_snapshot__devices__panorama.xml") == ("devices", "panorama")
+    assert parse_hygiene_snapshot_file_name("panos_hygiene_snapshot_devices_panorama.xml") == ("devices", "panorama")
+
+
+def test_parse_hygiene_snapshot_file_name_rejects_other_files():
+    # given
+    from Panorama import parse_hygiene_snapshot_file_name
+
+    # when / then
+    assert parse_hygiene_snapshot_file_name("running_config") is None
+    assert parse_hygiene_snapshot_file_name("panos_hygiene_snapshot_unknown-type_panorama.xml") is None
+
+
+def test_get_active_firewalls_skips_disconnected_and_passive_devices():
+    # given
+    from Panorama import get_active_firewalls_from_devices_response
+
+    with open(f"{HYGIENE_SNAPSHOTS_DIR}/devices.xml") as f:
+        devices_response = ElementTree.fromstring(f.read())
+
+    # when
+    firewalls = get_active_firewalls_from_devices_response(devices_response)
+
+    # then
+    assert firewalls == [{"serial": "FW1", "sw_version": "10.2.0"}]
+
+
+def test_get_hygiene_snapshot_makes_exactly_one_api_call(mocker):
+    # given
+    import Panorama
+
+    with open(f"{HYGIENE_SNAPSHOTS_DIR}/devices.xml") as f:
+        devices_xml = f.read()
+    http_request = mocker.patch.object(Panorama, "http_request", return_value=devices_xml)
+
+    # when
+    file_entry, command_result = Panorama.get_hygiene_snapshot("devices")
+
+    # then
+    http_request.assert_called_once()
+    assert http_request.call_args.kwargs["body"]["cmd"] == "<show><devices><all></all></devices></show>"
+    assert file_entry["File"] == "panos_hygiene_snapshot_devices_panorama.xml"
+    assert command_result.outputs == {"SnapshotType": "devices", "Target": "panorama", "Firewalls": ["FW1"]}
+
+
+def test_get_hygiene_snapshot_sends_target_for_firewall_snapshot(mocker):
+    # given
+    import Panorama
+
+    with open(f"{HYGIENE_SNAPSHOTS_DIR}/firewall_config.xml") as f:
+        firewall_xml = f.read()
+    http_request = mocker.patch.object(Panorama, "http_request", return_value=firewall_xml)
+
+    # when
+    file_entry, _ = Panorama.get_hygiene_snapshot("firewall-config", HYGIENE_FIREWALL_SERIAL)
+
+    # then
+    http_request.assert_called_once()
+    body = http_request.call_args.kwargs["body"]
+    assert body["target"] == HYGIENE_FIREWALL_SERIAL
+    assert body["xpath"] == "/config/devices/entry[@name='localhost.localdomain']/vsys"
+    assert file_entry["File"] == f"panos_hygiene_snapshot_firewall-config_{HYGIENE_FIREWALL_SERIAL}.xml"
+
+
+def test_get_hygiene_snapshot_requires_target_for_firewall_snapshot(mocker):
+    # given
+    import Panorama
+
+    http_request = mocker.patch.object(Panorama, "http_request")
+
+    # when / then
+    with pytest.raises(DemistoException, match="required"):
+        Panorama.get_hygiene_snapshot("pushed-template")
+    http_request.assert_not_called()
+
+
+def test_get_hygiene_snapshot_raises_on_failed_response(mocker):
+    # given
+    import Panorama
+
+    mocker.patch.object(Panorama, "http_request", return_value='<response status="error"><msg>bad xpath</msg></response>')
+
+    # when / then
+    with pytest.raises(DemistoException, match="bad xpath"):
+        Panorama.get_hygiene_snapshot("panorama-config")
+
+
+def test_evaluate_hygiene_snapshots_returns_expected_findings(mocker, real_panos_object_methods):
+    # given
+    import Panorama
+
+    mock_hygiene_snapshot_files(mocker, HYGIENE_SNAPSHOT_FIXTURES)
+
+    # when
+    result = Panorama.evaluate_hygiene_snapshots(",".join(HYGIENE_SNAPSHOT_FIXTURES))
+
+    # then
+    assert {(check.issue_code, check.issue_count) for check in result.summary_data} == HYGIENE_EXPECTED_SUMMARY
+    findings = {(issue.issue_code, issue.hostid, issue.container_name, issue.name) for issue in result.result_data}
+    assert ("BP-V-7", HYGIENE_FIREWALL_SERIAL, "vsys1", "z-fw") in findings
+    assert ("BP-V-7", "1.1.1.1", "T1", "z-tmpl") in findings
+    assert ("BP-V-8", "1.1.1.1", "shared", "r-shared") in findings
+    # Template-pushed zones are reported where they are configured (the template), not on the firewall.
+    assert not any(name == "z-pushed" for _, _, _, name in findings)
+
+
+def test_evaluate_hygiene_snapshots_makes_no_api_calls(mocker, real_panos_object_methods):
+    # given
+    import Panorama
+
+    mock_hygiene_snapshot_files(mocker, HYGIENE_SNAPSHOT_FIXTURES)
+    http_request = mocker.patch.object(Panorama, "http_request")
+    # Every real PAN-OS XML API request in pan-python goes through this (name-mangled) private method.
+    xapi_request = mocker.patch("pan.xapi.PanXapi._PanXapi__api_request")
+
+    # when
+    Panorama.evaluate_hygiene_snapshots(",".join(HYGIENE_SNAPSHOT_FIXTURES))
+
+    # then
+    http_request.assert_not_called()
+    xapi_request.assert_not_called()
+
+
+def test_evaluate_hygiene_snapshots_matches_existing_checks_on_same_config(mocker, real_panos_object_methods):
+    # given: the same snapshot XML served once as a live device (existing per-object reads) and once from files
+    import Panorama
+
+    mock_hygiene_snapshot_files(mocker, HYGIENE_SNAPSHOT_FIXTURES)
+    snapshots = Panorama.load_hygiene_snapshots(list(HYGIENE_SNAPSHOT_FIXTURES))
+    topology, _ = Panorama.build_hygiene_snapshot_topology(snapshots, "1.1.1.1")
+
+    # when
+    existing = [
+        Panorama.check_log_forwarding(topology),
+        Panorama.check_security_zones(topology),
+        Panorama.check_spyware_profiles(topology, return_nonconforming_profiles="yes"),
+        Panorama.check_url_filtering_profiles(topology, return_nonconforming_profiles="yes"),
+        Panorama.check_vulnerability_profiles(topology, return_nonconforming_profiles="yes"),
+        Panorama.check_security_rules(topology),
+    ]
+    evaluated = Panorama.evaluate_hygiene_snapshots(",".join(HYGIENE_SNAPSHOT_FIXTURES))
+
+    # then
+    assert [vars(issue) for result in existing for issue in result.result_data] == [
+        vars(issue) for issue in evaluated.result_data
+    ]
+
+
+def test_evaluate_hygiene_snapshots_reports_missing_firewall_snapshots(mocker, real_panos_object_methods):
+    # given
+    import Panorama
+
+    fixtures = {entry_id: value for entry_id, value in HYGIENE_SNAPSHOT_FIXTURES.items() if value[0] != "pushed-template"}
+    mock_hygiene_snapshot_files(mocker, fixtures)
+
+    # when / then
+    with pytest.raises(DemistoException, match=f"pushed-template', '{HYGIENE_FIREWALL_SERIAL}"):
+        Panorama.evaluate_hygiene_snapshots(",".join(fixtures))
+
+
+def test_evaluate_hygiene_snapshots_uses_last_duplicate_snapshot(mocker, real_panos_object_methods):
+    # given: the panorama config was snapshotted twice, the second one is empty
+    import Panorama
+
+    fixtures = {**HYGIENE_SNAPSHOT_FIXTURES, "5@inv": ("panorama-config", "panorama", "panorama_config_empty.xml")}
+    mock_hygiene_snapshot_files(mocker, fixtures)
+
+    # when
+    snapshots = Panorama.load_hygiene_snapshots(list(fixtures))
+
+    # then
+    assert len(snapshots) == 4
+    assert len(snapshots[("panorama-config", "panorama")].find("./result/config")) == 0
+
+
+def test_hygiene_snapshot_xapi_blocks_unexpected_api_calls():
+    # given
+    from Panorama import HygieneSnapshotXapi
+
+    xapi = HygieneSnapshotXapi(ElementTree.fromstring("<config/>"), {})
+
+    # when / then
+    with pytest.raises(DemistoException, match="offline"):
+        xapi.set(xpath="/config", element="<x/>")
+
+
+def test_run_isolated_hygiene_check_turns_failure_into_error_row():
+    # given
+    from Panorama import HYGIENE_CHECK_ERROR_ISSUE_CODE, run_isolated_hygiene_check
+
+    def failing_check():
+        raise ValueError("boom")
+
+    # when
+    result = run_isolated_hygiene_check("security-rules", failing_check)
+
+    # then
+    assert result.summary_data[0].issue_code == HYGIENE_CHECK_ERROR_ISSUE_CODE
+    assert "boom" in result.result_data[0].description

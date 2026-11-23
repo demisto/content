@@ -9240,6 +9240,86 @@ script:
       description: The affected object name.
       type: String
   - arguments:
+    - description: 'The snapshot to read. "devices": the managed devices list (Panorama). "panorama-config": the full Panorama candidate configuration (shared, device groups, templates, template stacks). "firewall-config": the virtual systems candidate configuration of one firewall. "pushed-template": the template configuration pushed to one firewall.'
+      name: snapshot_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - devices
+      - panorama-config
+      - firewall-config
+      - pushed-template
+    - description: The serial number of the firewall. Required for the firewall-config and pushed-template snapshot types. Not supported for the others.
+      name: target
+    description: Reads one configuration snapshot used by the configuration hygiene checks, with a single PAN-OS API request, and returns it as a file. Use pan-os-hygiene-evaluate-snapshots to run the checks on the snapshots.
+    name: pan-os-hygiene-get-snapshot
+    outputs:
+    - contextPath: PANOS.HygieneSnapshot.SnapshotType
+      description: The type of the snapshot.
+      type: String
+    - contextPath: PANOS.HygieneSnapshot.Target
+      description: The firewall serial number of the snapshot, or "panorama".
+      type: String
+    - contextPath: PANOS.HygieneSnapshot.Firewalls
+      description: For the devices snapshot, the serial numbers of the connected, HA-active firewalls.
+      type: Unknown
+    - contextPath: File.EntryID
+      description: The entry ID of the snapshot file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the snapshot file.
+      type: String
+  - arguments:
+    - description: The entry IDs of the snapshot files returned by pan-os-hygiene-get-snapshot. Must include the devices and panorama-config snapshots, and the firewall-config and pushed-template snapshots of each connected firewall. Files that are not hygiene snapshots are ignored.
+      name: entry_ids
+      required: true
+      isArray: true
+    - description: The string to filter to only check a given device.
+      name: device_filter_string
+    - description: A comma-separated list of severities that must be in drop/reset/block-ip mode.
+      name: minimum_block_severities
+      defaultValue: critical,high
+    - description: A comma-separated list of severities that must be in alert/default or higher mode.
+      name: minimum_alert_severities
+      defaultValue: medium,low
+    - description: Whether to return details of non-conforming profiles.
+      name: return_nonconforming_profiles
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      defaultValue: "yes"
+    description: Runs all the configuration hygiene checks (log forwarding, security zones, spyware, URL filtering and vulnerability profiles, security rules) on snapshots taken by pan-os-hygiene-get-snapshot. Makes no API calls to the device.
+    name: pan-os-hygiene-evaluate-snapshots
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: The total number of matching issues.
+      type: Number
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: The parent container (DG, Template, VSYS) this object belongs to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: The human readable description of the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name.
+      type: String
+  - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
       name: issue
       isArray: true

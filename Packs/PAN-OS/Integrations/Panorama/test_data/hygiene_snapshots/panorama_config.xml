@@ -1,0 +1,66 @@
+<response status="success">
+  <result>
+    <config version="10.2.0">
+      <shared>
+        <log-settings>
+          <profiles>
+            <entry name="lf1">
+              <enhanced-application-logging>no</enhanced-application-logging>
+              <match-list>
+                <entry name="m1"><log-type>traffic</log-type></entry>
+              </match-list>
+            </entry>
+          </profiles>
+        </log-settings>
+        <pre-rulebase>
+          <security>
+            <rules>
+              <entry name="r-shared"><log-end>no</log-end></entry>
+            </rules>
+          </security>
+        </pre-rulebase>
+      </shared>
+      <devices>
+        <entry name="localhost.localdomain">
+          <device-group>
+            <entry name="DG1">
+              <post-rulebase>
+                <security>
+                  <rules>
+                    <entry name="r-dg">
+                      <log-end>yes</log-end>
+                      <log-setting>lf1</log-setting>
+                      <profile-setting><group><member>g1</member></group></profile-setting>
+                    </entry>
+                  </rules>
+                </security>
+              </post-rulebase>
+              <profiles>
+                <url-filtering>
+                  <entry name="u1"><block><member>malware</member></block></entry>
+                </url-filtering>
+              </profiles>
+            </entry>
+          </device-group>
+          <template>
+            <entry name="T1">
+              <config>
+                <devices>
+                  <entry name="localhost.localdomain">
+                    <vsys>
+                      <entry name="vsys1">
+                        <zone>
+                          <entry name="z-tmpl"><network><layer3/></network></entry>
+                        </zone>
+                      </entry>
+                    </vsys>
+                  </entry>
+                </devices>
+              </config>
+            </entry>
+          </template>
+        </entry>
+      </devices>
+    </config>
+  </result>
+</response>

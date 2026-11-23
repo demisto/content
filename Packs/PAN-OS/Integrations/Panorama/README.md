@@ -7474,6 +7474,81 @@ Check security rules are configured correctly.
 >| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
 >| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
 
+### pan-os-hygiene-get-snapshot
+
+***
+Reads one configuration snapshot used by the configuration hygiene checks, with a single PAN-OS API request, and returns it as a file. Use pan-os-hygiene-evaluate-snapshots to run the checks on the snapshots.
+
+#### Base Command
+
+`pan-os-hygiene-get-snapshot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| snapshot_type | The snapshot to read. "devices": the managed devices list (Panorama). "panorama-config": the full Panorama candidate configuration (shared, device groups, templates, template stacks). "firewall-config": the virtual systems candidate configuration of one firewall. "pushed-template": the template configuration pushed to one firewall. Possible values are: devices, panorama-config, firewall-config, pushed-template. | Required |
+| target | The serial number of the firewall. Required for the firewall-config and pushed-template snapshot types. Not supported for the others. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HygieneSnapshot.SnapshotType | String | The type of the snapshot. |
+| PANOS.HygieneSnapshot.Target | String | The firewall serial number of the snapshot, or "panorama". |
+| PANOS.HygieneSnapshot.Firewalls | Unknown | For the devices snapshot, the serial numbers of the connected, HA-active firewalls. |
+| File.EntryID | String | The entry ID of the snapshot file. |
+| File.Name | String | The name of the snapshot file. |
+
+#### Command example
+
+```!pan-os-hygiene-get-snapshot snapshot_type=devices```
+
+#### Human Readable Output
+
+>### PAN-OS Hygiene Snapshot
+>
+>|SnapshotType|Target|Firewalls|
+>|---|---|---|
+>| devices | panorama | 007051000263049 |
+
+### pan-os-hygiene-evaluate-snapshots
+
+***
+Runs all the configuration hygiene checks (log forwarding, security zones, spyware, URL filtering and vulnerability profiles, security rules) on snapshots taken by pan-os-hygiene-get-snapshot. Makes no API calls to the device.
+
+#### Base Command
+
+`pan-os-hygiene-evaluate-snapshots`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_ids | The entry IDs of the snapshot files returned by pan-os-hygiene-get-snapshot. Must include the devices and panorama-config snapshots, and the firewall-config and pushed-template snapshots of each connected firewall. Files that are not hygiene snapshots are ignored. | Required |
+| device_filter_string | The string to filter to only check a given device. | Optional |
+| minimum_block_severities | A comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional |
+| minimum_alert_severities | A comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional |
+| return_nonconforming_profiles | Whether to return details of non-conforming profiles. Possible values are: yes, no. Default is yes. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check. |
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. |
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. |
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | The total number of matching issues. |
+| PANOS.ConfigurationHygiene.Result.hostid | String | The host ID. |
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container (DG, Template, VSYS) this object belongs to. |
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. |
+| PANOS.ConfigurationHygiene.Result.description | String | The human readable description of the issue. |
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. |
+
+#### Command example
+
+```!pan-os-hygiene-evaluate-snapshots entry_ids=${File.EntryID}```
+
 ### pan-os-hygiene-fix-log-forwarding
 
 ***

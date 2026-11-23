@@ -12937,6 +12937,301 @@ def check_security_rules(topology: Topology, device_filter_string: Optional[str]
     return HygieneLookups.check_security_rules(topology, device_filter_str=device_filter_string)
 
 
+# --- Hygiene snapshots: one API call per snapshot command, evaluation with no API calls ---
+HYGIENE_SNAPSHOT_FILE_PREFIX = "panos_hygiene_snapshot"
+# Single underscore: the platform collapses repeated underscores in file names. Types and targets never contain one.
+HYGIENE_SNAPSHOT_FILE_SEPARATOR = "_"
+HYGIENE_SNAPSHOT_PANORAMA_TARGET = "panorama"
+HYGIENE_SNAPSHOT_DEVICES = "devices"
+HYGIENE_SNAPSHOT_PANORAMA_CONFIG = "panorama-config"
+HYGIENE_SNAPSHOT_FIREWALL_CONFIG = "firewall-config"
+HYGIENE_SNAPSHOT_PUSHED_TEMPLATE = "pushed-template"
+HYGIENE_SNAPSHOT_FIREWALL_TYPES = (HYGIENE_SNAPSHOT_FIREWALL_CONFIG, HYGIENE_SNAPSHOT_PUSHED_TEMPLATE)
+HYGIENE_PUSHED_TEMPLATE_OP_COMMAND = "show config pushed-template"
+HYGIENE_FIREWALL_DEVICE_XPATH = "/config/devices/entry[@name='localhost.localdomain']"
+# The single PAN-OS XML API request behind each snapshot type. Reads only (candidate config, like `refreshall`).
+HYGIENE_SNAPSHOT_REQUESTS: Dict[str, Dict[str, str]] = {
+    HYGIENE_SNAPSHOT_DEVICES: {"type": "op", "cmd": "<show><devices><all></all></devices></show>"},
+    HYGIENE_SNAPSHOT_PANORAMA_CONFIG: {"type": "config", "action": "get", "xpath": "/config"},
+    HYGIENE_SNAPSHOT_FIREWALL_CONFIG: {"type": "config", "action": "get", "xpath": f"{HYGIENE_FIREWALL_DEVICE_XPATH}/vsys"},
+    HYGIENE_SNAPSHOT_PUSHED_TEMPLATE: {"type": "op", "cmd": panos.string_to_xml(HYGIENE_PUSHED_TEMPLATE_OP_COMMAND)},
+}
+HYGIENE_CHECK_ERROR_ISSUE_CODE = "CHECK-ERROR"
+
+
+def hygiene_snapshot_file_name(snapshot_type: str, target: str) -> str:
+    """Snapshot metadata is kept in the file name, so the evaluate command only needs the file entry IDs."""
+    return HYGIENE_SNAPSHOT_FILE_SEPARATOR.join((HYGIENE_SNAPSHOT_FILE_PREFIX, snapshot_type, target)) + ".xml"
+
+
+def parse_hygiene_snapshot_file_name(file_name: str) -> Optional[Tuple[str, str]]:
+    """Returns (snapshot type, target) from a snapshot file name, or None if it is not a hygiene snapshot."""
+    if not file_name.startswith(HYGIENE_SNAPSHOT_FILE_PREFIX):
+        return None
+    parts = [part for part in file_name[len(HYGIENE_SNAPSHOT_FILE_PREFIX) :].removesuffix(".xml").split("_") if part]
+    if len(parts) != 2 or parts[0] not in HYGIENE_SNAPSHOT_REQUESTS:
+        return None
+    return parts[0], parts[1]
+
+
+def get_active_firewalls_from_devices_response(devices_response: ET.Element) -> List[Dict[str, str]]:
+    """
+    Returns the connected, HA-active firewalls from a `show devices all` response, using the same rules as
+    `Topology.get_all_child_firewalls` + `Topology.active_devices`: standalone firewalls and HA members in the active state.
+    """
+    firewalls = []
+    for device_entry in devices_response.findall("./result/devices/entry"):
+        if device_entry.findtext("./connected") != "yes":
+            continue
+        if device_entry.find("./ha/peer/serial") is not None and device_entry.findtext("./ha/state") != "active":
+            continue
+        firewalls.append(
+            {"serial": device_entry.findtext("./serial") or "", "sw_version": device_entry.findtext("./sw-version") or ""}
+        )
+    return firewalls
+
+
+def get_hygiene_snapshot(snapshot_type: str, target: Optional[str] = None) -> List[Union[dict, CommandResults]]:
+    """
+    Reads one hygiene snapshot from the device with exactly one PAN-OS XML API request and returns it as a file entry.
+
+    :param snapshot_type: One of `HYGIENE_SNAPSHOT_REQUESTS`.
+    :param target: Firewall serial number. Required for firewall snapshot types, not allowed for Panorama ones.
+    """
+    if snapshot_type not in HYGIENE_SNAPSHOT_REQUESTS:
+        raise DemistoException(f"Invalid snapshot_type '{snapshot_type}'. Use one of: {', '.join(HYGIENE_SNAPSHOT_REQUESTS)}.")
+    is_firewall_snapshot = snapshot_type in HYGIENE_SNAPSHOT_FIREWALL_TYPES
+    if is_firewall_snapshot != bool(target):
+        raise DemistoException(
+            f"The target argument is {'required' if is_firewall_snapshot else 'not supported'} for snapshot_type '{snapshot_type}'."
+        )
+
+    params = {**HYGIENE_SNAPSHOT_REQUESTS[snapshot_type], "key": API_KEY}
+    if target:
+        params["target"] = target
+    start_time = time.monotonic()
+    response_text = http_request(URL, "POST", body=params, is_xml=True)
+    response = ET.fromstring(response_text)
+    if response.get("status") != "success":
+        raise DemistoException(f"Failed to read the '{snapshot_type}' snapshot: {''.join(response.itertext()).strip()}")
+    demisto.debug(f"[hygiene-snapshot] {snapshot_type} target={target} took {time.monotonic() - start_time:.1f}s")
+
+    snapshot_target = target or HYGIENE_SNAPSHOT_PANORAMA_TARGET
+    outputs: Dict[str, Any] = {"SnapshotType": snapshot_type, "Target": snapshot_target}
+    if snapshot_type == HYGIENE_SNAPSHOT_DEVICES:
+        outputs["Firewalls"] = [firewall["serial"] for firewall in get_active_firewalls_from_devices_response(response)]
+    return [
+        fileResult(hygiene_snapshot_file_name(snapshot_type, snapshot_target), response_text),
+        CommandResults(
+            outputs_prefix=OUTPUT_PREFIX + "HygieneSnapshot",
+            outputs_key_field=["SnapshotType", "Target"],
+            outputs=outputs,
+            readable_output=tableToMarkdown("PAN-OS Hygiene Snapshot", outputs, headers=list(outputs)),
+        ),
+    ]
+
+
+class HygieneSnapshotXapi:
+    """
+    Stands in for pan-os-python's `xapi` on an offline device, answering from snapshot XML instead of the network.
+    `get(xpath)` returns the same `<response><result>NODE</result></response>` shape as the live API, so `refreshall` and
+    the existing hygiene checks run unchanged. Any other API method raises, so evaluation can never call the device.
+    """
+
+    def __init__(self, config_root: ET.Element, op_responses: Dict[str, ET.Element]) -> None:
+        self.config_root = config_root
+        self.op_responses = op_responses
+        self.lookups = 0
+
+    def get(self, xpath: str, *args, **kwargs) -> ET.Element:
+        self.lookups += 1
+        response = ET.Element("response", status="success")
+        result = ET.SubElement(response, "result")
+        root_tag, _, relative_xpath = xpath.strip("/").partition("/")
+        if root_tag == self.config_root.tag:
+            node = self.config_root.find(relative_xpath) if relative_xpath else self.config_root
+            if node is not None:
+                result.append(node)
+        return response
+
+    def op(self, cmd: Optional[str] = None, *args, **kwargs) -> ET.Element:
+        self.lookups += 1
+        if cmd not in self.op_responses:
+            raise DemistoException(f"No hygiene snapshot holds the result of the operational command {cmd}.")
+        return self.op_responses[cmd]
+
+    def __getattr__(self, name: str):
+        raise DemistoException(f"Hygiene evaluation is offline; the '{name}' API call is not allowed.")
+
+
+def load_hygiene_snapshots(entry_ids: List[str]) -> Dict[Tuple[str, str], ET.Element]:
+    """
+    Loads the snapshot files into {(snapshot type, target): response XML}. If the same snapshot appears more than once
+    (e.g. the playbook ran twice in one investigation), the last entry ID in the list wins; context keeps file entries
+    in creation order.
+    """
+    snapshot_paths: Dict[Tuple[str, str], str] = {}
+    for entry_id in entry_ids:
+        file_info = demisto.getFilePath(entry_id)
+        snapshot_key = parse_hygiene_snapshot_file_name(file_info.get("name", ""))
+        if not snapshot_key:
+            demisto.debug(f"[hygiene-evaluate] skipping entry {entry_id}, not a hygiene snapshot: {file_info.get('name')}")
+            continue
+        snapshot_paths[snapshot_key] = file_info["path"]
+
+    snapshots: Dict[Tuple[str, str], ET.Element] = {}
+    for snapshot_key, path in snapshot_paths.items():
+        with open(path) as snapshot_file:
+            snapshots[snapshot_key] = ET.fromstring(snapshot_file.read())
+    return snapshots
+
+
+def set_snapshot_device_version(device: PanDevice, version: Optional[str]) -> None:
+    """Pins the PAN-OS version so pan-os-python picks the right xpaths without asking the device."""
+    if version:
+        device._set_version_and_version_info(version)
+
+
+def build_hygiene_snapshot_topology(
+    snapshots: Dict[Tuple[str, str], ET.Element], panorama_hostname: str
+) -> Tuple[Topology, List[HygieneSnapshotXapi]]:
+    """
+    Builds an offline `Topology` (Panorama + its connected active firewalls) whose devices read from the snapshots.
+    Raises if a snapshot needed by the hygiene checks is missing.
+    """
+    devices_response = snapshots.get((HYGIENE_SNAPSHOT_DEVICES, HYGIENE_SNAPSHOT_PANORAMA_TARGET))
+    panorama_config_response = snapshots.get((HYGIENE_SNAPSHOT_PANORAMA_CONFIG, HYGIENE_SNAPSHOT_PANORAMA_TARGET))
+    firewalls = get_active_firewalls_from_devices_response(devices_response) if devices_response is not None else []
+    missing = [
+        snapshot_key
+        for snapshot_key, response in {
+            (HYGIENE_SNAPSHOT_DEVICES, HYGIENE_SNAPSHOT_PANORAMA_TARGET): devices_response,
+            (HYGIENE_SNAPSHOT_PANORAMA_CONFIG, HYGIENE_SNAPSHOT_PANORAMA_TARGET): panorama_config_response,
+        }.items()
+        if response is None
+    ]
+    missing += [
+        (snapshot_type, firewall["serial"])
+        for firewall in firewalls
+        for snapshot_type in HYGIENE_SNAPSHOT_FIREWALL_TYPES
+        if (snapshot_type, firewall["serial"]) not in snapshots
+    ]
+    if missing:
+        raise DemistoException(f"Missing hygiene snapshots (type, target): {missing}")
+
+    panorama_config = panorama_config_response.find("./result/config")  # type: ignore[union-attr]
+    if panorama_config is None:
+        raise DemistoException("The panorama-config snapshot does not contain a <config> element.")
+    panorama = Panorama(hostname=panorama_hostname)
+    set_snapshot_device_version(panorama, panorama_config.get("version"))
+    panorama_xapi = HygieneSnapshotXapi(panorama_config, {})
+    panorama._xapi_private = panorama_xapi
+    topology = Topology()
+    topology.panorama_objects[panorama_hostname] = panorama
+    topology.ha_active_devices[panorama_hostname] = "STANDALONE"
+    xapis = [panorama_xapi]
+
+    for firewall_info in firewalls:
+        serial = firewall_info["serial"]
+        firewall_config = ET.fromstring('<config><devices><entry name="localhost.localdomain"/></devices></config>')
+        vsys_root = snapshots[(HYGIENE_SNAPSHOT_FIREWALL_CONFIG, serial)].find("./result/vsys")
+        if vsys_root is not None:
+            firewall_config.find("./devices/entry").append(vsys_root)  # type: ignore[union-attr]
+        firewall = Firewall(serial=serial)
+        panorama.add(firewall)
+        set_snapshot_device_version(firewall, firewall_info["sw_version"])
+        firewall_xapi = HygieneSnapshotXapi(
+            firewall_config,
+            {
+                HYGIENE_SNAPSHOT_REQUESTS[HYGIENE_SNAPSHOT_PUSHED_TEMPLATE]["cmd"]: snapshots[
+                    (HYGIENE_SNAPSHOT_PUSHED_TEMPLATE, serial)
+                ]
+            },
+        )
+        firewall._xapi_private = firewall_xapi
+        topology.firewall_objects[serial] = firewall
+        topology.ha_active_devices[serial] = "STANDALONE"
+        xapis.append(firewall_xapi)
+
+    return topology, xapis
+
+
+def run_isolated_hygiene_check(
+    check_name: str, check_func: Callable[[], ConfigurationHygieneCheckResult]
+) -> ConfigurationHygieneCheckResult:
+    """Runs one hygiene check; a failure becomes a CHECK-ERROR row instead of failing the other checks."""
+    start_time = time.monotonic()
+    try:
+        result = check_func()
+    except Exception as e:  # noqa: BLE001  # isolate per-check failures, the error is reported in the results
+        demisto.error(f"[hygiene-evaluate] check '{check_name}' failed: {e}")
+        return ConfigurationHygieneCheckResult(
+            summary_data=[
+                ConfigurationHygieneCheck(
+                    description=f"The '{check_name}' check failed to run.",
+                    issue_code=HYGIENE_CHECK_ERROR_ISSUE_CODE,
+                    result=UNICODE_FAIL,
+                    issue_count=1,
+                )
+            ],
+            result_data=[
+                ConfigurationHygieneIssue(
+                    hostid="PLATFORM",
+                    container_name="",
+                    description=f"The '{check_name}' check failed to run: {e}",
+                    name=check_name,
+                    issue_code=HYGIENE_CHECK_ERROR_ISSUE_CODE,
+                )
+            ],
+        )
+    demisto.debug(f"[hygiene-evaluate] check '{check_name}' took {time.monotonic() - start_time:.2f}s")
+    return result
+
+
+def evaluate_hygiene_snapshots(
+    entry_ids: str,
+    device_filter_string: Optional[str] = None,
+    minimum_block_severities: str = "critical,high",
+    minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "yes",
+) -> ConfigurationHygieneCheckResult:
+    """
+    Runs the six existing hygiene checks, unchanged, against snapshots taken by `pan-os-hygiene-get-snapshot`.
+    Makes no API calls: the devices in the topology answer from the snapshot files.
+    """
+    topology, xapis = build_hygiene_snapshot_topology(
+        load_hygiene_snapshots(argToList(entry_ids)), urlparse(demisto.params().get("server")).hostname or ""
+    )
+    checks: List[Tuple[str, Callable[[], ConfigurationHygieneCheckResult]]] = [
+        ("log-forwarding", lambda: check_log_forwarding(topology, device_filter_string)),
+        ("security-zones", lambda: check_security_zones(topology, device_filter_string)),
+        (
+            "spyware-profiles",
+            lambda: check_spyware_profiles(
+                topology, device_filter_string, minimum_block_severities, minimum_alert_severities, return_nonconforming_profiles
+            ),
+        ),
+        (
+            "url-filtering-profiles",
+            lambda: check_url_filtering_profiles(topology, device_filter_string, return_nonconforming_profiles),
+        ),
+        (
+            "vulnerability-profiles",
+            lambda: check_vulnerability_profiles(
+                topology, device_filter_string, minimum_block_severities, minimum_alert_severities, return_nonconforming_profiles
+            ),
+        ),
+        ("security-rules", lambda: check_security_rules(topology, device_filter_string)),
+    ]
+    merged = ConfigurationHygieneCheckResult(summary_data=[], result_data=[])
+    for check_name, check_func in checks:
+        result = run_isolated_hygiene_check(check_name, check_func)
+        merged.summary_data.extend(result.summary_data)
+        merged.result_data.extend(result.result_data)
+    demisto.debug(f"[hygiene-evaluate] {len(xapis)} devices, {sum(xapi.lookups for xapi in xapis)} snapshot lookups, 0 API calls")
+    return merged
+
+
 def hygiene_issue_dict_to_object(issue_dicts: Union[List[dict], dict]) -> List[ConfigurationHygieneIssue]:
     """
     Converts the given list of hygiene issues, which is a list of dictionaries, into the dataclass objects.
@@ -17119,6 +17414,15 @@ def main():  # pragma: no cover
                 dataclasses_to_command_results(
                     check_security_rules(topology, **demisto.args()),
                     empty_result_message="All security rules are configured correctly.",
+                )
+            )
+        elif command == "pan-os-hygiene-get-snapshot":
+            return_results(get_hygiene_snapshot(args["snapshot_type"], args.get("target")))
+        elif command == "pan-os-hygiene-evaluate-snapshots":
+            return_results(
+                dataclasses_to_command_results(
+                    evaluate_hygiene_snapshots(**args),
+                    empty_result_message="All configuration hygiene checks passed.",
                 )
             )
         elif command == "pan-os-hygiene-fix-log-forwarding":

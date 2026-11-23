@@ -1,0 +1,19 @@
+<response status="success">
+  <result>
+    <vsys>
+      <entry name="vsys1">
+        <zone>
+          <entry name="z-fw"><network><layer3/></network></entry>
+          <entry name="z-pushed"><network><layer3/></network></entry>
+        </zone>
+        <rulebase>
+          <security>
+            <rules>
+              <entry name="r-fw"><log-end>yes</log-end></entry>
+            </rules>
+          </security>
+        </rulebase>
+      </entry>
+    </vsys>
+  </result>
+</response>
