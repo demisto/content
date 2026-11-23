@@ -1045,7 +1045,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             "labels": GraphMailUtils.parse_email_as_labels(parsed_email),
             "occurred": parsed_email.get("ReceivedTime"),
             "attachment": parsed_email.get("Attachments", []),
-            "rawJSON": json.dumps(parsed_email),
+            "rawJSON": GraphMailUtils.serialize_raw_json(parsed_email),
             "ID": parsed_email.get("ID"),  # only used for look-back to identify the email in a unique way
         }
 
@@ -1156,6 +1156,32 @@ class GraphMailUtils:
         "internetMessageId": "MessageID",
         "categories": "Categories",
     }
+
+    @staticmethod
+    def serialize_raw_json(parsed_email: dict) -> str:
+        """
+        Serializes a parsed email to the incident rawJSON, keeping non-ASCII characters (e.g. 'ç', '€') as is.
+
+        If the email holds text that is not valid UTF-8 (such as a lone surrogate from a broken emoji),
+        logs it and falls back to ASCII-escaped JSON, which is always safe to send.
+
+        :type parsed_email: ``dict``
+        :param parsed_email: The parsed email.
+
+        :return: The JSON string.
+        :rtype: ``str``
+        """
+        raw_json = json.dumps(parsed_email, ensure_ascii=False)
+        try:
+            raw_json.encode("utf-8")
+        except UnicodeEncodeError as error:
+            demisto.debug(traceback.format_exc())
+            demisto.info(
+                f"Email {parsed_email.get('ID')} contains text that is not valid UTF-8 ({error}). "
+                "Using ASCII-escaped rawJSON for this email."
+            )
+            return json.dumps(parsed_email)
+        return raw_json
 
     @staticmethod
     def read_file(attach_id: str) -> tuple[bytes, int, str]:
