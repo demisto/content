@@ -585,7 +585,7 @@ def test_impersonation_target_profile_list_command(mocker):
 
     profiles = [
         {"platform": "facebook", "profile": "https://www.facebook.com/john.doe"},
-        {"platform": "linkedin", "profile": "https://www.linkedin.com/in/john-doe"},
+        {"platform": "linkedin", "profile": "https://www.example.com/in/john-doe"},
     ]
     request = mocker.patch.object(Client, "_http_request", return_value=profiles)
 

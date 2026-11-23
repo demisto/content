@@ -978,8 +978,8 @@ Get the impersonation targets (e.g., executives or brand entities) available to 
 | Netcraft.ImpersonationTarget.id | String | The unique identifier of the impersonation target. |
 | Netcraft.ImpersonationTarget.name | String | The name of the impersonation target. |
 | Netcraft.ImpersonationTarget.role | String | The role of the impersonation target. |
-| Netcraft.ImpersonationTarget.has_detection | Unknown | Whether detection is enabled for the impersonation target. |
-| Netcraft.ImpersonationTarget.regions | Unknown | The regions that can access the impersonation target. |
+| Netcraft.ImpersonationTarget.has_detection | Boolean | Whether detection is enabled for the impersonation target. |
+| Netcraft.ImpersonationTarget.regions | String | The regions that can access the impersonation target. |
 
 #### Command example
 

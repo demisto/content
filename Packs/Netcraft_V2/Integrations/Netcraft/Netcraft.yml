@@ -769,10 +769,10 @@ script:
       type: String
     - contextPath: Netcraft.ImpersonationTarget.has_detection
       description: Whether detection is enabled for the impersonation target.
-      type: Unknown
+      type: Boolean
     - contextPath: Netcraft.ImpersonationTarget.regions
       description: The regions that can access the impersonation target.
-      type: Unknown
+      type: String
   - name: netcraft-impersonation-target-profile-list
     arguments:
     - description: The ID of the impersonation target. Run the command "netcraft-impersonation-target-list" to get the list of valid IDs.
@@ -1617,7 +1617,7 @@ script:
       type: String
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.16.14740428
   subtype: python3
   isfetch: true
   runonce: false
