@@ -86,6 +86,12 @@ ignore=GR109
 [file:playbook-Issue_Exception_Approval.yml]
 ignore=PB106
 
+[file:Trigger_-_Possible_External_RDP_Brute-Force.json]
+ignore=GR107
+
+[file:Trigger_-_Remote_PsExec_with_LOLBIN_command_execution_alert.json]
+ignore=GR107
+
 [file:DiagnoseSyslogCollector.yml]
 ignore=GR103
 
