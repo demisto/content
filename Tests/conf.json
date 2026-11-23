@@ -6182,7 +6182,8 @@
         "AnsibleTower_Test_playbook": "Instance not working",
         "playbook_TrendmicroCAS_Test": "Authentication token not found",
         "PaloAltoNetworks_DeviceSecurity-Test": "No instance",
-        "Test_Bitbucket": "No instance"
+        "Test_Bitbucket": "No instance",
+        "Playbook_TheHiveProject_Test": "TheHive test instance returns 503 Service Temporarily Unavailable, test-module fails before and after content updates - CIAC-19411"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
