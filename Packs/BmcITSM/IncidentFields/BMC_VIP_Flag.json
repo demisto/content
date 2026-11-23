@@ -39,5 +39,9 @@
             "type": "singleSelect",
             "name": "Bmc VIP Flag"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

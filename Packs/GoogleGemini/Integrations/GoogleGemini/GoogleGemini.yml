@@ -192,7 +192,7 @@ script:
     - contextPath: GoogleGemini.Chat.Truncated
       description: Whether the history, the prompt, or both were automatically truncated to fit within max_input_tokens.
       type: Boolean
-  dockerimage: demisto/google-api-py3:1.0.0.13398989
+  dockerimage: demisto/google-api-py3:1.0.0.14304551
   runonce: false
   script: ''
   subtype: python3
