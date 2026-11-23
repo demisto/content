@@ -252,7 +252,8 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}", error=e)
 
 
 """ ENTRY POINT """
