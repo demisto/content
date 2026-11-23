@@ -2,7 +2,7 @@
     "name": "Cyble Threat Intel",
     "description": "Cyble Threat Intelligence for Vision Users. Must have access to Vision Taxii feed to access the threat intelligence.",
     "support": "partner",
-    "currentVersion": "3.1.0",
+    "currentVersion": "3.2.0",
     "author": "Cyble Infosec",
     "url": "https://cyble.com",
     "email": "",
@@ -20,6 +20,10 @@
         "CommonScripts": {
             "mandatory": false,
             "display_name": "Common Scripts"
+        },
+        "Cryptocurrency": {
+            "mandatory": false,
+            "display_name": "Cryptocurrency"
         }
     },
     "marketplaces": [

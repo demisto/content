@@ -19,6 +19,7 @@ from CybleThreatIntel import (
     map_cyble_ioc_type,
     build_indicator_from_ioc,
     get_current_utc_time,
+    build_ioc_filters,
     DEFAULT_EXECUTION_TIMEOUT_SECONDS,
 )
 
@@ -306,7 +307,7 @@ def test_fetch_indicators_saves_checkpoint_per_page(mock_demisto, mock_set_last_
         ("FileHash-MD5", "d41d8cd98f00b204e9800998ecf8427e", "File"),
         ("FileHash-SHA256", "a" * 64, "File"),
         ("Email", "user@example.com", "Email"),
-        ("Wallet-Address", "0xabc", None),
+        ("Wallet-Address", "0xabc", "Cryptocurrency Address"),
         ("", "8.8.8.8", "IP"),  # fall back to value detection
     ],
 )
@@ -316,7 +317,7 @@ def test_map_cyble_ioc_type(raw_type, value, expected):
 
 def test_build_indicator_from_ioc_skips_empty_and_unknown():
     assert build_indicator_from_ioc({"ioc": "", "ioc_type": "IPv4"}) is None
-    assert build_indicator_from_ioc({"ioc": "x", "ioc_type": "Wallet-Address"}) is None
+    assert build_indicator_from_ioc({"ioc": "x", "ioc_type": "Unknown-Type"}) is None
     indicator = build_indicator_from_ioc({"ioc": "example.com", "ioc_type": "Domain", "risk_score": 80})
     assert indicator is not None
     assert indicator["type"] == "Domain"
@@ -370,3 +371,71 @@ def test_fetch_stops_at_per_fetch_cap(mock_demisto, mock_set_last_run, mock_crea
     assert client.fetch_iocs.call_count == 1
     # Next page checkpointed for resume
     assert any(call.args[0].get("page") == "2" for call in mock_set_last_run.call_args_list)
+
+
+# -------------------------------------------------------------------
+#   IOC FILTERS
+# -------------------------------------------------------------------
+def test_build_ioc_filters_empty():
+    assert build_ioc_filters({}) == {}
+
+
+def test_build_ioc_filters_all():
+    params = {
+        "ioc_types": ["Domain", "IPv4"],
+        "confidence_ratings": ["High", "Medium"],
+        "risk_score_min": "70",
+        "risk_score_max": "100",
+        "industries": ["BFSI", "IT & ITES"],
+        "countries": ["India (IN)", "Cocos (Keeling) Islands (CC)"],
+        "regions": ["Asia & Pacific (APAC)"],
+    }
+    assert build_ioc_filters(params) == {
+        "iocType": "Domain,IPv4",
+        "confidentRating": "High,Medium",
+        "industries": "BFSI,IT & ITES",
+        "regions": "Asia & Pacific (APAC)",
+        "countryCodes": "IN,CC",
+        "riskRating": {"gte": 70, "lte": 100},
+    }
+
+
+def test_build_ioc_filters_only_min_risk():
+    assert build_ioc_filters({"risk_score_min": "40"}) == {"riskRating": {"gte": 40}}
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"risk_score_min": "101"},
+        {"risk_score_max": "-1"},
+        {"risk_score_min": "80", "risk_score_max": "20"},
+        {"risk_score_min": "abc"},
+    ],
+)
+def test_build_ioc_filters_invalid_risk(params):
+    with pytest.raises(Exception):
+        build_ioc_filters(params)
+
+
+def test_fetch_iocs_sends_filters():
+    client = _make_client(
+        {"base_url": "https://example.com", "credentials": {"password": "t"}, "ioc_types": ["URL"], "risk_score_max": "50"}
+    )
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.fetch_iocs("2026-01-01T00:00:00+00:00", "2026-01-01T00:15:00+00:00", page=2, limit=10)
+
+    body = client._http_request.call_args.kwargs["json_data"]
+    assert body["iocType"] == "URL"
+    assert body["riskRating"] == {"gte": 0, "lte": 50}
+    assert body["page"] == 2
+
+
+def test_ioc_lookup_ignores_filters():
+    client = _make_client({"base_url": "https://example.com", "credentials": {"password": "t"}, "ioc_types": ["URL"]})
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.ioc_lookup("1.1.1.1")
+
+    assert client._http_request.call_args.kwargs["json_data"] == {"ioc": "1.1.1.1"}
