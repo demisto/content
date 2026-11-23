@@ -1,10 +1,9 @@
 from datetime import datetime, UTC
 
+import httpx
 import pytest
-import requests_mock as rm
 from CommonServerPython import DemistoException
 from KeeperSecurity import (
-    EVENTS_ENDPOINT,
     Client,
     add_time_to_events,
     dedup_events,
@@ -35,6 +34,22 @@ def client() -> Client:
     return Client(base_url=BASE_URL, api_key="token", verify=False)
 
 
+def mock_transport(mocker: MockerFixture, client: Client, response: httpx.Response) -> list[httpx.Request]:
+    """Routes the ContentClient's httpx requests to a canned response and returns the list of captured requests."""
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return response
+
+    mocker.patch.object(
+        client,
+        "_get_async_client",
+        side_effect=lambda: httpx.AsyncClient(base_url=BASE_URL, transport=httpx.MockTransport(handler)),
+    )
+    return requests
+
+
 @pytest.mark.parametrize(
     "url, expected",
     [
@@ -47,28 +62,27 @@ def test_normalize_base_url(url, expected):
     assert normalize_base_url(url) == expected
 
 
-def test_get_events_sends_auth_header_and_params(client: Client):
-    with rm.Mocker() as m:
-        m.get(f"{BASE_URL}{EVENTS_ENDPOINT}", json={"events": [], "has_more": False})
-        client.get_events(
-            datetime(2024, 1, 1, tzinfo=UTC),
-            datetime(2024, 1, 2, tzinfo=UTC),
-            limit=5,
-            continuation_token="tok",
-        )
-        request = m.request_history[0]
-        assert request.headers["x-api-token"] == "Bearer token"
-        assert request.qs["start_date"] == ["2024-01-01t00:00:00z"]
-        assert request.qs["end_date"] == ["2024-01-02t00:00:00z"]
-        assert request.qs["limit"] == ["5"]
-        assert request.qs["continuation_token"] == ["tok"]
+def test_get_events_sends_auth_header_and_params(client: Client, mocker: MockerFixture):
+    requests = mock_transport(mocker, client, httpx.Response(200, json={"events": [], "has_more": False}))
+    client.get_events(
+        datetime(2024, 1, 1, tzinfo=UTC),
+        datetime(2024, 1, 2, tzinfo=UTC),
+        limit=5,
+        continuation_token="tok",
+    )
+    request = requests[0]
+    assert request.headers["x-api-token"] == "Bearer token"
+    assert request.url.params["start_date"] == "2024-01-01T00:00:00Z"
+    assert request.url.params["end_date"] == "2024-01-02T00:00:00Z"
+    assert request.url.params["limit"] == "5"
+    assert request.url.params["continuation_token"] == "tok"
 
 
-def test_get_events_forbidden(client: Client):
-    with rm.Mocker() as m:
-        m.get(f"{BASE_URL}{EVENTS_ENDPOINT}", status_code=403, json={"error": "invalid_token"})
-        with pytest.raises(DemistoException, match="SIEM:1"):
-            client.get_events(datetime.now(UTC), datetime.now(UTC))
+def test_get_events_forbidden(client: Client, mocker: MockerFixture, capfd):
+    mock_transport(mocker, client, httpx.Response(403, json={"error": "invalid_token"}))
+    with pytest.raises(DemistoException, match="SIEM:1"):
+        client.get_events(datetime.now(UTC), datetime.now(UTC))
+    capfd.readouterr()  # ContentClient logs authentication errors to stdout
 
 
 def test_event_hash_is_stable_and_distinguishes_events():

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, UTC
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401
 
 """ CONSTANTS """
 
@@ -40,14 +41,6 @@ class Client(ContentClient):
             headers={"x-api-token": f"Bearer {api_key}", "Accept": "application/json"},
         )
 
-    @staticmethod
-    def _error_handler(res: requests.Response) -> None:
-        if res.status_code == 403:
-            raise DemistoException(f"{INVALID_TOKEN_MESSAGE} Response: {res.text}", res=res)
-        if res.status_code == 429:
-            raise DemistoException(f"Keeper Security throttled the request (HTTP 429). Response: {res.text}", res=res)
-        raise DemistoException(f"Error in API call [{res.status_code}] - {res.reason}. Response: {res.text}", res=res)
-
     def get_events(
         self,
         start_date: datetime,
@@ -66,16 +59,20 @@ class Client(ContentClient):
         }
         if continuation_token:
             params["continuation_token"] = continuation_token
-        return self._http_request(
-            "GET",
-            EVENTS_ENDPOINT,
-            params=params,
-            # The API allows 10 requests per 10 seconds per API key and answers 429 when throttled.
-            retries=3,
-            status_list_to_retry=[429],
-            backoff_factor=3,
-            error_handler=self._error_handler,
-        )
+        try:
+            return self._http_request(
+                "GET",
+                EVENTS_ENDPOINT,
+                params=params,
+                # The API allows 10 requests per 10 seconds per API key and answers 429 when throttled.
+                retries=3,
+                status_list_to_retry=[429],
+                backoff_factor=3,
+            )
+        except ContentClientAuthenticationError as e:
+            raise DemistoException(f"{INVALID_TOKEN_MESSAGE} Response: {e}") from e
+        except ContentClientRateLimitError as e:
+            raise DemistoException(f"Keeper Security throttled the request (HTTP 429). Response: {e}") from e
 
 
 """ HELPER FUNCTIONS """
@@ -195,7 +192,9 @@ def test_module(client: Client) -> str:
 def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
     limit = arg_to_number(args.get("limit")) or 50
     now = datetime.now(UTC)
-    start_date = arg_to_datetime(args.get("start_time") or args.get("start_date") or "1 hour", arg_name="start_time", required=True)
+    start_date = arg_to_datetime(
+        args.get("start_time") or args.get("start_date") or "1 hour", arg_name="start_time", required=True
+    )
     end_date = arg_to_datetime(args.get("end_time") or args.get("end_date"), arg_name="end_time") or now
     end_date = arg_to_datetime(args.get("end_date"), arg_name="end_date") or now
     assert start_date is not None  # required=True
