@@ -42,9 +42,16 @@ configuration:
   section: Connect
   required: false
   hidden: true
+- display: Client ID
+  name: client_id
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: The Application (Client) ID of the Azure app registration.
 - displaypassword: Client ID
   name: creds_client_id
   hiddenusername: true
+  hiddenpassword: true
   type: 9
   section: Connect
   required: false

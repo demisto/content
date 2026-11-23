@@ -99,11 +99,14 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     ok_codes = (200, 201, 202)
     refresh_token = params.get("creds_refresh_token", {}).get("password")
-    auth_and_token_url = params.get("creds_auth_id", {}).get("password")
+    auth_and_token_url = params.get("_auth_id") or params.get("creds_auth_id", {}).get("password")
     enc_key = params.get("creds_enc_key", {}).get("password")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     auth_code = params.get("creds_auth_code", {}).get("password")
+
+    if not auth_and_token_url:
+        raise DemistoException("ID or Client ID must be provided.")
 
     if not enc_key:
         raise DemistoException(

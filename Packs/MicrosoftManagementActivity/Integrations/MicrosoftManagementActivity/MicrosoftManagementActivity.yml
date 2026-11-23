@@ -20,10 +20,17 @@ configuration:
   section: Connect
   hidden: true
   required: false
+- display: Application ID or Client ID
+  additionalinfo: See the Help tab.
+  name: _auth_id
+  type: 0
+  section: Connect
+  required: false
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   name: credentials_auth_id
   hiddenusername: true
+  hiddenpassword: true
   section: Connect
   type: 9
   required: false

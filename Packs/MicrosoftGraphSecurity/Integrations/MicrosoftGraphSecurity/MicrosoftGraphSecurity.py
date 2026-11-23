@@ -3894,7 +3894,7 @@ def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
     tenant = params.get("creds_tenant_id", {}).get("password") or params.get("tenant_id")
-    auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
+    auth_and_token_url = params.get("_auth_id") or params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key")
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)

@@ -17,10 +17,16 @@ configuration:
   required: true
   type: 0
   section: Connect
+- name: client_id
+  type: 0
+  display: ID or Client ID
+  section: Connect
+  required: false
 - name: creds_client_id
   type: 9
   displaypassword: ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   section: Connect
   required: false
 - name: creds_tenant_id

@@ -29,10 +29,16 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: Use this option when required to customize the URL to the Microsoft Graph User endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- name: _auth_id
+  type: 0
+  display: ID / client ID
+  section: Connect
+  required: false
 - name: creds_auth_id
   type: 9
   displaypassword: ID / client ID
   hiddenusername: true
+  hiddenpassword: true
   section: Connect
   required: false
 - name: creds_tenant_id

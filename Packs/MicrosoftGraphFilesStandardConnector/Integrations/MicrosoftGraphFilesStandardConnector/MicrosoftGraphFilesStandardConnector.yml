@@ -18,10 +18,16 @@ configuration:
   hidden: true
   required: false
   section: Connect
+- display: Application ID / Client ID
+  name: _auth_id
+  type: 0
+  required: false
+  section: Connect
 - name: credentials_auth_id
   type: 9
   displaypassword: Application ID / Client ID
   hiddenusername: true
+  hiddenpassword: true
   required: false
   section: Connect
 - display: Token / Tenant ID

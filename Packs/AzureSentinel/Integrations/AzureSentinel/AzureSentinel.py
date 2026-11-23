@@ -2491,7 +2491,11 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client_id = params.get("creds_client_id", {}).get("password") or params.get("credentials", {}).get("identifier")
+        client_id = (
+            params.get("client_id")
+            or params.get("creds_client_id", {}).get("password")
+            or params.get("credentials", {}).get("identifier")
+        )
         client_secret = params.get("credentials", {}).get("password")
         certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
         private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get(

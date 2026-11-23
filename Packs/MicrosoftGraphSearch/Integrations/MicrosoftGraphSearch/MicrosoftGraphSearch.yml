@@ -6,11 +6,17 @@ commonfields:
   id: Microsoft Graph Search
   version: -1
 configuration:
+- display: ID or Client ID
+  name: _auth_id
+  required: false
+  type: 0
+  section: Connect
 - display: ""
   displaypassword: ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   name: creds_auth_id
-  required: true
+  required: false
   type: 9
   section: Connect
 - display: ""

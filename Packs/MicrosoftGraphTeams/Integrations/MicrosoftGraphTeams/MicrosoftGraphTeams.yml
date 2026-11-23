@@ -22,11 +22,18 @@ configuration:
   section: Connect
 - additionalinfo: ID or Client ID
   display: Client ID
+  name: _client_id
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: ID or Client ID
+  display: Client ID
   hiddenusername: true
   name: client_id
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - additionalinfo: Key or Client Secret
   display: Client Secret
   hiddenusername: true

@@ -24,11 +24,18 @@ configuration:
   section: Connect
   additionalinfo: The Microsoft Entra ID tenant ID of the registered application.
 - display: Client ID
+  name: _client_id
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The application (client) ID of the registered application.
+- display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 4
   hiddenusername: true
   section: Connect
+  hidden: true
   additionalinfo: The application (client) ID of the registered application.
 - display: Client Secret
   name: secret

@@ -7,10 +7,16 @@ commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
 configuration:
+- display: Application ID or Client ID
+  name: _auth_id
+  type: 0
+  section: Connect
+  required: false
 - name: creds_auth_id
   type: 9
   displaypassword: Application ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   section: Connect
   required: false
 - name: creds_refresh_token

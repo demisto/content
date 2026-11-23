@@ -867,7 +867,7 @@ def run_microsoft_graph_teams_integration():
     params: dict = demisto.params()
     url = params.get("url", "").rstrip("/") + "/v1.0/"
     tenant: str = params.get("tenant_id", "")
-    auth_and_token_url: str = params.get("client_id", "")
+    auth_and_token_url: str = params.get("_client_id") or params.get("client_id", "")
     enc_key: str = params.get("secret", "")
     verify: bool = not params.get("insecure", False)
     self_deployed: bool = params.get("self_deployed", False)
@@ -881,6 +881,8 @@ def run_microsoft_graph_teams_integration():
     # Under UCP the credential envelope is injected per-request by the platform,
     # so config-time validation of `enc_key` / certificate is skipped.
     if not should_use_ucp_auth():
+        if not auth_and_token_url:
+            raise DemistoException("Client ID must be provided.")
         if not self_deployed and not enc_key:
             raise DemistoException(
                 "Key must be provided. For further information see "

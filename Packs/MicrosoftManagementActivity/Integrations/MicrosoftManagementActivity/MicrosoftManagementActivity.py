@@ -574,7 +574,7 @@ def main():
         self_deployed = params.get("self_deployed", False) or managed_identities_client_id is not None
         redirect_uri = params.get("redirect_uri", "")
         tenant_id = refresh_token if self_deployed else ""
-        auth_id = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id")
+        auth_id = params.get("_auth_id") or params.get("credentials_auth_id", {}).get("password") or params.get("auth_id")
         enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")
         auth_code = params.get("credentials_auth_code", {}).get("password") or params.get("auth_code", "")
         certificate_thumbprint = params.get("credentials_certificate_thumbprint", {}).get("password") or params.get(

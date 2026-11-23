@@ -13,9 +13,16 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Application ID or Client ID
+  additionalinfo: See the Help tab.
+  name: _auth_id
+  type: 0
+  section: Connect
+  required: false
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   hiddenusername: true
+  hiddenpassword: true
   name: creds_auth_id
   type: 9
   section: Connect
@@ -134,12 +141,6 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-- display: ID or Client ID
-  name: _auth_id
-  type: 0
-  section: Connect
-  required: false
-  hidden: true
 - display: Token or Tenant ID
   name: _tenant_id
   type: 0
