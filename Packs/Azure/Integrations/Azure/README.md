@@ -5957,3 +5957,247 @@ Replaces all firewall rules on a SQL server. Required permissions: Microsoft.Sql
 | Azure.SqlDB.FirewallRules.type | String | The resource type. |
 | Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
 | Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |
+
+### azure-storage-fileshare-create
+
+***
+Creates a new Azure file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/write.
+
+#### Base Command
+
+`azure-storage-fileshare-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share to create. Share names must be lowercase, 3-63 characters, and can contain only letters, numbers, and single hyphens. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-fileshare-delete
+
+***
+Deletes a file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/delete.
+
+#### Base Command
+
+`azure-storage-fileshare-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-fileshares-list
+
+***
+Lists Azure file shares under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/read.
+
+#### Base Command
+
+`azure-storage-fileshares-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| limit | The maximum number of shares to retrieve per page. Default is 50. | Optional |
+| next_token | The nextLink URI returned by a previous run of this command in Azure.Storage.FileSharesNextToken. Use this URI to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.FileShares.id | String | The fully qualified resource ID for the file share. |
+| Azure.Storage.FileShares.name | String | The name of the file share. |
+| Azure.Storage.FileShares.type | String | The type of the resource. |
+| Azure.Storage.FileShares.etag | String | The resource ETag. |
+| Azure.Storage.FileShares.properties.accessTier | String | The access tier for the share \(TransactionOptimized, Hot, Cool, or Premium\). |
+| Azure.Storage.FileShares.properties.lastModifiedTime | Date | The date and time the share was last modified in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.Storage.FileShares.properties.shareQuota | Number | The provisioned size of the share, in gibibytes. |
+| Azure.Storage.FileShares.properties.shareUsageBytes | Number | The approximate size of the data stored on the share, in bytes. |
+| Azure.Storage.FileShares.properties.enabledProtocols | String | The authentication protocol used for the file share \(SMB or NFS\). |
+| Azure.Storage.FileShares.properties.leaseState | String | The lease state of the share. |
+| Azure.Storage.FileShares.properties.leaseStatus | String | The lease status of the share. |
+| Azure.Storage.FileShares.properties.deleted | Boolean | Whether the share was deleted. |
+| Azure.Storage.FileShares.properties.version | String | The version of the share. |
+| Azure.Storage.FileShares.properties.fileSharePaidBursting | Unknown | The paid bursting settings of the file share. |
+| Azure.Storage.FileSharesNextToken | String | The URI to fetch the next page of file shares. Run the same command with the next_token argument to get the next page. |
+
+### azure-storage-fileshare-content-list
+
+***
+Lists files and directories under the specified share or directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role.
+
+#### Base Command
+
+`azure-storage-fileshare-content-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| directory_path | The path to the directory whose content to list. If you do not provide this argument, the command lists the share root. | Optional |
+| limit | The maximum number of entries to retrieve. Default is 50. | Optional |
+| prefix | The prefix used to filter entries. The command returns only entries whose names begin with this prefix. | Optional |
+| next_token | The string value that identifies the portion of the list to return with the next list operation. The operation returns a marker value in the response body if the returned list is not complete. In a subsequent call, use the Azure.Storage.FileShares.ContentNextToken value to request the next set of list items. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.FileShares.name | String | The share name. |
+| Azure.Storage.FileShares.ContentNextToken | String | The marker value to pass as the next_token argument in a subsequent call to retrieve the next set of list items. Empty if the list is complete. |
+| Azure.Storage.FileShares.Content.Path | String | The directory path. |
+| Azure.Storage.FileShares.Content.DirectoryId | String | The directory ID. |
+| Azure.Storage.FileShares.Content.File.FileId | String | The file ID. |
+| Azure.Storage.FileShares.Content.File.Name | String | The file name. |
+| Azure.Storage.FileShares.Content.Directory.FileId | String | The directory ID. |
+| Azure.Storage.FileShares.Content.Directory.Name | String | The directory name. |
+
+### azure-storage-fileshare-directory-create
+
+***
+Creates a new directory under the specified share or parent directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role.
+
+#### Base Command
+
+`azure-storage-fileshare-directory-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| directory_name | The name of the directory to create. | Required |
+| directory_path | The path to the parent directory under which to create the new directory. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-fileshare-directory-delete
+
+***
+Deletes the specified empty directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role.
+
+#### Base Command
+
+`azure-storage-fileshare-directory-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| directory_name | The name of the directory to delete. The directory must be empty. | Required |
+| directory_path | The path to the parent directory of the directory to delete. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-fileshare-file-create
+
+***
+Creates a new file in a share from a War Room file entry ID. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role.
+
+#### Base Command
+
+`azure-storage-fileshare-file-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| file_entry_id | The War Room entry ID of the file to upload. | Required |
+| file_name | The name to give the created file. Defaults to the original file name. | Optional |
+| directory_path | The path to the directory where the file should be created. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-fileshare-file-get
+
+***
+Retrieves a file from a share and returns it to the War Room. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role.
+
+#### Base Command
+
+`azure-storage-fileshare-file-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| file_name | The name of the file to retrieve. | Required |
+| directory_path | The path to the directory where the file resides. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | The file information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
+
+### azure-storage-fileshare-file-delete
+
+***
+Deletes a file from a share. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role.
+
+#### Base Command
+
+`azure-storage-fileshare-file-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| share_name | The name of the file share. | Required |
+| file_name | The name of the file to delete. | Required |
+| directory_path | The path to the directory where the file resides. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

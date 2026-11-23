@@ -1,7 +1,7 @@
 args:
-- description: The end date for searching indicators.
+- description: The end date for searching indicators. Supports ISO 8601 dates, epoch, or relative dates (e.g., "now").
   name: to
-- description: The start date for searching indicators.
+- description: The start date for searching indicators. Supports ISO 8601 dates, epoch, or relative dates (e.g., "30 days ago").
   name: from
 comment: This is a widget script returning MITRE indicators information for top indicators shown in incidents.
 commonfields:
@@ -15,7 +15,7 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.15.14069087
 runas: DBotWeakRole
 tests:
 - No test.
