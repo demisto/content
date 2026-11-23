@@ -19,6 +19,5 @@
   "supportedModules": [
     "xsiam",
     "agentix"
-  ],
-  "deprecated": true
+  ]
 }
