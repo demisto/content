@@ -10,6 +10,8 @@ It shares all of its code with the Anthropic Claude integration through the `Ant
 | Server URL | The Anthropic API base URL. Defaults to https://api.anthropic.com/. | True |
 | Messages API Key | The Anthropic Messages API key used for the model-assisted commands \(claude-send-message, claude-check-email-\*, and claude-create-soc-email-template\). Generate one at https://platform.claude.com/settings/keys. | False |
 | Compliance Access Key | The Anthropic Compliance Access Key \(sk-ant-api01-...\) used for event collection and the read-only compliance commands. Required to fetch events and to run the claude-list-\* and claude-get-\* commands. | False |
+| Use system proxy settings | Whether to route requests through the system HTTPS proxy configured on the server. | False |
+| Trust any certificate (not secure) | Bypass TLS certificate validation. Not recommended for production use. | False |
 | Model | The model that will process the inputs and generate the response. | False |
 | Model (Optional - overrides selected choice) | The model that will process the inputs and generate the response. | False |
 | Max tokens | The maximum number of tokens that can be generated for the response. Anthropic's API requires this value \(default is 1024\). | False |
@@ -18,9 +20,6 @@ It shares all of its code with the Anthropic Claude integration through the `Ant
 | Organization UUID | The default Organization UUID to use for compliance commands that accept an org_uuid argument. The command argument overrides this value when you provide it. | False |
 | Activity types | A comma-separated list of Activity Feed types to narrow the feed \(for example, user.login,chat.created\). Leave empty to fetch all activity types. For the available activity types, see https://platform.claude.com/docs/en/api/compliance/activities/list. | False |
 | Maximum number of events per fetch | The maximum number of events to fetch per cycle. | False |
-| First fetch time | The date and time when the first event fetch starts if no fetch state exists yet \(for example, 3 days or 2026-06-01T00:00:00Z\). Defaults to 1 minute ago. When moving from an existing Anthropic Claude instance, set this to the time you disabled the old instance to avoid gaps or duplicates. | False |
-| Trust any certificate (not secure) | Bypass TLS certificate validation. Not recommended for production use. | False |
-| Use system proxy settings | Whether to route requests through the system HTTPS proxy configured on the server. | False |
 
 ## Commands
 
@@ -50,7 +49,7 @@ Sends a plain message to the selected Claude model and receives the generated re
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | The entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Unknown | The entire conversation \(if not reset\) between the user and the Claude model. | 
 
 ### claude-check-email-header
 
@@ -75,7 +74,7 @@ Checks the email header for possible security issues. You can keep asking questi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | The entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Unknown | The entire conversation \(if not reset\) between the user and the Claude model. | 
 
 ### claude-check-email-body
 
@@ -100,7 +99,7 @@ Checks the email body for possible security issues. You can keep asking question
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | The entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Unknown | The entire conversation \(if not reset\) between the user and the Claude model. | 
 
 ### claude-create-soc-email-template
 
@@ -124,7 +123,7 @@ Creates an email template from the conversation context for the SOC to send.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | The entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Unknown | The entire conversation \(if not reset\) between the user and the Claude model. | 
 
 ### claude-get-events
 

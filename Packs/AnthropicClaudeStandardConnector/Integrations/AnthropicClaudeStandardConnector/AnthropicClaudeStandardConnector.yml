@@ -32,6 +32,20 @@ configuration:
   additionalinfo: The Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events and to run the claude-list-* and claude-get-* commands.
   displaypassword: Compliance Access Key
   hiddenusername: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+  additionalinfo: Whether to route requests through the system HTTPS proxy configured on the server.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+  additionalinfo: Bypass TLS certificate validation. Not recommended for production use.
 - additionalinfo: The model that will process the inputs and generate the response.
   defaultvalue: claude-haiku-4-5
   display: Model
@@ -59,21 +73,21 @@ configuration:
   display: Max tokens
   name: max_tokens
   required: false
-  section: Collect
+  section: Connect
   type: 0
 - additionalinfo: The degree of randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
   advanced: true
   display: Temperature
   name: temperature
   required: false
-  section: Collect
+  section: Connect
   type: 0
 - additionalinfo: The value (0 to 1) for nucleus sampling, which considers only the top 'p' percent of probable tokens. Lower values result in more focused outputs, while higher values increase diversity.
   advanced: true
   display: Top P
   name: top_p
   required: false
-  section: Collect
+  section: Connect
   type: 0
 - display: Organization UUID
   name: organization_uuid
@@ -99,20 +113,6 @@ configuration:
   additionalinfo: The maximum number of events to fetch per cycle.
   supportedModules:
   - xsiam
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-  section: Connect
-  advanced: true
-  additionalinfo: Bypass TLS certificate validation. Not recommended for production use.
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-  section: Connect
-  advanced: true
-  additionalinfo: Whether to route requests through the system HTTPS proxy configured on the server.
 description: The Claude connector configures this integration automatically. Do not configure this integration directly. Set it up from the connector page instead.
 script:
   commands:
@@ -137,7 +137,7 @@ script:
     outputs:
     - contextPath: AnthropicClaude.Conversation
       description: The entire conversation (if not reset) between the user and the Claude model.
-      type: Dictionary
+      type: Unknown
   - arguments:
     - description: Entry ID of an uploaded '.eml' file.
       name: entry_id
@@ -155,7 +155,7 @@ script:
     outputs:
     - contextPath: AnthropicClaude.Conversation
       description: The entire conversation (if not reset) between the user and the Claude model.
-      type: Dictionary
+      type: Unknown
   - arguments:
     - description: The entry ID of an uploaded .eml file.
       name: entry_id
@@ -173,7 +173,7 @@ script:
     outputs:
     - contextPath: AnthropicClaude.Conversation
       description: The entire conversation (if not reset) between the user and the Claude model.
-      type: Dictionary
+      type: Unknown
   - arguments:
     - description: The additional instructions or security issue to focus on.
       name: additional_instructions
@@ -188,7 +188,7 @@ script:
     outputs:
     - contextPath: AnthropicClaude.Conversation
       description: The entire conversation (if not reset) between the user and the Claude model.
-      type: Dictionary
+      type: Unknown
   - arguments:
     - defaultValue: '50'
       description: The maximum number of events to retrieve.

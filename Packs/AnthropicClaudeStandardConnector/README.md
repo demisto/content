@@ -3,7 +3,7 @@
 
 ## What does this pack do?
 
-This pack contains the integration behind the XSOAR handler of the Claude connector. The integration provides:
+This pack contains the integration behind the Cortex XSOAR handler of the Claude connector. The integration provides:
 
 - **Automation and Remediation.** All Anthropic Claude commands:
   - Compliance actions: the directory, chat and project read commands, and the irreversible chat file and project document delete commands. These use the Compliance Access Key.
