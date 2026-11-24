@@ -1,8 +1,8 @@
+import httpx
 import pytest
-import requests_mock
+import respx
 import FeedNetAPI
 from FeedNetAPI import (
-    BASE_URL,
     LIST_DOMAINS,
     LIST_DOMAINS_NO_SINKHOLES,
     LIST_IPS,
@@ -33,6 +33,11 @@ def load_bytes(path: str) -> bytes:
 
 def make_client() -> Client:
     return Client(verify=True, proxy=False, timeout=10)
+
+
+def mock_list(response: httpx.Response) -> respx.Route:
+    """Mocks the NetAPI list endpoint (any query) with the given response."""
+    return respx.route(method="GET", host="netapi.com", path="/api2/").mock(return_value=response)
 
 
 @pytest.mark.parametrize(
@@ -212,20 +217,23 @@ def test_fetch_indicators(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     create_indicators = mocker.patch.object(demisto, "createIndicators")
-    with requests_mock.Mocker() as mocked:
-        mocked.get(
-            BASE_URL,
-            content=load_bytes("test_data/domains.csv"),
-            headers={"ETag": '"abc"', "Last-Modified": "Tue, 24 Nov 2026 06:30:47 GMT"},
+    with respx.mock:
+        route = mock_list(
+            httpx.Response(
+                200,
+                content=load_bytes("test_data/domains.csv"),
+                headers={"ETag": '"abc"', "Last-Modified": "Tue, 24 Nov 2026 06:30:47 GMT"},
+            )
         )
         total = fetch_indicators_command(make_client(), LIST_DOMAINS_NO_SINKHOLES, PARAMS)
-        assert mocked.last_request.qs == {
-            "method": ["compromised"],
-            "dataset_type": ["url"],
-            "format": ["csv"],
-            "sinkholes": ["0"],
+        request = route.calls.last.request
+        assert dict(request.url.params) == {
+            "method": "compromised",
+            "dataset_type": "url",
+            "format": "csv",
+            "sinkholes": "0",
         }
-        assert "If-None-Match" not in mocked.last_request.headers
+        assert "If-None-Match" not in request.headers
 
     assert total == 3
     assert [len(call.args[0]) for call in create_indicators.call_args_list] == [2, 1]
@@ -240,16 +248,16 @@ def test_fetch_indicators_not_modified(mocker):
     """
     Given: a list that has not changed since the last fetch (HTTP 304).
     When: indicators are fetched.
-    Then: the conditional headers are sent and the existing indicators are kept (noUpdate).
+    Then: the conditional headers are sent, the 304 is accepted and the existing indicators are kept (noUpdate).
     """
     recent = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     mocker.patch.object(demisto, "getLastRun", return_value={"list": LIST_IPS, "etag": '"abc"', "last_updated": recent})
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     create_indicators = mocker.patch.object(demisto, "createIndicators")
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, status_code=304)
+    with respx.mock:
+        route = mock_list(httpx.Response(304))
         total = fetch_indicators_command(make_client(), LIST_IPS, PARAMS)
-        assert mocked.last_request.headers["If-None-Match"] == '"abc"'
+        assert route.calls.last.request.headers["If-None-Match"] == '"abc"'
 
     assert total == 0
     create_indicators.assert_called_once_with([], noUpdate=True)
@@ -265,8 +273,8 @@ def test_fetch_indicators_empty_list(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
     create_indicators = mocker.patch.object(demisto, "createIndicators")
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, content=b"domain,threat_type,evidence,first_seen,last_seen\n")
+    with respx.mock:
+        mock_list(httpx.Response(200, content=b"domain,threat_type,evidence,first_seen,last_seen\n"))
         assert fetch_indicators_command(make_client(), LIST_DOMAINS, PARAMS) == 0
     create_indicators.assert_called_once_with([], noUpdate=False)
 
@@ -280,25 +288,58 @@ def test_fetch_indicators_without_header(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     create_indicators = mocker.patch.object(demisto, "createIndicators")
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, content=b"")
+    with respx.mock:
+        mock_list(httpx.Response(200, content=b""))
         with pytest.raises(DemistoException, match="no header line"):
             fetch_indicators_command(make_client(), LIST_DOMAINS, PARAMS)
     create_indicators.assert_not_called()
     set_last_run.assert_not_called()
 
 
-def test_get_indicators_command_limit_cap(mocker):
+def test_fetch_indicators_http_error(mocker):
     """
-    Given: a limit above the maximum.
-    When: netapi-get-indicators runs.
-    Then: no more than the maximum is requested from the parser.
+    Given: an HTTP 404 answer.
+    When: indicators are fetched.
+    Then: the fetch fails without creating indicators or saving the lastRun.
     """
-    mocker.patch.object(FeedNetAPI, "MAX_GET_INDICATORS_LIMIT", 1)
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, content=load_bytes("test_data/domains.csv"))
-        result = get_indicators_command(make_client(), LIST_DOMAINS, PARAMS, {"limit": "100000"})
-    assert len(result.raw_response) == 1
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+    with respx.mock:
+        mock_list(httpx.Response(404, content=b"not found"))
+        with pytest.raises(DemistoException):
+            fetch_indicators_command(make_client(), LIST_DOMAINS, PARAMS)
+    create_indicators.assert_not_called()
+    set_last_run.assert_not_called()
+
+
+def test_fetch_indicators_partial_content(mocker):
+    """
+    Given: an HTTP 206 answer, which the client accepts as a success.
+    When: indicators are fetched.
+    Then: the fetch fails without creating indicators or saving the lastRun, as only a 200 answer is a whole list.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+    with respx.mock:
+        mock_list(httpx.Response(206, content=load_bytes("test_data/domains.csv")))
+        with pytest.raises(DemistoException, match="Unexpected HTTP status 206"):
+            fetch_indicators_command(make_client(), LIST_DOMAINS, PARAMS)
+    create_indicators.assert_not_called()
+    set_last_run.assert_not_called()
+
+
+def test_iter_indicators_extra_cells():
+    """
+    Given: a row with more cells than the header.
+    When: the list is parsed.
+    Then: the extra cells are left out of the raw JSON.
+    """
+    lines = ["domain,threat_type,evidence,first_seen,last_seen", "example.com,cert-polska,,2026-11-01,2026-11-24,extra,"]
+    indicator = next(iter_indicators(lines, LIST_DOMAINS, PARAMS, False))
+    assert None not in indicator["rawJSON"]
+    assert indicator["rawJSON"]["domain"] == "example.com"
 
 
 def test_get_indicators_command():
@@ -307,11 +348,23 @@ def test_get_indicators_command():
     When: netapi-get-indicators runs with a limit.
     Then: only that many indicators are returned.
     """
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, content=load_bytes("test_data/ips.csv"))
+    with respx.mock:
+        mock_list(httpx.Response(200, content=load_bytes("test_data/ips.csv")))
         result = get_indicators_command(make_client(), LIST_IPS, PARAMS, {"limit": "1"})
     assert [indicator["value"] for indicator in result.raw_response] == ["1.0.168.9"]
     assert "1.0.168.9" in result.readable_output
+
+
+def test_get_indicators_command_large_limit():
+    """
+    Given: a limit above the number of rows of the list.
+    When: netapi-get-indicators runs.
+    Then: every row of the list is returned.
+    """
+    with respx.mock:
+        mock_list(httpx.Response(200, content=load_bytes("test_data/domains.csv")))
+        result = get_indicators_command(make_client(), LIST_DOMAINS, PARAMS, {"limit": "100000"})
+    assert len(result.raw_response) == 3
 
 
 def test_test_module():
@@ -320,6 +373,6 @@ def test_test_module():
     When: the instance is tested.
     Then: ok is returned.
     """
-    with requests_mock.Mocker() as mocked:
-        mocked.get(BASE_URL, content=load_bytes("test_data/domains.csv"))
+    with respx.mock:
+        mock_list(httpx.Response(200, content=load_bytes("test_data/domains.csv")))
         assert FeedNetAPI.test_module(make_client(), LIST_DOMAINS, PARAMS) == "ok"

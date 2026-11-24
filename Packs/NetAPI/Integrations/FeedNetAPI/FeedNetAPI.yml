@@ -18,6 +18,24 @@ configuration:
   - Compromised domains without sinkholed malware domains
   - Honeypot attacker IPs
   additionalinfo: The NetAPI list this instance fetches. To fetch more than one list, configure one instance per list.
+- name: polling_timeout
+  display: Request Timeout
+  type: 0
+  section: Connect
+  defaultvalue: '120'
+  additionalinfo: The timeout of the download request in seconds. The domain list is about 20 MB.
+  advanced: true
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+  required: false
 - name: feed
   display: Fetch indicators
   type: 8
@@ -34,7 +52,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  additionalinfo: The reputation with which indicators from this integration instance will be marked.
   required: false
 - name: feedReliability
   display: Source Reliability
@@ -49,7 +67,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data.
+  additionalinfo: The reliability of the source providing the intelligence data.
 - name: tlp_color
   display: Traffic Light Protocol Color
   type: 15
@@ -98,24 +116,6 @@ configuration:
   section: Collect
   additionalinfo: Supports CSV values.
   required: false
-- name: polling_timeout
-  display: Request Timeout
-  type: 0
-  section: Connect
-  defaultvalue: '120'
-  additionalinfo: Timeout of the download request in seconds. The domain list is about 20 MB.
-  advanced: true
-  required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  type: 8
-  section: Connect
-  required: false
-- name: proxy
-  display: Use system proxy settings
-  type: 8
-  section: Connect
-  required: false
 description: Fetches the free NetAPI threat intelligence lists - compromised domains and the IP addresses of attackers seen by the NetAPI honeypot sensors.
 display: NetAPI Feed
 name: NetAPI Feed
@@ -125,15 +125,16 @@ script:
     description: Gets indicators from the feed.
     arguments:
     - name: limit
-      description: The maximum number of results to return (at most 1000).
+      description: The maximum number of results to return.
       defaultValue: '50'
     outputs: []
-  dockerimage: demisto/python3:3.12.16.14740428
+  dockerimage: demisto/fastapi:0.163.1.14846051
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 6.10.0
+supportlevelheader: community
 tests:
 - No tests (auto formatted)

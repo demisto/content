@@ -1,21 +1,24 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401,F403
 
 import csv
 import re
+import traceback
 from collections.abc import Iterable, Iterator
+from datetime import datetime, timezone
 from itertools import islice
+
+import httpx
 
 BASE_URL = "https://netapi.com/api2/"
 COMMAND_PREFIX = "netapi"
-FEED_ENCODING = "utf-8"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_TIMEOUT_SECONDS = 120
 # Refetch the full list at least this often, even when it is unchanged, so the indicators do not expire.
 FULL_REFRESH_SECONDS = 43200  # 12 hours
 CREATE_INDICATORS_BATCH_SIZE = 2000
 DEFAULT_GET_INDICATORS_LIMIT = 50
-MAX_GET_INDICATORS_LIMIT = 1000
 
 LIST_DOMAINS = "Compromised domains"
 LIST_DOMAINS_NO_SINKHOLES = "Compromised domains without sinkholed malware domains"
@@ -37,21 +40,28 @@ DATE_ONLY_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 DATE_TIME_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     def __init__(self, verify: bool, proxy: bool, timeout: int):
-        super().__init__(base_url=BASE_URL, verify=verify, proxy=proxy)
-        self.timeout = timeout
+        super().__init__(base_url=BASE_URL, verify=verify, proxy=proxy, timeout=timeout, client_name="FeedNetAPI")
 
-    def download_list(self, list_name: str, headers: dict | None = None) -> requests.Response:
-        """Starts the download of a list. Returns the streamed response, which is 304 for an unchanged list."""
-        return self._http_request(
+    def download_list(self, list_name: str, headers: dict | None = None) -> httpx.Response:
+        """Downloads a list. The response is read in full, its status is 304 when the list did not change.
+
+        A download that breaks off before the announced Content-Length raises an error (after the retries),
+        so a cut list is never taken for a complete one.
+        """
+        response = self._http_request(
             "GET",
             params=LIST_QUERIES[list_name],
             headers=headers,
+            ok_codes=(200, 304),
             resp_type="response",
             timeout=self.timeout,
-            stream=True,
         )
+        # The client passes other 2xx answers too (for example 206), and only a full 200 answer is a whole list.
+        if response.status_code not in (200, 304):
+            raise DemistoException(f"Unexpected HTTP status {response.status_code} from NetAPI for the list {list_name}.")
+        return response
 
 
 def get_list_name(params: dict) -> str:
@@ -127,7 +137,8 @@ def build_indicator(row: dict[str, str], list_name: str, params: dict, enrichmen
     if params.get("tlp_color"):
         fields["trafficlightprotocol"] = params["tlp_color"]
 
-    raw_json = dict(row)
+    # Cells beyond the header are stored by the CSV reader under the key None, they are left out.
+    raw_json: dict[str, Any] = {key: cell for key, cell in row.items() if key is not None}
     raw_json.update({"value": value, "type": indicator_type})
     indicator: dict[str, Any] = {
         "value": value,
@@ -170,13 +181,6 @@ def iter_batches(items: Iterable[dict], batch_size: int) -> Iterator[list[dict]]
         yield chunk
 
 
-def response_lines(response: requests.Response) -> Iterator[str]:
-    """Yields the lines of a streamed response, for the commands that read only the start of a list."""
-    for line_number, line in enumerate(response.iter_lines(decode_unicode=False)):
-        text = line.decode(FEED_ENCODING)
-        yield text.lstrip("\ufeff") if line_number == 0 else text
-
-
 def content_lines(content: bytes) -> list[str]:
     """Splits a whole downloaded list into lines. Only line feeds end a line, a trailing carriage return is removed."""
     text = content.decode("utf-8-sig")
@@ -199,7 +203,7 @@ def get_conditional_headers(last_run: dict, list_name: str) -> dict:
     return headers
 
 
-def build_last_run(response: requests.Response, list_name: str) -> dict:
+def build_last_run(response: httpx.Response, list_name: str) -> dict:
     """Builds the lastRun from the response caching headers. Returns an empty dict if there are none."""
     etag = response.headers.get("ETag")
     last_modified = response.headers.get("Last-Modified")
@@ -214,29 +218,23 @@ def is_enrichment_excluded(params: dict) -> bool:
 
 
 def test_module(client: Client, list_name: str, params: dict) -> str:
-    """Checks that the list can be downloaded and has the expected columns, without reading the whole file."""
+    """Checks that the list can be downloaded and has the expected columns."""
     response = client.download_list(list_name)
-    try:
-        list(iter_indicators(response_lines(response), list_name, params, False, limit=1))
-    finally:
-        response.close()
+    list(iter_indicators(content_lines(response.content), list_name, params, False, limit=1))
     return "ok"
 
 
 def fetch_indicators_command(client: Client, list_name: str, params: dict) -> int:
     """Fetches the whole list and creates its indicators in batches. Returns the number of indicators created."""
     response = client.download_list(list_name, headers=get_conditional_headers(demisto.getLastRun(), list_name))
-    try:
-        if response.status_code == 304:
-            demisto.debug(f"The NetAPI list {list_name} did not change since the last fetch.")
-            demisto.createIndicators([], noUpdate=True)
-            return 0
+    if response.status_code == 304:
+        demisto.debug(f"The NetAPI list {list_name} did not change since the last fetch.")
+        demisto.createIndicators([], noUpdate=True)
+        return 0
 
-        # The whole list (about 20 MB) is read before any indicator is created, so a download that breaks off
-        # or a response without the header never replaces the indicators of the last complete fetch.
-        lines = content_lines(response.content)
-    finally:
-        response.close()
+    # The whole list (about 20 MB) is downloaded before any indicator is created, so a download that breaks off
+    # or a response without the header never replaces the indicators of the last complete fetch.
+    lines = content_lines(response.content)
 
     total = 0
     indicators = iter_indicators(lines, list_name, params, is_enrichment_excluded(params))
@@ -253,14 +251,11 @@ def fetch_indicators_command(client: Client, list_name: str, params: dict) -> in
 
 
 def get_indicators_command(client: Client, list_name: str, params: dict, args: dict) -> CommandResults:
-    limit = min(arg_to_number(args.get("limit")) or DEFAULT_GET_INDICATORS_LIMIT, MAX_GET_INDICATORS_LIMIT)
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_INDICATORS_LIMIT
     response = client.download_list(list_name)
-    try:
-        indicators = list(
-            iter_indicators(response_lines(response), list_name, params, is_enrichment_excluded(params), limit=limit)
-        )
-    finally:
-        response.close()
+    indicators = list(
+        iter_indicators(content_lines(response.content), list_name, params, is_enrichment_excluded(params), limit=limit)
+    )
     readable_output = tableToMarkdown("Indicators", indicators, headers=["value", "type", "fields"])
     return CommandResults(readable_output=readable_output, raw_response=indicators)
 
@@ -282,7 +277,8 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {e!s}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command. Error: {e!s}", error=e)
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
