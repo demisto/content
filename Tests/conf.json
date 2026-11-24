@@ -3229,7 +3229,8 @@
         },
         {
             "integrations": "MailListener - POP3",
-            "playbookID": "MailListener-POP3 - Test"
+            "playbookID": "MailListener-POP3 - Test",
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "sumList - Test"
