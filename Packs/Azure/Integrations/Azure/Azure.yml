@@ -16653,13 +16653,13 @@ script:
         description: The name of the Log Analytics workspace.
         required: true
   - name: azure-test-command
-    description: Executes the azureTest script, which verifies that arg1 and arg2 are not empty and returns "ok". This command does not call the Azure API and requires no Azure permissions.
+    description: Verifies that arg1 and arg2 are not empty and returns "ok". This command does not call the Azure API and requires no Azure permissions.
     arguments:
       - name: arg1
-        description: The first argument to pass to the azureTest script. Must not be empty.
+        description: The first argument to verify. Must not be empty.
         required: true
       - name: arg2
-        description: The second argument to pass to the azureTest script. Must not be empty.
+        description: The second argument to verify. Must not be empty.
         required: true
   isfetch: false
   runonce: false
