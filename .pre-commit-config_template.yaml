@@ -100,6 +100,17 @@ repos:
     skip:nightly: true
     skip:docker_autoupdate: true
 
+  - id: xsoar-lint-ast
+    name: xsoar-lint-ast
+    description: Run the ast-based xsoar-linter on the code in content packs (comparison with xsoar-lint)
+    entry: demisto-sdk xsoar-lint --engine ast
+    files: ^Packs\/.*\.py$
+    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
+    require_serial: true
+    language: system
+    skip:nightly: true
+    skip:docker_autoupdate: true
+
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
