@@ -79,6 +79,22 @@
         "http_request": {
             "type": "string",
             "is_array": false
+        },
+        "api": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "resources": {
+            "type": "string",
+            "is_array": false
+        },
+        "auth_protocol": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
