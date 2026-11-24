@@ -1,4 +1,4 @@
-!idira-identity-response-get-user-by-name username=jdoe@corp
+!idira-identity-response-get-user-by-name username=jdoe@example.com
 !idira-identity-response-lock-user user_id=00000000-0000-0000-0000-000000000000
 !idira-identity-response-disable-user user_id=00000000-0000-0000-0000-000000000000
 !idira-identity-response-unlock-user user_id=00000000-0000-0000-0000-000000000000
