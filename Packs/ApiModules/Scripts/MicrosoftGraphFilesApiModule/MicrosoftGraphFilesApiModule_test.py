@@ -3150,7 +3150,7 @@ def test_run_integration_auth_id_precedence(mocker: MockerFixture, id_params: di
         - MsGraphClient is instantiated with auth_id by precedence:
           '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
     """
-    import MicrosoftGraphFilesApiModule
+    from MicrosoftGraphFilesApiModule import run_microsoft_graph_files_integration
 
     params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -3158,10 +3158,10 @@ def test_run_integration_auth_id_precedence(mocker: MockerFixture, id_params: di
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("MicrosoftGraphFilesApiModule.MsGraphClient")
     mocker.patch("MicrosoftGraphFilesApiModule.test_function", return_value="ok")
-    mocker.patch.object(MicrosoftGraphFilesApiModule, "return_results")
-    mocker.patch.object(MicrosoftGraphFilesApiModule, "return_error")
+    mocker.patch("MicrosoftGraphFilesApiModule.return_results")
+    mock_return_error = mocker.patch("MicrosoftGraphFilesApiModule.return_error")
 
-    MicrosoftGraphFilesApiModule.run_microsoft_graph_files_integration()
+    run_microsoft_graph_files_integration()
 
-    MicrosoftGraphFilesApiModule.return_error.assert_not_called()
+    mock_return_error.assert_not_called()
     assert mock_client_cls.call_args[1]["auth_id"] == expected_auth_id

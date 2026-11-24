@@ -1585,17 +1585,16 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
         - MsGraphListenerClient is instantiated with auth_id by precedence:
           '_auth_id' > 'creds_auth_id.password' > 'auth_id'.
     """
-    import MicrosoftGraphListener
     from MicrosoftGraphListener import main
 
     params = {"enc_key": "enc-key", **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(MicrosoftGraphListener, "get_integration_context", return_value={})
+    mocker.patch("MicrosoftGraphListener.get_integration_context", return_value={})
     mock_client_cls = mocker.patch("MicrosoftGraphListener.MsGraphListenerClient")
-    mocker.patch.object(MicrosoftGraphListener, "return_results")
-    mocker.patch.object(MicrosoftGraphListener, "return_error")
+    mocker.patch("MicrosoftGraphListener.return_results")
+    mocker.patch("MicrosoftGraphListener.return_error")
 
     main()
 

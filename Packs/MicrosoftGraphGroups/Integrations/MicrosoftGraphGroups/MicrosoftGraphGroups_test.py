@@ -259,7 +259,7 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
           '_auth_id' > 'creds_auth_id.password' > 'auth_id'.
     """
     import demistomock as demisto
-    import MicrosoftGraphGroups
+    from MicrosoftGraphGroups import main
 
     params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -267,8 +267,8 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("MicrosoftGraphGroups.MsGraphClient")
     mocker.patch("MicrosoftGraphGroups.test_function_command", return_value=("ok", None, None))
-    mocker.patch.object(MicrosoftGraphGroups, "return_outputs")
+    mocker.patch("MicrosoftGraphGroups.return_outputs")
 
-    MicrosoftGraphGroups.main()
+    main()
 
     assert mock_client_cls.call_args[1]["auth_id"] == expected_auth_id

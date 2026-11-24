@@ -22,16 +22,14 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
         - MsGraphClient is instantiated with auth_and_token_url (2nd positional argument) by precedence:
           '_auth_id' > 'creds_auth_id.password'.
     """
-    import MicrosoftGraphSearch
-
     params = {"creds_enc_key": {"password": "enc-key"}, **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(MicrosoftGraphSearch, "get_integration_context", return_value={})
+    mocker.patch("MicrosoftGraphSearch.get_integration_context", return_value={})
     mock_client_cls = mocker.patch("MicrosoftGraphSearch.MsGraphClient")
-    mocker.patch.object(MicrosoftGraphSearch, "return_results")
-    mocker.patch.object(MicrosoftGraphSearch, "return_error")
+    mocker.patch("MicrosoftGraphSearch.return_results")
+    mocker.patch("MicrosoftGraphSearch.return_error")
 
     main()
 

@@ -881,7 +881,6 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
           '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
     """
     import demistomock as demisto
-    import MicrosoftManagementActivity
     from MicrosoftManagementActivity import main
 
     params = {"enc_key": "client_secret", **id_params}
@@ -891,7 +890,7 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
     mock_client_cls = mocker.patch("MicrosoftManagementActivity.Client")
     mock_client_cls.return_value.get_access_token_data.return_value = ("token", {"tid": "tenant"})
     mocker.patch("MicrosoftManagementActivity.test_module", return_value="ok")
-    mocker.patch.object(MicrosoftManagementActivity, "return_results")
+    mocker.patch("MicrosoftManagementActivity.return_results")
 
     main()
 

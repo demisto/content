@@ -2623,17 +2623,15 @@ def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
         - MsGraphMailClient is instantiated with auth_id by precedence:
           '_auth_id' > 'creds_auth_id.password' > 'auth_id'.
     """
-    import MicrosoftGraphMail
-
     params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("MicrosoftGraphMail.MsGraphMailClient")
-    mocker.patch.object(MicrosoftGraphMail, "return_results")
-    mocker.patch.object(MicrosoftGraphMail, "return_error")
+    mocker.patch("MicrosoftGraphMail.return_results")
+    mock_return_error = mocker.patch("MicrosoftGraphMail.return_error")
 
     main()
 
-    MicrosoftGraphMail.return_error.assert_not_called()
+    mock_return_error.assert_not_called()
     assert mock_client_cls.call_args[1]["auth_id"] == expected_auth_id

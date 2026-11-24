@@ -1361,15 +1361,13 @@ def test_main_app_id_precedence(mocker, id_params, expected_app_id):
       - Client is instantiated with app_id by precedence:
         'client_id' > 'creds_client_id.password' > 'app_id' > '_app_id'.
     """
-    import Microsoft365Defender
-
     params = {"_tenant_id": "tenant-id", "credentials": {"password": "1234"}, **id_params}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("Microsoft365Defender.Client")
     mocker.patch("Microsoft365Defender.test_module", return_value="ok")
-    mocker.patch.object(Microsoft365Defender, "return_results")
+    mocker.patch("Microsoft365Defender.return_results")
 
     main()
 
