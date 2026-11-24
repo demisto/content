@@ -617,8 +617,8 @@ def test_seen_cache_is_bounded(context, created, mocker):
     server = FakeTaxiiServer(page_size=50)
     server.add(ALL, *[stix(f"domain-name:value = 'old{i}.com'", NOW - timedelta(days=10)) for i in range(20)])
     server.add(ALL, stix("domain-name:value = 'recent.com'", NOW))
-    # NOW is fixed, so the first fetch window is counted from the real clock to always include the old objects.
-    first_fetch = f"{(datetime.now(UTC) - NOW).days + 30} days"
+    # Anchored to NOW (not the wall clock), so the old objects stay inside the first fetch window.
+    first_fetch = feed.to_taxii_time(NOW - timedelta(days=30))
     run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "first_fetch": first_fetch}, mocker)
 
     assert len(created) == 21
