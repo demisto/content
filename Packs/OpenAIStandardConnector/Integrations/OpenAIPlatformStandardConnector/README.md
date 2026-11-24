@@ -157,19 +157,20 @@ Checks the email body for possible security issues. Enables you to ask subsequen
 | --- | --- | --- |
 | OpenAiChatGPTV3.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the GPT model. | 
 
-### openai-platform-get-events
+### openai-get-events
 
 ***
 Manually retrieves OpenAI Audit log events from OpenAI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
-`openai-platform-get-events`
+`openai-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| event_type | A comma-separated list of event types to retrieve. If not specified, uses OpenAI Audit logs. Possible values are: OpenAI Audit logs. | Optional | 
 | limit | The maximum number of events to return per stream. Default is 50. | Optional | 
 | start_time | The lookback start time for the fetch. Supports ISO 8601 or relative time (for example, "3 days ago", "2099-01-01T00:00:00Z"). | Optional | 
 | should_push_events | Whether retrieved events are also ingested by Cortex. Possible values are: true, false. Default is false. | Optional | 

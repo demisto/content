@@ -2725,18 +2725,19 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),
 }
 
-# The manual get-events command has a per-service name on the standard connector, because one
-# connector cannot expose the same command name from two integrations.
+# The manual get-events command name per service. API Platform keeps the legacy `openai-get-events`
+# name (command parity), and Workspace gets its own name, because one connector cannot expose the
+# same command name from two integrations.
 GET_EVENTS_COMMAND_BY_SERVICE: dict[str, str] = {
     Service.LEGACY: "openai-get-events",
-    Service.API_PLATFORM: "openai-platform-get-events",
+    Service.API_PLATFORM: "openai-get-events",
     Service.WORKSPACE: "openai-workspace-get-events",
 }
 
 # Commands each service exposes. The integration YML is the user-facing boundary; this map rejects
 # anything else so a service never reaches an API it has no credential for.
 WORKSPACE_COMMANDS = {"test-module", "fetch-events"}
-API_PLATFORM_COMMANDS = set(COMMAND_MAP) - {"openai-get-events"}
+API_PLATFORM_COMMANDS = set(COMMAND_MAP)
 
 
 def get_command_map(service: str = Service.LEGACY) -> dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]], Any]]:

@@ -3119,7 +3119,7 @@ def _mock_session(mocker, client: OpenAiClient, body: str = '{"data": [], "has_m
         pytest.param("gpt-send-message", CredentialScope.CHAT, "UCP_CHAT", id="command-uses-api-key-profile"),
         pytest.param("fetch-events", CredentialScope.ADMIN, "UCP_ADMIN", id="fetch-audit-uses-admin-profile"),
         pytest.param("test-module", CredentialScope.ADMIN, "UCP_ADMIN", id="test-module-audit-uses-admin-profile"),
-        pytest.param("openai-platform-get-events", CredentialScope.ADMIN, "UCP_ADMIN", id="get-events-audit-uses-admin-profile"),
+        pytest.param("openai-get-events", CredentialScope.ADMIN, "UCP_ADMIN", id="get-events-audit-uses-admin-profile"),
         pytest.param("test-module", CredentialScope.CHAT, "UCP_CHAT", id="test-module-chat-uses-api-key-profile"),
     ],
 )
@@ -3174,7 +3174,7 @@ def test_ucp_audit_request_without_admin_profile_raises(mocker, ucp):
     When: An audit-log request is made.
     Then: A clear error is raised instead of silently sending the API key to the audit endpoint.
     """
-    ucp(PLATFORM_PROFILES[:1], "openai-platform-get-events")
+    ucp(PLATFORM_PROFILES[:1], "openai-get-events")
     client = _ucp_client(Service.API_PLATFORM)
     _mock_session(mocker, client)
 
@@ -3255,18 +3255,21 @@ def test_test_module_workspace_under_ucp_probes_compliance_only(mocker, ucp):
     "service, expected_present, expected_absent",
     [
         pytest.param(
-            Service.LEGACY, {"openai-get-events", "gpt-send-message", "fetch-events"}, {"openai-platform-get-events"}, id="legacy"
+            Service.LEGACY,
+            {"openai-get-events", "gpt-send-message", "fetch-events"},
+            {"openai-workspace-get-events"},
+            id="legacy",
         ),
         pytest.param(
             Service.API_PLATFORM,
-            {"openai-platform-get-events", "gpt-send-message", "gpt-create-response", "fetch-events", "test-module"},
-            {"openai-get-events", "openai-workspace-get-events"},
+            {"openai-get-events", "gpt-send-message", "gpt-create-response", "fetch-events", "test-module"},
+            {"openai-workspace-get-events"},
             id="api-platform",
         ),
         pytest.param(
             Service.WORKSPACE,
             {"openai-workspace-get-events", "fetch-events", "test-module"},
-            {"openai-get-events", "gpt-send-message", "openai-platform-get-events"},
+            {"openai-get-events", "gpt-send-message"},
             id="workspace",
         ),
     ],

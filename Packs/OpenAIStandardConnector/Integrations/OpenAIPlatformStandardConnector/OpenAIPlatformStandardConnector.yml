@@ -269,9 +269,15 @@ script:
     - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
-  - name: openai-platform-get-events
+  - name: openai-get-events
     description: Manually retrieves OpenAI Audit log events from OpenAI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
+    - name: event_type
+      description: A comma-separated list of event types to retrieve. If not specified, uses OpenAI Audit logs.
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - OpenAI Audit logs
     - name: limit
       description: The maximum number of events to return per stream.
       defaultValue: '50'
