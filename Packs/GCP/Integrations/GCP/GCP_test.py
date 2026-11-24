@@ -1889,6 +1889,8 @@ def test_health_check_permission_and_connectivity_failures(mocker):
     "error_message, expected",
     [
         ("Permission 'storage.buckets.list' denied on resource", ["storage.buckets.list"]),
+        ("Permission denied for storage.buckets.list.", ["storage.buckets.list"]),
+        ("Permission denied, see storage.googleapis.com for details", ["N/A"]),
         ("Required 'compute.firewalls.list' permission for 'projects/p'", ["compute.firewalls.list"]),
         (
             "https://bigquery.googleapis.com/x returned: Permission bigquery.datasets.get denied on p.example.com, "

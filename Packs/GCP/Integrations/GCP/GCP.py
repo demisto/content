@@ -6358,8 +6358,13 @@ def extract_gcp_permission_names(error_message: str) -> list[str]:
         list[str]: The unique permission names in order of appearance, or ["N/A"] if none were found.
     """
     known_prefixes = {permission.split(".")[0] for _, permissions in COMMAND_REQUIREMENTS.values() for permission in permissions}
-    candidates = re.findall(r"(?<![\w.@/-])([a-z]+\.[a-zA-Z]+\.[a-zA-Z]+)(?![\w./@-])", error_message)
-    permission_names = [candidate for candidate in candidates if candidate.split(".")[0] in known_prefixes]
+    # A trailing sentence period is allowed, but not one that continues a hostname/URL/email (e.g. ".com", "/v1").
+    candidates = re.findall(r"(?<![\w.@/-])([a-z]+\.[a-zA-Z]+\.[a-zA-Z]+)(?!\w|[./@-]\w)", error_message)
+    permission_names = [
+        candidate
+        for candidate in candidates
+        if candidate.split(".")[0] in known_prefixes and ".googleapis." not in f"{candidate}."
+    ]
     return list(dict.fromkeys(permission_names)) or ["N/A"]
 
 
