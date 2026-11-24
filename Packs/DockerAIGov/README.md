@@ -24,7 +24,7 @@ Detection and monitoring content:
 
 | Category | Category Display Name |
 |:---------|:----------------------|
-| `AUDIT_CATEGORY_MANAGEMENT` | Session lifecycle and policy synchronisation |
+| `AUDIT_CATEGORY_MANAGEMENT` | Session lifecycle and policy synchronization |
 | `AUDIT_CATEGORY_EVALUATION` | Allow or deny policy decision |
 | `AUDIT_CATEGORY_EXECUTION` | Outcome of a performed action |
 
