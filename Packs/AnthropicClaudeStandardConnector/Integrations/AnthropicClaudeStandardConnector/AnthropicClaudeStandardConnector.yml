@@ -99,15 +99,6 @@ configuration:
   additionalinfo: The maximum number of events to fetch per cycle.
   supportedModules:
   - xsiam
-- display: First fetch time
-  name: first_fetch
-  type: 0
-  required: false
-  section: Collect
-  advanced: true
-  additionalinfo: The date and time when the first event fetch starts if no fetch state exists yet (for example, 3 days or 2026-06-01T00:00:00Z). Defaults to 1 minute ago. When moving from an existing Anthropic Claude instance, set this to the time you disabled the old instance to avoid gaps or duplicates.
-  supportedModules:
-  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
