@@ -4,4 +4,3 @@ The **Claude** connector configures this integration automatically. Do not confi
 
 - **Compliance actions** and **Log Collection** use the Anthropic Compliance Access Key (`sk-ant-api01-...`). The delete commands also require the `delete:compliance_user_data` scope.
 - **Claude model commands** use an Anthropic Messages API key. Generate one in the [Claude Console](https://platform.claude.com/settings/keys).
-- **First fetch time** sets where log collection starts. When you move from another Anthropic Claude instance, set it to that instance's last fetch time to avoid gaps or duplicate events.
