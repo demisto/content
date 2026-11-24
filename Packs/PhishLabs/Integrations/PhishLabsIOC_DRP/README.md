@@ -1383,7 +1383,7 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
                 "CaseStatus": "Assigned",
                 "CaseType": "Other",
                 "CreatedBy": {
-                    "DisplayName": "Matt T.",
+                    "DisplayName": "Matt Test.",
                     "ID": "1e59f06d",
                     "Name": "mtwitty"
                 },
@@ -1417,7 +1417,7 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
         <td> Brand Abuse</td>
         <td> Assigned</td>
         <td> 2019-08-09T21:20:18Z</td>
-        <td> ID: 1e59f06d-7b03-11e4-b9b0-0025902add30<br>Name: mtwitty<br>DisplayName: Matt T.</td>
+        <td> ID: 1e59f06d-7b03-11e4-b9b0-0025902add30<br>Name: mtwitty<br>DisplayName: Matt Test.</td>
     </tr>
     </tbody>
 </table>

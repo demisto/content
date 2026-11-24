@@ -470,9 +470,61 @@
             }
         },
         "reputation": {
-            "score": 42,
+            "score": 0.42,
             "score_level": "MEDIUM",
-            "model_version": "1.0.0"
+            "model_version": "1.0.0",
+            "label": "BENIGN",
+            "score_suppressed": false,
+            "class_probabilities": [
+                {
+                    "label": "HONEYPOT",
+                    "probability": 0.0031
+                },
+                {
+                    "label": "INACTIVE"
+                },
+                {
+                    "label": "BENIGN",
+                    "probability": 0.9115
+                },
+                {
+                    "label": "SUSPICIOUS",
+                    "probability": 0.0568
+                },
+                {
+                    "label": "MALICIOUS",
+                    "probability": 0.0286
+                }
+            ],
+            "evidence": [
+                {
+                    "feature": {
+                        "id": "has_threat",
+                        "name": "Any Threat",
+                        "value": "false",
+                        "contribution": 0.1192,
+                        "category": "threat_intelligence"
+                    }
+                },
+                {
+                    "feature": {
+                        "id": "distinct_threat_id_count",
+                        "name": "Distinct Threats",
+                        "value": "0",
+                        "contribution": 0.1086,
+                        "category": "threat_intelligence"
+                    }
+                },
+                {
+                    "feature": {
+                        "id": "max_port",
+                        "name": "Max Port",
+                        "value": "853",
+                        "contribution": -0.0658,
+                        "category": "service_surface"
+                    }
+                }
+            ]
         },
         "greynoise": {
             "actor": "Generic Actor",
@@ -481,19 +533,17 @@
         },
         "network": [
             {
-                "source": "generic-source",
+                "source": "IPINFO",
                 "hosting": true,
-                "mobile": false,
                 "satellite": false
             }
         ],
         "privacy": [
             {
-                "source": "generic-source",
+                "source": "IPINFO",
                 "anonymous": true,
                 "proxy": false,
                 "relay": false,
-                "tor": false,
                 "vpn": true,
                 "service_provider": [
                     "Generic VPN"

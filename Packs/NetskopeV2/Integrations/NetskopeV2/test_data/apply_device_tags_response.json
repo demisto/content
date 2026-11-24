@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "data": {
+        "affected_device_tags": 1,
+        "affected_device_classification_tags": 0,
+        "message": "Tags replaced successfully"
+    }
+}

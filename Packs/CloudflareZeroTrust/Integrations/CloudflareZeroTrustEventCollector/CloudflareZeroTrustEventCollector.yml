@@ -85,6 +85,26 @@ configuration:
   section: Connect
   required: false  # Only needed if using "API token" auth type
   additionalinfo: To use the API Token authorization type, provide an API Token. This field should be left blank if the Global API Key authorization type is selected.
+- name: eventFetchInterval
+  display: Events Fetch Interval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
 display: Cloudflare Zero Trust
 name: Cloudflare Zero Trust
@@ -115,7 +135,7 @@ script:
       isArray: true
     description: Gets events from Cloudflare Zero Trust.
     name: cloudflare-zero-trust-get-events
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetchevents: true
   runonce: false
   script: '-'

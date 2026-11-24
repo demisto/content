@@ -4,6 +4,8 @@ import demistomock as demisto
 import pytest
 import urllib3
 from CheckDockerImageAvailable import docker_auth, docker_min_layer, main, parse_www_auth
+from pytest_mock import MockerFixture
+from requests_mock import Mocker as RequestsMocker
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -102,3 +104,38 @@ def test_invalid_docker_image(mocker):
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg is not None
+
+
+OCI_MANIFEST_TYPE = "application/vnd.oci.image.manifest.v1+json"
+
+
+def test_main_oci_manifest_image_ok(mocker: MockerFixture, requests_mock: RequestsMocker):
+    """
+    Given: an xsoar-registry image stored with an OCI image manifest. The registry only serves it to clients that
+        accept that media type, otherwise it returns 404 MANIFEST_UNKNOWN (XSUP-76350).
+    When: running the script.
+    Then: the image is reported as available ("ok").
+    """
+    registry, image, tag = "xsoar-registry.pan.dev", "demisto/sklearn", "1.0.0.12545527"
+    layer_digest = "sha256:" + "c" * 64
+    manifest_url = f"https://{registry}/v2/{image}/manifests/{tag}"
+    mocker.patch.object(demisto, "args", return_value={"input": f"{registry}/{image}:{tag}"})
+    mocker.patch("CheckDockerImageAvailable.docker_auth", return_value="token")
+    results = mocker.patch.object(demisto, "results")
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    requests_mock.get(
+        manifest_url,
+        status_code=404,
+        json={"errors": [{"code": "MANIFEST_UNKNOWN", "message": f'Manifest has media type "{OCI_MANIFEST_TYPE}"'}]},
+    )
+    requests_mock.get(
+        manifest_url,
+        json={"mediaType": OCI_MANIFEST_TYPE, "layers": [{"size": 150, "digest": layer_digest}]},
+        additional_matcher=lambda request: OCI_MANIFEST_TYPE in request.headers.get("Accept", ""),
+    )
+    requests_mock.get(f"https://{registry}/v2/{image}/blobs/{layer_digest}", content=b"x" * 100)
+
+    main()
+
+    return_error_mock.assert_not_called()
+    results.assert_called_once_with("ok")

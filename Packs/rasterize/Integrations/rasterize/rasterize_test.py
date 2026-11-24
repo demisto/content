@@ -591,6 +591,98 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
     )
 
 
+class _FakeClock:
+    """Simulated clock: time.sleep advances time.monotonic without actually sleeping."""
+
+    def __init__(self):
+        self.now = 0.0
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += seconds
+
+
+def _patch_startup_env(mocker: MockerFixture, ready_after_seconds: float | None, returncode_after: float | None = None):
+    """Patches the clock, the Chrome process and pychrome so Chrome accepts connections after `ready_after_seconds`."""
+    clock = _FakeClock()
+    mocker.patch.object(rasterize.time, "monotonic", side_effect=clock.monotonic)
+    mocker.patch.object(rasterize.time, "sleep", side_effect=clock.sleep)
+
+    process = MagicMock(pid=4)
+    process.poll.side_effect = lambda: 0 if returncode_after is not None and clock.now >= returncode_after else None
+
+    def fake_browser(url):
+        if ready_after_seconds is None or clock.now < ready_after_seconds:
+            raise requests.exceptions.ConnectionError("[Errno 111] Connection refused")
+        browser = MagicMock()
+        browser.list_tab.return_value = []
+        return browser
+
+    mocker.patch("pychrome.Browser", side_effect=fake_browser)
+    return clock, process
+
+
+def test_wait_for_started_chrome_slow_start(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but refuses connections for 35s
+            (CPU-starved script worker in lightweight mode, XSUP-80469).
+    When    Waiting for it to start.
+    Then    Keep waiting while the process is alive and return the connected browser,
+            instead of giving up after the old ~29s retry budget.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=35)
+
+    browser = rasterize.wait_for_started_chrome("9301", process)
+
+    assert browser is not None
+    assert 35 <= clock.now < 37
+
+
+def test_wait_for_started_chrome_process_exited(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that exits during startup.
+    When    Waiting for it to start.
+    Then    Fail fast and log the return code, without waiting for the full timeout.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None, returncode_after=3)
+    debug = mocker.patch.object(demisto, "debug")
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert clock.now < 5
+    assert "exited during startup, returncode=0" in debug.call_args[0][0]
+
+
+def test_wait_for_started_chrome_timeout(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but never accepts connections.
+    When    Waiting for it to start.
+    Then    Give up after CHROME_STARTUP_TIMEOUT_SECONDS.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None)
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert rasterize.CHROME_STARTUP_TIMEOUT_SECONDS <= clock.now <= rasterize.CHROME_STARTUP_TIMEOUT_SECONDS + 1
+
+
+def test_start_chrome_headless_kills_chrome_that_did_not_start(mocker: MockerFixture):
+    """
+    Given   Chrome that never becomes ready.
+    When    Starting Chrome headless.
+    Then    The process is killed, nothing is registered in the instances file, and (None, None) is returned.
+    """
+    process = MagicMock(pid=4, returncode=None)
+    mocker.patch("subprocess.Popen", return_value=process)
+    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch.object(rasterize, "wait_for_started_chrome", return_value=None)
+    add_instance = mocker.patch.object(rasterize, "add_new_chrome_instance")
+
+    assert rasterize.start_chrome_headless("9301", "instance_id", "None") == (None, None)
+    process.kill.assert_called_once()
+    add_instance.assert_not_called()
+
+
 def test_backoff(mocker):
     """
     Given   Waiting for a process to complete.
@@ -691,7 +783,19 @@ def test_is_private_network_urls(mocker: MockerFixture):
     )
 
 
-def test_increase_counter_chrome_instances_file(mocker):
+@pytest.fixture
+def chrome_instances_tmp_path(mocker, tmp_path) -> str:
+    """
+    Redirect CHROME_INSTANCES_FILE_PATH to a writable temp dir.
+    write_chrome_instances_file() writes atomically via a NamedTemporaryFile in the target's directory,
+    and the default (/var) is not writable in the test container.
+    """
+    chrome_instances_path = str(tmp_path / "chrome_instances.json")
+    mocker.patch("rasterize.CHROME_INSTANCES_FILE_PATH", chrome_instances_path)
+    return chrome_instances_path
+
+
+def test_increase_counter_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -718,7 +822,7 @@ def test_increase_counter_chrome_instances_file(mocker):
     assert expected_rasterization_count == mocker_json.call_args[0][0]["2222"][RASTERIZATION_COUNT]
 
 
-def test_add_new_chrome_instance(mocker):
+def test_add_new_chrome_instance(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -749,7 +853,7 @@ def test_add_new_chrome_instance(mocker):
     assert "9345" in mocker_json.call_args[0][0]
 
 
-def test_terminate_port_chrome_instances_file(mocker):
+def test_terminate_port_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A port to terminate.
@@ -772,7 +876,7 @@ def test_terminate_port_chrome_instances_file(mocker):
     assert "2222" not in mocker_json.call_args[0][0]
 
 
-def test_write_chrome_instances_empty(mocker):
+def test_write_chrome_instances_empty(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content(first chrome instance).
@@ -791,6 +895,26 @@ def test_write_chrome_instances_empty(mocker):
     write_chrome_instances_file(new_chrome_content=mock_file_content)
 
     assert mocker_json.call_count == 1
+
+
+def test_write_chrome_instances_file_atomic_round_trip(chrome_instances_tmp_path):
+    """
+    Given:
+        - A writable chrome instances file location.
+    When:
+        - Executing write_chrome_instances_file and reading the file back.
+    Then:
+        - The content round-trips intact and no temporary files are left behind.
+    """
+    from rasterize import write_chrome_instances_file
+
+    content = util_load_json("test_data/chrome_instances.json")
+    write_chrome_instances_file(new_chrome_content=content)
+
+    with open(chrome_instances_tmp_path) as f:
+        assert json.load(f) == content
+    directory = os.path.dirname(chrome_instances_tmp_path)
+    assert os.listdir(directory) == ["chrome_instances.json"]
 
 
 def test_read_json_file(mocker):
@@ -1074,6 +1198,133 @@ def test_retry_loading(mocker: MockerFixture):
     mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("runtime_exception")
     handler.retry_loading()
     assert mock_event.set.called
+
+
+def test_retry_loading_is_not_reentrant(mocker: MockerFixture):
+    """
+    Given:
+        - A PychromeEventHandler whose page is stuck on a chrome-error page.
+        - Page.navigate re-fires the frameStoppedLoading CDP callback, which calls
+          retry_loading again - exactly what Chrome does in production.
+    When:
+        - retry_loading is called.
+    Then:
+        - The nested (re-entrant) invocations return immediately instead of starting a new
+          retry budget, so the total number of navigate calls stays bounded by
+          DEFAULT_RETRIES_COUNT instead of growing without limit (which previously hung the
+          command until the engine dispatch timeout and leaked a Chrome tab).
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
+    mock_event = mocker.Mock()
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
+
+    # Simulate Chrome firing frameStoppedLoading as a result of our own Page.navigate call.
+    def navigate_side_effect(*args, **kwargs):
+        handler.retry_loading()  # re-entrant call - must be ignored
+
+    mock_tab.Page.navigate = mocker.Mock(side_effect=navigate_side_effect)
+    mocker.patch("time.sleep")
+    mocker.patch.object(rasterize, "safe_sleep")
+
+    handler.retry_loading()
+
+    # Without the guard this recursed and navigate was called far more than the retry budget.
+    assert mock_tab.Page.navigate.call_count == DEFAULT_RETRIES_COUNT
+    assert handler.load_failed is True
+    assert mock_event.set.called
+    assert handler._retry_in_progress is False
+
+
+def test_retry_loading_respects_total_deadline(mocker: MockerFixture):
+    """
+    Given:
+        - A handler whose overall retry deadline has already elapsed.
+    When:
+        - retry_loading is called.
+    Then:
+        - It gives up immediately without navigating, and marks the load as failed, so the
+          worker thread can never outlive the engine's dispatch timeout.
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.Page.navigate = mocker.Mock()
+    mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
+    mock_event = mocker.Mock()
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
+
+    # Deadline already in the past.
+    handler._retry_deadline = time.monotonic() - 1
+    mocker.patch("time.sleep")
+    mocker.patch.object(rasterize, "safe_sleep")
+
+    handler.retry_loading()
+
+    mock_tab.Page.navigate.assert_not_called()
+    assert handler.load_failed is True
+    assert mock_event.set.called
+
+
+def test_close_orphaned_tabs(mocker: MockerFixture):
+    """
+    Given:
+        - A browser carrying more tabs than allowed, left over from executions that were
+          killed by the engine dispatch timeout before their tab could be closed.
+    When:
+        - close_orphaned_tabs is called.
+    Then:
+        - The excess (oldest) tabs are closed and only max_allowed_tabs remain.
+    """
+    tabs = [f"tab{i}" for i in range(19)]
+    mock_browser = mocker.Mock()
+    mock_browser.list_tab = mocker.Mock(return_value=tabs)
+    mock_browser.close_tab = mocker.Mock()
+
+    closed = rasterize.close_orphaned_tabs(mock_browser, max_allowed_tabs=1)
+
+    assert closed == 18
+    assert mock_browser.close_tab.call_count == 18
+    # The most recent tab is kept.
+    closed_tabs = [c.args[0] for c in mock_browser.close_tab.call_args_list]
+    assert "tab18" not in closed_tabs
+
+
+def test_close_orphaned_tabs_no_op_when_within_limit(mocker: MockerFixture):
+    """
+    Given:
+        - A browser with no more tabs than allowed.
+    When:
+        - close_orphaned_tabs is called.
+    Then:
+        - No tab is closed.
+    """
+    mock_browser = mocker.Mock()
+    mock_browser.list_tab = mocker.Mock(return_value=["tab0"])
+    mock_browser.close_tab = mocker.Mock()
+
+    assert rasterize.close_orphaned_tabs(mock_browser, max_allowed_tabs=1) == 0
+    mock_browser.close_tab.assert_not_called()
+
+
+def test_write_chrome_instances_file_is_atomic(mocker: MockerFixture, tmp_path):
+    """
+    Given:
+        - Chrome instance content to persist.
+    When:
+        - write_chrome_instances_file writes it.
+    Then:
+        - The destination file contains valid JSON (written via a temp file + atomic rename,
+          so a concurrent reader can never observe a truncated, half-written file), and no
+          temporary files are left behind.
+    """
+    target = tmp_path / "chrome_instances.json"
+    mocker.patch.object(rasterize, "CHROME_INSTANCES_FILE_PATH", str(target))
+
+    content = {"9301": {"instance_id": "abc", "rasterization_count": 3}}
+    rasterize.write_chrome_instances_file(content)
+
+    assert json.loads(target.read_text()) == content
+    # No leftover temp files in the directory.
+    assert [p.name for p in tmp_path.iterdir()] == ["chrome_instances.json"]
 
 
 @pytest.mark.parametrize(
@@ -1999,6 +2250,44 @@ def test_wait_for_page_load_freeze_on_load_defaults_to_true(mocker):
 # endregion
 
 
+# region warn_unless_test_module tests
+
+
+def test_warn_unless_test_module_suppresses_entry_during_test_module(mocker):
+    """
+    Given: The running command is test-module and a non-fatal condition (memory pressure) occurred.
+    When: Calling warn_unless_test_module.
+    Then: No war-room entry is emitted, so test-module keeps returning a single "ok" entry and the
+          debug-log download keeps working. The message is written to the debug log instead.
+    """
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    rasterize.warn_unless_test_module("Warning: Rasterize aborted page-load wait due to memory pressure.")
+
+    return_warning_mock.assert_not_called()
+    assert any("memory pressure" in str(call_args) for call_args in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize("command", ["rasterize", "rasterize-email", "rasterize-html", "rasterize-pdf"])
+def test_warn_unless_test_module_returns_warning_for_other_commands(mocker, command):
+    """
+    Given: The running command is a regular rasterize command and a non-fatal condition occurred.
+    When: Calling warn_unless_test_module.
+    Then: The warning entry is returned as before - the suppression applies only to test-module.
+    """
+    mocker.patch.object(demisto, "command", return_value=command)
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+
+    rasterize.warn_unless_test_module("Warning: some content might be missing.")
+
+    return_warning_mock.assert_called_once_with("Warning: some content might be missing.")
+
+
+# endregion
+
+
 def test_rasterize_extract_command_extraction_error_includes_guidance(mocker):
     """
     Given: A URL that fails extraction with an "Extraction Error:" result
@@ -2057,3 +2346,86 @@ def test_extract_content_from_tab_uses_navigation_timeout(mocker):
     extract_content_from_tab(mock_tab, 145)
 
     assert mock_tab.Runtime.evaluate.call_args.kwargs["_timeout"] == 145
+
+
+def test_chrome_manager_one_port_stale_record_starts_new_chrome(mocker):
+    """
+    Given:
+        - A saved chrome_instances record for port 9301 whose Chrome options match the instance's,
+          while no Chrome is running on that port (it crashed in a previous execution).
+    When:
+        - Executing the chrome_manager_one_port function.
+    Then:
+        - The stale record is dropped (terminate_chrome on the saved port) and a new Chrome is started,
+          instead of returning no browser and failing with "Could not use local Chrome".
+    """
+    from rasterize import chrome_manager_one_port
+
+    instance_id = "33333333-3333-3333-3333-333333333333"
+    chrome_options = "--disable-gpu"
+    stale_record = {"9301": {"instance_id": instance_id, "chrome_options": chrome_options, "rasterization_count": 0}}
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstanceID": instance_id}})
+    mocker.patch.object(demisto, "params", return_value={"chrome_options": chrome_options})
+    mocker.patch.object(rasterize, "read_json_file", return_value=stale_record)
+    mocker.patch.object(rasterize, "get_chrome_browser", return_value=None)
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+    generate_new_chrome_instance_mocker = mocker.patch.object(
+        rasterize, "generate_new_chrome_instance", return_value=("new_browser", "9301")
+    )
+
+    browser, chrome_port = chrome_manager_one_port()
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    generate_new_chrome_instance_mocker.assert_called_once_with(instance_id, chrome_options)
+    assert browser == "new_browser"
+    assert chrome_port == "9301"
+
+
+def test_get_tabs_count_for_log_chrome_gone():
+    """
+    Given:
+        - A browser whose Chrome process is gone, so list_tab raises ConnectionError.
+    When:
+        - Calling get_tabs_count_for_log.
+    Then:
+        - "unavailable" is returned instead of raising.
+    """
+    from rasterize import get_tabs_count_for_log
+
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    assert get_tabs_count_for_log(browser) == "unavailable"
+
+    browser.list_tab.side_effect = None
+    browser.list_tab.return_value = ["tab1", "tab2"]
+    assert get_tabs_count_for_log(browser) == 2
+
+
+def test_perform_rasterize_chrome_crashed_still_terminates_chrome(mocker, tmp_path):
+    """
+    Given:
+        - Lightweight mode, and Chrome crashed during the rasterization (the screenshot failed and
+          browser.list_tab now raises ConnectionError).
+    When:
+        - perform_rasterize finishes the rasterization threads.
+    Then:
+        - terminate_chrome is still called for the port, so the chrome_instances record is removed
+          and the next execution does not reuse a Chrome that is not running.
+    """
+    mocker.patch.object(rasterize, "IS_LIGHTWEIGHT", True)
+    mocker.patch.object(rasterize, "RASTERIZE_LOCK_FILE_PATH", str(tmp_path / "rasterize.lock"))
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    mocker.patch.object(rasterize, "chrome_manager_one_port", return_value=(browser, "9301"))
+    mocker.patch.object(rasterize, "close_orphaned_tabs", return_value=0)
+    mocker.patch.object(rasterize, "support_multithreading")
+    mocker.patch.object(rasterize, "rasterize_thread", return_value=(None, "Failed to capture screenshot due to User abort"))
+    mocker.patch.object(rasterize, "read_json_file", return_value={})
+    mocker.patch.object(rasterize, "return_results")
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+
+    results = perform_rasterize(path="https://www.example.com", rasterize_type=RasterizeType.PNG)
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    assert results == []

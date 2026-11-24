@@ -1,7 +1,40 @@
+import json
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from xlsxwriter import Workbook
 from xlsxwriter.format import Format
+
+
+def format_list_item(list_item: Any) -> str:
+    """Converts a single list element to a string suitable for a spreadsheet cell.
+
+    Args:
+        list_item: An element of a list value (may be of any JSON-compatible type).
+
+    Returns:
+        str: JSON for dicts/lists, an empty string for None, otherwise str() of the element.
+    """
+    if list_item is None:
+        return ""
+    if isinstance(list_item, (dict, list)):
+        return json.dumps(list_item)
+    return str(list_item)
+
+
+def format_cell_value(item_value: Any) -> str:
+    """Converts a context value to a string suitable for a spreadsheet cell.
+
+    Args:
+        item_value: The value to write (may be of any JSON-compatible type).
+
+    Returns:
+        str: A comma-separated string for lists, otherwise str() of the value.
+    """
+    if isinstance(item_value, list):
+        return ", ".join(format_list_item(list_item) for list_item in item_value)
+    return str(item_value)
 
 
 def write_data(sheet: str, data_item: dict | list, data_headers: list | None, workbook: Workbook, bold: Format, border: Format):
@@ -25,11 +58,8 @@ def write_data(sheet: str, data_item: dict | list, data_headers: list | None, wo
             row += 1
             for header in data_headers:
                 item_value = item.get(header)
-                if item_value:
-                    if isinstance(item_value, list):
-                        worksheet.write(row, col, ", ".join(item_value), border)
-                    else:
-                        worksheet.write(row, col, str(item_value), border)
+                if item_value not in (None, "", []):
+                    worksheet.write(row, col, format_cell_value(item_value), border)
                 col += 1
 
 

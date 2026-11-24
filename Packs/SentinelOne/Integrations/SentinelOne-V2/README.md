@@ -53,7 +53,7 @@ Returns all agents that match the specified criteria.
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional |
 | min_active_threats | Minimum number of threats per agent. | Optional |
 | limit | The maximum number of agents to return. Default is 10. | Optional |
-| params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional |
+| params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are AND'd. | Optional |
 | columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
@@ -2334,3 +2334,370 @@ Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
 | --- | --- | --- |
 | SentinelOne.Export.Timeline.ThreatId | String | The threat ID. |
 | SentinelOne.Export.Timeline.Filename | String | The name of the file containing the Timeline. |
+
+### sentinelone-get-unified-exclusions
+
+***
+Lists all unified exclusions that match the specified input filter. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-get-unified-exclusions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| account_ids | A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| site_ids | A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| os_types | A comma-separated list of OS types to filter by. Possible values are: windows, windows_legacy, macos, linux. | Optional |
+| mode_type | A comma-separated list of exclusion mode types to filter by. Possible values are: suppression, agent_interoperability, binary_vault, endpoint, all. | Optional |
+| value_contains | The free-text filter by exclusion value. | Optional |
+| exclusion_name_contains | The free-text filter by exclusion name. | Optional |
+| include_children | Whether to return exclusions from children scope levels. Default is false. | Optional |
+| include_parents | Whether to return exclusions from parent scope levels. Default is false. | Optional |
+| tenant | Whether to filter for tenant scope only. | Optional |
+| limit | The maximum number of items to return (1-1000). Default is 10. | Optional |
+| cursor | The cursor position returned by the last request, used to paginate beyond 1000 items. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.ID | String | The exclusion item ID. |
+| SentinelOne.UnifiedExclusions.Name | String | The exclusion item name. |
+| SentinelOne.UnifiedExclusions.Type | String | The exclusion type. |
+| SentinelOne.UnifiedExclusions.Value | String | The value of the exclusion item. |
+| SentinelOne.UnifiedExclusions.OsType | String | The operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type. |
+| SentinelOne.UnifiedExclusions.Description | String | The description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | The source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | The timestamp when the exclusion item was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | The timestamp when the exclusion item was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UserName | String | The username of the user who created the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | The threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | The engines associated with the exclusion item. |
+
+### sentinelone-create-unified-exclusion
+
+***
+Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-create-unified-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exclusion_name | The name of the exclusion item. | Required |
+| os_type | The operating system type. Possible values are: windows, windows_legacy, macos, linux. | Required |
+| mode_type | The exclusion mode type. Possible values are: suppression, agent_interoperability, binary_vault, all. | Required |
+| exclusion_type | The exclusion type that determines how the value is interpreted. Possible values are: file_type, path, white_hash, certificate, browser. | Required |
+| value | The exclusion value, for example a file path or hash. | Optional |
+| scope_level | The scope level for the exclusion. Possible values are: group, site, account, tenant. | Required |
+| scope_level_id | The ID of the scope (group, site, or account). Not required when scope_level is tenant. | Optional |
+| reason | The reason for creating the exclusion. Possible values are: performance_issue, false_positive, other. | Required |
+| description | The description of the exclusion item. | Optional |
+| threat_type | The threat type associated with the exclusion, for example "EDR". | Required |
+| engines | The engine associated with the exclusion, for example "suppress". | Optional |
+| path_exclusion_type | The path exclusion type. Applies to path exclusions only. Possible values are: file, folder, subfolder. | Optional |
+| sha256_value | The SHA-256 value associated with the exclusion. | Optional |
+| child_process | Whether the exclusion applies to child processes. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.ID | String | The created exclusion item ID. |
+| SentinelOne.UnifiedExclusions.Name | String | The exclusion item name. |
+| SentinelOne.UnifiedExclusions.Type | String | The exclusion type (e.g. path, white_hash). |
+| SentinelOne.UnifiedExclusions.Value | String | The exclusion value. |
+| SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type (e.g. suppression). |
+| SentinelOne.UnifiedExclusions.OsType | String | The operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Description | String | The description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | The threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | The engine associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.PathExclusionType | String | The path exclusion type (e.g. file, folder). |
+| SentinelOne.UnifiedExclusions.Sha256Value | String | The SHA-256 value associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | The source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopeName | String | The scope name of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopePath | String | The full scope path of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | The timestamp when the exclusion item was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | The timestamp when the exclusion item was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UserName | String | The username of the user who created the exclusion item. |
+
+### sentinelone-delete-unified-exclusions
+
+***
+Deletes unified exclusion items by their IDs and types. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-delete-unified-exclusions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of unified exclusion IDs to delete, for example: "225494730938493804,225494730938493915". | Required |
+| exclusion_types | A comma-separated list of exclusion types corresponding to each ID (must match the order of ids). Possible values are: browser, certificate, commandline, container_native, file_type, idr, path, white_hash. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.Deleted.Affected | Number | The number of exclusion items successfully deleted. |
+
+### sentinelone-get-alert-with-raw-indicators
+
+***
+Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unifiedalerts GraphQL endpoint. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-get-alert-with-raw-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The alert ID to retrieve raw indicators for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.AlertWithRawIndicators.ID | String | The alert ID. |
+| SentinelOne.AlertWithRawIndicators.Name | String | The alert name. |
+| SentinelOne.AlertWithRawIndicators.Severity | String | The alert severity. |
+| SentinelOne.AlertWithRawIndicators.Classification | String | The alert classification. |
+| SentinelOne.AlertWithRawIndicators.Description | String | The alert description. |
+| SentinelOne.AlertWithRawIndicators.Status | String | The alert status. |
+| SentinelOne.AlertWithRawIndicators.AnalystVerdict | String | The analyst verdict for the alert. |
+| SentinelOne.AlertWithRawIndicators.ConfidenceLevel | String | The confidence level of the alert. |
+| SentinelOne.AlertWithRawIndicators.PrimaryIndicatorType | String | The primary indicator type of the alert. |
+| SentinelOne.AlertWithRawIndicators.Result | String | The mitigation result of the alert. |
+| SentinelOne.AlertWithRawIndicators.StorylineId | String | The storyline ID associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.AttackSurfaces | String | The attack surfaces of the alert. |
+| SentinelOne.AlertWithRawIndicators.CreatedAt | Date | The timestamp when the alert was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.DetectedAt | Date | The timestamp when the alert was detected, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.FirstSeenAt | Date | The timestamp when the alert was first seen, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.LastSeenAt | Date | The timestamp when the alert was last seen, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.UpdatedAt | Date | The timestamp when the alert was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.ExternalId | String | The external ID of the alert. |
+| SentinelOne.AlertWithRawIndicators.Indicators | Unknown | List of structured indicators associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.RawIndicators | Unknown | List of raw SDL telemetry events that triggered the alert indicators. |
+| SentinelOne.AlertWithRawIndicators.RawData | Unknown | Full OCSF-formatted raw data object for the alert. |
+| SentinelOne.AlertWithRawIndicators.EventSearchParams | Unknown | Pre-built Power Query search parameters for Deep Visibility investigation. |
+| SentinelOne.AlertWithRawIndicators.Asset | Unknown | Asset information for the endpoint associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.DetectionSource | Unknown | Detection source product and vendor information. |
+| SentinelOne.AlertWithRawIndicators.Process | Unknown | Process information associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.Observables | Unknown | Observable indicators such as process name or IP associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.DetectionTime | Unknown | Scope information at the time of detection. |
+
+### sentinelone-create-firewall-rule
+
+***
+Creates a Firewall Control rule that allows or blocks network traffic on endpoints in the specified scope. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-create-firewall-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the firewall rule. | Required |
+| action | The action the agent takes on traffic that matches the rule. Possible values are: Allow, Block. | Required |
+| status | The rule status. Possible values are: Enabled, Disabled. | Required |
+| direction | The traffic direction the rule applies to. Possible values are: any, inbound, outbound. | Optional |
+| os_types | A comma-separated list of OS types for the rule. Possible values are: linux, windows, macos, windows_legacy. | Optional |
+| protocol | The network protocol for the rule. | Optional |
+| remote_host_type | The type of remote host to match. Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs. Possible values are: any, cidr, range, addresses, fqdn. | Optional |
+| remote_host_values | A comma-separated list of remote host values. | Optional |
+| local_host_type | The type of local host to match. Possible values are: any, cidr, range, addresses, fqdn. | Optional |
+| local_host_values | A comma-separated list of local host values. | Optional |
+| remote_port_type | The type of remote ports to match. Possible values are: any, ports, range. | Optional |
+| remote_port_values | A comma-separated list of remote port numbers (integers between 0 and 65535). | Optional |
+| local_port_type | The type of local ports to match. Possible values are: any, ports, range. | Optional |
+| local_port_values | A comma-separated list of local port numbers (integers between 0 and 65535). | Optional |
+| application_type | The type of application for the rule. Possible values are: any, path, sha1, system. | Optional |
+| application_values | A comma-separated list of application values. | Optional |
+| location_type | The location type for the rule. Possible values are: all, specific, fallback. | Optional |
+| location_ids | A comma-separated list of location IDs (applicable when location_type is 'specific'). | Optional |
+| description | The description of the firewall rule. | Optional |
+| tag_ids | A comma-separated list of tag IDs to link to this firewall rule. | Optional |
+| tenant | Whether to apply the rule at the tenant (global) scope. Can't be combined with account_ids, site_ids, or group_ids. Possible values are: true, false. | Optional |
+| account_ids | A comma-separated list of account IDs to scope the firewall rule to. | Optional |
+| site_ids | A comma-separated list of site IDs to scope the firewall rule to. | Optional |
+| group_ids | A comma-separated list of group IDs to scope the firewall rule to. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.FirewallRule.Created.ID | String | The ID of the firewall rule. |
+| SentinelOne.FirewallRule.Created.Name | String | The name of the firewall rule. |
+| SentinelOne.FirewallRule.Created.Action | String | The rule action. |
+| SentinelOne.FirewallRule.Created.Status | String | The status of the rule. |
+| SentinelOne.FirewallRule.Created.Direction | String | The direction of the firewall rule. |
+| SentinelOne.FirewallRule.Created.OsType | String | The primary OS type of the rule. |
+| SentinelOne.FirewallRule.Created.OsTypes | Unknown | The list of OS types for the rule. |
+| SentinelOne.FirewallRule.Created.Protocol | String | The protocol of the firewall rule. |
+| SentinelOne.FirewallRule.Created.RemoteHost | Unknown | The first remote host in the rule. |
+| SentinelOne.FirewallRule.Created.RemoteHosts | Unknown | The list of remote hosts in the rule. |
+| SentinelOne.FirewallRule.Created.LocalHost | Unknown | The local host of the rule. |
+| SentinelOne.FirewallRule.Created.RemotePort | Unknown | The remote ports of the rule. |
+| SentinelOne.FirewallRule.Created.LocalPort | Unknown | The local ports of the rule. |
+| SentinelOne.FirewallRule.Created.Application | Unknown | The application of the rule. |
+| SentinelOne.FirewallRule.Created.Location | Unknown | The location associated with the rule. |
+| SentinelOne.FirewallRule.Created.Scope | String | The scope of the rule. |
+| SentinelOne.FirewallRule.Created.ScopeId | String | The group, site, or account ID depending on the scope. |
+| SentinelOne.FirewallRule.Created.Order | Number | The position of the rule in the list of rules. |
+| SentinelOne.FirewallRule.Created.Editable | Boolean | Whether the rule can be modified at this scope level. |
+| SentinelOne.FirewallRule.Created.Creator | String | The full name of the user who created the rule. |
+| SentinelOne.FirewallRule.Created.CreatorId | String | The ID of the user who created the rule. |
+| SentinelOne.FirewallRule.Created.CreatedAt | Date | The date and time of rule creation. |
+| SentinelOne.FirewallRule.Created.UpdatedAt | Date | The date and time of the last update. |
+| SentinelOne.FirewallRule.Created.Description | String | The description of the firewall rule. |
+| SentinelOne.FirewallRule.Created.RuleCategory | String | The rule category. |
+| SentinelOne.FirewallRule.Created.TagIds | Unknown | The list of tag IDs linked to this rule. |
+| SentinelOne.FirewallRule.Created.TagNames | Unknown | The list of tag names linked to this rule. |
+| SentinelOne.FirewallRule.Created.Tags | Unknown | The list of tag objects linked to this rule. |
+| SentinelOne.FirewallRule.Created.ProductId | String | The product identifier. |
+
+#### Command example
+
+```!sentinelone-create-firewall-rule name="Block-Outbound-Example" action=Block status=Enabled direction=outbound os_types=windows,linux protocol=any remote_host_type=addresses remote_host_values=1.1.1.1 site_ids=1111111111111111111 description="Example firewall rule"```
+
+#### Context Example
+
+```json
+{
+    "SentinelOne": {
+        "FirewallRule": {
+            "Created": {
+                "Action": "Block",
+                "Application": null,
+                "CreatedAt": "2024-01-01T00:00:00.000000Z",
+                "Creator": "Example User (user@example.com)",
+                "CreatorId": "2222222222222222222",
+                "Description": "Example firewall rule",
+                "Direction": "outbound",
+                "Editable": true,
+                "ID": "1234567890123456789",
+                "LocalHost": null,
+                "LocalPort": null,
+                "Location": null,
+                "Name": "Block-Outbound-Example",
+                "Order": 1,
+                "OsType": "windows",
+                "OsTypes": [
+                    "windows",
+                    "linux"
+                ],
+                "ProductId": null,
+                "Protocol": "any",
+                "RemoteHost": null,
+                "RemoteHosts": [
+                    {
+                        "type": "addresses",
+                        "values": [
+                            "1.1.1.1"
+                        ]
+                    }
+                ],
+                "RemotePort": null,
+                "RuleCategory": "firewall",
+                "Scope": "site",
+                "ScopeId": "1111111111111111111",
+                "Status": "Enabled",
+                "TagIds": null,
+                "TagNames": null,
+                "Tags": null,
+                "UpdatedAt": "2024-01-01T00:00:00.000000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sentinel One - Create Firewall Rule
+>
+>|Action|Created At|Creator|Creator Id|Description|Direction|Editable|ID|Name|Order|Os Type|Os Types|Protocol|Remote Hosts|Rule Category|Scope|Scope Id|Status|Updated At|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Block | 2024-01-01T00:00:00.000000Z | Example User (user@example.com) | 2222222222222222222 | Example firewall rule | outbound | true | 1234567890123456789 | Block-Outbound-Example | 1 | windows | windows,<br>linux | any | {'type': 'addresses', 'values': ['1.1.1.1']} | firewall | site | 1111111111111111111 | Enabled | 2024-01-01T00:00:00.000000Z |
+
+### sentinelone-delete-firewall-rule
+
+***
+Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1. Warning: all filters are combined, and every rule in the selected scope that matches them is deleted. Broad filters (for example, tenant=true with only scopes=global, or statuses without ids) can delete many or all rules in the scope. To delete specific rules, use the ids argument.
+
+#### Base Command
+
+`sentinelone-delete-firewall-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of firewall rule IDs to filter by. | Optional |
+| account_ids | A comma-separated list of account IDs to filter by. | Optional |
+| site_ids | A comma-separated list of site IDs to filter by. | Optional |
+| group_ids | A comma-separated list of group IDs to filter by. | Optional |
+| tenant | Whether to apply the request at the tenant (global) scope. Possible values are: true, false. | Optional |
+| query | Free-text search on name, tag, application, or protocol. | Optional |
+| scopes | A comma-separated list of scopes to filter firewall rules by. Possible values are: global, account, group, site. | Optional |
+| applications | A comma-separated list of applications to filter firewall rules by. | Optional |
+| name | The exact rule name to filter firewall rules by. | Optional |
+| protocols | A comma-separated list of protocols to filter firewall rules by. | Optional |
+| os_types | A comma-separated list of OS types to filter firewall rules by. Possible values are: linux, windows, macos, windows_legacy. | Optional |
+| directions | A comma-separated list of directions to filter firewall rules by. Possible values are: any, inbound, outbound. | Optional |
+| actions | A comma-separated list of actions to filter firewall rules by. Possible values are: Allow, Block. | Optional |
+| statuses | A comma-separated list of statuses to filter firewall rules by. Possible values are: Enabled, Disabled. | Optional |
+| created_at_lt | Filter firewall rules created before this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_gt | Filter firewall rules created after this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_lte | Filter firewall rules created before or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_gte | Filter firewall rules created after or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_between | Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999". | Optional |
+| location_ids | A comma-separated list of associated location IDs to filter by. | Optional |
+| tag_ids | A comma-separated list of associated tag IDs to filter by. | Optional |
+| name_contains | Filter firewall rules whose name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| tag_name_contains | Filter firewall rules whose tag name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| application_contains | Filter firewall rules whose application contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| protocol_contains | Filter firewall rules whose protocol contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| service_contains | Filter firewall rules whose service contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.FirewallRule.Deleted.Affected | Number | The number of firewall rules successfully deleted. |
+
+#### Command example
+
+```!sentinelone-delete-firewall-rule ids=1234567890123456789,1234567890123456790 site_ids=1111111111111111111```
+
+#### Context Example
+
+```json
+{
+    "SentinelOne": {
+        "FirewallRule": {
+            "Deleted": {
+                "Affected": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Sentinel One - Deleted 2 firewall rule(s).

@@ -14,7 +14,7 @@ This integration was integrated and tested with version 2.0.0 of CSCDomainManage
 
 ## Access and Security
 
- Customers request access through their CSC service team.  Their service team will gather the details for
+Customers request access through their CSC service team.  Their service team will gather the details for
 the service account that will be used to access the API; and
 the API administrator(s) (one or more authorized client users) who will manage the credentials through our CSCDomainManagerSM web portal.
 

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Reduced the available select values of the Vega Incident Status incident field from 9 to 4 (OPEN, IN REVIEW, ON HOLD, RESOLVED). Existing incidents using removed values or playbooks/automations that rely on them must be updated."
+}

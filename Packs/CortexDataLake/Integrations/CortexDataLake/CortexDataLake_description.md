@@ -30,6 +30,8 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
     * **insecure**: Trust any certificate (not secure).
     * **Fetch incidents**: Whether to fetch incidents.
     * **First fetch time**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
+    * **Fetch Table**: The table incidents are fetched from.
+    * **Fetch Filter**: A query used to filter the fetched incidents. Cannot be used in combination with specific **Severity of events to fetch (Firewall)** or **Subtype of events to fetch (Firewall)** values. When using a Fetch Filter, leave those parameters empty or set them to "all".
     * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium, Low, Informational, or Unused.
     * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
 7. Click **Test** to validate the credentials and connection.

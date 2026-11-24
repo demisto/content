@@ -309,7 +309,7 @@ script:
       description: Total number of pages of incidents from service.
       type: Number
 
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.16.14740428
   isfetch: true
   script: "-"
   subtype: python3

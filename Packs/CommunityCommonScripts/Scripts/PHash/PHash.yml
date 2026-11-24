@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python-phash:1.0.0.12571702
+dockerimage: demisto/python-phash:1.0.0.14169403
 enabled: true
 name: PHash
 outputs:
