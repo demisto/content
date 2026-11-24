@@ -24,6 +24,10 @@ MERAKI_TOKEN_RENEWAL_MARGIN_SECONDS = 60
 MERAKI_RATE_LIMIT_RETRIES = 3
 MERAKI_RATE_LIMIT_STATUS_CODES = [http.HTTPStatus.TOO_MANY_REQUESTS.value]
 
+# Values of the legacy integration's `auth_method` param.
+MERAKI_AUTH_METHOD_API_KEY = "API Key"
+MERAKI_AUTH_METHOD_OAUTH = "OAuth 2.0"
+
 # Values of the UCP connector's `endpoint_region` field. Europe, South America and Asia-Pacific
 # dashboards are served by the global api.meraki.com cluster.
 MERAKI_REGION_BASE_URLS: dict[str, str] = {
@@ -80,45 +84,36 @@ def resolve_meraki_base_url(params: dict[str, Any]) -> str:
 
 
 def resolve_meraki_auth_mode(
+    auth_method: str | None,
     api_key: str | None,
     client_id: str | None,
     client_secret: str | None,
     redirect_uri: str | None = None,
-    auth_code: str | None = None,
 ) -> MerakiAuthMode:
-    """Select the authentication mode: UCP-brokered credentials first, else exactly one legacy method.
+    """Select the authentication mode: UCP-brokered credentials first, else the `Authentication Method` param.
 
-    Outside UCP, the legacy methods are exclusive: an API Key, or OAuth 2.0 (Client ID, Client Secret and
-    Redirect URI; the Authorization code is added after running the generate-login-url command).
+    Outside UCP, only the fields of the selected method are used; values left in the fields of the other
+    method (hidden by the YML triggers) are ignored. An empty method means the default "API Key", because
+    existing instances do not receive the default of a newly added param until they are saved again.
 
     Raises:
-        DemistoException: When both methods are configured, an OAuth 2.0 field is missing, or no
-            credentials are configured.
+        DemistoException: When a field of the selected method is missing, or the method is unknown.
     """
     if should_use_ucp_auth():
         return MerakiAuthMode.UCP
-    oauth_fields = {
-        "Client ID": client_id,
-        "Client Secret": client_secret,
-        "Redirect URI": redirect_uri,
-        "Authorization code": auth_code,
-    }
-    configured_oauth_fields = [name for name, value in oauth_fields.items() if value]
-    if api_key and configured_oauth_fields:
-        raise DemistoException(
-            "Configure either an API Key or OAuth 2.0, not both. Clear the API Key, or clear the OAuth 2.0 fields "
-            f"({', '.join(configured_oauth_fields)})."
-        )
-    if configured_oauth_fields:
-        missing_fields = [name for name in ("Client ID", "Client Secret", "Redirect URI") if not oauth_fields[name]]
+    method = auth_method or MERAKI_AUTH_METHOD_API_KEY
+    if method == MERAKI_AUTH_METHOD_OAUTH:
+        oauth_fields = {"Client ID": client_id, "Client Secret": client_secret, "Redirect URI": redirect_uri}
+        missing_fields = [name for name, value in oauth_fields.items() if not value]
         if missing_fields:
             raise DemistoException(f"OAuth 2.0 authentication requires: {', '.join(missing_fields)}.")
         return MerakiAuthMode.OAUTH
-    if api_key:
+    if method == MERAKI_AUTH_METHOD_API_KEY:
+        if not api_key:
+            raise DemistoException("API Key authentication requires an API Key.")
         return MerakiAuthMode.API_KEY
     raise DemistoException(
-        "No credentials are configured. Provide either an API Key or OAuth 2.0 credentials "
-        "(Client ID, Client Secret and Redirect URI)."
+        f"Unknown authentication method: {method!r}. Use {MERAKI_AUTH_METHOD_API_KEY!r} or {MERAKI_AUTH_METHOD_OAUTH!r}."
     )
 
 
@@ -295,10 +290,11 @@ class MerakiBaseClient(BaseClient):
         scopes: list[str] | None = None,
         verify: bool = True,
         proxy: bool = False,
+        auth_method: str | None = None,
     ) -> None:
         base_url = base_url.rstrip("/")
         super().__init__(base_url=urljoin(base_url, MERAKI_API_V1), verify=verify, proxy=proxy)
-        self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret, redirect_uri, auth_code)
+        self.auth_mode = resolve_meraki_auth_mode(auth_method, api_key, client_id, client_secret, redirect_uri)
         demisto.debug(f"[Auth] Selected the {self.auth_mode.value} authentication mode.")
         self.api_key = api_key
         self.token_manager: MerakiOAuthTokenManager | None = None
@@ -745,6 +741,7 @@ class Client(MerakiBaseClient):
         client_secret: str | None = None,
         redirect_uri: str | None = None,
         auth_code: str | None = None,
+        auth_method: str | None = None,
     ) -> None:
         """Initialize the Client class.
 
@@ -759,6 +756,7 @@ class Client(MerakiBaseClient):
             client_secret (str | None): OAuth 2.0 client secret.
             redirect_uri (str | None): OAuth 2.0 redirect URI registered on the Meraki app.
             auth_code (str | None): OAuth 2.0 authorization code.
+            auth_method (str | None): "API Key" or "OAuth 2.0". Defaults to "API Key" when empty.
         """
         super().__init__(
             base_url=base_url,
@@ -770,6 +768,7 @@ class Client(MerakiBaseClient):
             scopes=CISCO_MERAKI_V2_OAUTH_SCOPES,
             verify=verify,
             proxy=proxy,
+            auth_method=auth_method,
         )
 
     def list_organization(self, per_page: int | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -4273,6 +4272,7 @@ def run_cisco_meraki_v2_integration() -> None:
             client_secret=dict_safe_get(params, keys=["credentials", "password"]) or None,
             redirect_uri=params.get("redirect_uri") or None,
             auth_code=dict_safe_get(params, keys=["auth_code", "password"]) or None,
+            auth_method=params.get("auth_method") or None,
         )
 
         if command == "test-module":

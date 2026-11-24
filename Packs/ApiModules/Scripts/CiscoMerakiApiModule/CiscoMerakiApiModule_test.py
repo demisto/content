@@ -1555,47 +1555,49 @@ def build_oauth_client(auth_code: str | None = "the-code") -> CiscoMerakiv2.Clie
         client_secret="csecret",
         redirect_uri="https://redirect.example.com",
         auth_code=auth_code,
+        auth_method="OAuth 2.0",
     )
 
 
 @pytest.mark.parametrize(
-    "api_key, client_id, client_secret, redirect_uri, auth_code, expected",
+    "auth_method, api_key, client_id, client_secret, redirect_uri, expected",
     [
-        ("key", None, None, None, None, CiscoMerakiv2.MerakiAuthMode.API_KEY),
-        (None, "cid", "secret", "https://redirect.example.com", None, CiscoMerakiv2.MerakiAuthMode.OAUTH),
-        (None, "cid", "secret", "https://redirect.example.com", "code", CiscoMerakiv2.MerakiAuthMode.OAUTH),
+        ("API Key", "key", None, None, None, CiscoMerakiv2.MerakiAuthMode.API_KEY),
+        (None, "key", None, None, None, CiscoMerakiv2.MerakiAuthMode.API_KEY),
+        ("API Key", "key", "cid", "secret", "https://redirect.example.com", CiscoMerakiv2.MerakiAuthMode.API_KEY),
+        ("OAuth 2.0", None, "cid", "secret", "https://redirect.example.com", CiscoMerakiv2.MerakiAuthMode.OAUTH),
+        ("OAuth 2.0", "key", "cid", "secret", "https://redirect.example.com", CiscoMerakiv2.MerakiAuthMode.OAUTH),
     ],
 )
-def test_resolve_meraki_auth_mode(api_key, client_id, client_secret, redirect_uri, auth_code, expected):
+def test_resolve_meraki_auth_mode(auth_method, api_key, client_id, client_secret, redirect_uri, expected):
     """
-    Given: Exactly one complete authentication method.
+    Given: An Authentication Method (empty means the "API Key" default) and its fields, possibly with
+           leftover values in the hidden fields of the other method.
     When:  Resolving the authentication mode outside UCP.
-    Then:  That method is selected.
+    Then:  The selected method is used and the other method's fields are ignored.
     """
-    assert CiscoMerakiv2.resolve_meraki_auth_mode(api_key, client_id, client_secret, redirect_uri, auth_code) == expected
+    assert CiscoMerakiv2.resolve_meraki_auth_mode(auth_method, api_key, client_id, client_secret, redirect_uri) == expected
 
 
 @pytest.mark.parametrize(
-    "api_key, client_id, client_secret, redirect_uri, auth_code, match",
+    "auth_method, api_key, client_id, client_secret, redirect_uri, match",
     [
-        (None, None, None, None, None, "No credentials are configured"),
-        ("key", "cid", "secret", "https://redirect.example.com", None, "not both"),
-        ("key", None, None, None, "code", "not both"),
-        ("key", None, None, "https://redirect.example.com", None, "not both"),
-        (None, "cid", None, "https://redirect.example.com", None, "requires: Client Secret"),
-        (None, None, "secret", "https://redirect.example.com", None, "requires: Client ID"),
-        (None, "cid", "secret", None, None, "requires: Redirect URI"),
-        (None, None, None, None, "code", "requires: Client ID, Client Secret, Redirect URI"),
+        ("API Key", None, "cid", "secret", "https://redirect.example.com", "requires an API Key"),
+        (None, None, None, None, None, "requires an API Key"),
+        ("OAuth 2.0", "key", None, None, None, "requires: Client ID, Client Secret, Redirect URI"),
+        ("OAuth 2.0", None, "cid", None, "https://redirect.example.com", "requires: Client Secret"),
+        ("OAuth 2.0", None, "cid", "secret", None, "requires: Redirect URI"),
+        ("Basic", "key", None, None, None, "Unknown authentication method"),
     ],
 )
-def test_resolve_meraki_auth_mode_errors(api_key, client_id, client_secret, redirect_uri, auth_code, match):
+def test_resolve_meraki_auth_mode_errors(auth_method, api_key, client_id, client_secret, redirect_uri, match):
     """
-    Given: No credentials, both methods mixed, or partial OAuth 2.0 fields.
+    Given: A field of the selected method is missing, or the method is unknown.
     When:  Resolving the authentication mode.
-    Then:  A clear error names the conflict or the missing fields.
+    Then:  A clear error names the missing fields or the unknown method.
     """
     with pytest.raises(CommonServerPython.DemistoException, match=match):
-        CiscoMerakiv2.resolve_meraki_auth_mode(api_key, client_id, client_secret, redirect_uri, auth_code)
+        CiscoMerakiv2.resolve_meraki_auth_mode(auth_method, api_key, client_id, client_secret, redirect_uri)
 
 
 def test_resolve_meraki_auth_mode_ucp(mocker):
@@ -1605,7 +1607,7 @@ def test_resolve_meraki_auth_mode_ucp(mocker):
     Then:  UCP mode is returned and no error is raised.
     """
     mocker.patch.object(CiscoMerakiv2, "should_use_ucp_auth", return_value=True)
-    assert CiscoMerakiv2.resolve_meraki_auth_mode(None, None, None) == CiscoMerakiv2.MerakiAuthMode.UCP
+    assert CiscoMerakiv2.resolve_meraki_auth_mode(None, None, None, None) == CiscoMerakiv2.MerakiAuthMode.UCP
 
 
 @pytest.mark.parametrize(
@@ -1638,8 +1640,10 @@ def test_oauth_rejected_for_regional_cluster():
     When:  Creating the client.
     Then:  An error points the user to the API key.
     """
-    with pytest.raises(CommonServerPython.DemistoException, match="API Key"):
-        CiscoMerakiv2.Client(base_url="https://api.meraki.ca", client_id="cid", client_secret="cs", redirect_uri="r")
+    with pytest.raises(CommonServerPython.DemistoException, match="supported only"):
+        CiscoMerakiv2.Client(
+            base_url="https://api.meraki.ca", client_id="cid", client_secret="cs", redirect_uri="r", auth_method="OAuth 2.0"
+        )
 
 
 def test_api_key_header(requests_mock):
