@@ -18,7 +18,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- display: ID (received from the admin consent - see Detailed Instructions (?)
+- display: ID (received from the admin consent - see Detailed Instructions (?))
   name: _auth_id
   type: 0
   required: false
