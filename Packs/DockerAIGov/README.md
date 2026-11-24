@@ -61,7 +61,7 @@ For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/
 
 ### Docker side
 
-Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organisation governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
+Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organization governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
 
 The collector accepts newline-delimited JSON, one `AuditRecord` per line. Send records to:
 
