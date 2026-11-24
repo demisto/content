@@ -1361,7 +1361,7 @@ script:
     - contextPath: MSGraphUser.MFAAccessToken.AccessToken
       description: The access token value.
       type: String
-  dockerimage: demisto/crypto:1.0.0.11658507
+  dockerimage: demisto/crypto:1.0.0.14788468
   runonce: false
   script: '-'
   subtype: python3

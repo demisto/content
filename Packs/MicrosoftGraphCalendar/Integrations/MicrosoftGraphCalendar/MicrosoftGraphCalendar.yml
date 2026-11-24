@@ -626,7 +626,7 @@ script:
     execution: false
     name: msgraph-calendar-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.14788468
   runonce: false
   script: '-'
   type: python
