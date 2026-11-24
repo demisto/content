@@ -30,6 +30,7 @@ GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 class HealthStatus(str):
     ERROR = "ERROR"
     WARNING = "WARNING"
+    SUCCESS = "SUCCESS"
     OK = "ok"
 
 
@@ -52,17 +53,20 @@ class HealthCheckError:
         message: str,
         error_type: str,
         capability: str = Capability.AUTOMATION,
+        name: str = "",
     ):
         self.account_id = account_id
         self.connector_id = connector_id
         self.message = message
         self.error_type = error_type
         self.capability = capability
+        # The raw name of the missing permission (e.g. storage.buckets.list), reported for permission errors.
+        self.name = name
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
-        return {
+        error_dict = {
             "account_id": self.account_id,
             "connector_id": self.connector_id,
             "message": self.message,
@@ -70,6 +74,9 @@ class HealthCheckError:
             "classification": self.classification,
             "capability": self.capability,
         }
+        if self.name:
+            error_dict["name"] = self.name
+        return error_dict
 
 
 class HealthCheck:
@@ -93,12 +100,16 @@ class HealthCheck:
             health_check_error.capability = self.capability
         self.errors.extend(errors)
 
-    def summarize(self) -> CommandResults | str:
+    def summarize(self, account_id: str = "") -> CommandResults:
         """Summarizes the health check results by calculating severity based on error classifications.
 
+        Args:
+            account_id (str): The account the health check ran against, reported on the success entry.
+
         Returns:
-            CommandResults | str:
-                - If errors exist: CommandResults object with severity level and error details, otherwise "ok".
+            CommandResults:
+                - If errors exist: CommandResults object with severity level and error details.
+                - Otherwise: a note entry with a single SUCCESS classification dictionary.
         """
 
         def _calculate_severity() -> int:
@@ -108,7 +119,13 @@ class HealthCheck:
             return EntryType.ERROR if HealthStatus.ERROR in [error.classification for error in self.errors] else EntryType.WARNING
 
         if not self.errors:
-            return HealthStatus.OK
+            success_entry = {
+                "account_id": account_id,
+                "connector_id": self.connector_id,
+                "classification": HealthStatus.SUCCESS,
+                "capability": self.capability,
+            }
+            return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON, raw_response=[success_entry])
 
         error_list = [error.to_dict() for error in self.errors]
         return CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=error_list)
@@ -288,7 +305,7 @@ def run_health_check_for_accounts(
     cloud_type: str,
     health_check_func: Callable[[dict, str, str], Any],
     capability: str = Capability.AUTOMATION,
-) -> str | CommandResults:
+) -> CommandResults:
     """Runs a health check function for each account associated with a connector sequentially.
 
     Args:
@@ -301,17 +318,19 @@ def run_health_check_for_accounts(
             reported on every health check error. Defaults to ``Capability.AUTOMATION``.
 
     Returns:
-        str | CommandResults: Either "ok" string or CommandResults with appropriate EntryType
+        CommandResults: A SUCCESS note entry, or an entry with the appropriate EntryType (WARNING / ERROR)
+            and the health check errors.
 
     Raises:
         DemistoException: If the account retrieval fails.
     """
     health_check_result = HealthCheck(connector_id, capability)
+    account_id = ""
     try:
         accounts = get_accounts_by_connector_id(connector_id)
         if not accounts:
             demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
-            return HealthStatus.OK
+            return health_check_result.summarize()
 
         account_id = accounts[0]["account_id"]
         shared_creds = get_cloud_credentials(cloud_type, account_id)
@@ -322,20 +341,20 @@ def run_health_check_for_accounts(
         demisto.error(error_msg)
         health_check_result.error(
             HealthCheckError(
-                account_id="",  # No specific account since this is a connector-level error
+                account_id=account_id,  # Empty if the failure occurred before the account was resolved
                 connector_id=connector_id,
                 message=error_msg,
                 error_type=ErrorType.CONNECTIVITY_ERROR,
             )
         )
-        return health_check_result.summarize()
+        return health_check_result.summarize(account_id)
 
     result = _check_account(account_id, connector_id, shared_creds, health_check_func)
     if result is not None:
         health_check_result.error(result)
 
     demisto.debug(f"[COOC API] Completed processing {account_id}")
-    return health_check_result.summarize()
+    return health_check_result.summarize(account_id)
 
 
 def get_proxydome_token() -> str:

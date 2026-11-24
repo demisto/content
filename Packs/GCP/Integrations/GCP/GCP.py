@@ -6344,6 +6344,25 @@ def validate_limit(limit):
         )
 
 
+def extract_gcp_permission_names(error_message: str) -> list[str]:
+    """Extracts the raw GCP permission names (e.g. storage.buckets.list) mentioned in an error message.
+
+    A match must be a standalone ``<service>.<resource>.<verb>`` token whose service prefix is one of the
+    permission namespaces used by the integration, so hostnames, URLs and service account emails
+    (e.g. storage.googleapis.com, x@p.iam.gserviceaccount.com) are not reported as permissions.
+
+    Args:
+        error_message (str): The GCP error message.
+
+    Returns:
+        list[str]: The unique permission names in order of appearance, or ["N/A"] if none were found.
+    """
+    known_prefixes = {permission.split(".")[0] for _, permissions in COMMAND_REQUIREMENTS.values() for permission in permissions}
+    candidates = re.findall(r"(?<![\w.@/-])([a-z]+\.[a-zA-Z]+\.[a-zA-Z]+)(?![\w./@-])", error_message)
+    permission_names = [candidate for candidate in candidates if candidate.split(".")[0] in known_prefixes]
+    return list(dict.fromkeys(permission_names)) or ["N/A"]
+
+
 def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
     """Tests connectivity to GCP.
     This function is specifically used for COOC health checks
@@ -6356,7 +6375,8 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
 
     Returns:
         A list of HealthCheckError or None: A list of HealthCheckError if there's at least one issue,
-        None if successful.
+        None if successful. Permission failures are reported as permission errors (WARNING), one per
+        missing permission; any other failure is reported as a connectivity error (ERROR).
     """
     try:
         token = shared_creds.get("access_token")
@@ -6372,9 +6392,25 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
         )
     # Perform sample check on GCP services
     service_results = GCPServices.test_all_services(creds, project_id)
-    errors_list = []
-    for _, success, error_message in service_results:
-        if not success and "Permission" not in error_message:
+    errors_list: list[HealthCheckError] = []
+    for service_name, success, error_message in service_results:
+        if success:
+            continue
+        if "Permission" in error_message:
+            demisto.debug(f"[GCP Health Check] Permission error for service {service_name}: {error_message}")
+            errors_list.extend(
+                HealthCheckError(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message=f"Missing permission {permission_name}"
+                    if permission_name != "N/A"
+                    else f"Missing permission for service {service_name}. Error: {error_message}",
+                    error_type=ErrorType.PERMISSION_ERROR,
+                    name=permission_name,
+                )
+                for permission_name in extract_gcp_permission_names(error_message)
+            )
+        else:
             errors_list.append(
                 HealthCheckError(
                     account_id=project_id,

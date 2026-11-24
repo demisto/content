@@ -15465,3 +15465,67 @@ def test_cspm_remediation_command_permissions_validation(command, is_allowed):
 
     command_permissions = {permission for permission, commands in PERMISSIONS_TO_COMMANDS.items() if command in commands}
     assert (bool(command_permissions) and command_permissions <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed
+
+
+def test_build_azure_health_check_error_authorization_failed():
+    """
+    Given: An Azure authorization failure (403 / AuthorizationFailed) raised during the health check.
+    When: build_azure_health_check_error is called.
+    Then: A permission error (WARNING) is returned, with the denied action as the permission name.
+    """
+    from Azure import build_azure_health_check_error
+    from COOCApiModule import ErrorType, HealthStatus
+
+    error = DemistoException(
+        "Error in API call [403] - Forbidden\n"
+        '{"error":{"code":"AuthorizationFailed","message":"The client \'abc\' with object id \'abc\' does not have '
+        "authorization to perform action 'Microsoft.Authorization/roleAssignments/read' over scope "
+        "'/subscriptions/sub-1' or the scope is invalid.\"}}"
+    )
+
+    result = build_azure_health_check_error(error, "sub-1", "connector-1").to_dict()
+
+    assert result == {
+        "account_id": "sub-1",
+        "connector_id": "connector-1",
+        "message": "Missing permission Microsoft.Authorization/roleAssignments/read",
+        "error": ErrorType.PERMISSION_ERROR,
+        "classification": HealthStatus.WARNING,
+        "capability": "AUTOMATION",
+        "name": "Microsoft.Authorization/roleAssignments/read",
+    }
+
+
+def test_build_azure_health_check_error_forbidden_without_action():
+    """
+    Given: An Azure 403 error that does not mention the denied action.
+    When: build_azure_health_check_error is called.
+    Then: A permission error (WARNING) is returned with "N/A" as the permission name.
+    """
+    from Azure import build_azure_health_check_error
+    from COOCApiModule import ErrorType, HealthStatus
+
+    result = build_azure_health_check_error(DemistoException("Error in API call [403] - Forbidden"), "sub-1", "connector-1")
+
+    assert result.error_type == ErrorType.PERMISSION_ERROR
+    assert result.classification == HealthStatus.WARNING
+    assert result.name == "N/A"
+
+
+def test_build_azure_health_check_error_connectivity():
+    """
+    Given: A non-authorization failure raised during the health check.
+    When: build_azure_health_check_error is called.
+    Then: A connectivity error (ERROR) is returned without a permission name.
+    """
+    from Azure import build_azure_health_check_error
+    from COOCApiModule import ErrorType, HealthStatus
+
+    result = build_azure_health_check_error(
+        Exception("Connectivity Error: Cannot reach Azure endpoint"), "sub-1", "connector-1"
+    ).to_dict()
+
+    assert result["error"] == ErrorType.CONNECTIVITY_ERROR
+    assert result["classification"] == HealthStatus.ERROR
+    assert result["message"] == "Failed to connect to Azure: Connectivity Error: Cannot reach Azure endpoint"
+    assert "name" not in result

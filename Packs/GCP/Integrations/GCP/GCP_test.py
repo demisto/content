@@ -1816,23 +1816,30 @@ def test_health_check_service_connectivity_failure(mocker):
     assert result[0].error_type == "Connectivity Error"
 
 
-def test_health_check_service_permission_failure_ignored(mocker):
+def test_health_check_service_permission_failure_reported_as_warning(mocker):
     """
     Given: Valid credentials but services fail with permission-related errors
     When: health_check is called and service tests fail with permission errors
-    Then: The function should return None as permission errors are expected and ignored
+    Then: The function returns a permission error (WARNING) per failure, with the missing permission name
+          when it can be extracted from the error message and "N/A" otherwise
     """
     from GCP import health_check
+    from COOCApiModule import ErrorType, HealthStatus
 
     # Mock shared credentials
     shared_creds = {"access_token": "valid-token-123"}
     project_id = "test-project"
     connector_id = "connector-123"
 
-    # Mock service test failure (permission related - should be ignored)
     mock_service_results = [
         ("compute", True, ""),
-        ("storage", False, "Permission denied for storage.buckets.list"),
+        (
+            "storage",
+            False,
+            "<HttpError 403 when requesting https://storage.googleapis.com/storage/v1/b?project=test-project returned "
+            '"sa@test-project.iam.gserviceaccount.com does not have storage.buckets.list access to the Google Cloud '
+            "project. Permission 'storage.buckets.list' denied on resource (or it may not exist).\">",
+        ),
         ("container", False, "Insufficient Permission to access container API"),
     ]
 
@@ -1841,8 +1848,66 @@ def test_health_check_service_permission_failure_ignored(mocker):
     # Execute the function
     result = health_check(shared_creds, project_id, connector_id)
 
-    # Should return None as permission errors are ignored in health checks
-    assert result is None
+    assert isinstance(result, list)
+    assert len(result) == 2
+    storage_error, container_error = (error.to_dict() for error in result)
+    assert storage_error["error"] == ErrorType.PERMISSION_ERROR
+    assert storage_error["classification"] == HealthStatus.WARNING
+    assert storage_error["name"] == "storage.buckets.list"
+    assert storage_error["message"] == "Missing permission storage.buckets.list"
+    assert storage_error["account_id"] == project_id
+    assert storage_error["connector_id"] == connector_id
+    assert container_error["classification"] == HealthStatus.WARNING
+    assert container_error["name"] == "N/A"
+    assert "container" in container_error["message"]
+
+
+def test_health_check_permission_and_connectivity_failures(mocker):
+    """
+    Given: One service fails with a permission error and another with a non-permission error
+    When: health_check is called
+    Then: Both are reported, the permission failure as WARNING and the other as a connectivity ERROR
+    """
+    from GCP import health_check
+    from COOCApiModule import ErrorType, HealthStatus
+
+    mock_service_results = [
+        ("storage", False, "Permission 'storage.buckets.list' denied on resource"),
+        ("compute", False, "Network timeout occurred"),
+    ]
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    result = health_check({"access_token": "valid-token-123"}, "test-project", "connector-123")
+
+    assert [(error.error_type, error.classification) for error in result] == [
+        (ErrorType.PERMISSION_ERROR, HealthStatus.WARNING),
+        (ErrorType.CONNECTIVITY_ERROR, HealthStatus.ERROR),
+    ]
+
+
+@pytest.mark.parametrize(
+    "error_message, expected",
+    [
+        ("Permission 'storage.buckets.list' denied on resource", ["storage.buckets.list"]),
+        ("Required 'compute.firewalls.list' permission for 'projects/p'", ["compute.firewalls.list"]),
+        (
+            "https://bigquery.googleapis.com/x returned: Permission bigquery.datasets.get denied on p.example.com, "
+            "bigquery.datasets.get is required",
+            ["bigquery.datasets.get"],
+        ),
+        ("sa@p.iam.gserviceaccount.com lacks access", ["N/A"]),
+        ("Insufficient Permission", ["N/A"]),
+    ],
+)
+def test_extract_gcp_permission_names(error_message, expected):
+    """
+    Given: GCP error messages with and without permission names, hostnames, URLs and service account emails
+    When: extract_gcp_permission_names is called
+    Then: Only the unique permission names are returned, or ["N/A"] when none is found
+    """
+    from GCP import extract_gcp_permission_names
+
+    assert extract_gcp_permission_names(error_message) == expected
 
 
 def test_health_check_credentials_creation_failure(mocker):

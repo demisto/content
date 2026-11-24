@@ -13590,6 +13590,41 @@ def complete_auth(client: AzureClient) -> str:
     return "Authorization completed successfully."
 
 
+def build_azure_health_check_error(error: Exception, subscription_id: str, connector_id: str) -> HealthCheckError:
+    """Converts an exception raised during the Azure health check into a HealthCheckError.
+
+    An authorization failure (HTTP 403 / AuthorizationFailed) is reported as a permission error (WARNING),
+    with the denied action as the permission name. Any other failure is reported as a connectivity error (ERROR).
+
+    Args:
+        error (Exception): The exception raised during the health check.
+        subscription_id (str): The Azure subscription ID that was checked.
+        connector_id (str): The connector ID for the Cloud integration.
+
+    Returns:
+        HealthCheckError: The health check error matching the failure.
+    """
+    error_message = str(error)
+    if "[403]" in error_message or "AuthorizationFailed" in error_message:
+        action_match = re.search(r"perform action '([^']+)'", error_message)
+        permission_name = action_match.group(1) if action_match else "N/A"
+        return HealthCheckError(
+            account_id=subscription_id,
+            connector_id=connector_id,
+            message=f"Missing permission {permission_name}"
+            if action_match
+            else f"Missing permission for Azure. Error: {error_message}",
+            error_type=ErrorType.PERMISSION_ERROR,
+            name=permission_name,
+        )
+    return HealthCheckError(
+        account_id=subscription_id,
+        connector_id=connector_id,
+        message=f"Failed to connect to Azure: {error_message}",
+        error_type=ErrorType.CONNECTIVITY_ERROR,
+    )
+
+
 def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:  # pragma: no cover
     """
     Tests connectivity to Azure and checks for required permissions.
@@ -13600,7 +13635,8 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
         subscription_id (str): The Azure subscription ID to check against.
         connector_id (str): The connector ID for the Cloud integration.
     Returns:
-        HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
+        HealthCheckError or None: HealthCheckError if there's an issue (a permission error for an
+        authorization failure, a connectivity error otherwise), None if successful.
     """
     if not subscription_id:
         return HealthCheckError(
@@ -13625,12 +13661,7 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
         test_module(client)
 
     except Exception as e:
-        return HealthCheckError(
-            account_id=subscription_id,
-            connector_id=connector_id,
-            message=f"Failed to connect to Azure: {str(e)}",
-            error_type=ErrorType.CONNECTIVITY_ERROR,
-        )
+        return build_azure_health_check_error(e, subscription_id, connector_id)
 
     return None
 

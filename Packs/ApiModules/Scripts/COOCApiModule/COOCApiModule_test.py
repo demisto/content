@@ -241,6 +241,33 @@ def test_health_check_error_to_dict():
 
     # Verify classification for different error type
     assert connectivity_error_dict["classification"] == HealthStatus.ERROR
+    # The permission name is only reported when provided
+    assert "name" not in connectivity_error_dict
+
+
+def test_health_check_error_to_dict_with_permission_name():
+    """
+    Given: A permission HealthCheckError created with the name of the missing permission.
+    When: Calling to_dict().
+    Then: The dictionary is a WARNING permission error that includes the permission name.
+    """
+    error_dict = HealthCheckError(
+        account_id="test-account-id",
+        connector_id="test-connector-id",
+        message="Missing permission storage.buckets.list",
+        error_type=ErrorType.PERMISSION_ERROR,
+        name="storage.buckets.list",
+    ).to_dict()
+
+    assert error_dict == {
+        "account_id": "test-account-id",
+        "connector_id": "test-connector-id",
+        "message": "Missing permission storage.buckets.list",
+        "error": ErrorType.PERMISSION_ERROR,
+        "classification": HealthStatus.WARNING,
+        "capability": "AUTOMATION",
+        "name": "storage.buckets.list",
+    }
 
 
 def test_health_check_error_to_dict_capability():
@@ -320,19 +347,29 @@ def test_health_check_error_stamps_capability():
 def test_health_check_summarize_no_errors():
     """
     Given: A HealthCheck instance with no errors.
-    When: The summarize method is called.
-    Then: It returns "ok".
+    When: The summarize method is called with an account ID.
+    Then: It returns a note CommandResults with a single SUCCESS classification entry.
     """
-    from COOCApiModule import HealthCheck
+    from COOCApiModule import Capability, HealthCheck
 
     # Create HealthCheck with no errors
     health_check = HealthCheck(connector_id="test-connector-id")
 
     # Call summarize
-    result = health_check.summarize()
+    result = health_check.summarize("test-account-id")
 
     # Verify result
-    assert result == HealthStatus.OK
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.NOTE
+    assert result.content_format == EntryFormat.JSON
+    assert result.raw_response == [
+        {
+            "account_id": "test-account-id",
+            "connector_id": "test-connector-id",
+            "classification": HealthStatus.SUCCESS,
+            "capability": Capability.AUTOMATION,
+        }
+    ]
 
 
 def test_health_check_summarize_with_errors():
@@ -412,20 +449,125 @@ def test_run_health_check_no_accounts(mocker):
     """
     Given: A connector_id with no associated accounts.
     When: run_health_check_for_accounts is called.
-    Then: It returns "ok" without running any permission checks.
+    Then: It returns a SUCCESS note entry without running any health checks.
     """
     from COOCApiModule import run_health_check_for_accounts
 
     # Mock get_accounts_by_connector_id to return empty list
     mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[])
     mocker.patch.object(demisto, "debug")
+    health_check_func = mocker.Mock()
 
     # Call function
-    result = run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
+    result = run_health_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="AWS", health_check_func=health_check_func
+    )
 
     # Verify results
-    assert result == HealthStatus.OK
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.NOTE
+    assert result.raw_response == [
+        {
+            "account_id": "",
+            "connector_id": "test-connector-id",
+            "classification": HealthStatus.SUCCESS,
+            "capability": "AUTOMATION",
+        }
+    ]
+    health_check_func.assert_not_called()
     assert demisto.debug.called
+
+
+def test_run_health_check_credentials_failure_entry(mocker):
+    """
+    Given: A connector_id with an account but credential retrieval fails.
+    When: run_health_check_for_accounts is called.
+    Then: It returns an ERROR entry with a connectivity error that reports the account ID.
+    """
+    from COOCApiModule import run_health_check_for_accounts
+
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[{"account_id": "account-1"}])
+    mocker.patch("COOCApiModule.get_cloud_credentials", side_effect=Exception("Credential error"))
+    mocker.patch.object(demisto, "error")
+
+    result = run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
+
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.ERROR
+    assert len(result.raw_response) == 1
+    error_entry = result.raw_response[0]
+    assert error_entry["account_id"] == "account-1"
+    assert error_entry["connector_id"] == "test-connector-id"
+    assert error_entry["classification"] == HealthStatus.ERROR
+    assert error_entry["error"] == ErrorType.CONNECTIVITY_ERROR
+    assert "Credential error" in error_entry["message"]
+
+
+def test_run_health_check_permission_warning(mocker):
+    """
+    Given: A connector whose account is missing a permission.
+    When: run_health_check_for_accounts is called and the health check function reports a permission error.
+    Then: It returns a WARNING entry with the missing permission name.
+    """
+    from COOCApiModule import run_health_check_for_accounts
+
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[{"account_id": "account-1"}])
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "test-token"})
+    health_check_func = mocker.Mock(
+        return_value=HealthCheckError(
+            account_id="account-1",
+            connector_id="test-connector-id",
+            message="Missing permission storage.buckets.list",
+            error_type=ErrorType.PERMISSION_ERROR,
+            name="storage.buckets.list",
+        )
+    )
+
+    result = run_health_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="GCP", health_check_func=health_check_func
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.WARNING
+    assert result.raw_response == [
+        {
+            "account_id": "account-1",
+            "connector_id": "test-connector-id",
+            "message": "Missing permission storage.buckets.list",
+            "error": ErrorType.PERMISSION_ERROR,
+            "classification": HealthStatus.WARNING,
+            "capability": "AUTOMATION",
+            "name": "storage.buckets.list",
+        }
+    ]
+
+
+def test_run_health_check_success(mocker):
+    """
+    Given: A connector whose account passes the health check.
+    When: run_health_check_for_accounts is called.
+    Then: It returns a SUCCESS note entry for the account.
+    """
+    from COOCApiModule import run_health_check_for_accounts
+
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[{"account_id": "account-1"}])
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "test-token"})
+
+    result = run_health_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="GCP", health_check_func=mocker.Mock(return_value=None)
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.entry_type == EntryType.NOTE
+    assert result.content_format == EntryFormat.JSON
+    assert result.raw_response == [
+        {
+            "account_id": "account-1",
+            "connector_id": "test-connector-id",
+            "classification": HealthStatus.SUCCESS,
+            "capability": "AUTOMATION",
+        }
+    ]
 
 
 def test_run_health_check_credentials_failure(mocker):
