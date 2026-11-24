@@ -2,7 +2,7 @@
 
 <~XSIAM>
 
-## Overview
+## What does this pack do?
 
 AI coding agents run with real credentials and real network access. Docker's policy enforcement point sits in front of that activity and records every governed action it evaluates: which agent asked, which developer owned it, what was requested, and whether policy allowed it.
 
