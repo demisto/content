@@ -4507,6 +4507,104 @@ class TestHygieneFunctions:
             assert value
 
 
+class TestContainerAwareReads:
+    """
+    Objects must only be read from the kinds of container that can hold them. The other containers are skipped without
+    making an API call. The container kinds are: vsys (on a firewall), device group, shared (the Panorama itself),
+    template and template stack.
+
+    The expectations below are the supported-container table. If a PAN-OS expert says the table is wrong, change the
+    matching constant in Panorama.py and the expectation here together.
+    """
+
+    PROFILE_CONTAINERS = {"vsys", "device-group", "shared"}
+    ZONE_CONTAINERS = {"vsys", "template", "template-stack"}
+
+    @staticmethod
+    def containers() -> dict:
+        """One container of each kind."""
+        return {
+            "vsys": MagicMock(spec=Vsys),
+            "device-group": MagicMock(spec=DeviceGroup),
+            "shared": MagicMock(spec=Panorama),
+            "template": MagicMock(spec=Template),
+            "template-stack": MagicMock(spec=TemplateStack),
+        }
+
+    @pytest.mark.parametrize("object_class_name", ["SecurityRule", "NatRule"])
+    @pytest.mark.parametrize(
+        "container_kind, expected_rulebases",
+        [
+            ("vsys", ["Rulebase"]),
+            ("device-group", ["PreRulebase", "PostRulebase"]),
+            ("shared", ["PreRulebase", "PostRulebase"]),
+            ("template", []),
+            ("template-stack", []),
+        ],
+    )
+    def test_rules_are_read_only_from_rulebases_the_container_can_have(
+        self, mocker, object_class_name, container_kind, expected_rulebases
+    ):
+        """
+        Given a container of each kind,
+        When reading its security or NAT rules,
+        Then only the rulebases that kind of container can have are read: a firewall vsys has a rulebase, Panorama device
+        groups and shared have pre and post rulebases, and templates and template stacks have none.
+        """
+        from Panorama import HygieneRemediation, NatRule, SecurityRule
+
+        object_class = {"SecurityRule": SecurityRule, "NatRule": NatRule}[object_class_name]
+        refresh = mocker.patch.object(object_class, "refreshall", return_value=[])
+
+        HygieneRemediation.get_all_rules_in_container(self.containers()[container_kind], object_class)
+
+        assert [type(call.args[0]).__name__ for call in refresh.call_args_list] == expected_rulebases
+
+    @pytest.mark.parametrize(
+        "check_name, kwargs, class_name, supported_containers",
+        [
+            ("check_log_forwarding_profiles", {}, "LogForwardingProfile", PROFILE_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "spyware"}, "AntiSpywareProfile", PROFILE_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "vulnerability"}, "VulnerabilityProfile", PROFILE_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "url"}, "URLFilteringProfile", PROFILE_CONTAINERS),
+            ("check_security_zones", {}, "Zone", ZONE_CONTAINERS),
+            ("get_all_conforming_url_filtering_profiles", {}, "URLFilteringProfile", PROFILE_CONTAINERS),
+            (
+                "get_all_conforming_spyware_profiles",
+                {"minimum_block_severities": [], "minimum_alert_severities": []},
+                "AntiSpywareProfile",
+                PROFILE_CONTAINERS,
+            ),
+            (
+                "get_all_conforming_vulnerability_profiles",
+                {"minimum_block_severities": [], "minimum_alert_severities": []},
+                "VulnerabilityProfile",
+                PROFILE_CONTAINERS,
+            ),
+        ],
+    )
+    def test_object_is_read_only_from_containers_that_can_hold_it(
+        self, mocker, mock_panorama, check_name, kwargs, class_name, supported_containers
+    ):
+        """
+        Given one container of each kind,
+        When running a hygiene check or lookup,
+        Then the object type is only read from the container kinds that can hold it. Security, log forwarding and
+        conforming-profile lookups skip templates and template stacks; the zone check skips device groups and shared.
+        """
+        import Panorama
+
+        containers = self.containers()
+        topology = MagicMock()
+        topology.get_all_object_containers.return_value = [(mock_panorama, container) for container in containers.values()]
+        refresh = mocker.patch.object(getattr(Panorama, class_name), "refreshall", return_value=[])
+
+        getattr(Panorama.HygieneLookups, check_name)(topology, **kwargs)
+
+        expected = [container for kind, container in containers.items() if kind in supported_containers]
+        assert [call.args[0] for call in refresh.call_args_list] == expected
+
+
 class TestObjectFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
