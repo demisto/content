@@ -4,4 +4,4 @@
 !arcanna-get-decision-set job_id="1201"
 !arcanna-trigger-train job_id="1201" username="dbot"
 !arcanna-export-event job_id="1201" event_id="85123"
-!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" labels=[\"['Drop', 'Escalate']\"] close_reason="Resolved" username="dbot" indicators="[{\"type\": \"malware\",\"value\": \"some_hash_value\"}]"
+!arcanna-send-event-feedback job_id="1208" event_id="615471" feedback="Escalate" username="admin"
