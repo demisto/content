@@ -56,6 +56,12 @@ class MerakiAuthMode(str, Enum):
     API_KEY = "api_key"
 
 
+# Values of the legacy `auth_method` parameter (Cisco Meraki v2). The YML triggers show only the
+# fields of the selected method.
+AUTH_METHOD_API_KEY = "API Key"
+AUTH_METHOD_OAUTH = "OAuth 2.0"
+
+
 def resolve_meraki_base_url(params: dict[str, Any]) -> str:
     """Return the Meraki base URL from the `base_url` param, else from the UCP `endpoint_region` field.
 
@@ -79,14 +85,26 @@ def resolve_meraki_base_url(params: dict[str, Any]) -> str:
     return resolved
 
 
-def resolve_meraki_auth_mode(api_key: str | None, client_id: str | None, client_secret: str | None) -> MerakiAuthMode:
-    """Select the authentication mode. UCP-brokered credentials win, then OAuth 2.0, then the API key.
+def resolve_meraki_auth_mode(
+    api_key: str | None, client_id: str | None, client_secret: str | None, auth_method: str | None = None
+) -> MerakiAuthMode:
+    """Select the authentication mode. UCP-brokered credentials win, then the selected `auth_method`.
+    Without a selected method (instances saved before the parameter existed), OAuth 2.0 wins over the API key.
 
     Raises:
-        DemistoException: When the OAuth credentials are partial or no credentials are configured.
+        DemistoException: When the selected method's credentials are missing, the OAuth credentials are partial,
+            or no credentials are configured.
     """
     if should_use_ucp_auth():
         return MerakiAuthMode.UCP
+    if auth_method == AUTH_METHOD_API_KEY:
+        if not api_key:
+            raise DemistoException("The API Key authentication method is selected, but no API Key is configured.")
+        return MerakiAuthMode.API_KEY
+    if auth_method == AUTH_METHOD_OAUTH:
+        if not (client_id and client_secret):
+            raise DemistoException("Both Client ID and Client Secret are required for OAuth 2.0 authentication.")
+        return MerakiAuthMode.OAUTH
     if client_id and client_secret:
         return MerakiAuthMode.OAUTH
     if client_id or client_secret:
@@ -271,10 +289,11 @@ class MerakiBaseClient(BaseClient):
         scopes: list[str] | None = None,
         verify: bool = True,
         proxy: bool = False,
+        auth_method: str | None = None,
     ) -> None:
         base_url = base_url.rstrip("/")
         super().__init__(base_url=urljoin(base_url, MERAKI_API_V1), verify=verify, proxy=proxy)
-        self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret)
+        self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret, auth_method)
         demisto.debug(f"[Auth] Selected the {self.auth_mode.value} authentication mode.")
         self.api_key = api_key
         self.token_manager: MerakiOAuthTokenManager | None = None
@@ -723,6 +742,7 @@ class Client(MerakiBaseClient):
         client_secret: str | None = None,
         redirect_uri: str | None = None,
         auth_code: str | None = None,
+        auth_method: str | None = None,
     ) -> None:
         """Initialize the Client class.
 
@@ -737,6 +757,7 @@ class Client(MerakiBaseClient):
             client_secret (str | None): OAuth 2.0 client secret.
             redirect_uri (str | None): OAuth 2.0 redirect URI registered on the Meraki app.
             auth_code (str | None): OAuth 2.0 authorization code.
+            auth_method (str | None): The selected authentication method (`API Key` or `OAuth 2.0`).
         """
         super().__init__(
             base_url=base_url,
@@ -748,6 +769,7 @@ class Client(MerakiBaseClient):
             scopes=CISCO_MERAKI_V2_OAUTH_SCOPES,
             verify=verify,
             proxy=proxy,
+            auth_method=auth_method,
         )
 
     def list_organization(self, per_page: int | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -4251,6 +4273,7 @@ def run_cisco_meraki_v2_integration() -> None:
             client_secret=dict_safe_get(params, keys=["credentials", "password"]) or None,
             redirect_uri=params.get("redirect_uri") or None,
             auth_code=dict_safe_get(params, keys=["auth_code", "password"]) or None,
+            auth_method=params.get("auth_method") or None,
         )
 
         if command == "test-module":

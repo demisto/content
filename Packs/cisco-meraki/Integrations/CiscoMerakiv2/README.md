@@ -9,6 +9,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Base URL | The API base URL. Use https://api.meraki.com for the global cluster (North America, South America, Europe, Asia-Pacific), https://api.meraki.ca for Canada, https://api.meraki.cn for China, https://api.meraki.in for India, or https://api.gov-meraki.com for United States FedRAMP. OAuth 2.0 is supported only for https://api.meraki.com. | True |
+| Authentication Method | The authentication method to use. "API Key" works for all clusters. "OAuth 2.0" works only for https://api.meraki.com and needs the Client ID, Client Secret, Redirect URI and Authorization code. | False |
 | API Key | An API key can be generated through 'My Profile' in 'API access'. Required when OAuth 2.0 is not configured, and for clusters other than https://api.meraki.com. | False |
 | Client ID | OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. When set, OAuth 2.0 is used instead of the API key. | False |
 | Client Secret |  | False |

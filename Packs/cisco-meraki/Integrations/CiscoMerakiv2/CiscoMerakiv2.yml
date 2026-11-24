@@ -11,6 +11,16 @@ configuration:
     type: 0
     section: Connect
     defaultvalue: https://api.meraki.com
+  - name: auth_method
+    display: Authentication Method
+    additionalinfo: The authentication method to use. "API Key" works for all clusters. "OAuth 2.0" works only for https://api.meraki.com and needs the Client ID, Client Secret, Redirect URI and Authorization code.
+    required: false
+    type: 15
+    section: Connect
+    defaultvalue: API Key
+    options:
+      - API Key
+      - OAuth 2.0
   - name: api_key
     displaypassword: API Key
     additionalinfo: An API key can be generated through 'My Profile' in 'API access'. Required when OAuth 2.0 is not configured, and for clusters other than https://api.meraki.com.
@@ -2308,6 +2318,38 @@ script:
   dockerimage: demisto/python3:3.12.13.10116658
   isfetch: false
   script: ""
+triggers:
+  - conditions:
+      - name: auth_method
+        operator: equal
+        value: API Key
+    effects:
+      - name: api_key
+        action:
+          required: true
+      - name: credentials
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: auth_code
+        action:
+          hidden: true
+  - conditions:
+      - name: auth_method
+        operator: equal
+        value: OAuth 2.0
+    effects:
+      - name: api_key
+        action:
+          hidden: true
+      - name: credentials
+        action:
+          required: true
+      - name: redirect_uri
+        action:
+          required: true
 fromversion: 6.10.0
 tests:
   - No tests (auto formatted)
