@@ -15,6 +15,7 @@ import re
 import copy
 import shlex
 import subprocess
+import tempfile
 
 
 DEFAULT_MAX_RETRIES: int = 5
@@ -24,6 +25,26 @@ TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 AWS_CLI_COMMAND = "aws-cli"
 AWS_CLI_TIMEOUT_SECONDS = 300
+AWS_CLI_UNPRIVILEGED_UID = 4000  # The non-root 'demisto' user that exists in the Docker image.
+AWS_CLI_UNPRIVILEGED_GID = 4000
+AWS_CLI_UMASK = 0o077
+# Read-only AWS CLI config for every run: stops the CLI from fetching http(s):// parameter values.
+AWS_CLI_CONFIG = "[default]\ncli_follow_urlparam = false\n"
+# Parameter prefixes that make the AWS CLI read a local file and use its content as the parameter value.
+AWS_CLI_LOCAL_FILE_PREFIXES = ("file://", "fileb://")
+# The only container environment variables passed to the AWS CLI subprocess (binary lookup, proxy, and custom CA certificates).
+AWS_CLI_PASSTHROUGH_ENV_VARS = (
+    "PATH",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "no_proxy",
+    "REQUESTS_CA_BUNDLE",
+    "AWS_CA_BUNDLE",
+    "SSL_CERT_FILE",
+)
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
@@ -11421,7 +11442,7 @@ def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[
         region (str): The AWS region to run the command against.
 
     Returns:
-        dict[str, str]: A copy of the current environment with the AWS credential variables set.
+        dict[str, str]: A minimal environment with only the passthrough variables and the AWS credential variables.
     """
     if credentials:
         access_key_id = credentials.get("key", "")
@@ -11443,20 +11464,46 @@ def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[
             secret_access_key = tmp_creds["SecretAccessKey"]
             session_token = tmp_creds["SessionToken"]
 
-    env = os.environ.copy()
-    env.pop("AWS_PROFILE", None)
+    env = {name: os.environ[name] for name in AWS_CLI_PASSTHROUGH_ENV_VARS if name in os.environ}
     env.update({"AWS_ACCESS_KEY_ID": access_key_id, "AWS_SECRET_ACCESS_KEY": secret_access_key, "AWS_DEFAULT_REGION": region})
     env["AWS_PAGER"] = ""
     if session_token:
         env["AWS_SESSION_TOKEN"] = session_token
-    else:
-        env.pop("AWS_SESSION_TOKEN", None)
     return env
+
+
+def get_cli_privilege_kwargs(home_dir: str) -> dict[str, Any]:
+    """
+    Build the subprocess arguments that drop root privileges for the AWS CLI subprocess.
+
+    When the integration runs as root, the CLI runs as the unprivileged user with no supplementary groups,
+    and the per-run home directory is handed over to that user. Otherwise, the CLI keeps the current user.
+
+    Args:
+        home_dir (str): The per-run temporary home directory of the CLI subprocess.
+
+    Returns:
+        dict[str, Any]: The privilege-related keyword arguments for ``subprocess.run``. Empty when not running as root.
+    """
+    if os.geteuid() != 0:
+        return {}
+    os.chown(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID)
+    return {
+        "user": AWS_CLI_UNPRIVILEGED_UID,
+        "group": AWS_CLI_UNPRIVILEGED_GID,
+        "extra_groups": [],
+        "umask": AWS_CLI_UMASK,
+    }
 
 
 def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedProcess:
     """
     Run the AWS CLI binary with the given tokens. No shell is invoked.
+
+    The CLI runs as an unprivileged user (when the integration runs as root) with a fresh temporary home
+    directory, so it cannot read root-only files or persist AWS CLI configuration between runs.
+    The CLI config is a read-only file outside the home directory, the shared credentials file and the
+    instance metadata service are disabled, so profiles, ``credential_process`` and config changes cannot be used.
 
     Args:
         tokens (list[str]): The CLI tokens without the leading ``aws`` token.
@@ -11465,12 +11512,34 @@ def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedP
     Returns:
         subprocess.CompletedProcess: The completed process with captured stdout and stderr.
     """
-    try:
-        return subprocess.run(["aws", *tokens], capture_output=True, text=True, env=env, timeout=AWS_CLI_TIMEOUT_SECONDS)
-    except FileNotFoundError as e:
-        raise DemistoException("The 'aws' CLI binary was not found. Ensure 'awscli' is installed in the Docker image.") from e
-    except subprocess.TimeoutExpired as e:
-        raise DemistoException(f"The AWS CLI command timed out after {AWS_CLI_TIMEOUT_SECONDS} seconds.") from e
+    with tempfile.TemporaryDirectory(prefix="aws-cli-") as run_dir:
+        os.chmod(run_dir, 0o755)
+        config_file = os.path.join(run_dir, "config")
+        with open(config_file, "w") as config:
+            config.write(AWS_CLI_CONFIG)
+        os.chmod(config_file, 0o444)
+        home_dir = os.path.join(run_dir, "home")
+        os.mkdir(home_dir)
+        privilege_kwargs = get_cli_privilege_kwargs(home_dir)
+        cli_env = env | {
+            "HOME": home_dir,
+            "AWS_CONFIG_FILE": config_file,
+            "AWS_SHARED_CREDENTIALS_FILE": os.devnull,
+            "AWS_EC2_METADATA_DISABLED": "true",
+        }
+        try:
+            return subprocess.run(
+                ["aws", *tokens],
+                capture_output=True,
+                text=True,
+                env=cli_env,
+                timeout=AWS_CLI_TIMEOUT_SECONDS,
+                **privilege_kwargs,
+            )
+        except FileNotFoundError as e:
+            raise DemistoException("The 'aws' CLI binary was not found. Ensure 'awscli' is installed in the Docker image.") from e
+        except subprocess.TimeoutExpired as e:
+            raise DemistoException(f"The AWS CLI command timed out after {AWS_CLI_TIMEOUT_SECONDS} seconds.") from e
 
 
 def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -> CommandResults:
@@ -11491,6 +11560,8 @@ def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -
         tokens = tokens[1:]
     if not tokens:
         raise ValueError("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
+    if any(prefix in token.lower() for token in tokens for prefix in AWS_CLI_LOCAL_FILE_PREFIXES):
+        raise ValueError("Local file parameters (file:// and fileb://) are not supported. Pass the value inline instead.")
     if "--output" not in tokens:
         tokens += ["--output", "json"]
 

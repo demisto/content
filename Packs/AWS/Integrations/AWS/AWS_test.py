@@ -23121,6 +23121,48 @@ def test_execute_cli_command_empty_command_raises(cli_command):
 
 
 @pytest.mark.parametrize(
+    "cli_command",
+    [
+        "aws s3api get-bucket-location --bucket file:///proc/self/environ",
+        "aws s3api get-bucket-location --bucket=file:///etc/passwd",
+        "aws lambda invoke --function-name f --payload fileb:///etc/hosts out.json",
+        "aws ec2 describe-instances --cli-input-json file://input.json",
+        'aws ssm put-parameter --name n --value "FILE:///proc/self/environ"',
+    ],
+)
+def test_execute_cli_command_local_file_parameters_rejected(mocker, cli_command):
+    """
+    Given: A CLI command with a file:// or fileb:// value, in any position, form, or letter case.
+    When: execute_cli_command is called.
+    Then: A ValueError is raised and the aws binary is never started.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run")
+
+    with pytest.raises(ValueError, match="Local file parameters"):
+        execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, {"cli_command": cli_command, "account_id": "1"})
+
+    mock_run.assert_not_called()
+
+
+def test_execute_cli_command_value_mentioning_file_is_allowed(mocker):
+    """
+    Given: A CLI command whose values contain the word 'file' without a file:// or fileb:// prefix.
+    When: execute_cli_command is called.
+    Then: The command runs normally.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+
+    args = {"cli_command": "aws s3api head-object --bucket my-files --key profile/file.txt", "account_id": "1"}
+    execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, args)
+
+    mock_run.assert_called_once()
+
+
+@pytest.mark.parametrize(
     "side_effect, match",
     [
         (FileNotFoundError(), "binary was not found"),
@@ -23139,6 +23181,91 @@ def test_run_aws_cli_errors(mocker, side_effect, match):
 
     with pytest.raises(DemistoException, match=match):
         run_aws_cli(["s3api", "list-buckets"], {})
+
+
+def test_run_aws_cli_drops_root_privileges(mocker):
+    """
+    Given: The integration runs as root.
+    When: run_aws_cli is called.
+    Then: The CLI runs as the unprivileged user with no supplementary groups, a restrictive umask,
+          and a fresh temporary HOME owned by that user, without changing the caller's environment.
+    """
+    from AWS import AWS_CLI_UNPRIVILEGED_GID, AWS_CLI_UNPRIVILEGED_UID, run_aws_cli
+
+    mocker.patch("AWS.os.geteuid", return_value=0)
+    mock_chown = mocker.patch("AWS.os.chown")
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+    env = {"AWS_ACCESS_KEY_ID": "ASIAKEY", "HOME": "/root"}
+
+    run_aws_cli(["s3api", "list-buckets"], env)
+
+    run_kwargs = mock_run.call_args[1]
+    home_dir = run_kwargs["env"]["HOME"]
+    assert run_kwargs["user"] == AWS_CLI_UNPRIVILEGED_UID
+    assert run_kwargs["group"] == AWS_CLI_UNPRIVILEGED_GID
+    assert run_kwargs["extra_groups"] == []
+    assert run_kwargs["umask"] == 0o077
+    assert home_dir != "/root"
+    assert run_kwargs["env"]["AWS_ACCESS_KEY_ID"] == "ASIAKEY"
+    mock_chown.assert_called_once_with(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID)
+    assert env["HOME"] == "/root"
+    assert not os.path.exists(home_dir)
+
+
+def test_run_aws_cli_uses_locked_config(mocker):
+    """
+    Given: Any AWS CLI command.
+    When: run_aws_cli is called.
+    Then: The CLI gets a read-only config file outside its HOME that disables URL fetching,
+          no shared credentials file, and no instance metadata service, and the files are removed afterwards.
+    """
+    from pathlib import Path
+
+    from AWS import AWS_CLI_CONFIG, run_aws_cli
+
+    mocker.patch("AWS.os.geteuid", return_value=4000)
+    seen: dict = {}
+
+    def fake_run(cmd, **kwargs):
+        cli_env = kwargs["env"]
+        seen["env"] = cli_env
+        with open(cli_env["AWS_CONFIG_FILE"]) as config:
+            seen["config"] = config.read()
+        seen["config_mode"] = Path(cli_env["AWS_CONFIG_FILE"]).stat().st_mode & 0o777
+        return _completed_process(stdout="{}")
+
+    mocker.patch("AWS.subprocess.run", side_effect=fake_run)
+
+    run_aws_cli(["s3api", "list-buckets"], {"PATH": "/usr/bin"})
+
+    cli_env = seen["env"]
+    assert seen["config"] == AWS_CLI_CONFIG
+    assert "cli_follow_urlparam = false" in seen["config"]
+    assert seen["config_mode"] == 0o444
+    assert os.path.dirname(cli_env["AWS_CONFIG_FILE"]) != cli_env["HOME"]
+    assert cli_env["AWS_SHARED_CREDENTIALS_FILE"] == os.devnull
+    assert cli_env["AWS_EC2_METADATA_DISABLED"] == "true"
+    assert not os.path.exists(cli_env["AWS_CONFIG_FILE"])
+
+
+def test_run_aws_cli_non_root_keeps_current_user(mocker):
+    """
+    Given: The integration does not run as root.
+    When: run_aws_cli is called.
+    Then: The CLI keeps the current user (no privilege arguments) but still gets a fresh temporary HOME.
+    """
+    from AWS import run_aws_cli
+
+    mocker.patch("AWS.os.geteuid", return_value=4000)
+    mock_chown = mocker.patch("AWS.os.chown")
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+
+    run_aws_cli(["s3api", "list-buckets"], {"HOME": "/home/demisto"})
+
+    run_kwargs = mock_run.call_args[1]
+    assert not {"user", "group", "extra_groups", "umask"} & run_kwargs.keys()
+    assert run_kwargs["env"]["HOME"] != "/home/demisto"
+    mock_chown.assert_not_called()
 
 
 def test_build_cli_environment_marketplace_access_keys(mocker):
@@ -23177,6 +23304,40 @@ def test_build_cli_environment_marketplace_assume_role(mocker):
 
     assert env["AWS_ACCESS_KEY_ID"] == "ASIATMP"
     assert env["AWS_SESSION_TOKEN"] == "TMPTOKEN"
+
+
+def test_build_cli_environment_is_minimal(mocker):
+    """
+    Given: A container environment with proxy settings, unrelated secrets, and AWS variables that steer the CLI.
+    When: build_cli_environment is called.
+    Then: Only the passthrough variables and the AWS credential variables are passed to the CLI.
+    """
+    from AWS import build_cli_environment
+
+    mocker.patch.dict(
+        os.environ,
+        {
+            "PATH": "/usr/bin",
+            "HTTPS_PROXY": "test-proxy-value",
+            "UNRELATED_SECRET": "do-not-leak",
+            "AWS_PROFILE": "attacker",
+            "AWS_CONFIG_FILE": "/tmp/evil",
+            "AWS_ENDPOINT_URL": "https://evil.example",
+        },
+        clear=True,
+    )
+
+    env = build_cli_environment(CLI_PLATFORM_CREDENTIALS, {}, "us-east-1")
+
+    assert env == {
+        "PATH": "/usr/bin",
+        "HTTPS_PROXY": "test-proxy-value",
+        "AWS_ACCESS_KEY_ID": "ASIAKEY",
+        "AWS_SECRET_ACCESS_KEY": "SECRET",
+        "AWS_SESSION_TOKEN": "SESSION",
+        "AWS_DEFAULT_REGION": "us-east-1",
+        "AWS_PAGER": "",
+    }
 
 
 def test_build_cli_environment_missing_credentials():
