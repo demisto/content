@@ -30,7 +30,9 @@ Gets events from Recorded Future.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
-| limit | Maximum results to return. Default is 10. | Optional |
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| start_time | The start time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T00:00:00Z) or relative time (e.g., 3 days). If not set, the API default (about the last 7 days) is used. | Optional |
+| end_time | The end time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T23:59:59Z) or relative time (e.g., 1 hour). Requires start_time. | Optional |
 
 #### Context Output
 
