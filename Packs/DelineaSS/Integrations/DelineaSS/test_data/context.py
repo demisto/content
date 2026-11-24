@@ -554,8 +554,8 @@ PLATFORM_GET_ALL_USERS_CONTEXT = {
         },
         {
             "uuid": "user-222",
-            "name": "Jane Smith",
-            "displayName": "Jane Smith",
+            "name": "jane Test",
+            "displayName": "jane Test",
             "mail": "jane@example.com",
             "description": "Test user 2",
             "disabled": False,
@@ -577,8 +577,8 @@ PLATFORM_USER_SEARCH_TEXT_CONTEXT = {
         },
         {
             "uuid": "user-222",
-            "name": "Jane Smith",
-            "displayName": "Jane Smith",
+            "name": "jane Test",
+            "displayName": "jane Test",
             "mail": "jane@example.com",
             "description": "Test user 2",
             "disabled": False,
