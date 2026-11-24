@@ -91,6 +91,19 @@ outputs:
 - contextPath: Cyfirma.Alert.Objectid
   description: Object ID.
   type: string
+- contextPath: Cyfirma.Alert.Thirdpartyrelated
+  description: Third-party related.
+  type: string
+- contextPath: Cyfirma.Alert.Firstseen
+  description: First seen.
+  type: string
+- contextPath: Cyfirma.Alert.Lastseen
+  description: Last seen.
+  type: string
+- contextPath: Cyfirma.Alert.Exposurescore
+  description: Exposure score.
+  type: string
+
 scripttarget: 0
 subtype: python3
 runonce: false

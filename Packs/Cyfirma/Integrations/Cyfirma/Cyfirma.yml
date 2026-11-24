@@ -117,6 +117,19 @@ script:
     - contextPath: Cyfirma.Alert.Subdomain
       description: Subdomain.
       type: String
+    - contextPath: Cyfirma.Alert.Thirdpartyrelated
+      description: Thirdpartyrelated.
+      type: String
+    - contextPath: Cyfirma.Alert.Exposurescore
+      description: Exposure score.
+      type: String
+    - contextPath: Cyfirma.Alert.Firstseen
+      description: First seen.
+      type: String
+    - contextPath: Cyfirma.Alert.Lastseen
+      description: Last seen.
+      type: String
+
 
   - name: cyfirma-takedown-initiate
     description: Create a take-down request for a CYFIRMA alert.

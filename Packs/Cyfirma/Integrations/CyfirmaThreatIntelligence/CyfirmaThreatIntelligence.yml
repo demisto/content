@@ -88,11 +88,6 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- name: feedReliability
-  display: Source Reliability
-  type: 15
-  required: true
-  additionalinfo: Reliability of the source providing the intelligence data
 - name: feedExpirationInterval
   display: ''
   type: 1

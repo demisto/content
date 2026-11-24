@@ -1,7 +1,7 @@
 commonfields:
-  id: CyfirmaAlertDigitalFootprintParser
+  id: CyfirmaDataParser
   version: -1
-name: CyfirmaAlertDigitalFootprintParser
+name: CyfirmaDataParser
 script: |-
   import json
 
@@ -88,6 +88,16 @@ outputs:
 - contextPath: Cyfirma.Alert.Objectid
   description: Object ID.
   type: string
+- contextPath: Cyfirma.Alert.Firstseen
+  description: First seen.
+  type: string
+- contextPath: Cyfirma.Alert.Lastseen
+  description: Last seen.
+  type: string
+- contextPath: Cyfirma.Alert.DigitalFootprints
+  description: Digital footprints.
+  type: Unknown
+
 scripttarget: 0
 subtype: python3
 runonce: false
