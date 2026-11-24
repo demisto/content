@@ -1,0 +1,8 @@
+cyfirma-get-ip,
+cyfirma-get-domain
+!cyfirma-get-url
+!cyfirma-get-file
+!cyfirma-get-ioc-search value=8.8.8.8
+!cyfirma-get-threat-actor-search value="APT29"
+!cyfirma-get-malware-search value="Emotet"
+!cyfirma-get-vulnerability-search value=CVE-2024-12345

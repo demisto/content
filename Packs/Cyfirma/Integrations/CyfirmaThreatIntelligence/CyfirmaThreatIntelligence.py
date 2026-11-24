@@ -181,17 +181,17 @@ _MALWARE_COLUMNS = [
 ]
 
 _TYPE_COMMANDS = {
-    "cyfirma-ip-get": "ip",
-    "cyfirma-domain-get": "domain",
-    "cyfirma-url-get": "url",
-    "cyfirma-file-get": "file",
+    "cyfirma-get-ip": "ip",
+    "cyfirma-get-domain": "domain",
+    "cyfirma-get-url": "url",
+    "cyfirma-get-file": "file",
 }
 
 _SEARCH_COMMANDS = {
-    "cyfirma-ioc-search-get": LABEL_INDICATOR,
-    "cyfirma-threat-actor-search-get": LABEL_THREAT_ACTOR,
-    "cyfirma-malware-search-get": LABEL_MALWARE,
-    "cyfirma-vulnerability-search-get": LABEL_VULNERABILITY,
+    "cyfirma-get-ioc-search": LABEL_INDICATOR,
+    "cyfirma-get-threat-actor-search": LABEL_THREAT_ACTOR,
+    "cyfirma-get-malware-search": LABEL_MALWARE,
+    "cyfirma-get-vulnerability-search": LABEL_VULNERABILITY,
 }
 
 

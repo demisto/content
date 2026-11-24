@@ -97,7 +97,7 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 script:
   commands:
-  - name: cyfirma-ip-get
+  - name: cyfirma-get-ip
     description: Retrieves IP indicators from CYFIRMA.
     outputs:
     - contextPath: Cyfirma.Indicator.value
@@ -122,7 +122,7 @@ script:
       description: The recommended action for the indicator.
       type: String
 
-  - name: cyfirma-domain-get
+  - name: cyfirma-get-domain
     description: Retrieves domain indicators from CYFIRMA.
     outputs:
     - contextPath: Cyfirma.Indicator.value
@@ -147,7 +147,7 @@ script:
       description: The recommended action for the indicator.
       type: String
 
-  - name: cyfirma-url-get
+  - name: cyfirma-get-url
     description: Retrieves URL indicators from CYFIRMA.
     outputs:
     - contextPath: Cyfirma.Indicator.value
@@ -172,7 +172,7 @@ script:
       description: The recommended action for the indicator.
       type: String
 
-  - name: cyfirma-file-get
+  - name: cyfirma-get-file
     description: Retrieves file hash indicators from CYFIRMA.
     outputs:
     - contextPath: Cyfirma.Indicator.value
@@ -197,7 +197,7 @@ script:
       description: The recommended action for the indicator.
       type: String
 
-  - name: cyfirma-ioc-search-get
+  - name: cyfirma-get-ioc-search
     description: Searches CYFIRMA for an indicator by value.
     arguments:
     - name: value
@@ -226,7 +226,7 @@ script:
       description: The recommended action for the indicator.
       type: String
 
-  - name: cyfirma-threat-actor-search-get
+  - name: cyfirma-get-threat-actor-search
     description: Searches CYFIRMA for a threat actor by name.
     arguments:
     - name: value
@@ -264,7 +264,7 @@ script:
       description: Campaigns associated with the threat actor.
       type: String
 
-  - name: cyfirma-malware-search-get
+  - name: cyfirma-get-malware-search
     description: Searches CYFIRMA for malware by name.
     arguments:
     - name: value
@@ -296,7 +296,7 @@ script:
       description: Threat actors associated with the malware.
       type: String
 
-  - name: cyfirma-vulnerability-search-get
+  - name: cyfirma-get-vulnerability-search
     description: Searches CYFIRMA for a vulnerability by CVE ID.
     arguments:
     - name: value

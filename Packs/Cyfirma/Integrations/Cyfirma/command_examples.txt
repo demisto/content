@@ -1,0 +1,4 @@
+!cyfirma-takedown-list
+!cyfirma-takedown-list domain=bad.com size=10 page=0
+!cyfirma-takedown-initiate alert_id=A1B2C3 comment="Phishing site impersonating our brand"
+!cyfirma-alert-parser

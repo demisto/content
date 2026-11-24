@@ -94,42 +94,41 @@ script:
     execution: true
     outputs:
     - contextPath: Cyfirma.Alert.Alertid
-      description: Alert ID.
+      description: Unique identifier of the CYFIRMA alert.
       type: String
     - contextPath: Cyfirma.Alert.Severity
-      description: Severity.
+      description: Severity level assigned to the alert, indicating the potential impact or risk.
       type: String
     - contextPath: Cyfirma.Alert.Category
-      description: Category.
+      description: Primary category of the alert, identifying the type of security exposure or threat.
       type: String
     - contextPath: Cyfirma.Alert.Subcategory
-      description: Subcategory.
+      description: Subcategory providing more specific classification of the alert.
       type: String
     - contextPath: Cyfirma.Alert.Description
-      description: Description.
+      description: Detailed description of the alert, including relevant information about the identified security exposure or threat.
       type: String
     - contextPath: Cyfirma.Alert.Ip
-      description: IP address.
+      description: IP address associated with the alert, if available.
       type: String
     - contextPath: Cyfirma.Alert.Domain
-      description: Domain.
+      description: Domain associated with the alert, if available.
       type: String
     - contextPath: Cyfirma.Alert.Subdomain
-      description: Subdomain.
+      description: Subdomain associated with the alert, if available.
       type: String
     - contextPath: Cyfirma.Alert.Thirdpartyrelated
-      description: Thirdpartyrelated.
+      description: Indicates whether the alert is associated with a third-party entity or not.
       type: String
     - contextPath: Cyfirma.Alert.Exposurescore
-      description: Exposure score.
+      description: CYFIRMA exposure score associated with the alert, representing the assessed level of exposure.
       type: String
     - contextPath: Cyfirma.Alert.Firstseen
-      description: First seen.
+      description: Timestamp indicating when the identified exposure or threat was first observed.
       type: String
     - contextPath: Cyfirma.Alert.Lastseen
-      description: Last seen.
+      description: Timestamp indicating when the identified exposure or threat was last observed.
       type: String
-
 
   - name: cyfirma-takedown-initiate
     description: Create a take-down request for a CYFIRMA alert.
