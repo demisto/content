@@ -1,0 +1,565 @@
+id: Arcanna Playbook
+version: 3
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: ArcannaAI
+    itemVersion: 1.2.2
+    fromServerVersion: 6.2.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Arcanna-Playbook
+description: "Can be integrated as a sub-playbook into current production playbooks.\nThis
+  process automates event analysis and feedback exchange with Arcanna in XSOAR:  \n\n1.
+  Build JSON Package – Prepare the event data in JSON format.  \n2. Send Event to
+  Arcanna – Submit the event for analysis.  \n3. Get Arcanna Response – Fetch the
+  AI-generated analysis results.  \nOptional:\n4. Get Job Decision Set – Extract the
+  decision set from Arcanna.  \n5. Get Analyst Input for Arcanna Feedback – Collect
+  analyst feedback on the AI decision.  \n6. Send Feedback to Arcanna – Submit feedback
+  to improve AI decision-making.  \n\n\"Get Arcanna response\" also maps information
+  for the layout and/or dashboards. Check task \"Mapping\" tab for details."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ebcbcbf4-76fa-4a7d-86ba-5e957997de98
+    type: start
+    task:
+      id: ebcbcbf4-76fa-4a7d-86ba-5e957997de98
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 29b393a2-805d-49bb-8336-df3f7cc0ed7c
+    type: regular
+    task:
+      id: 29b393a2-805d-49bb-8336-df3f7cc0ed7c
+      version: -1
+      name: Send event to Arcanna
+      description: Sends an event to Arcanna.
+      script: Arcanna.AI|||arcanna-send-event
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "28"
+    scriptarguments:
+      event_json:
+        simple: ${incident_json}
+      id_value:
+        simple: ${incident.id}
+      job_id:
+        simple: ${inputs.job_id}
+      severity:
+        simple: ${incident.severity}
+      title:
+        simple: ${incident.name}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c4f8aaa4-33aa-49f7-8a59-aecb5f38498f
+    type: regular
+    task:
+      id: c4f8aaa4-33aa-49f7-8a59-aecb5f38498f
+      version: -1
+      name: Send feedback to Arcanna
+      description: Send Arcanna feedback for a previous inferred event.
+      script: Arcanna.AI|||arcanna-send-event-feedback
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "16"
+    scriptarguments:
+      event_id:
+        simple: ${Arcanna.GetEventDetails.event_id}
+      feedback:
+        simple: ${Analyst_input.Answers.0}
+      job_id:
+        simple: ${inputs.job_id}
+      username:
+        simple: ${Analyst_input.Answers.name}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Arcanna Feedback User
+      output:
+        complex:
+          root: Analyst_input.Answers
+          accessor: name
+    - incidentfield: Arcanna Feedback
+      output:
+        complex:
+          root: Analyst_input.Answers
+          accessor: "0"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f701bcf0-ab47-4a22-86e9-18b0ec72d717
+    type: title
+    task:
+      id: f701bcf0-ab47-4a22-86e9-18b0ec72d717
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5f217134-1be0-4d83-8e8c-072e51192bfa
+    type: regular
+    task:
+      id: 5f217134-1be0-4d83-8e8c-072e51192bfa
+      version: -1
+      name: Build Json package
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: incident_json
+      stringify:
+        simple: "true"
+      value:
+        simple: '{"incident":${incident}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 305207ab-917c-46bd-802f-d19f26b78753
+    type: regular
+    task:
+      id: 305207ab-917c-46bd-802f-d19f26b78753
+      version: -1
+      name: Get job decision set
+      description: Retrieve available decision points for specified AI Job.
+      script: Arcanna.AI|||arcanna-get-decision-set
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "26"
+    scriptarguments:
+      job_id:
+        simple: ${inputs.job_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7cab9376-f49f-4846-846d-370eac37202c
+    type: collection
+    task:
+      id: 7cab9376-f49f-4846-846d-370eac37202c
+      version: -1
+      name: Get Analyst Input for Arcanna feedback
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 0
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Input Analyst investigation result.
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 4
+        retriesinterval: 0
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'What was the expected decision from the AI Model for the current
+            incident?  Current decision is: ${Arcanna.GetEventDetails.result_label}'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: Arcanna.GetDecisionSet.decision_set
+            accessor: '[0]'
+        - complex:
+            root: Arcanna.GetDecisionSet.decision_set
+            accessor: '[1]'
+        - complex:
+            root: Arcanna.GetDecisionSet.decision_set
+            accessor: '[2]'
+        - complex:
+            root: Arcanna.GetDecisionSet.decision_set
+            accessor: '[3]'
+        - complex:
+            root: Arcanna.GetDecisionSet.decision_set
+            accessor: '[4]'
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst_input
+      description: Get Analyst Input for Arcanna decision
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e2d611c8-a837-4d10-875b-d62f51e9de87
+    type: regular
+    task:
+      id: e2d611c8-a837-4d10-875b-d62f51e9de87
+      version: -1
+      name: 'Get Arcanna response '
+      description: Retrieves Arcanna Inference result.
+      script: Arcanna.AI|||arcanna-get-event-status
+      type: regular
+      iscommand: true
+      brand: Arcanna.AI
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "24"
+    scriptarguments:
+      event_id:
+        simple: ${Arcanna.SendEventDetails.event_id}
+      interval:
+        simple: "10"
+      job_id:
+        simple: ${inputs.job_id}
+      polling:
+        simple: "true"
+      timeout:
+        simple: "60"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Arcanna decision
+      output:
+        complex:
+          root: Arcanna.GetEventDetails
+          accessor: result_label
+    - incidentfield: Arcanna decision confidence score
+      output:
+        complex:
+          root: Arcanna.GetEventDetails
+          accessor: confidence_score
+    - incidentfield: Arcanna outlier flag
+      output:
+        complex:
+          root: Arcanna.GetEventDetails
+          accessor: outlier
+    - incidentfield: Arcanna bucket state
+      output:
+        complex:
+          root: Arcanna.GetEventDetails
+          accessor: bucket_state
+    - incidentfield: Arcanna Event ID
+      output:
+        complex:
+          root: Arcanna.SendEventDetails
+          accessor: event_id
+    - incidentfield: Arcanna job ID
+      output:
+        complex:
+          root: Arcanna.SendEventDetails
+          accessor: job_id
+    - incidentfield: Arcanna error message
+      output:
+        complex:
+          root: Arcanna.GetEventDetails
+          accessor: error_message
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 1ae12004-e7f0-438d-86cb-b48da0c951be
+    type: regular
+    task:
+      id: 1ae12004-e7f0-438d-86cb-b48da0c951be
+      version: -1
+      name: 'Delete previous Arcanna context '
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: Arcanna,incident_json,Analyst_input
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8c090e69-71f6-4403-81b6-f26cd066f019
+    type: regular
+    task:
+      id: 8c090e69-71f6-4403-81b6-f26cd066f019
+      version: -1
+      name: Catch error from XSOAR task
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. The automation will return an array of
+        the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 0507bf9b-008b-465f-8c1e-e50b50dd4833
+    type: title
+    task:
+      id: 0507bf9b-008b-465f-8c1e-e50b50dd4833
+      version: -1
+      name: Send error details to responsible team (TBD)
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_30_#error#": 0.61,
+      "24_30_#error#": 0.52,
+      "28_30_#error#": 0.29,
+      "6_30_#error#": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: job_id
+  value:
+    simple: "1208"
+  required: true
+  description: Provide the Job ID from Arcanna (visible in the URL bar after clicking
+    on an AI Job title)
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: Arcanna-Generic-Investigation
