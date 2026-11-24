@@ -1,0 +1,26 @@
+commonfields:
+  id: azureTest
+  version: -1
+name: azureTest
+script: ''
+type: python
+subtype: python3
+tags:
+- Azure
+comment: Verifies that the arg1 and arg2 arguments are not empty and returns "ok". Executed by the azure-test-command command of the Azure integration.
+enabled: true
+args:
+- name: arg1
+  description: The first argument to verify. Must not be empty.
+  required: true
+- name: arg2
+  description: The second argument to verify. Must not be empty.
+  required: true
+scripttarget: 0
+dockerimage: demisto/python3:3.12.15.14069087
+runas: DBotWeakRole
+fromversion: 8.11.0
+marketplaces:
+- platform
+tests:
+- No tests (auto formatted)

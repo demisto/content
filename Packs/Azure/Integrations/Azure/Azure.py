@@ -966,6 +966,11 @@ FIREWALL_FAILED_PROVISIONING_STATE = "Failed"
 FIREWALL_TERMINAL_PROVISIONING_STATES = {"Succeeded", FIREWALL_FAILED_PROVISIONING_STATE}
 # Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
 # first positional argument, so main() dispatches these commands differently from the regular ones.
+# The script executed by azure-test-command.
+AZURE_TEST_SCRIPT_NAME = "azureTest"
+# Commands that do not call the Azure API. main() runs them before resolving the subscription and building the
+# AzureClient, so they do not require Azure credentials or a subscription ID.
+COMMANDS_WITHOUT_AZURE_CLIENT = {"azure-test-command"}
 POLLING_COMMANDS = {
     "azure-vn-ip-group-create",
     "azure-vn-ip-group-update",
@@ -14540,6 +14545,25 @@ def get_command_resource(command: str) -> str:
     return DEFAULT_RESOURCE
 
 
+def azure_test_command(client: AzureClient | None, params: dict, args: dict[str, Any]) -> CommandResults:
+    """
+    Executes the azureTest script with the given arguments and returns its result.
+
+    Args:
+        client (AzureClient | None): Unused. The command does not call the Azure API.
+        params (dict): The integration parameters. Unused.
+        args (dict[str, Any]): Command arguments including arg1 and arg2.
+
+    Returns:
+        CommandResults: The value returned by the azureTest script ("ok" on success).
+    """
+    script_args = {"arg1": args.get("arg1"), "arg2": args.get("arg2")}
+    demisto.debug(f"Executing the {AZURE_TEST_SCRIPT_NAME} script.")
+    # execute_command raises a DemistoException when the script returns an error entry.
+    script_result = execute_command(AZURE_TEST_SCRIPT_NAME, script_args)
+    return CommandResults(readable_output=str(script_result), raw_response=script_result)
+
+
 def switch_to_gov_account() -> None:
     global BLOB_SERVICE_PREFIX
     global SCOPE_BY_CONNECTION
@@ -14794,7 +14818,11 @@ def main():  # pragma: no cover
             "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
             "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
             "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
+            "azure-test-command": azure_test_command,
         }
+
+        if command in COMMANDS_WITHOUT_AZURE_CLIENT:
+            return return_results(commands_with_params_and_args[command](client=None, params=params, args=args))
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
 
