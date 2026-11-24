@@ -11,19 +11,9 @@ configuration:
     type: 0
     section: Connect
     defaultvalue: https://api.meraki.com
-  - name: auth_method
-    display: Authentication Method
-    additionalinfo: The authentication method to use. "API Key" works for all clusters. "OAuth 2.0" works only for https://api.meraki.com and needs the Client ID, Client Secret, Redirect URI and Authorization code.
-    required: false
-    type: 15
-    section: Connect
-    defaultvalue: API Key
-    options:
-      - API Key
-      - OAuth 2.0
   - name: api_key
     displaypassword: API Key
-    additionalinfo: An API key can be generated through 'My Profile' in 'API access'. Required when OAuth 2.0 is not configured, and for clusters other than https://api.meraki.com.
+    additionalinfo: An API key can be generated through 'My Profile' in 'API access'. Use either the API Key or OAuth 2.0, not both. Required for clusters other than https://api.meraki.com.
     required: false
     type: 9
     hiddenusername: true
@@ -31,7 +21,7 @@ configuration:
   - name: credentials
     display: Client ID
     displaypassword: Client Secret
-    additionalinfo: OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. When set, OAuth 2.0 is used instead of the API key.
+    additionalinfo: OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. Use either the API Key or OAuth 2.0, not both.
     required: false
     type: 9
     section: Connect
@@ -2320,13 +2310,13 @@ script:
   script: ""
 triggers:
   - conditions:
-      - name: auth_method
-        operator: equal
-        value: API Key
-    effects:
       - name: api_key
-        action:
-          required: true
+        operator: exists
+      - name: credentials
+        operator: not_exists
+      - name: redirect_uri
+        operator: not_exists
+    effects:
       - name: credentials
         action:
           hidden: true
@@ -2337,17 +2327,27 @@ triggers:
         action:
           hidden: true
   - conditions:
-      - name: auth_method
-        operator: equal
-        value: OAuth 2.0
+      - name: credentials
+        operator: exists
+      - name: api_key
+        operator: not_exists
+    effects:
+      - name: api_key
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          required: true
+  - conditions:
+      - name: redirect_uri
+        operator: exists
+      - name: api_key
+        operator: not_exists
     effects:
       - name: api_key
         action:
           hidden: true
       - name: credentials
-        action:
-          required: true
-      - name: redirect_uri
         action:
           required: true
 fromversion: 6.10.0

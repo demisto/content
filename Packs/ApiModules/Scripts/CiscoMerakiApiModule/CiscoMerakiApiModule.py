@@ -56,12 +56,6 @@ class MerakiAuthMode(str, Enum):
     API_KEY = "api_key"
 
 
-# Values of the legacy `auth_method` parameter (Cisco Meraki v2). The YML triggers show only the
-# fields of the selected method.
-AUTH_METHOD_API_KEY = "API Key"
-AUTH_METHOD_OAUTH = "OAuth 2.0"
-
-
 def resolve_meraki_base_url(params: dict[str, Any]) -> str:
     """Return the Meraki base URL from the `base_url` param, else from the UCP `endpoint_region` field.
 
@@ -86,33 +80,45 @@ def resolve_meraki_base_url(params: dict[str, Any]) -> str:
 
 
 def resolve_meraki_auth_mode(
-    api_key: str | None, client_id: str | None, client_secret: str | None, auth_method: str | None = None
+    api_key: str | None,
+    client_id: str | None,
+    client_secret: str | None,
+    redirect_uri: str | None = None,
+    auth_code: str | None = None,
 ) -> MerakiAuthMode:
-    """Select the authentication mode. UCP-brokered credentials win, then the selected `auth_method`.
-    Without a selected method (instances saved before the parameter existed), OAuth 2.0 wins over the API key.
+    """Select the authentication mode: UCP-brokered credentials first, else exactly one legacy method.
+
+    Outside UCP, the legacy methods are exclusive: an API Key, or OAuth 2.0 (Client ID, Client Secret and
+    Redirect URI; the Authorization code is added after running the generate-login-url command).
 
     Raises:
-        DemistoException: When the selected method's credentials are missing, the OAuth credentials are partial,
-            or no credentials are configured.
+        DemistoException: When both methods are configured, an OAuth 2.0 field is missing, or no
+            credentials are configured.
     """
     if should_use_ucp_auth():
         return MerakiAuthMode.UCP
-    if auth_method == AUTH_METHOD_API_KEY:
-        if not api_key:
-            raise DemistoException("The API Key authentication method is selected, but no API Key is configured.")
-        return MerakiAuthMode.API_KEY
-    if auth_method == AUTH_METHOD_OAUTH:
-        if not (client_id and client_secret):
-            raise DemistoException("Both Client ID and Client Secret are required for OAuth 2.0 authentication.")
+    oauth_fields = {
+        "Client ID": client_id,
+        "Client Secret": client_secret,
+        "Redirect URI": redirect_uri,
+        "Authorization code": auth_code,
+    }
+    configured_oauth_fields = [name for name, value in oauth_fields.items() if value]
+    if api_key and configured_oauth_fields:
+        raise DemistoException(
+            "Configure either an API Key or OAuth 2.0, not both. Clear the API Key, or clear the OAuth 2.0 fields "
+            f"({', '.join(configured_oauth_fields)})."
+        )
+    if configured_oauth_fields:
+        missing_fields = [name for name in ("Client ID", "Client Secret", "Redirect URI") if not oauth_fields[name]]
+        if missing_fields:
+            raise DemistoException(f"OAuth 2.0 authentication requires: {', '.join(missing_fields)}.")
         return MerakiAuthMode.OAUTH
-    if client_id and client_secret:
-        return MerakiAuthMode.OAUTH
-    if client_id or client_secret:
-        raise DemistoException("Both Client ID and Client Secret are required for OAuth 2.0 authentication.")
     if api_key:
         return MerakiAuthMode.API_KEY
     raise DemistoException(
-        "No credentials are configured. Provide either OAuth 2.0 credentials (Client ID and Client Secret) or an API Key."
+        "No credentials are configured. Provide either an API Key or OAuth 2.0 credentials "
+        "(Client ID, Client Secret and Redirect URI)."
     )
 
 
@@ -289,11 +295,10 @@ class MerakiBaseClient(BaseClient):
         scopes: list[str] | None = None,
         verify: bool = True,
         proxy: bool = False,
-        auth_method: str | None = None,
     ) -> None:
         base_url = base_url.rstrip("/")
         super().__init__(base_url=urljoin(base_url, MERAKI_API_V1), verify=verify, proxy=proxy)
-        self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret, auth_method)
+        self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret, redirect_uri, auth_code)
         demisto.debug(f"[Auth] Selected the {self.auth_mode.value} authentication mode.")
         self.api_key = api_key
         self.token_manager: MerakiOAuthTokenManager | None = None
@@ -302,12 +307,10 @@ class MerakiBaseClient(BaseClient):
         if not should_use_ucp_auth():
             if self.auth_mode == MerakiAuthMode.OAUTH:
                 ensure_oauth_supported_host(base_url)
-                if not redirect_uri:
-                    raise DemistoException("The Redirect URI parameter is required for OAuth 2.0 authentication.")
                 self.token_manager = MerakiOAuthTokenManager(
                     client_id=str(client_id),
                     client_secret=str(client_secret),
-                    redirect_uri=redirect_uri,
+                    redirect_uri=str(redirect_uri),
                     scopes=scopes or [],
                     auth_code=auth_code,
                     verify=verify,
@@ -742,7 +745,6 @@ class Client(MerakiBaseClient):
         client_secret: str | None = None,
         redirect_uri: str | None = None,
         auth_code: str | None = None,
-        auth_method: str | None = None,
     ) -> None:
         """Initialize the Client class.
 
@@ -757,7 +759,6 @@ class Client(MerakiBaseClient):
             client_secret (str | None): OAuth 2.0 client secret.
             redirect_uri (str | None): OAuth 2.0 redirect URI registered on the Meraki app.
             auth_code (str | None): OAuth 2.0 authorization code.
-            auth_method (str | None): The selected authentication method (`API Key` or `OAuth 2.0`).
         """
         super().__init__(
             base_url=base_url,
@@ -769,7 +770,6 @@ class Client(MerakiBaseClient):
             scopes=CISCO_MERAKI_V2_OAUTH_SCOPES,
             verify=verify,
             proxy=proxy,
-            auth_method=auth_method,
         )
 
     def list_organization(self, per_page: int | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -4273,7 +4273,6 @@ def run_cisco_meraki_v2_integration() -> None:
             client_secret=dict_safe_get(params, keys=["credentials", "password"]) or None,
             redirect_uri=params.get("redirect_uri") or None,
             auth_code=dict_safe_get(params, keys=["auth_code", "password"]) or None,
-            auth_method=params.get("auth_method") or None,
         )
 
         if command == "test-module":

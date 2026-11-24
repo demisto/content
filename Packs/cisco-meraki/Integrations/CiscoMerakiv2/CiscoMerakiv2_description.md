@@ -14,13 +14,13 @@ Use the URL of your Meraki dashboard cluster:
 
 ### Authentication
 
-Select the method in **Authentication Method**; only the fields of the selected method are shown.
+Configure **one** of the following methods, not both. All the fields start as optional: once you fill in the fields of one method, the fields of the other method are hidden. The instance fails with a clear error when both methods are configured or a field of the chosen method is missing.
 
 #### OAuth 2.0 (recommended, `https://api.meraki.com` only)
 
 1. In the Meraki Dashboard, go to **Organization** > **Integrations** > **My integrations** and register a new integration.
 2. Set a **Redirect URI** (for example, `https://localhost`) and grant these scopes: `dashboard:general:config:read`, `dashboard:general:config:write`, `dashboard:general:telemetry:read`, `dashboard:iam:config:read`, `dashboard:licensing:config:read`, `dashboard:licensing:config:write`, `sdwan:config:read`, `sdwan:config:write`, `wireless:config:read`.
-3. Set **Authentication Method** to **OAuth 2.0**, enter the **Client ID**, **Client Secret** and **Redirect URI**, and save the instance.
+3. Enter the **Client ID**, **Client Secret** and **Redirect URI** in the instance and save it.
 4. Run `!meraki-generate-login-url`, open the URL, sign in and approve access.
 5. Copy the `code` value from the URL you are redirected to, paste it into **Authorization code**, and save the instance.
 6. Run `!meraki-auth-test`.
@@ -32,4 +32,4 @@ To authorize again, run `!meraki-auth-reset` and repeat steps 4–6.
 1. Open your Meraki dashboard and go to **Organization** > **Settings**.
 2. Make sure API access is set to **Enable access to the Cisco Meraki Dashboard API**.
 3. Click your account email address (upper-right) > **My profile**, and generate an API key.
-4. Set **Authentication Method** to **API Key**, enter the key in **API Key** and click **Test**.
+4. Enter it in **API Key** and click **Test**.
