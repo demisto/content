@@ -161,3 +161,13 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ("__builtin__", "builtins"):
     main()
+
+
+def xsoar_lint_validation_errors_sample(args: dict) -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    print("reported: E9002")
+    demisto.log("reported: E9012")
+    demisto.debug("http://example.com is reported: W9013")
+    print("suppressed by an xsoar-lint comment")  # xsoar-lint: disable=print-exists
+    demisto.log("suppressed by a pylint comment")  # pylint: disable=demisto-log-exists
+    # xsoar-lint: disable-next=E9004
+    exit(1)

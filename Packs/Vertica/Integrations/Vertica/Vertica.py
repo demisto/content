@@ -179,3 +179,11 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
+
+
+def xsoar_lint_validation_warnings_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    sample_value = demisto.args()["reported_w9019"]
+    demisto.debug(sample_value)
+    # xsoar-lint: disable=E9002
+    print("suppressed until the end of the function")
+    print("also suppressed")
