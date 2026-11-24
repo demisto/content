@@ -50,8 +50,15 @@ def test_incident_links_use_production_environment() -> None:
     from PaloAltoNetworks_DeviceSecurity import get_scm_alert_url, get_scm_vuln_url
 
     expected_base_url = "https://stratacloudmanager.paloaltonetworks.com"
+    assert get_scm_alert_url("alert-123", "") == (
+        f"{expected_base_url}/insights/iot-security/alerts/security-alerts/alert-detail?id=alert-123"
+    )
     assert get_scm_alert_url("alert-123", "1912782606") == (
         f"{expected_base_url}/insights/iot-security/alerts/security-alerts/alert-detail?id=alert-123&tsg_id=1912782606"
+    )
+    assert get_scm_vuln_url({"deviceid": "device-123", "vulnerability_name": "Test vulnerability"}, "") == (
+        f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123"
+        "?vulnerabilityname=Test%20vulnerability"
     )
     assert get_scm_vuln_url({"deviceid": "device-123", "vulnerability_name": "Test vulnerability"}, "1912782606") == (
         f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123"

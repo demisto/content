@@ -47,7 +47,7 @@ class Client(ContentClient):
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
-        self.tsg_id = tsg_id
+        self.tsg_id = tsg_id or ""
 
     def _http_request(self, **kwargs) -> Any:  # type: ignore[override]
         try:
@@ -260,8 +260,10 @@ def get_scm_alert_url(alert_id: str, tsg_id: str = "") -> str:
     Returns:
         str: Full alert details URL.
     """
-    return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}&tsg_id={tsg_id}"
-
+    if tsg_id is not None:
+        return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}&tsg_id={tsg_id}"
+    return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}"
+ 
 
 def get_scm_vuln_url(vuln: dict, tsg_id: str = "") -> str:
     """Build the SCM vulnerability details URL.
@@ -273,11 +275,17 @@ def get_scm_vuln_url(vuln: dict, tsg_id: str = "") -> str:
     """
     vulnerability_name = vuln.get("vulnerability_name", "").replace(" ", "%20")
     device_id = vuln.get("deviceid", "")
+    if tsg_id is not None:
+        return (
+            f"{get_scm_ui_base_url()}"
+            f"/insights/iot-security/assets/assets/overview/{device_id}"
+            f"?vulnerabilityname={vulnerability_name}&tsg_id={tsg_id}"
+        )
     return (
-        f"{get_scm_ui_base_url()}"
-        f"/insights/iot-security/assets/assets/overview/{device_id}"
-        f"?vulnerabilityname={vulnerability_name}&tsg_id={tsg_id}"
-    )
+            f"{get_scm_ui_base_url()}"
+            f"/insights/iot-security/assets/assets/overview/{device_id}"
+            f"?vulnerabilityname={vulnerability_name}"
+        )
 
 
 def trim_seen_ids(seen_ids: list[str]) -> list[str]:
@@ -831,6 +839,7 @@ def vulnerability_to_incident(vulnerability: dict, occurred: str, tsg_id: str = 
     Args:
         vulnerability (dict): Vulnerability record returned by the API.
         occurred (str): Normalized detection timestamp for the incident.
+        tsg_id (str): Optional TSG ID for constructing the SCM vulnerability URL.
 
     Returns:
         An incident containing serialized raw data, device and vulnerability
