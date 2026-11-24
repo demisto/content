@@ -2134,6 +2134,291 @@ script:
       description: The RowKey property of the entity to delete.
       required: true
 
+  - name: azure-storage-fileshare-create
+    description: "Creates a new Azure file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/write."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share to create. Share names must be lowercase, 3-63 characters, and can contain only letters, numbers, and single hyphens.
+
+  - name: azure-storage-fileshare-delete
+    description: "Deletes a file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share to delete.
+
+  - name: azure-storage-fileshares-list
+    description: "Lists Azure file shares under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/read."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of shares to retrieve per page.
+    - name: next_token
+      description: The nextLink URI returned by a previous run of this command in Azure.Storage.FileSharesNextToken. Use this URI to retrieve the next page of results.
+    outputs:
+    - contextPath: Azure.Storage.FileShares.id
+      description: The fully qualified resource ID for the file share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.name
+      description: The name of the file share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.Storage.FileShares.etag
+      description: The resource ETag.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.accessTier
+      description: The access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.lastModifiedTime
+      description: The date and time the share was last modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Azure.Storage.FileShares.properties.shareQuota
+      description: The provisioned size of the share, in gibibytes.
+      type: Number
+    - contextPath: Azure.Storage.FileShares.properties.shareUsageBytes
+      description: The approximate size of the data stored on the share, in bytes.
+      type: Number
+    - contextPath: Azure.Storage.FileShares.properties.enabledProtocols
+      description: The authentication protocol used for the file share (SMB or NFS).
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.leaseState
+      description: The lease state of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.leaseStatus
+      description: The lease status of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.deleted
+      description: Whether the share was deleted.
+      type: Boolean
+    - contextPath: Azure.Storage.FileShares.properties.version
+      description: The version of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting
+      description: The paid bursting settings of the file share.
+      type: Unknown
+    - contextPath: Azure.Storage.FileSharesNextToken
+      description: The URI to fetch the next page of file shares. Run the same command with the next_token argument to get the next page.
+      type: String
+
+  - name: azure-storage-fileshare-content-list
+    description: "Lists files and directories under the specified share or directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_path
+      description: The path to the directory whose content to list. If you do not provide this argument, the command lists the share root.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of entries to retrieve.
+    - name: prefix
+      description: The prefix used to filter entries. The command returns only entries whose names begin with this prefix.
+    - name: next_token
+      description: The string value that identifies the portion of the list to return with the next list operation. The operation returns a marker value in the response body if the returned list is not complete. In a subsequent call, use the Azure.Storage.FileShares.ContentNextToken value to request the next set of list items.
+    outputs:
+    - contextPath: Azure.Storage.FileShares.name
+      description: The share name.
+      type: String
+    - contextPath: Azure.Storage.FileShares.ContentNextToken
+      description: The marker value to pass as the next_token argument in a subsequent call to retrieve the next set of list items. Empty if the list is complete.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.Path
+      description: The directory path.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.DirectoryId
+      description: The directory ID.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.File.FileId
+      description: The file ID.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.File.Name
+      description: The file name.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.Directory.FileId
+      description: The directory ID.
+      type: String
+    - contextPath: Azure.Storage.FileShares.Content.Directory.Name
+      description: The directory name.
+      type: String
+
+  - name: azure-storage-fileshare-directory-create
+    description: "Creates a new directory under the specified share or parent directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
+    hidden:
+      - platform
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_name
+      required: true
+      description: The name of the directory to create.
+    - name: directory_path
+      description: The path to the parent directory under which to create the new directory.
+
+  - name: azure-storage-fileshare-directory-delete
+    description: "Deletes the specified empty directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
+    execution: true
+    hidden:
+      - platform
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_name
+      required: true
+      description: The name of the directory to delete. The directory must be empty.
+    - name: directory_path
+      description: The path to the parent directory of the directory to delete.
+
+  - name: azure-storage-fileshare-file-create
+    description: "Creates a new file in a share from a War Room file entry ID. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_entry_id
+      required: true
+      description: The War Room entry ID of the file to upload.
+    - name: file_name
+      description: The name to give the created file. Defaults to the original file name.
+    - name: directory_path
+      description: The path to the directory where the file should be created.
+
+  - name: azure-storage-fileshare-file-get
+    description: "Retrieves a file from a share and returns it to the War Room. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_name
+      required: true
+      description: The name of the file to retrieve.
+    - name: directory_path
+      description: The path to the directory where the file resides.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: The file information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
+  - name: azure-storage-fileshare-file-delete
+    description: "Deletes a file from a share. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
+    execution: true
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_name
+      required: true
+      description: The name of the file to delete.
+    - name: directory_path
+      description: The path to the directory where the file resides.
+
   - arguments:
     - name: name
       required: true
@@ -4233,6 +4518,484 @@ script:
     - contextPath: Azure.KeyVault.Vault.properties.networkAcls
       description: Rules governing the accessibility of the key vault from specific network locations.
       type: Unknown
+  - name: azure-sqldb-servers-list
+    description: "Lists all SQL servers, optionally filtered by resource group. Required permissions: Microsoft.Sql/servers/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
+      description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
+      required: false
+    outputs:
+    - contextPath: Azure.SqlDB.Servers
+      description: A list of SQL servers.
+      type: Unknown
+    - contextPath: Azure.SqlDB.Servers.id
+      description: The server resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.name
+      description: The server name.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.location
+      description: The server location.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.kind
+      description: The kind of server.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.type
+      description: The server resource type.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.properties.administratorLogin
+      description: The username of the server administrator.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.properties.version
+      description: The server version.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.properties.state
+      description: The server state.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.properties.fullyQualifiedDomainName
+      description: The fully qualified domain name of the server.
+      type: String
+    - contextPath: Azure.SqlDB.Servers.properties.publicNetworkAccess
+      description: Whether public endpoint access is enabled.
+      type: String
+    - contextPath: Azure.SqlDB.ServersNextToken
+      description: The URL to the next page of SQL servers. Pass this value as next_token to retrieve the next page.
+      type: String
+  - name: azure-sqldb-databases-list
+    description: "Lists all databases for a SQL server. Required permissions: Microsoft.Sql/servers/read, Microsoft.Sql/servers/databases/read."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
+      description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
+      required: false
+    outputs:
+    - contextPath: Azure.SqlDB.Databases
+      description: A list of SQL databases.
+      type: Unknown
+    - contextPath: Azure.SqlDB.Databases.id
+      description: The database resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.name
+      description: The database name.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.location
+      description: The database location.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.kind
+      description: The kind of database.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.type
+      description: The database resource type.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.properties.status
+      description: The database status.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.managedBy
+      description: The resource that manages the database.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.properties.sku
+      description: A dictionary of the database SKU details.
+      type: Unknown
+    - contextPath: Azure.SqlDB.Databases.properties.collation
+      description: The database collation.
+      type: String
+    - contextPath: Azure.SqlDB.Databases.properties.maxSizeBytes
+      description: The maximum size of the database in bytes.
+      type: Number
+    - contextPath: Azure.SqlDB.Databases.properties.zoneRedundant
+      description: Whether the database is zone redundant.
+      type: Boolean
+    - contextPath: Azure.SqlDB.DatabasesNextToken
+      description: The URL to the next page of SQL databases. Pass this value as next_token to retrieve the next page.
+      type: String
+  - name: azure-sqldb-server-auditing-settings-list
+    description: "Gets the auditing settings of a SQL database. Required permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/auditingSettings/read."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: db_name
+      description: The name of the database.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
+      description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
+      required: false
+    outputs:
+    - contextPath: Azure.SqlDB.ServerAuditingSettings
+      description: A list of database audit policies.
+      type: Unknown
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.id
+      description: The audit policy resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.name
+      description: The audit policy name.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.state
+      description: The policy state. Possible values are Enabled or Disabled.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.retentionDays
+      description: The number of days to keep audit logs.
+      type: Number
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled
+      description: Whether audit events are sent to Azure Monitor.
+      type: Boolean
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId
+      description: The storage subscription ID.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse
+      description: Whether managed identity is used to access blob storage.
+      type: Boolean
+    - contextPath: Azure.SqlDB.ServerAuditingSettingsNextToken
+      description: The URL to the next page of database audit policies. Pass this value as next_token to retrieve the next page.
+      type: String
+  - name: azure-sqldb-audit-policy-create-update
+    description: "Creates or fully replaces the auditing settings of a SQL database. Warning: this is a full replacement and not a partial update. The command removes or resets to its default any property that you do not provide as an argument (for example, audit_actions_groups, retention_days, or storage_endpoint). Required permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: db_name
+      description: The name of the database.
+      required: true
+    - name: state
+      description: "The state of the audit policy. When state is Enabled, it is mandatory to provide storage_endpoint, is_azure_monitor_target_enabled, or both."
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Enabled
+      - Disabled
+    - name: audit_actions_groups
+      description: A comma-separated list of actions and groups to audit. See https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions for possible values.
+      required: false
+      isArray: true
+    - name: is_azure_monitor_target_enabled
+      description: Whether audit events are sent to Azure Monitor.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: is_storage_secondary_key_in_use
+      description: Whether the storage account access key value is the storage secondary key.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: queue_delay_ms
+      description: The time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).
+      required: false
+    - name: retention_days
+      description: The number of days to keep the policy in the audit logs.
+      required: false
+    - name: storage_account_access_key
+      description: The identifier key of the auditing storage account.
+      required: false
+    - name: storage_account_subscription_id
+      description: The storage subscription ID.
+      required: false
+    - name: storage_endpoint
+      description: The storage endpoint. Required when state is Enabled and is_azure_monitor_target_enabled is not set.
+      required: false
+    - name: is_managed_identity_in_use
+      description: Whether managed identity is used to access blob storage.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    outputs:
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.id
+      description: The audit policy resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.name
+      description: The audit policy name.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.state
+      description: The policy state. Possible values are Enabled or Disabled.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.retentionDays
+      description: The number of days to keep audit logs.
+      type: Number
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled
+      description: Whether audit events are sent to Azure Monitor.
+      type: Boolean
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId
+      description: The storage subscription ID.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.auditActionsAndGroups
+      description: A list of the audit actions and groups.
+      type: Unknown
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isStorageSecondaryKeyInUse
+      description: Whether the storage account access key is the secondary key.
+      type: Boolean
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.queueDelayMs
+      description: The time in milliseconds before audit actions are forced to be processed.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageEndpoint
+      description: The storage endpoint.
+      type: String
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse
+      description: Whether managed identity is used to access blob storage.
+      type: Boolean
+  - name: azure-sqldb-security-alert-policy-create
+    description: "Creates a database's security alert policy. Required permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/write."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: db_name
+      description: The name of the database.
+      required: true
+    - name: state
+      description: "The state of the threat detection policy."
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Enabled
+      - Disabled
+    - name: disabled_alerts
+      description: "A comma-separated list of disabled alerts. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
+      required: false
+      isArray: true
+    - name: email_account_admins
+      description: Whether the alert is sent to the account administrators.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: email_addresses
+      description: A comma-separated list of email addresses to which the alert is sent.
+      required: false
+      isArray: true
+    - name: retention_days
+      description: The number of days to keep the policy in the audit logs.
+      required: false
+    - name: storage_account_access_key
+      description: The identifier key of the threat detection audit storage account.
+      required: false
+    - name: storage_endpoint
+      description: The blob storage endpoint for Threat Detection audit logs.
+      required: false
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    outputs:
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
+      description: The threat policy resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
+      description: The threat policy name.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.state
+      description: The threat policy state. Possible values are Enabled or Disabled.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays
+      description: The number of days to keep Threat Detection audit logs.
+      type: Number
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint
+      description: The Threat Detection audit storage account endpoint.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins
+      description: Whether account administrators are emailed on alert.
+      type: Boolean
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses
+      description: The list of email addresses to which the alert is sent.
+      type: String
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts
+      description: The list of disabled alerts, or an empty string if none are disabled.
+      type: String
+  - name: azure-sqldb-firewall-rules-list
+    description: "Retrieves a list of firewall rules or a specific firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/read."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: firewall_rule_name
+      description: The name of the firewall rule. If not provided, all firewall rules for the server are returned.
+      required: false
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
+      description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. Not applicable when firewall_rule_name is provided.
+      required: false
+    outputs:
+    - contextPath: Azure.SqlDB.FirewallRules
+      description: A list of SQL server firewall rules.
+      type: Unknown
+    - contextPath: Azure.SqlDB.FirewallRules.id
+      description: The firewall rule resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.name
+      description: The firewall rule name.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRulesNextToken
+      description: The URL to the next page of firewall rules. Pass this value as next_token to retrieve the next page.
+      type: String
+  - name: azure-sqldb-firewall-rule-create-update
+    description: "Creates or updates a firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write."
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: firewall_rule_name
+      description: The name of the firewall rule.
+      required: true
+    - name: start_ip_address
+      description: "The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses."
+      required: true
+    - name: end_ip_address
+      description: "The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses."
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    outputs:
+    - contextPath: Azure.SqlDB.FirewallRules.id
+      description: The firewall rule resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.name
+      description: The firewall rule name.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
+  - name: azure-sqldb-firewall-rule-delete
+    description: "Deletes a firewall rule from a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/delete."
+    execution: true
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: firewall_rule_name
+      description: The name of the firewall rule to delete.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+  - name: azure-sqldb-firewall-rule-replace
+    description: "Replaces all firewall rules on a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write."
+    execution: true
+    arguments:
+    - name: server_name
+      description: The name of the SQL server.
+      required: true
+    - name: firewall_rule_name
+      description: The name of the firewall rule. Required unless entry_id is provided.
+      required: false
+    - name: start_ip_address
+      description: "The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id."
+      required: false
+    - name: end_ip_address
+      description: "The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id."
+      required: false
+    - name: entry_id
+      description: "The entry ID of a file containing the full request JSON in FirewallRuleList format. If provided, firewall_rule_name, start_ip_address, and end_ip_address must not be set."
+      required: false
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    outputs:
+    - contextPath: Azure.SqlDB.FirewallRules.id
+      description: The firewall rule resource ID.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.name
+      description: The firewall rule name.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
   - arguments:
     - description: Server name.
       name: server_name
@@ -15393,6 +16156,21 @@ script:
         description: The DNS settings of the network interface.
         type: Unknown
   - name: azure-rg-list-operations
+    description: "Gets all Azure Resource Graph operations permissions and descriptions. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read."
+    deprecated: true
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+    outputs:
+      - contextPath: Azure.ResourceGraph.Operations.Name
+        description: The name of the Azure Resource Graph operation.
+        type: String
+      - contextPath: Azure.ResourceGraph.Operations.Display
+        description: A dictionary of the display information of the Azure Resource Graph operation, including provider, resource, operation, and description.
+        type: Unknown
+  - name: azure-rg-operations-list
     description: "Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read."
     arguments:
       - name: subscription_id

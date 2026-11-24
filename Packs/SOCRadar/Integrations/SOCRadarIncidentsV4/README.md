@@ -40,7 +40,9 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 
 - Fetch incidents with configurable interval (default: 1 minute)
 - Support for date ranges and epoch timestamps
-- Automatic deduplication (tracks last 1000 alarm IDs)
+- Automatic deduplication (tracks the most recent 10,000 alarm IDs)
+- Hourly check that retrieves alarms not captured by the regular fetch cycle, without creating duplicate incidents
+- Automatic retries on API rate limiting and temporary server errors
 - Reverse pagination for optimal performance
 
 ### Flexible Filtering

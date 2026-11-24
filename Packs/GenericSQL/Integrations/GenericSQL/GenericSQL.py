@@ -118,7 +118,9 @@ class Client:
         if dialect == MY_SQL:
             module = "mysql"
         elif dialect == POSTGRES_SQL:
-            module = "postgresql"
+            # Pin the driver explicitly: SQLAlchemy 2.1 changed the default PostgreSQL driver
+            # from psycopg2 to psycopg (v3), which is not installed in the Docker image.
+            module = "postgresql+psycopg2"
         elif dialect == ORACLE:
             module = "oracle+oracledb"
         elif dialect == TRINO:
