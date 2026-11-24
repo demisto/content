@@ -967,19 +967,19 @@ Gets the impersonation targets (for example, executives or brand entities) avail
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The region to filter the impersonation targets by. The command returns only the targets that this region can access.<br/>If you do not provide a region, the command uses the region specified in the instance configuration. | Optional | 
-| limit | The maximum number of impersonation targets to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all impersonation targets. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional | 
+| region | The region to filter the impersonation targets by. The command returns only the targets that this region can access.<br/>If you do not provide a region, the command uses the region specified in the instance configuration. | Optional |
+| limit | The maximum number of impersonation targets to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all impersonation targets. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Netcraft.ImpersonationTarget.id | String | The unique identifier of the impersonation target. | 
-| Netcraft.ImpersonationTarget.name | String | The name of the impersonation target. | 
-| Netcraft.ImpersonationTarget.role | String | The role of the impersonation target. | 
-| Netcraft.ImpersonationTarget.has_detection | Boolean | Whether detection is enabled for the impersonation target. | 
-| Netcraft.ImpersonationTarget.regions | String | The regions that can access the impersonation target. | 
+| Netcraft.ImpersonationTarget.id | String | The unique identifier of the impersonation target. |
+| Netcraft.ImpersonationTarget.name | String | The name of the impersonation target. |
+| Netcraft.ImpersonationTarget.role | String | The role of the impersonation target. |
+| Netcraft.ImpersonationTarget.has_detection | Boolean | Whether detection is enabled for the impersonation target. |
+| Netcraft.ImpersonationTarget.regions | String | The regions that can access the impersonation target. |
 
 #### Command example
 
@@ -1024,16 +1024,16 @@ Gets the known social media profiles of an impersonation target.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| impersonation_target_id | The ID of the impersonation target. Run the netcraft-impersonation-target-list command to get the list of valid IDs. | Required | 
-| limit | The maximum number of profiles to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all profiles. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional | 
+| impersonation_target_id | The ID of the impersonation target. Run the netcraft-impersonation-target-list command to get the list of valid IDs. | Required |
+| limit | The maximum number of profiles to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all profiles. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Netcraft.ImpersonationTargetProfile.platform | String | The platform of the profile \(for example, Facebook\). | 
-| Netcraft.ImpersonationTargetProfile.profile | String | The profile identifier or URL on the platform. | 
+| Netcraft.ImpersonationTargetProfile.platform | String | The platform of the profile \(for example, Facebook\). |
+| Netcraft.ImpersonationTargetProfile.profile | String | The profile identifier or URL on the platform. |
 
 #### Command example
 
