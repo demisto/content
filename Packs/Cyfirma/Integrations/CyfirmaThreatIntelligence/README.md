@@ -30,20 +30,19 @@ This integration was integrated and tested with the CYFIRMA API.
 | Feed expiration interval | Controls when fetched indicators expire. | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
  
-
 ## Commands
  
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
  
-### cyfirma-ip-get
+### cyfirma-get-ip
  
 ***
 Retrieves IP indicators from CYFIRMA.
  
 #### Base Command
  
-`cyfirma-ip-get`
+`cyfirma-get-ip`
  
 #### Input
  
@@ -64,17 +63,17 @@ There are no input arguments for this command.
 #### Command example
  
 ```
-!cyfirma-ip-get
+!cyfirma-get-ip
 ```
  
-### cyfirma-domain-get
+### cyfirma-get-domain
  
 ***
 Retrieves domain indicators from CYFIRMA.
  
 #### Base Command
  
-`cyfirma-domain-get`
+`cyfirma-get-domain`
  
 #### Input
  
@@ -95,17 +94,17 @@ There are no input arguments for this command.
 #### Command example
  
 ```
-!cyfirma-domain-get
+!cyfirma-get-domain
 ```
  
-### cyfirma-url-get
+### cyfirma-get-url
  
 ***
 Retrieves URL indicators from CYFIRMA.
  
 #### Base Command
  
-`cyfirma-url-get`
+`cyfirma-get-url`
  
 #### Input
  
@@ -126,17 +125,17 @@ There are no input arguments for this command.
 #### Command example
  
 ```
-!cyfirma-url-get
+!cyfirma-get-url
 ```
  
-### cyfirma-file-get
+### cyfirma-get-file
  
 ***
 Retrieves file hash indicators from CYFIRMA.
  
 #### Base Command
  
-`cyfirma-file-get`
+`cyfirma-get-file`
  
 #### Input
  
@@ -157,17 +156,17 @@ There are no input arguments for this command.
 #### Command example
  
 ```
-!cyfirma-file-get
+!cyfirma-get-file
 ```
  
-### cyfirma-ioc-search-get
+### cyfirma-get-ioc-search
  
 ***
 Searches CYFIRMA for an indicator by value.
  
 #### Base Command
  
-`cyfirma-ioc-search-get`
+`cyfirma-get-ioc-search`
  
 #### Input
  
@@ -190,17 +189,17 @@ Searches CYFIRMA for an indicator by value.
 #### Command example
  
 ```
-!cyfirma-ioc-search-get value=<indicator_value>
+!cyfirma-get-ioc-search value=<indicator_value>
 ```
  
-### cyfirma-threat-actor-search-get
+### cyfirma-get-threat-actor-search
  
 ***
 Searches CYFIRMA for a threat actor by name.
  
 #### Base Command
  
-`cyfirma-threat-actor-search-get`
+`cyfirma-get-threat-actor-search`
  
 #### Input
  
@@ -226,17 +225,17 @@ Searches CYFIRMA for a threat actor by name.
 #### Command example
  
 ```
-!cyfirma-threat-actor-search-get value=<threat_actor_name>
+!cyfirma-get-threat-actor-search value=<threat_actor_name>
 ```
  
-### cyfirma-malware-search-get
+### cyfirma-get-malware-search
  
 ***
 Searches CYFIRMA for malware by name.
  
 #### Base Command
  
-`cyfirma-malware-search-get`
+`cyfirma-get-malware-search`
  
 #### Input
  
@@ -260,17 +259,17 @@ Searches CYFIRMA for malware by name.
 #### Command example
  
 ```
-!cyfirma-malware-search-get value=<malware_name>
+!cyfirma-get-malware-search value=<malware_name>
 ```
  
-### cyfirma-vulnerability-search-get
+### cyfirma-get-vulnerability-search
  
 ***
 Searches CYFIRMA for a vulnerability by CVE ID.
  
 #### Base Command
  
-`cyfirma-vulnerability-search-get`
+`cyfirma-get-vulnerability-search`
  
 #### Input
  
@@ -304,7 +303,7 @@ Searches CYFIRMA for a vulnerability by CVE ID.
 #### Command example
  
 ```
-!cyfirma-vulnerability-search-get value=CVE-2024-12345
+!cyfirma-get-vulnerability-search value=CVE-2024-12345
 ```
  
 ## Troubleshooting
