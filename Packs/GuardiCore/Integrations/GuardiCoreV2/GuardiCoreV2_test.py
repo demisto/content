@@ -505,6 +505,7 @@ def test_revoked_cached_token_is_regenerated_and_request_retried(mocker, request
     assert incidents == []
     assert last_fetch == 1611322250000  # checkpoint preserved
     assert auth_mock.call_count == 1
+    assert "Authorization" not in auth_mock.request_history[0].headers
     assert incidents_mock.call_count == 2
     assert incidents_mock.request_history[0].headers["Authorization"] == f"Bearer {OLD_REVOKED_TOKEN}"
     assert incidents_mock.request_history[1].headers["Authorization"] == f"Bearer {NEW_TOKEN}"

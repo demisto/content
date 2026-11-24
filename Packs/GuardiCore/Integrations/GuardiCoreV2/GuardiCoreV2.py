@@ -107,6 +107,7 @@ class Client(BaseClient):
             if e.res is None or e.res.status_code != 401:
                 raise
             demisto.debug(f"{INTEGRATION_NAME} - Got 401 with the current access token, generating a new token and retrying.")
+            self._headers = {}  # don't send the rejected token to /authenticate
             self.generate_new_token()
             return self._http_request(**kwargs)
 
