@@ -89,17 +89,19 @@ class Client(BaseClient):
         demisto.debug(f"Params sent to API are: {params!s}")
         return self._http_request("GET", url_suffix=suffix, params=assign_params(**params))
 
-    def get_incident_by_id(self, incident_id: str) -> dict:
+    def get_incident_by_id(self, incident_id: str, extend_attachments: bool = False) -> dict:
         """Query incident by ID
 
         Args:
             incident_id: ID of incident
+            extend_attachments: If True, also return screenshot and submission attachment types (if available).
 
         Returns:
             Response JSON as dictionary
         """
         suffix = f"/incidents/EIR/{incident_id}"
-        return self._http_request("GET", url_suffix=suffix)
+        params = {"extend_attachments": "true"} if extend_attachments else None
+        return self._http_request("GET", url_suffix=suffix, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -495,7 +497,8 @@ def get_incident_by_id_command(client: Client, args: dict) -> tuple[object, dict
         human readable (markdown format), raw response and entry context
     """
     incident_id = args.get("incident_id", "")
-    raw_response: dict = client.get_incident_by_id(incident_id)
+    extend_attachments = argToBoolean(args.get("extend_attachments", False))
+    raw_response: dict = client.get_incident_by_id(incident_id, extend_attachments=extend_attachments)
     if raw_response:
         title = f"{INTEGRATION_NAME} - incidents"
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client, raw_response.get("incidents"))

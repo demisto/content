@@ -67,6 +67,15 @@ from Azure import (
     get_command_and_token_scopes,
     create_set_tags_request_body,
     nsg_security_rules_list_command,
+    sql_servers_list_command,
+    sql_db_list_command,
+    sql_db_server_auditing_settings_list_command,
+    sql_db_audit_policy_create_update_command,
+    sql_db_threat_policy_create_update_command,
+    sql_firewall_rules_list_command,
+    sql_firewall_rule_create_update_command,
+    sql_firewall_rule_delete_command,
+    sql_firewall_rule_replace_command,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -872,6 +881,489 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 
     # Verify results
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
+
+
+def test_sql_servers_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
+    When: sql_servers_list_command is called without resource_group_name in args or params.
+    Then: It returns CommandResults with the servers list, generic title, and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Sql/servers/integration",
+                "name": "integration",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers",
+                "properties": {"state": "Ready", "version": "12.0"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-page-url",
+    }
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+    params_no_rg = {k: v for k, v in mock_params.items() if k != "resource_group_name"}
+
+    result = sql_servers_list_command(client=client, params=params_no_rg, args={})
+
+    servers_key = next(k for k in result.outputs if "Servers" in k and "NextLink" not in k)
+    assert len(result.outputs[servers_key]) == 1
+    assert result.outputs[servers_key][0].get("name") == "integration"
+    assert "SQL Servers List" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("ServersNextToken") == "https://management.azure.com/next-page-url"
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") is None
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers.
+    When: sql_servers_list_command is called with resource_group_name.
+    Then: It passes the resource_group_name to the client and includes it in the table title.
+    """
+    raw = {"value": [{"id": "/sub/rg/srv", "name": "integration", "properties": {"state": "Ready"}}]}
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+
+    result = sql_servers_list_command(
+        client=client, params=mock_params, args={"resource_group_name": mock_params["resource_group_name"]}
+    )
+
+    assert "SQL Servers in resource group" in result.readable_output
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") == mock_params["resource_group_name"]
+
+
+def test_sql_servers_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns an empty value list.
+    When: sql_servers_list_command is called.
+    Then: It returns a no-results readable output with no outputs.
+    """
+    mocker.patch.object(client, "sql_servers_list", return_value={"value": []})
+
+    result = sql_servers_list_command(client=client, params=mock_params, args={})
+
+    assert "No SQL servers found" in result.readable_output
+    assert result.outputs is None
+
+
+def test_sql_db_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns a list of databases with a nextLink.
+    When: sql_db_list_command is called with a server_name.
+    Then: It returns CommandResults with the databases list and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db",
+                "name": "integration-db",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers/databases",
+                "properties": {"status": "Online"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-db-page",
+    }
+    mocker.patch.object(client, "sql_db_list", return_value=raw)
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    db_key = next(k for k in result.outputs if "Databases" in k and "NextLink" not in k)
+    assert len(result.outputs[db_key]) == 1
+    assert result.outputs[db_key][0].get("name") == "integration-db"
+    assert "Databases for server integration" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("DatabasesNextToken") == "https://management.azure.com/next-db-page"
+
+
+def test_sql_db_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns an empty value list.
+    When: sql_db_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_list", return_value={"value": []})
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No databases found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns a list of audit policies with a nextLink.
+    When: sql_db_server_auditing_settings_list_command is called with server_name and db_name.
+    Then: It returns CommandResults with the audit policies and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db/auditingSettings/Default",
+                "name": "Default",
+                "type": "Microsoft.Sql/servers/databases/auditingSettings",
+                "properties": {"state": "Enabled", "retentionDays": 0, "isAzureMonitorTargetEnabled": True},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-audit-page",
+    }
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value=raw)
+
+    args = {"server_name": "integration", "db_name": "integration-db"}
+    result = sql_db_server_auditing_settings_list_command(client=client, params=mock_params, args=args)
+
+    audit_key = next(k for k in result.outputs if "ServerAuditingSettings" in k and "NextToken" not in k)
+    assert len(result.outputs[audit_key]) == 1
+    policy = result.outputs[audit_key][0]
+    assert policy.get("type") == "Microsoft.Sql/servers/databases/auditingSettings"
+    # properties are no longer flattened — they remain nested under 'properties'
+    assert policy.get("properties", {}).get("state") == "Enabled"
+    assert "Database Audit Settings" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("ServerAuditingSettingsNextToken") == "https://management.azure.com/next-audit-page"
+
+
+def test_sql_db_audit_policy_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns an empty value list.
+    When: sql_db_server_auditing_settings_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value={"value": []})
+
+    result = sql_db_server_auditing_settings_list_command(
+        client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"}
+    )
+
+    assert "No audit policies found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_audit_policy_create_update returns an updated policy.
+    When: sql_db_audit_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/auditingSettings/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/auditingSettings",
+        "properties": {"state": "Enabled", "retentionDays": 5, "isAzureMonitorTargetEnabled": True},
+    }
+    mocker.patch.object(client, "sql_db_audit_policy_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "is_azure_monitor_target_enabled": "true",
+    }
+    result = sql_db_audit_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SqlDB.ServerAuditingSettings"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Auditing Settings" in result.readable_output
+    call_kwargs = client.sql_db_audit_policy_create_update.call_args[1]
+    assert call_kwargs["state"] == "Enabled"
+    assert call_kwargs["server_name"] == "integration"
+    assert call_kwargs["db_name"] == "integration-db"
+    # Verify casted arguments: retention_days str→int, is_azure_monitor_target_enabled str→bool
+    assert call_kwargs["retention_days"] == 5
+    assert isinstance(call_kwargs["retention_days"], int)
+    assert call_kwargs["is_azure_monitor_target_enabled"] is True
+    assert isinstance(call_kwargs["is_azure_monitor_target_enabled"], bool)
+
+
+def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_threat_policy_update returns an updated policy.
+    When: sql_db_threat_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix,
+          and the body passed to sql_db_threat_policy_update contains the correct properties.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/securityAlertPolicies/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+        "properties": {"state": "Enabled", "retentionDays": 5, "emailAddresses": ["test1@test.com"]},
+    }
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "email_addresses": "test1@test.com",
+        "email_account_admins": "true",
+    }
+    result = sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Threat Detection Policies" in result.readable_output
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    props = call_kwargs["current"]["properties"]
+    assert props["state"] == "Enabled"
+    assert props["emailAddresses"] == ["test1@test.com"]
+    # Verify casted arguments: retentionDays str→int, emailAccountAdmins str→bool
+    assert props["retentionDays"] == 5
+    assert isinstance(props["retentionDays"], int)
+    assert props["emailAccountAdmins"] is True
+    assert isinstance(props["emailAccountAdmins"], bool)
+
+
+def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, mock_params):
+    """
+    Given: An AzureClient and disabled_alerts set to 'None'.
+    When: sql_db_threat_policy_create_update_command is called.
+    Then: The disabledAlerts in the body passed to sql_db_threat_policy_update is [''] (empty string sentinel).
+    """
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value={"id": "x", "properties": {}})
+
+    args = {"server_name": "srv", "db_name": "db", "state": "Enabled", "disabled_alerts": "None"}
+    sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    assert call_kwargs["current"]["properties"]["disabledAlerts"] == [""]
+
+
+def test_sql_firewall_rule_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns a list of firewall rules with a nextLink.
+    When: sql_firewall_rules_list_command is called without a specific rule name.
+    Then: It returns CommandResults with all rules and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/fw/AllowAll",
+                "name": "AllowAllWindowsAzureIps",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
+            {
+                "id": "/sub/rg/srv/fw/test-rule",
+                "name": "test-rule",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
+        ],
+        "nextLink": "https://management.azure.com/next-fw-page",
+    }
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
+
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    fw_key = next(k for k in result.outputs if "FirewallRule" in k and "NextLink" not in k)
+    assert len(result.outputs[fw_key]) == 2
+    assert result.outputs[fw_key][0].get("name") == "AllowAllWindowsAzureIps"
+    assert "Firewall Rules" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("FirewallRulesNextToken") == "https://management.azure.com/next-fw-page"
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") is None
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns a single firewall rule object.
+    When: sql_firewall_rules_list_command is called with a specific firewall_rule_name.
+    Then: It returns CommandResults with exactly one rule (no nextLink in outputs).
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/test-rule",
+        "name": "test-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args=args)
+
+    # Single-rule path: uses outputs_prefix + outputs_key_field; outputs is the single rule dict
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs.get("name") == "test-rule"
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") == "test-rule"
+
+
+def test_sql_firewall_rule_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rules_list returns an empty value list.
+    When: sql_firewall_rules_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value={"value": []})
+
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No firewall rules were found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_firewall_rule_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_create_update returns the created rule.
+    When: sql_firewall_rule_create_update_command is called with all required args.
+    Then: It returns CommandResults with a success message and the rule in outputs.
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/new-rule",
+        "name": "new-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rule_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "new-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_create_update_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rule new-rule" in result.readable_output
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    call_kwargs = client.sql_firewall_rule_create_update.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "new-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+
+
+def test_sql_firewall_rule_delete_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_delete succeeds.
+    When: sql_firewall_rule_delete_command is called with server_name and firewall_rule_name.
+    Then: It returns a success readable output confirming deletion.
+    """
+    mocker.patch.object(client, "sql_firewall_rule_delete", return_value=None)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rule_delete_command(client=client, params=mock_params, args=args)
+
+    assert "The firewall rule test-rule has been successfully deleted" in result.readable_output
+    client.sql_firewall_rule_delete.assert_called_once_with(
+        server_name="integration",
+        subscription_id=mock_params["subscription_id"],
+        resource_group_name=mock_params["resource_group_name"],
+        firewall_rule_name="test-rule",
+    )
+
+
+def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_replace returns the updated rules.
+    When: sql_firewall_rule_replace_command is called with rule name and IP addresses.
+    Then: It returns a success message and the rules in outputs.
+    """
+    raw = {
+        "values": [
+            {
+                "id": "/sub/rg/srv/fw/replaced-rule",
+                "name": "replaced-rule",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            }
+        ]
+    }
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "replaced-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "replaced-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+    assert call_kwargs["request_body"] is None
+
+
+def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params, tmp_path):
+    """
+    Given: An AzureClient and an entry_id pointing to a JSON file.
+    When: sql_firewall_rule_replace_command is called with entry_id.
+    Then: The request body is taken from the file and passed to the client.
+    """
+    fw_rules_content = json.dumps(
+        {"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}
+    )
+    tmp_file = tmp_path / "fw_rules.json"
+    tmp_file.write_text(fw_rules_content, encoding="utf-8")
+
+    raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+    mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(tmp_file)})
+
+    args = {"server_name": "integration", "entry_id": "123456"}
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["request_body"] is not None
+    assert "values" in call_kwargs["request_body"]
+
+
+@pytest.mark.parametrize(
+    "extra_arg",
+    [
+        {"firewall_rule_name": "replaced-rule"},
+        {"start_ip_address": "0.0.0.0"},
+        {"end_ip_address": "0.0.0.0"},
+    ],
+)
+def test_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, client, mock_params, extra_arg):
+    """
+    Given: An entry_id together with one of firewall_rule_name / start_ip_address / end_ip_address.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "entry_id": "123456", **extra_arg}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "When 'entry_id' is provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_missing_required_args(mocker, client, mock_params):
+    """
+    Given: No entry_id and missing rule arguments.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "firewall_rule_name": "replaced-rule"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Either 'entry_id' must be provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_invalid_entry_id(mocker, client, mock_params):
+    """
+    Given: An entry_id that does not exist (getFilePath returns an empty dict).
+    When: sql_firewall_rule_replace_command is called with that entry_id.
+    Then: A DemistoException is raised with a clear message.
+    """
+    mocker.patch("Azure.demisto.getFilePath", return_value={})
+
+    args = {"server_name": "integration", "entry_id": "nonexistent@123"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Could not find a file for entry_id" in str(exc.value)
 
 
 def test_aks_clusters_list_command(mocker, client, mock_params):
@@ -11078,6 +11570,541 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+# ---------------------------------------------------------------------------
+# Storage FileShare command tests (migrated from AzureStorageFileShare pack)
+# ---------------------------------------------------------------------------
+
+
+def test_storage_fileshare_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client whose create_share_request (Microsoft.Storage ARM) creates the share.
+    When: The storage_fileshare_create_command function is called with valid snake_case args.
+    Then: The function calls create_share_request on the ARM control plane and returns a success message only.
+    """
+    from Azure import storage_fileshare_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+    }
+    mocker.patch.object(client, "create_share_request")
+
+    result = storage_fileshare_create_command(client, mock_params, args)
+
+    client.create_share_request.assert_called_once_with(
+        "mock_subscription_id", "mock_resource_group", "mockaccount", "mock-share"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Share mock-share successfully created."
+
+
+def test_storage_fileshare_create_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a file share with an invalid share name.
+    When: The storage_fileshare_create_command function is called with an invalid share name.
+    Then: The function raises an exception about the invalid share name.
+    """
+    from Azure import storage_fileshare_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock--share",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        storage_fileshare_create_command(client, mock_params, args)
+
+    assert "The specified share name is invalid" in str(excinfo.value)
+
+
+def test_storage_fileshare_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a file share via the Microsoft.Storage ARM control plane.
+    When: The storage_fileshare_delete_command function is called with valid snake_case args.
+    Then: The function calls delete_share_request on the ARM control plane and returns a success message.
+    """
+    from Azure import storage_fileshare_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+    }
+    mocker.patch.object(client, "delete_share_request")
+
+    result = storage_fileshare_delete_command(client, mock_params, args)
+
+    client.delete_share_request.assert_called_once_with(
+        "mock_subscription_id", "mock_resource_group", "mockaccount", "mock-share"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Share mock-share successfully deleted."
+
+
+def test_storage_fileshare_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_shares_request (Microsoft.Storage ARM) returns a JSON share list.
+    When: The storage_fileshare_list_command function is called.
+    Then: The function returns CommandResults with the Azure.Storage.FileShares prefix and parsed share names.
+    """
+    from Azure import storage_fileshare_list_command
+
+    json_response = {
+        "value": [
+            {
+                "id": "/subscriptions/mock_subscription_id/resourceGroups/mock_resource_group/providers/"
+                "Microsoft.Storage/storageAccounts/mockaccount/fileServices/default/shares/my-file-share",
+                "name": "my-file-share",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8DABCDEF"',
+                "properties": {
+                    "accessTier": "TransactionOptimized",
+                    "shareQuota": 100,
+                    "lastModifiedTime": "2025-01-01T00:00:00.0000000Z",
+                    "enabledProtocols": "SMB",
+                    "leaseState": "Available",
+                },
+            },
+            {
+                "id": "/subscriptions/mock_subscription_id/resourceGroups/mock_resource_group/providers/"
+                "Microsoft.Storage/storageAccounts/mockaccount/fileServices/default/shares/my-share",
+                "name": "my-share",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8DFEDCBA"',
+                "properties": {
+                    "accessTier": "Hot",
+                    "shareQuota": 5120,
+                    "lastModifiedTime": "2025-02-02T00:00:00.0000000Z",
+                    "enabledProtocols": "SMB",
+                    "leaseState": "Available",
+                },
+            },
+        ]
+    }
+    mocker.patch.object(client, "list_shares_request", return_value=json_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mockaccount", "50", "")
+    assert isinstance(result, CommandResults)
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert len(shares) == 2
+    # Full share objects are passed through as-is with native camelCase keys.
+    assert shares[0].get("name") == "my-file-share"
+    assert shares[1].get("name") == "my-share"
+    assert shares[0].get("properties", {}).get("accessTier") == "TransactionOptimized"
+    assert shares[0].get("properties", {}).get("shareQuota") == 100
+    assert shares[1].get("etag") == '"0x8DFEDCBA"'
+    # No nextLink in the response -> next token is None and no pagination hint.
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+    assert "next_token" not in result.readable_output
+    # Readable output only surfaces Name/Id/Type.
+    assert "Access Tier" not in result.readable_output
+    assert "my-file-share" in result.readable_output
+
+
+def test_storage_fileshare_list_command_with_next_link(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_shares_request returns a page of shares along with a nextLink.
+    When: The storage_fileshare_list_command function is called.
+    Then: The shares are returned under Azure.Storage.FileShares and the nextLink under Azure.Storage.FileSharesNextToken,
+          and the readable output instructs the user how to fetch the next page.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = (
+        "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares?api-version=2022-09-01"
+        "&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    )
+    share_id_prefix = (
+        "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares/"
+    )
+    paid_bursting = {
+        "paidBurstingEnabled": True,
+        "paidBurstingMaxBandwidthMibps": 10340,
+        "paidBurstingMaxIops": 102400,
+    }
+    json_response = {
+        "nextLink": next_link,
+        "value": [
+            {
+                "name": "share1644",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847D51C7DE"',
+                "id": f"{share_id_prefix}share1644",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+            {
+                "name": "share4052",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847DAB5AF9"',
+                "id": f"{share_id_prefix}share4052",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+        ],
+    }
+    mocker.patch.object(client, "list_shares_request", return_value=json_response)
+
+    args = {
+        "subscription_id": "00000000-0000-0000-0000-000000000000",
+        "resource_group_name": "res9290",
+        "account_name": "sto1590",
+        "limit": "2",
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("00000000-0000-0000-0000-000000000000", "res9290", "sto1590", "2", "")
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert [share["name"] for share in shares] == ["share1644", "share4052"]
+    assert shares[0]["properties"]["fileSharePaidBursting"]["paidBurstingMaxIops"] == 102400
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": next_link}
+    assert result.raw_response == json_response
+
+
+def test_storage_fileshare_list_command_forwards_next_token(mocker, client, mock_params):
+    """
+    Given: A next_token argument holding the nextLink of a previous page, and a response that is the last page.
+    When: The storage_fileshare_list_command function is called.
+    Then: The next_token is forwarded to list_shares_request, and the stale token is cleared from the context.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = "https://management.azure.com/subscriptions/sub/next?api-version=2022-09-01&$skipToken=/acc/share2"
+    share = {"id": "share-2-id", "name": "share2", "type": "Microsoft.Storage/storageAccounts/fileServices/shares"}
+    mocker.patch.object(client, "list_shares_request", return_value={"value": [share]})
+
+    args = {
+        "subscription_id": "sub",
+        "resource_group_name": "rg",
+        "account_name": "acc",
+        "next_token": next_link,
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("sub", "rg", "acc", "50", next_link)
+    assert result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"] == [share]
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+
+
+def test_list_shares_request_uses_next_token(mocker, client):
+    """
+    Given: A next_token (nextLink URI) from a previous page.
+    When: list_shares_request is called with the next_token.
+    Then: The request is sent to the nextLink URI as-is, without adding api-version/$maxpagesize params.
+    """
+    next_link = "https://management.azure.com/next?api-version=2022-09-01&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2", next_link)
+
+    http_mock.assert_called_once_with(method="GET", full_url=next_link, params={})
+
+
+def test_list_shares_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given: A next_token pointing at a host other than the configured Azure management endpoint.
+    When: list_shares_request is called with the next_token.
+    Then: A DemistoException is raised and no HTTP request is sent.
+    """
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_shares_request("sub", "rg", "account", "2", "https://attacker.example.com/next?$skipToken=abc")
+
+    http_mock.assert_not_called()
+
+
+def test_list_shares_request_without_next_token(mocker, client):
+    """
+    Given: No next_token.
+    When: list_shares_request is called.
+    Then: The request is sent to the ARM shares URL with api-version and $maxpagesize params.
+    """
+    from Azure import FILESHARE_ARM_API_VERSION
+
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2")
+
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["full_url"].endswith("/storageAccounts/account/fileServices/default/shares")
+    assert call_kwargs["params"] == {"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": "2"}
+
+
+def test_storage_fileshare_content_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client with a mocked list_directories_and_files_request returning directory content XML.
+    When: The storage_fileshare_content_list_command function is called with a share name.
+    Then: The function returns CommandResults with the Azure.Storage.FileShares prefix and parsed content.
+    """
+    from Azure import storage_fileshare_content_list_command
+
+    xml_response = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<EnumerationResults>"
+        "<DirectoryId>mock_dir_id</DirectoryId>"
+        "<Entries>"
+        "<File><Name>mock_file.png</Name><FileId>mock_file_id</FileId>"
+        "<Properties>"
+        "<Content-Length>10</Content-Length>"
+        "<CreationTime>2025-01-01T00:00:00.0000000Z</CreationTime>"
+        "<LastAccessTime>2025-01-01T00:00:00.0000000Z</LastAccessTime>"
+        "<LastWriteTime>2025-01-01T00:00:00.0000000Z</LastWriteTime>"
+        "<ChangeTime>2025-01-01T00:00:00.0000000Z</ChangeTime>"
+        "<Last-Modified>Wed, 01 Jan 2025 00:00:00 GMT</Last-Modified>"
+        "</Properties></File>"
+        "<Directory><Name>mock_directory</Name><FileId>mock_directory_id</FileId>"
+        "<Properties>"
+        "<CreationTime>2025-01-01T00:00:00.0000000Z</CreationTime>"
+        "<LastAccessTime>2025-01-01T00:00:00.0000000Z</LastAccessTime>"
+        "<LastWriteTime>2025-01-01T00:00:00.0000000Z</LastWriteTime>"
+        "<ChangeTime>2025-01-01T00:00:00.0000000Z</ChangeTime>"
+        "<Last-Modified>Wed, 01 Jan 2025 00:00:00 GMT</Last-Modified>"
+        "</Properties></Directory>"
+        "</Entries>"
+        "<NextMarker/>"
+        "</EnumerationResults>"
+    )
+    mocker.patch.object(client, "list_directories_and_files_request", return_value=xml_response)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "share_name": "mock-share"}
+    result = storage_fileshare_content_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.FileShares"
+    assert result.outputs.get("name") == "mock-share"
+    assert result.outputs.get("Content").get("File")[0].get("Name") == "mock_file.png"
+    assert result.outputs.get("Content").get("Directory")[0].get("Name") == "mock_directory"
+    assert result.outputs.get("ContentNextToken") is None
+    assert "NextToken" not in result.outputs.get("Content")
+    assert "next_token" not in result.readable_output
+
+
+def test_storage_fileshare_content_list_command_with_next_token(mocker, client, mock_params):
+    """
+    Given: An Azure client and a next_token argument, with a response containing a NextMarker value.
+    When: The storage_fileshare_content_list_command function is called with the next_token argument.
+    Then: The next_token value is passed to the client request as the marker, and the returned
+          NextMarker is exposed as ContentNextToken and mentioned in the readable output.
+    """
+    from Azure import storage_fileshare_content_list_command
+
+    xml_response = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<EnumerationResults>"
+        "<DirectoryId>mock_dir_id</DirectoryId>"
+        "<Entries></Entries>"
+        "<NextMarker>mock-next-marker</NextMarker>"
+        "</EnumerationResults>"
+    )
+    request_mock = mocker.patch.object(client, "list_directories_and_files_request", return_value=xml_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "next_token": "mock-marker",
+    }
+    result = storage_fileshare_content_list_command(client, mock_params, args)
+
+    request_mock.assert_called_once_with("mockaccount", "mock-share", "", None, "50", "mock-marker")
+    assert result.outputs.get("ContentNextToken") == "mock-next-marker"
+    assert "next_token" in result.readable_output
+
+
+def test_storage_fileshare_directory_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a directory with a valid name.
+    When: The storage_fileshare_directory_create_command function is called with valid snake_case args.
+    Then: The function calls the client's create_directory_request and returns a success message.
+    """
+    from Azure import storage_fileshare_directory_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock_directory",
+    }
+    mocker.patch.object(client, "create_directory_request")
+
+    result = storage_fileshare_directory_create_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "mock_directory Directory successfully created in mock-share."
+
+
+def test_storage_fileshare_directory_create_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a directory with an invalid name.
+    When: The storage_fileshare_directory_create_command function is called with an invalid directory name.
+    Then: The function raises an exception about the invalid directory name.
+    """
+    from Azure import storage_fileshare_directory_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock<directory",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        storage_fileshare_directory_create_command(client, mock_params, args)
+
+    assert "The specified directory name is invalid" in str(excinfo.value)
+
+
+def test_storage_fileshare_directory_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a directory.
+    When: The storage_fileshare_directory_delete_command function is called with valid snake_case args.
+    Then: The function calls the client's delete_directory_request and returns a success message.
+    """
+    from Azure import storage_fileshare_directory_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock_directory",
+    }
+    mocker.patch.object(client, "delete_directory_request")
+
+    result = storage_fileshare_directory_delete_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "mock_directory Directory successfully deleted from mock-share."
+
+
+def test_storage_fileshare_file_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a file in a share from a War Room entry ID.
+    When: The storage_fileshare_file_create_command function is called with valid snake_case args.
+    Then: The function calls create_file_request and add_file_content_request and returns a success message.
+    """
+    from Azure import storage_fileshare_file_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_entry_id": "mock_entry_id",
+        "file_name": "mock_file.txt",
+        "directory_path": "mock/path",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "mock_path", "name": "mock_file.txt"})
+    mock_stat = mocker.MagicMock()
+    mock_stat.st_size = 1024
+    mocker.patch("Azure.Path.stat", return_value=mock_stat)
+    mock_open = mocker.patch("Azure.Path.open", mocker.mock_open(read_data=b"mock_data"))
+    mocker.patch.object(client, "create_file_request")
+    mocker.patch.object(client, "add_file_content_request")
+
+    result = storage_fileshare_file_create_command(client, mock_params, args)
+
+    client.create_file_request.assert_called_once_with("mockaccount", "mock-share", "mock_file.txt", 1024, "mock/path")
+    client.add_file_content_request.assert_called_once_with(
+        "mockaccount", "mock-share", "mock_file.txt", mock_open.return_value, 1024, "mock/path"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "File successfully created in mock-share."
+
+
+def test_storage_fileshare_file_get_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get a file from a share.
+    When: The storage_fileshare_file_get_command function is called with valid snake_case args.
+    Then: The function calls the client's get_file_request and returns a fileResult.
+    """
+    from Azure import storage_fileshare_file_get_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_name": "mock_file.txt",
+    }
+    mock_response = mocker.Mock()
+    mock_response.content = b"mock file content"
+    mocker.patch.object(client, "get_file_request", return_value=mock_response)
+    mock_file_result = mocker.patch("Azure.fileResult", return_value="file_result_object")
+
+    result = storage_fileshare_file_get_command(client, mock_params, args)
+
+    mock_file_result.assert_called_once_with(filename="mock_file.txt", data=b"mock file content")
+    assert result == "file_result_object"
+
+
+def test_storage_fileshare_file_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a file from a share.
+    When: The storage_fileshare_file_delete_command function is called with valid snake_case args.
+    Then: The function calls the client's delete_file_request and returns a success message.
+    """
+    from Azure import storage_fileshare_file_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_name": "mock_file.txt",
+    }
+    mocker.patch.object(client, "delete_file_request")
+
+    result = storage_fileshare_file_delete_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "File mock_file.txt successfully deleted from mock-share."
+
+
+@pytest.mark.parametrize(
+    "method_name, method_kwargs",
+    [
+        ("list_directories_and_files_request", {}),
+        ("create_directory_request", {"directory_name": "mock-dir"}),
+        ("delete_directory_request", {"directory_name": "mock-dir"}),
+        ("create_file_request", {"file_name": "mock_file.txt", "content_length": 10}),
+        ("add_file_content_request", {"file_name": "mock_file.txt", "file_data": b"0123456789", "content_length": 10}),
+        ("get_file_request", {"file_name": "mock_file.txt"}),
+        ("delete_file_request", {"file_name": "mock_file.txt"}),
+    ],
+)
+def test_fileshare_data_plane_requests_send_file_request_intent(mocker, client, method_name, method_kwargs):
+    """
+    Given: An Azure client calling an Azure Files data-plane (file.core.windows.net) request method.
+    When: The request is sent with an OAuth token.
+    Then: The x-ms-file-request-intent header required by Azure Files for OAuth requests is set to "backup".
+    """
+    mocker.patch.object(client, "http_request")
+
+    getattr(client, method_name)(account_name="mockaccount", share_name="mock-share", **method_kwargs)
+
+    client.http_request.assert_called_once()
+    assert client.headers["x-ms-file-request-intent"] == "backup"
 
 
 """ LOG ANALYTICS TESTS (migrated from the standalone Azure Log Analytics pack) """
