@@ -1,5 +1,6 @@
 import base64
 import copy
+import hashlib
 import importlib
 import io
 import json
@@ -2081,16 +2082,15 @@ def test_parse_attachment_exts(mocker, attachment_exts_input, attachment_exts_ou
         ("test", "password", None, None, True, False, "POST", "Basic", "Basic dGVzdDpwYXNzd29yZA==", True),
         # Given:
         #   - read/write credentials (empty string)
-        #   - right credentials
+        #   - wrong credentials
         #
         # When:
         #   - basic auth
-        #   - having permissions
-        #     (request write to read/write permissions)
+        #   - request write
         #
         # Then:
-        #   - Auth OK
-        ("", "", None, None, True, False, "POST", "Basic", "Basic Og==", True),
+        #   - Auth NG
+        ("", "", None, None, True, False, "POST", "Basic", "Basic Og==", False),
         # Given:
         #   - read-only credentials
         #   - right credentials
@@ -2173,15 +2173,14 @@ def test_parse_attachment_exts(mocker, attachment_exts_input, attachment_exts_ou
         ),
         # Given:
         #   - read/write credentials (empty string)
-        #   - right credentials
+        #   - wrong credentials
         #
         # When:
         #   - digest auth (md5)
-        #   - having permissions
-        #     (request write to read/write permissions)
+        #   - request write
         #
         # Then:
-        #   - Auth OK
+        #   - Auth NG
         (
             "",
             "",
@@ -2200,7 +2199,7 @@ def test_parse_attachment_exts(mocker, attachment_exts_input, attachment_exts_ou
             " qop=auth,"
             " nc=00000001,"
             ' cnonce="55257458a653e256"',
-            True,
+            False,
         ),
         # Given:
         #   - read-only credentials
@@ -2441,3 +2440,227 @@ def test_handle_auth(
         assert response is None
     else:
         assert response.status == 401 or "401" in response.status
+
+
+def _mock_auth_params(mocker, rw_credentials: dict, ro_credentials: dict, auth_method: str | None) -> None:
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "rwCredentials": rw_credentials,
+            "roCredentials": ro_credentials,
+            "authenticationMethod": auth_method,
+            "publicReadAccess": False,
+            "mimeTypes": None,
+            "mergeMimeTypes": True,
+            "attachmentExtensions": None,
+            "storageProtection": "read/write",
+            "maxStorageSize": None,
+            "maxSandboxSize": None,
+        },
+    )
+    importlib.reload(WebFileRepository)
+
+
+def _build_digest_header(username: str, password: str, hash_name: str, algorithm: str) -> str:
+    realm = "protected area"
+    nonce = WebFileRepository.NONCE_MANAGER.gen_nonce()
+    cnonce, nc = "0a4f113b", "00000001"
+    a1 = hashlib.new(hash_name, f"{username}:{realm}:{password}".encode()).hexdigest()
+    a2 = hashlib.new(hash_name, b"POST:/").hexdigest()
+    response = hashlib.new(hash_name, f"{a1}:{nonce}:{nc}:{cnonce}:auth:{a2}".encode()).hexdigest()
+    return (
+        f'Digest username="{username}", realm="{realm}", nonce="{nonce}", uri="/", algorithm={algorithm},'
+        f' response="{response}", qop=auth, nc={nc}, cnonce="{cnonce}"'
+    )
+
+
+def _authenticate(auth_header: str, permission) -> Any:
+    environ = {"REQUEST_METHOD": "POST", "PATH_INFO": "/", "HTTP_AUTHORIZATION": auth_header}
+    handler = WebFileRepository.ServiceHandler(WebFileRepository.SETTINGS, WebFileRepository.MASTER_REPOSITORY)
+    return handler.authenticate(bottle.LocalRequest(environ), permission)
+
+
+AUTH_SETTINGS_CONFIGS = [
+    # No users
+    ({}, {}),
+    # Read/write user only
+    ({"identifier": "rwuser", "password": "rwpass"}, {}),
+    # Read-only user only
+    ({}, {"identifier": "rouser", "password": "ropass"}),
+    # Users without passwords
+    ({"identifier": "rwuser", "password": ""}, {"identifier": "rouser", "password": None}),
+]
+
+
+@pytest.mark.parametrize("rw_credentials, ro_credentials", AUTH_SETTINGS_CONFIGS)
+@pytest.mark.parametrize("permission_name", ["READ", "WRITE"])
+@pytest.mark.parametrize(
+    "auth_header",
+    [
+        f"Basic {base64.b64encode(b':').decode()}",
+        f"Basic {base64.b64encode(b'rwuser:').decode()}",
+        f"Basic {base64.b64encode(b'rouser:').decode()}",
+    ],
+)
+def test_basic_auth_invalid_credentials(mocker, rw_credentials, ro_credentials, permission_name, auth_header):
+    """
+    Given:
+        Basic authentication with various user settings.
+
+    When:
+        A client sends credentials that do not match a configured user.
+
+    Then:
+        Validate the authentication fails with 401.
+    """
+    _mock_auth_params(mocker, rw_credentials, ro_credentials, "Basic")
+
+    response = _authenticate(auth_header, WebFileRepository.PERMISSION[permission_name])
+
+    assert response is not None
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize("rw_credentials, ro_credentials", AUTH_SETTINGS_CONFIGS)
+@pytest.mark.parametrize("permission_name", ["READ", "WRITE"])
+@pytest.mark.parametrize(
+    "auth_method, hash_name, algorithm",
+    [("Digest-md5", "md5", "MD5"), ("Digest-sha256", "sha256", "SHA-256")],
+)
+def test_digest_auth_invalid_credentials(
+    mocker, rw_credentials, ro_credentials, permission_name, auth_method, hash_name, algorithm
+):
+    """
+    Given:
+        Digest authentication with various user settings.
+
+    When:
+        A client sends credentials that do not match a configured user.
+
+    Then:
+        Validate the authentication fails with 401.
+    """
+    _mock_auth_params(mocker, rw_credentials, ro_credentials, auth_method)
+    auth_header = _build_digest_header("", "", hash_name, algorithm)
+
+    response = _authenticate(auth_header, WebFileRepository.PERMISSION[permission_name])
+
+    assert response is not None
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "auth_method, hash_name, algorithm",
+    [("Digest-md5", "md5", "MD5"), ("Digest-sha256", "sha256", "SHA-256")],
+)
+def test_digest_auth_valid_credentials(mocker, auth_method, hash_name, algorithm):
+    """
+    Given:
+        Digest authentication with a read/write user.
+
+    When:
+        A client sends the right credentials of the read/write user.
+
+    Then:
+        Validate write access is granted.
+    """
+    _mock_auth_params(mocker, {"identifier": "rwuser", "password": "rwpass"}, {}, auth_method)
+    auth_header = _build_digest_header("rwuser", "rwpass", hash_name, algorithm)
+
+    assert _authenticate(auth_header, WebFileRepository.PERMISSION.WRITE) is None
+
+
+@pytest.mark.parametrize("auth_header", ["Basic not-base64!!", "Basic //79", "Basic "])
+def test_basic_auth_malformed_header(mocker, auth_header):
+    """
+    Given:
+        Basic authentication with a configured read/write user.
+
+    When:
+        A client sends a malformed Authorization header.
+
+    Then:
+        Validate the authentication fails with 401.
+    """
+    _mock_auth_params(mocker, {"identifier": "rwuser", "password": "rwpass"}, {}, "Basic")
+
+    response = _authenticate(auth_header, WebFileRepository.PERMISSION.WRITE)
+
+    assert response is not None
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "rw_credentials, ro_credentials, auth_method, error",
+    [
+        ({}, {}, "Basic", "'User ID for Read/Write' and its password are required"),
+        ({"identifier": "rwuser"}, {}, "Digest-md5", "'User ID for Read/Write' and its password are required"),
+        ({"password": "rwpass"}, {}, "Digest-sha256", "'User ID for Read/Write' and its password are required"),
+        ({}, {"identifier": "rouser", "password": "ropass"}, "Basic", "'User ID for Read/Write' and its password are required"),
+        ({"identifier": "rwuser", "password": "rwpass"}, {"identifier": "rouser"}, "Basic", "'User ID for Read-Only'"),
+        ({"identifier": "rwuser", "password": "rwpass"}, {"password": "ropass"}, "Basic", "'User ID for Read-Only'"),
+    ],
+)
+def test_validate_credentials_fails(mocker, rw_credentials, ro_credentials, auth_method, error):
+    """
+    Given:
+        An authentication method with incomplete credentials.
+
+    When:
+        Validating the instance settings.
+
+    Then:
+        Validate an error explaining the missing credentials is raised.
+    """
+    _mock_auth_params(mocker, rw_credentials, ro_credentials, auth_method)
+
+    with pytest.raises(DemistoException, match=error):
+        WebFileRepository.SETTINGS.validate_credentials()
+
+
+@pytest.mark.parametrize(
+    "rw_credentials, ro_credentials, auth_method",
+    [
+        ({}, {}, None),
+        ({}, {}, ""),
+        ({"identifier": "rwuser", "password": "rwpass"}, {}, "Basic"),
+        ({"identifier": "rwuser", "password": "rwpass"}, {"identifier": "rouser", "password": "ropass"}, "Digest-md5"),
+    ],
+)
+def test_validate_credentials_passes(mocker, rw_credentials, ro_credentials, auth_method):
+    """
+    Given:
+        No authentication method, or an authentication method with complete credentials.
+
+    When:
+        Validating the instance settings.
+
+    Then:
+        Validate no error is raised.
+    """
+    _mock_auth_params(mocker, rw_credentials, ro_credentials, auth_method)
+
+    WebFileRepository.SETTINGS.validate_credentials()
+
+
+def test_main_fails_when_auth_method_set_without_credentials(mocker):
+    """
+    Given:
+        An authentication method with incomplete settings.
+
+    When:
+        Running the long-running execution.
+
+    Then:
+        Validate an error is returned.
+    """
+    _mock_auth_params(mocker, {}, {}, "Basic")
+    mocker.patch.object(demisto, "command", return_value="long-running-execution")
+    run_long_running = mocker.patch.object(WebFileRepository, "run_long_running")
+    return_error = mocker.patch.object(WebFileRepository, "return_error")
+
+    WebFileRepository.main()
+
+    run_long_running.assert_not_called()
+    assert "'User ID for Read/Write' and its password are required" in return_error.call_args[0][0]
