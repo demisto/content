@@ -261,9 +261,11 @@ def get_scm_alert_url(alert_id: str, tsg_id: str = "") -> str:
         str: Full alert details URL.
     """
     if tsg_id:
-        return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}&tsg_id={tsg_id}"
+        return (
+            f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}&tsg_id={tsg_id}"
+        )
     return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail" f"?id={alert_id}"
- 
+
 
 def get_scm_vuln_url(vuln: dict, tsg_id: str = "") -> str:
     """Build the SCM vulnerability details URL.
@@ -282,10 +284,10 @@ def get_scm_vuln_url(vuln: dict, tsg_id: str = "") -> str:
             f"?vulnerabilityname={vulnerability_name}&tsg_id={tsg_id}"
         )
     return (
-            f"{get_scm_ui_base_url()}"
-            f"/insights/iot-security/assets/assets/overview/{device_id}"
-            f"?vulnerabilityname={vulnerability_name}"
-        )
+        f"{get_scm_ui_base_url()}"
+        f"/insights/iot-security/assets/assets/overview/{device_id}"
+        f"?vulnerabilityname={vulnerability_name}"
+    )
 
 
 def trim_seen_ids(seen_ids: list[str]) -> list[str]:
