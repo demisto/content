@@ -12,8 +12,10 @@ urllib3.disable_warnings()
 logging.getLogger().setLevel(logging.ERROR)
 OPENCTI_LOGS = "opencti_logs"
 # Deterministic ordering is required for cursor-based pagination to be stable across fetch cycles.
-# Without it, OpenCTI paginates by internal ID, so newly created observables may land before the stored cursor.
-PAGINATION_ORDER_BY = "created_at"
+# Without it, OpenCTI paginates in an order that is not stable over time, so new observables may land before the stored cursor.
+# Ordering by modification time (not creation time) moves every changed observable (e.g. scored or relabeled by an
+# enrichment connector after creation) past the stored cursor, so it is fetched again and its updates reach XSOAR.
+PAGINATION_ORDER_BY = "updated_at"
 PAGINATION_ORDER_MODE = "asc"
 
 XSOAR_TYPES_TO_OPENCTI = {
@@ -192,8 +194,8 @@ def fetch_indicators_command(
     integration_context = demisto.getIntegrationContext()
     last_run_id = integration_context.get("last_run_id")
     if last_run_id and integration_context.get("order_by") != PAGINATION_ORDER_BY:
-        # Cursors saved by previous versions were produced without ordering and are incompatible
-        # with the current sort, so start over instead of sending an invalid cursor.
+        # Cursors saved by previous versions were produced without ordering or with a different ordering
+        # and are incompatible with the current sort, so start over instead of sending an invalid cursor.
         demisto.info(f"{OPENCTI_LOGS} - in fetch_indicators_command - ignoring legacy cursor {last_run_id}")
         last_run_id = None
     demisto.info(f"{OPENCTI_LOGS} - in fetch_indicators_command - get last run = {last_run_id}")
