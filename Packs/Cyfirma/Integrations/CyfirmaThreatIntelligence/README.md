@@ -1,18 +1,19 @@
 # CYFIRMA Threat Intelligence
- 
+
 CYFIRMA is an AI-powered Preemptive External Threat Landscape Management platform that enables organizations to predict, identify, and prevent cyber threats by gaining visibility into external exposure and adversary intent. By transforming threat intelligence into predictive insights and actionable risk intelligence, CYFIRMA helps organizations reduce cyber risk, protect critical digital assets, and move from reactive defence to proactive threat prevention.
- 
+
 This integration is a feed integration. It ingests CYFIRMA threat intelligence indicators, including tailored indicators and tailored vulnerabilities, into Cortex XSOAR / Cortex XSIAM. It also provides commands to retrieve indicators and to search CYFIRMA for indicators, threat actors, malware, and vulnerabilities.
- 
+
 This integration was integrated and tested with the CYFIRMA API.
- 
+
 ## Prerequisites
- 
+
 - A CYFIRMA account with access to the Threat Intelligence API.
 - A valid CYFIRMA API key.
 - Network access from the Cortex engine or server to the CYFIRMA API URL (default: `https://api.cyfirma.com`).
+
 ## Configure CYFIRMA Threat Intelligence in Cortex
- 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API URL (e.g. https://api.cyfirma.com) | The base URL of the CYFIRMA API. Default: `https://api.cyfirma.com`. | True |
@@ -29,27 +30,27 @@ This integration was integrated and tested with the CYFIRMA API.
 | Feed Fetch Interval | How often the feed is fetched. Default: 240. | False |
 | Feed expiration interval | Controls when fetched indicators expire. | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
- 
+
 ## Commands
- 
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
- 
+
 ### cyfirma-get-ip
- 
+
 ***
 Retrieves IP indicators from CYFIRMA.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-ip`
- 
+
 #### Input
- 
+
 There are no input arguments for this command.
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Indicator.value | String | The indicator value (IP, domain, URL, file hash, etc.). |
@@ -59,28 +60,26 @@ There are no input arguments for this command.
 | Cyfirma.Indicator.threat_actor | Unknown | Threat actor(s) associated with the indicator. |
 | Cyfirma.Indicator.vendors | Unknown | Security vendor detections for the indicator. |
 | Cyfirma.Indicator.action | String | The recommended action for the indicator. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-ip
-```
- 
+
+```!cyfirma-get-ip```
+
 ### cyfirma-get-domain
- 
+
 ***
 Retrieves domain indicators from CYFIRMA.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-domain`
- 
+
 #### Input
- 
+
 There are no input arguments for this command.
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Indicator.value | String | The indicator value (IP, domain, URL, file hash, etc.). |
@@ -90,28 +89,26 @@ There are no input arguments for this command.
 | Cyfirma.Indicator.threat_actor | Unknown | Threat actor(s) associated with the indicator. |
 | Cyfirma.Indicator.vendors | Unknown | Security vendor detections for the indicator. |
 | Cyfirma.Indicator.action | String | The recommended action for the indicator. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-domain
-```
- 
+
+```!cyfirma-get-domain```
+
 ### cyfirma-get-url
- 
+
 ***
 Retrieves URL indicators from CYFIRMA.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-url`
- 
+
 #### Input
- 
+
 There are no input arguments for this command.
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Indicator.value | String | The indicator value (IP, domain, URL, file hash, etc.). |
@@ -121,28 +118,26 @@ There are no input arguments for this command.
 | Cyfirma.Indicator.threat_actor | Unknown | Threat actor(s) associated with the indicator. |
 | Cyfirma.Indicator.vendors | Unknown | Security vendor detections for the indicator. |
 | Cyfirma.Indicator.action | String | The recommended action for the indicator. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-url
-```
- 
+
+```!cyfirma-get-url```
+
 ### cyfirma-get-file
- 
+
 ***
 Retrieves file hash indicators from CYFIRMA.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-file`
- 
+
 #### Input
- 
+
 There are no input arguments for this command.
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Indicator.value | String | The indicator value (IP, domain, URL, file hash, etc.). |
@@ -152,30 +147,28 @@ There are no input arguments for this command.
 | Cyfirma.Indicator.threat_actor | Unknown | Threat actor(s) associated with the indicator. |
 | Cyfirma.Indicator.vendors | Unknown | Security vendor detections for the indicator. |
 | Cyfirma.Indicator.action | String | The recommended action for the indicator. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-file
-```
- 
+
+```!cyfirma-get-file```
+
 ### cyfirma-get-ioc-search
- 
+
 ***
 Searches CYFIRMA for an indicator by value.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-ioc-search`
- 
+
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The indicator value to search for (IP, domain, URL, file hash, etc.). | Required |
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Indicator.value | String | The indicator value (IP, domain, URL, file hash, etc.). |
@@ -185,30 +178,28 @@ Searches CYFIRMA for an indicator by value.
 | Cyfirma.Indicator.threat_actor | Unknown | Threat actor(s) associated with the indicator. |
 | Cyfirma.Indicator.vendors | Unknown | Security vendor detections for the indicator. |
 | Cyfirma.Indicator.action | String | The recommended action for the indicator. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-ioc-search value=<indicator_value>
-```
- 
+
+```!cyfirma-get-ioc-search value=<indicator_value>```
+
 ### cyfirma-get-threat-actor-search
- 
+
 ***
 Searches CYFIRMA for a threat actor by name.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-threat-actor-search`
- 
+
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The threat actor name to search for. | Required |
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.ThreatActor.value | String | The threat actor name. |
@@ -221,30 +212,28 @@ Searches CYFIRMA for a threat actor by name.
 | Cyfirma.ThreatActor.target_industries | String | Industries targeted by the threat actor. |
 | Cyfirma.ThreatActor.associated_malware | String | Malware associated with the threat actor. |
 | Cyfirma.ThreatActor.associated_campaigns | String | Campaigns associated with the threat actor. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-threat-actor-search value=<threat_actor_name>
-```
- 
+
+```!cyfirma-get-threat-actor-search value=<threat_actor_name>```
+
 ### cyfirma-get-malware-search
- 
+
 ***
 Searches CYFIRMA for malware by name.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-malware-search`
- 
+
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The malware name to search for. | Required |
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Malware.value | String | The malware name. |
@@ -255,30 +244,28 @@ Searches CYFIRMA for malware by name.
 | Cyfirma.Malware.target_countries | String | Countries targeted by the malware. |
 | Cyfirma.Malware.country | String | Country associated with the malware. |
 | Cyfirma.Malware.threat_actors | String | Threat actors associated with the malware. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-malware-search value=<malware_name>
-```
- 
+
+```!cyfirma-get-malware-search value=<malware_name>```
+
 ### cyfirma-get-vulnerability-search
- 
+
 ***
 Searches CYFIRMA for a vulnerability by CVE ID.
- 
+
 #### Base Command
- 
+
 `cyfirma-get-vulnerability-search`
- 
+
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The CVE ID to search for, for example CVE-2024-12345. | Required |
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cyfirma.Vulnerability.value | String | The CVE ID. |
@@ -299,18 +286,15 @@ Searches CYFIRMA for a vulnerability by CVE ID.
 | Cyfirma.Vulnerability.integrity_impact | String | The CVSS integrity impact. |
 | Cyfirma.Vulnerability.availability_impact | String | The CVSS availability impact. |
 | Cyfirma.Vulnerability.vendors | Unknown | Vendors affected by the vulnerability. |
- 
+
 #### Command example
- 
-```
-!cyfirma-get-vulnerability-search value=CVE-2024-12345
-```
- 
+
+```!cyfirma-get-vulnerability-search value=CVE-2024-12345```
+
 ## Troubleshooting
- 
+
 - **Authorization or connection errors on Test:** Verify that the API URL is correct and that the API key is valid and active.
 - **SSL errors:** Ensure the certificate chain is trusted. Use **Trust any certificate (not secure)** only for troubleshooting.
 - **No indicators ingested:** Confirm that **Fetch threat intelligence feeds** is enabled, that at least one of the tailored indicator or tailored vulnerability options is enabled, and that the first fetch period covers the time range you expect.
 - **Indicators missing from the system:** If the exclusion list is blocking them, enable **Bypass exclusion list** for this instance.
 - **Proxy issues:** If your environment requires a proxy, enable **Use system proxy settings**.
- 
