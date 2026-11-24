@@ -67,7 +67,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 | customer_label | A free-text field which can be used to keep track of particular attacks. | Optional |
 | tags | A comma-separated list of tags to apply to the attack. | Optional |
 | region | The name of the region to create a takedown under.<br/>If not provided, the region specified in the instance configuration will be used.<br/>. | Optional |
-| impersonation_target_id | The ID of the impersonation target to attach to the takedown.<br/>Required by the API for social media impersonation attacks.<br/>Run the command "netcraft-impersonation-target-list" to get the list of valid IDs. | Optional |
+| impersonation_target_id | The ID of the impersonation target to attach to the takedown.<br/>The API requires this argument for social media impersonation attacks.<br/>Run the netcraft-impersonation-target-list command to get the list of valid IDs. | Optional |
 
 #### Context Output
 
@@ -957,7 +957,7 @@ Get information on the attack types that are available under a given region.
 ### netcraft-impersonation-target-list
 
 ***
-Get the impersonation targets (e.g., executives or brand entities) available to a region. Use the target ID with the "impersonation_target_id" argument of the "netcraft-attack-report" command.
+Gets the impersonation targets (for example, executives or brand entities) available to a region. Use the target ID with the impersonation_target_id argument of the netcraft-attack-report command.
 
 #### Base Command
 
@@ -967,9 +967,9 @@ Get the impersonation targets (e.g., executives or brand entities) available to 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | Filter to impersonation targets that the given region can access.<br/>If not provided, the region specified in the instance configuration will be used.<br/>. | Optional |
+| region | The region to filter the impersonation targets by. The command returns only the targets that this region can access.<br/>If you do not provide a region, the command uses the region specified in the instance configuration. | Optional |
 | limit | The maximum number of impersonation targets to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all impersonation targets. If set to true, the "limit" argument is ignored. Possible values are: false, true. Default is false. | Optional |
+| all_results | Whether to retrieve all impersonation targets. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
@@ -1014,7 +1014,7 @@ Get the impersonation targets (e.g., executives or brand entities) available to 
 ### netcraft-impersonation-target-profile-list
 
 ***
-Get the known social media profiles of an impersonation target.
+Gets the known social media profiles of an impersonation target.
 
 #### Base Command
 
@@ -1024,15 +1024,15 @@ Get the known social media profiles of an impersonation target.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| impersonation_target_id | The ID of the impersonation target. Run the command "netcraft-impersonation-target-list" to get the list of valid IDs. | Required |
+| impersonation_target_id | The ID of the impersonation target. Run the netcraft-impersonation-target-list command to get the list of valid IDs. | Required |
 | limit | The maximum number of profiles to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all profiles. If set to true, the "limit" argument is ignored. Possible values are: false, true. Default is false. | Optional |
+| all_results | Whether to retrieve all profiles. If you set this argument to true, the command ignores the limit argument. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Netcraft.ImpersonationTargetProfile.platform | String | The platform of the profile (e.g., facebook). |
+| Netcraft.ImpersonationTargetProfile.platform | String | The platform of the profile (for example, Facebook). |
 | Netcraft.ImpersonationTargetProfile.profile | String | The profile identifier or URL on the platform. |
 
 #### Command example
