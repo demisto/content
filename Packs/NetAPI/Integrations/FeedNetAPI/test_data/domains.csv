@@ -1,0 +1,4 @@
+domain,threat_type,evidence,first_seen,last_seen
+1gogetrichrightnow.com,sinkhole-ns,"ns sc-a.sinkhole.shadowserver.org",2019-12-18,2026-11-23
+mosoli.com,related-phishing,"ip 72.251.11.93 (10 of 20 listed)",2018-02-11,2026-11-23
+newnotify.online,cert-polska,,2023-02-25,2026-11-24

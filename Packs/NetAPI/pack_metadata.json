@@ -1,0 +1,42 @@
+{
+    "name": "NetAPI",
+    "description": "Free threat intelligence feeds from NetAPI: compromised domains (phishing, scam and malware domains, partly found by NetAPI's own detection over the zone files of all registries) and the IP addresses of attackers seen by NetAPI's honeypot sensors.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "NetAPI",
+    "url": "https://netapi.com",
+    "email": "",
+    "created": "2026-11-24T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Feed",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Phishing",
+        "Malware"
+    ],
+    "keywords": [
+        "NetAPI",
+        "Feed",
+        "Phishing",
+        "Malware",
+        "Sinkhole",
+        "Honeypot",
+        "Compromised domains"
+    ],
+    "githubUser": [
+        "slavaolesik"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

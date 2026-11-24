@@ -1,0 +1,140 @@
+category: Data Enrichment & Threat Intelligence
+provider: NetAPI
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: NetAPI Feed
+  version: -1
+configuration:
+- name: list
+  display: List
+  type: 15
+  section: Connect
+  required: true
+  defaultvalue: Compromised domains
+  options:
+  - Compromised domains
+  - Compromised domains without sinkholed malware domains
+  - Honeypot attacker IPs
+  additionalinfo: The NetAPI list this instance fetches. To fetch more than one list, configure one instance per list.
+- name: polling_timeout
+  display: Request Timeout
+  type: 0
+  section: Connect
+  defaultvalue: '120'
+  additionalinfo: The timeout of the download request in seconds. The domain list is about 20 MB.
+  advanced: true
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+  required: false
+- name: feed
+  display: Fetch indicators
+  type: 8
+  section: Collect
+  defaultvalue: 'true'
+  required: false
+- name: feedReputation
+  display: Indicator Reputation
+  type: 18
+  section: Collect
+  defaultvalue: Bad
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: The reputation with which indicators from this integration instance will be marked.
+  required: false
+- name: feedReliability
+  display: Source Reliability
+  type: 15
+  section: Collect
+  required: true
+  defaultvalue: C - Fairly reliable
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: The reliability of the source providing the intelligence data.
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  type: 15
+  section: Collect
+  defaultvalue: WHITE
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  required: false
+- name: feedExpirationPolicy
+  display: ''
+  type: 17
+  section: Collect
+  defaultvalue: suddenDeath
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+- name: feedExpirationInterval
+  display: ''
+  type: 1
+  section: Collect
+  defaultvalue: '20160'
+  required: false
+- name: feedFetchInterval
+  display: Feed Fetch Interval
+  type: 19
+  section: Collect
+  defaultvalue: '60'
+  additionalinfo: NetAPI rebuilds the lists every hour. Unchanged lists are not downloaded again.
+  required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
+  type: 8
+  section: Collect
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
+- name: feedTags
+  display: Tags
+  type: 0
+  section: Collect
+  additionalinfo: Supports CSV values.
+  required: false
+description: Fetches the free NetAPI threat intelligence lists - compromised domains and the IP addresses of attackers seen by the NetAPI honeypot sensors.
+display: NetAPI Feed
+name: NetAPI Feed
+script:
+  commands:
+  - name: netapi-get-indicators
+    description: Gets indicators from the feed.
+    arguments:
+    - name: limit
+      description: The maximum number of results to return.
+      defaultValue: '50'
+    outputs: []
+  dockerimage: demisto/fastapi:0.163.1.14846051
+  feed: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+supportlevelheader: community
+tests:
+- No tests (auto formatted)
