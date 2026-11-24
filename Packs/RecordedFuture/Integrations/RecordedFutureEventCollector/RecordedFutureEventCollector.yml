@@ -36,6 +36,22 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  hidden:
+  - xsoar
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector
@@ -52,11 +68,17 @@ script:
       - 'false'
       required: true
     - defaultValue: 10
-      description: Maximum number of results to return.
+      description: The maximum number of results to return.
       name: limit
+    - description: 'The start time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T00:00:00Z) or relative time (e.g., 3 days). If not set, the API default (about the last 7 days) is used.'
+      name: start_time
+      type: date
+    - description: 'The end time (UTC) for alerts to return, inclusive. Supports ISO 8601 (e.g., 2026-11-09T23:59:59Z) or relative time (e.g., 1 hour). Requires start_time.'
+      name: end_time
+      type: date
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.16.14740428
   isfetchevents: true
   script: '-'
   subtype: python3
