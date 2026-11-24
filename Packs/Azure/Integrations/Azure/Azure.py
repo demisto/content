@@ -2,6 +2,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
+# Uses MicrosoftApiModule and COOCApiModule.
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout

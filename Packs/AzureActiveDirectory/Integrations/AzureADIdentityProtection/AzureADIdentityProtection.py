@@ -2,6 +2,7 @@ import demistomock as demisto
 
 import dateparser
 import urllib3
+# Uses MicrosoftApiModule.
 from MicrosoftApiModule import *
 
 urllib3.disable_warnings()

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+# Uses MicrosoftGraphMailApiModule, which uses MicrosoftApiModule.
 from MicrosoftGraphMailApiModule import *  # noqa: E402
 
 from CommonServerUserPython import *

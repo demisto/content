@@ -3,6 +3,7 @@ from botocore.config import Config
 from CommonServerPython import *
 
 from CommonServerUserPython import *
+from COOCApiModule import *  # noqa: E402
 
 STS_ENDPOINTS = {
     "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",

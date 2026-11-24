@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
+from AWSApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from datetime import date, datetime, timedelta, UTC

@@ -6,6 +6,7 @@ from http import HTTPStatus
 
 import demistomock as demisto
 import urllib3.util
+# Uses AWSApiModule, which uses COOCApiModule.
 from AWSApiModule import *  # noqa: E402
 from CommonServerPython import *
 

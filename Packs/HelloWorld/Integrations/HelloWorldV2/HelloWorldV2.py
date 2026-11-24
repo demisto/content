@@ -15,6 +15,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+# Uses ContentClientApiModule and BaseContentApiModule.
 from ContentClientApiModule import *
 from BaseContentApiModule import *
 

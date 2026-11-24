@@ -9,6 +9,7 @@ import httplib2
 import io
 import urllib.parse
 import urllib3
+# Uses COOCApiModule.
 from COOCApiModule import *
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
