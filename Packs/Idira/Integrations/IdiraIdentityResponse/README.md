@@ -4,6 +4,8 @@ Trigger identity (workforce) response actions in the Idira Identity Security Pla
 
 This integration was implemented and tested with the Idira Identity Security Platform Shared Services (ISPSS) Identity workforce APIs.
 
+This version implements the actions for Identity (workforce), Privilege Cloud (session/credential) and Secure Infrastructure Access (access-policy) services.
+
 ## Authentication
 
 The integration uses the OAuth 2.0 **client-credentials** flow against `https://<tenant>.id.cyberark.cloud/oauth2/platformtoken` and sends the resulting Bearer token on every Identity API call. See the integration description for the service-user setup steps. Identity workforce actions require **system-administrator** or **user-management** rights on the service user.
@@ -226,13 +228,23 @@ Restores access by enabling a previously disabled SIA access policy. All other p
 
 **Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `PreviousStatus`, `Status`, `Success`).
 
-## Error handling
+## Troubleshooting
 
-Responses are mapped per the development guide: `401` triggers one re-authentication retry (then an auth error), `403` reports insufficient permissions, `404` prompts you to re-resolve the target, and `409` is treated as an idempotent success (the target is already in the requested state). `429`/`5xx` are retried with exponential backoff.
+The integration maps HTTP errors to actionable messages:
 
-## Known limitations
+| **Status / symptom** | **Behavior** | **What to check** |
+| --- | --- | --- |
+| `401` | The cached token is cleared and the request is retried once. If it fails again, an `Authentication failed` error is returned. | Verify the Client ID and Client Secret, and that the service user is an OAuth confidential client. |
+| `403` | An `Insufficient permissions` error is returned. | Identity actions require **system-administrator** or **user-management** rights. Privilege Cloud actions require the relevant Safe permissions, and SIA policy actions require the `DpaAdmin` role. |
+| `404` | A `Target not found` error is returned. | Run `idira-identity-response-get-user-by-name` again to resolve the user unique ID. |
+| `409` | Treated as success, because the target is already in the requested state. | None. |
+| `429` | A `Rate limited` error is returned. | Retry later, and don't retry in a tight loop. |
+| `5xx` and connection errors | Retried up to 3 times with exponential backoff. | If the error persists, check the status of the Idira service. |
+| `This command requires the Privilege Cloud URL` or `...the Secure Infrastructure Access (SIA) URL` | The command stops before sending any request. | Set the missing URL in the integration instance configuration. |
+
+## Known Limitations
 
 - The following request-body JSON keys are defaulted and should be verified against your tenant Swagger (`/identity-docs-api`) before go-live; each is a single-line constant at the top of the integration code:
   - `GetUserByName` request key - defaulted to `name`.
   - `SignOutEverywhere` user-ID key - defaulted to `ID`.
-- This version covers Identity (workforce), Privilege Cloud (account resolution, session terminate/suspend/resume, credential rotate/verify, vault account), and Secure Infrastructure Access (disable access policy) actions. Secure Cloud Access (SCA) session revocation and machine-identity (workload/authenticator) deletion are not yet included — their API path shapes are pending live-tenant confirmation. Endpoint containment (EPM) is handled by the **Idira EPM SOC Response** integration.
+- This version covers Identity (workforce), Privilege Cloud (account resolution, session terminate/suspend/resume, credential rotate/verify, vault account), and Secure Infrastructure Access (disable and enable access policy) actions. Secure Cloud Access (SCA) session revocation and machine-identity (workload/authenticator) deletion are not yet included — their API path shapes are pending live-tenant confirmation. Endpoint containment (EPM) is handled by the **Idira EPM SOC Response** integration.

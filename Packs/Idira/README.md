@@ -1,5 +1,3 @@
-<~XSIAM>
-
 ## What does this pack do?
 
 The **Idira** pack lets you trigger identity (workforce) response actions in the Idira Identity Security Platform as part of a detection-to-containment playbook. From an incident or automation you can:
@@ -36,4 +34,3 @@ Complete the service-user setup in Identity Administration before configuring th
 
 For more information, see the [Idira Identity Response](Integrations/IdiraIdentityResponse/README.md) integration documentation.
 
-</~XSIAM>

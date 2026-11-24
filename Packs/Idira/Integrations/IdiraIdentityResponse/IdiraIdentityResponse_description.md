@@ -1,7 +1,5 @@
 ## Idira Identity Response
 
-This integration triggers **identity (workforce) response actions** in the Idira Identity Security Platform - lock, disable, or unlock a user, force logout, expire a password, and remove a privileged role - as part of a detection-to-containment playbook.
-
 ### Authentication
 
 The integration authenticates with the Idira Identity Security Platform Shared Services (ISPSS) using the **OAuth 2.0 client-credentials** flow. It requests a Bearer token from `https://<tenant>.id.cyberark.cloud/oauth2/platformtoken` and sends it on every subsequent Identity API call.
@@ -28,7 +26,3 @@ Assign the service user a role that grants **system-administrator** or **user-ma
 | **Identity URL** | The Idira Identity tenant FQDN, e.g. `https://abc1234.id.cyberark.cloud` |
 | **Client ID** | The service username without domain |
 | **Client Secret** | The service user password |
-
-### Scope
-
-This version implements the actions for Identity (workforce), Privilege Cloud (session/credential) and Secure Infrastructure Access (access-policy) services.

@@ -3,8 +3,8 @@
     "description": "Trigger identity (workforce) response actions in the Idira Identity Security Platform - lock, disable, or unlock a user, force logout, expire a password, and remove a privileged role - as part of a detection-to-containment playbook.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
-    "author": "Idira",
-    "url": "https://www.paloaltonetworks.com/resources/guides/tech-support-guidelines",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "cybr-bizdevtech@paloaltonetworks.com",
     "created": "2026-08-26T21:49:36Z",
     "categories": [
