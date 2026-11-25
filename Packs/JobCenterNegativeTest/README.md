@@ -20,7 +20,6 @@ Each file starts from a valid interval job and breaks exactly one rule. The file
 | ST110_JobNameTooLong.yml | `jobName` is 129 characters | ST110 |
 | ST110_JobNameLeadingSpace.yml | `jobName` starts with a space | ST110 |
 | ST110_JobNameIllegalChar.yml | `jobName: Case@Followup` | ST110 |
-| ST110_JobNameNumber.yml | `jobName: 123` (a number, not a string) | ST110 |
 | ST110_MissingMetadata.yml | No `metadata` | ST110 |
 | ST110_MetadataNotMapping.yml | `metadata` is a list | ST110 |
 | ST110_MissingAgentId.yml | No `metadata.agent_id` | ST110 |
@@ -28,7 +27,6 @@ Each file starts from a valid interval job and breaks exactly one rule. The file
 | ST110_EntityTypeWithoutEntityId.yml | `entityType` without `entityId` | ST110 |
 | ST110_EntityIdWithoutEntityType.yml | `entityId` without `entityType` | ST110 |
 | ST110_InvalidEntityType.yml | `entityType: incident` | ST110 |
-| ST110_EntityIdNumber.yml | `entityId: 1234` (a number, not a string) | ST110 |
 | ST110_InvalidStatus.yml | `status: RUNNING` | ST110 |
 | ST110_MissingTriggerType.yml | No `triggerType` | ST110 |
 | ST110_InvalidTriggerType.yml | `triggerType: cron` | ST110 |
@@ -43,10 +41,6 @@ Each file starts from a valid interval job and breaks exactly one rule. The file
 | ST110_OnetimeTriggerSpecNotMapping.yml | One-time job with `triggerSpec: soon` | ST110 |
 | ST110_UniquenessKeyEmpty.yml | `uniquenessKey: ""` | ST110 |
 | ST110_UniquenessKeyTooLong.yml | `uniquenessKey` is 257 characters | ST110 |
-| ST110_MissingName.yml | No `name` | ST110 (reported as BA102, see note 1) |
-| ST110_MissingId.yml | No `commonfields.id` | ST110 (reported as BA102, see note 1) |
-| ST110_SystemNotBool.yml | `system: maybe` | ST110 (reported as BA102, see note 1) |
-| ST110_SystemStringTrue.yml | `system: "true"` (a string, not a boolean) | ST110 (not reported, see note 2) |
 
 ### Basic (BA)
 
@@ -68,17 +62,17 @@ These two files need the content graph (neo4j) to be checked.
 | GR105_DuplicateIdA.yml | Uses the same ID as GR105_DuplicateIdB.yml (`job-duplicate`) | GR105 |
 | GR105_DuplicateIdB.yml | Uses the same ID as GR105_DuplicateIdA.yml (`job-duplicate`) | GR105 |
 
-### Content path
+## Removed cases
 
-`validate-content-path` (pre-commit) rejects these files. The `validate` command does not.
+These files were removed because they are not useful negative tests for Job Center:
 
-| File | Broken rule | Expected error |
-| --- | --- | --- |
-| Nested/NestedJob.yml | Job in a subfolder under `JobCenters` | validate-content-path: JobCenter files must be placed directly under JobCenters |
-| WrongSuffix.yaml | `.yaml` suffix instead of `.yml` | validate-content-path: This file's suffix is not allowed |
-
-## Notes
-
-1. The SDK rejects these files when it loads them, before ST110 runs. The error is BA102 ("The given file is not supported in the validate command") together with a pydantic error that names the field.
-2. The SDK accepts `system: "true"` because it converts the string to a boolean. The same happens with `system: 1` and `locked: "yes"`.
-3. Because of note 1, running `validate` on the whole pack stops with a pydantic error. Validate one file at a time.
+| File | Reason |
+| --- | --- |
+| ST110_MissingName.yml | A missing `name` crashes `demisto-sdk validate -g` for every content type. This is generic SDK behavior, not specific to Job Center. |
+| ST110_MissingId.yml | A missing `commonfields.id` crashes `demisto-sdk validate -g` for every content type. |
+| ST110_SystemNotBool.yml | A boolean that cannot be converted crashes `demisto-sdk validate -g` for every content type. |
+| ST110_SystemStringTrue.yml | Every content type converts `system: "true"` to `true`, so the file passes. |
+| Nested/NestedJob.yml | Fails the pre-commit `validate-content-paths` hook by design. Already proven in CI. |
+| WrongSuffix.yaml | Fails the pre-commit `validate-content-paths` hook by design. Already proven in CI. |
+| ST110_JobNameNumber.yml | Job Center now converts numbers in text fields to strings, like other content types, so `jobName: 123` passes. |
+| ST110_EntityIdNumber.yml | Job Center now converts numbers in text fields to strings, so `entityId: 1234` passes. |
