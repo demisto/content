@@ -14,13 +14,30 @@ configuration:
   defaultvalue: https://api.platform.censys.io
   additionalinfo: The URL of the Censys API server.
   section: Connect
+- display: Authentication Type
+  name: authentication_type
+  type: 15
+  required: false
+  defaultvalue: API Token
+  options:
+  - OAuth 2.0
+  - API Token
+  additionalinfo: Select the authentication type. "API Token" uses a Personal Access Token and "OAuth 2.0" uses the Client ID and Client Secret of a Censys service account.
+  section: Connect
+- display: Client ID (Required for OAuth 2.0)
+  displaypassword: Client Secret (Required for OAuth 2.0)
+  name: oauth_credentials
+  type: 9
+  required: false
+  additionalinfo: Client ID and Client Secret of the Censys service account. Required when the Authentication Type is "OAuth 2.0".
+  section: Connect
 - display: ""
   displaypassword: API Token
   name: api_token
   hiddenusername: true
   type: 9
-  required: true
-  additionalinfo: Personal access token from the Censys platform.
+  required: false
+  additionalinfo: Personal access token from the Censys platform. Required when the Authentication Type is "API Token".
   section: Connect
 - display: Organization ID
   name: organization_id
@@ -43,7 +60,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-  additionalinfo: Leverages the host.reputation.label data from Censys to score IPs as Malicious, Suspicious or Good.
+  additionalinfo: Leverages the host.reputation.label data from Censys to score IPs as Malicious, Suspicious or Benign.
 - display: Use Censys Host Enrichment API for ip command
   name: use_host_enrichment
   type: 8
@@ -2386,7 +2403,7 @@ script:
     - contextPath: Censys.RelatedInfrastructure.ioc_value
       description: The value of the IOC.
       type: String
-  dockerimage: demisto/python3:3.12.14.12343672
+  dockerimage: demisto/python3:3.12.16.14740428
   runonce: false
   script: '-'
   subtype: python3
