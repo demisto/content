@@ -15858,8 +15858,6 @@ BASE_PICKLE_ALLOWED_CLASSES = {
 
 
 # Functions that are NOT types but are needed for legitimate ML model deserialization.
-# Discovered by pickling DataFrame, Series, and ndarray with protocols 2 and 4,
-# then enumerating all GLOBAL opcodes and checking isinstance(obj, type).
 _PICKLE_FUNCTION_ALLOWLIST = frozenset({
     # numpy reconstruction (both old and new module paths)
     ("numpy._core.multiarray", "_reconstruct"),  # numpy 2.x

