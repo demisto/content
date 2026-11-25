@@ -22,7 +22,8 @@
         "cloud",
         "cloud_runtime_security",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "data_security"
     ],
     "derivedSource": "cooc"
 }

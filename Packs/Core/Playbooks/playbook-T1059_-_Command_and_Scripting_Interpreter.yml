@@ -1699,6 +1699,7 @@ outputs: []
 tests:
 - T1059 - Command and Scripting Interpreter - Test
 fromversion: 6.6.0
+toversion: 8.15.0
 contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
