@@ -6,6 +6,8 @@ from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *  # noqa: E402
 from requests.exceptions import ConnectionError, Timeout
+from enum import Enum
+from typing import ClassVar
 import datetime as dt
 import urllib.parse
 from urllib.parse import parse_qs, urlparse
@@ -460,6 +462,75 @@ class TokenScope:
     WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
 
 
+class AzureServices(str, Enum):
+    """Azure services. ``AzureIntegration._resolve_service`` maps a command to its service, and
+    ``AzureIntegration.service_client_classes`` maps a service to its client class."""
+
+    STORAGE = "storage"
+    NETWORK = "network"
+    COMPUTE = "compute"
+    SQL = "sql"
+    POSTGRES = "postgres"
+    MYSQL = "mysql"
+    APP_SERVICE = "appservice"
+    KEY_VAULT = "keyvault"
+    CONTAINER_REGISTRY = "containerregistry"
+    AKS = "aks"
+    COSMOS_DB = "cosmosdb"
+    MONITOR = "monitor"
+    LOG_ANALYTICS = "loganalytics"
+    POLICY = "policy"
+    BILLING = "billing"
+    RESOURCE_MANAGER = "resourcemanager"
+
+
+# The second word of the command name (azure-<prefix>-...) -> its service.
+SERVICE_PREFIX_MAP: dict[str, AzureServices] = {
+    "storage": AzureServices.STORAGE,
+    "vn": AzureServices.NETWORK,
+    "nsg": AzureServices.NETWORK,
+    "firewall": AzureServices.NETWORK,
+    "network": AzureServices.NETWORK,
+    "application": AzureServices.NETWORK,  # azure-application-gateway-waf-...
+    "front": AzureServices.NETWORK,  # azure-front-door-...
+    "compute": AzureServices.COMPUTE,
+    "vm": AzureServices.COMPUTE,
+    "disk": AzureServices.COMPUTE,
+    "sql": AzureServices.SQL,
+    "sqldb": AzureServices.SQL,
+    "postgres": AzureServices.POSTGRES,
+    "mysql": AzureServices.MYSQL,
+    "appservice": AzureServices.APP_SERVICE,
+    "webapp": AzureServices.APP_SERVICE,
+    "function": AzureServices.APP_SERVICE,
+    "key": AzureServices.KEY_VAULT,
+    "keyvault": AzureServices.KEY_VAULT,
+    "acr": AzureServices.CONTAINER_REGISTRY,
+    "cr": AzureServices.CONTAINER_REGISTRY,
+    "aks": AzureServices.AKS,
+    "cosmos": AzureServices.COSMOS_DB,
+    "cosmosdb": AzureServices.COSMOS_DB,
+    "monitor": AzureServices.MONITOR,
+    "log": AzureServices.LOG_ANALYTICS,
+    "policy": AzureServices.POLICY,
+    "billing": AzureServices.BILLING,
+    "rg": AzureServices.RESOURCE_MANAGER,
+    "rm": AzureServices.RESOURCE_MANAGER,
+}
+
+# Commands whose service can't be derived from the command name. test-module and the auth helper commands
+# only validate authentication, so they use the Resource Manager API.
+COMMAND_SERVICE_MAP: dict[str, AzureServices] = {
+    "test-module": AzureServices.RESOURCE_MANAGER,
+    **{command: AzureServices.RESOURCE_MANAGER for command in AUTH_HELPER_COMMANDS},
+    "azure-set-function-app-http-version2-0-quick-action": AzureServices.APP_SERVICE,
+    "azure-set-storage-account-https-only-quick-action": AzureServices.STORAGE,
+    "azure-network-disable-storage-account-access-quick-action": AzureServices.STORAGE,
+    "azure-disable-public-private-access-vm-disk-quick-action": AzureServices.COMPUTE,
+    "azure-disable-public-n-private-access-vm-disk-quick-action": AzureServices.COMPUTE,
+}
+
+
 """ PERMISSION HELPERS """
 
 
@@ -519,8 +590,8 @@ class AzureBaseClient:
       configured ``connection_type``.
     - **Cortex Platform path**: ``headers`` carry a CTS bearer token and requests go through ``BaseClient``.
 
-    Integrations subclass it with their resource request methods (Azure: ``AzureClient``) and pass the
-    subclass to ``AzureIntegration`` as ``client_class``.
+    Integrations subclass it with their resource request methods (Azure: ``AzureClient``) and set the
+    subclass as ``client_class`` on their ``AzureIntegration`` subclass.
     """
 
     def __init__(
@@ -774,8 +845,11 @@ class AzureIntegration(CloudIntegration):
     - **Cortex Platform path**: fetches a CTS access token for the ``subscription_id`` with the token
       scope of the command.
 
-    ``get_client()`` builds ``client_class``: the integration's ``AzureBaseClient`` subclass with the resource
-    request methods (Azure: ``AzureClient``), passed in by ``main()``.
+    Like AWS and GCP, ``get_client()`` returns the service client for the current command. The service is
+    resolved from the command name (see ``_resolve_service``), and its client class is taken from
+    ``service_client_classes``, falling back to ``client_class``. Integrations subclass ``AzureIntegration``
+    and set these to their ``AzureBaseClient`` subclasses with the resource request methods (Azure:
+    ``AzureClient`` for all services, until it is split into per-service clients).
 
     - **Registered commands** (``@AzureIntegration.register``): ``(client, args)``, or ``(args, client)``
       when registered with ``polling=True``.
@@ -789,18 +863,26 @@ class AzureIntegration(CloudIntegration):
     cloud_type = CloudTypes.AZURE.value
     account_id_arg = "subscription_id"
     uses_proxy_env = True
+    polling_commands = frozenset(POLLING_COMMANDS)
+    # service -> its client class. Services without an entry use client_class.
+    service_client_classes: ClassVar[dict[AzureServices, type[AzureBaseClient]]] = {}
+    client_class: ClassVar[type[AzureBaseClient]] = AzureBaseClient
 
-    def __init__(self, command: str, args: dict, params: dict, client_class: type[AzureBaseClient] = AzureBaseClient) -> None:
+    def __init__(self, command: str, args: dict, params: dict) -> None:
         super().__init__(command, args, params)
-        self.client_class = client_class
         self.azure_ad_endpoint: str = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
 
     def get_client(self) -> AzureBaseClient:
-        """Build ``client_class`` for the current command.
+        """Build the client for the service of ``self.command``."""
+        return self.get_service_client(self._resolve_service(self.command))
 
-        On the Cortex Platform path a CTS token is fetched for the token scope of the command. On the
-        marketplace path the mandatory parameters of the configured auth type are validated, and
-        ``MicrosoftClient`` handles authentication.
+    def get_service_client(self, service: AzureServices) -> AzureBaseClient:
+        """Build the client of ``service`` (``service_client_classes``, falling back to ``client_class``).
+
+        The scope and resource are those of the current command (storage data-plane or management, see
+        ``is_storage_command``), since the commands of one service can use both APIs. On the Cortex Platform
+        path a CTS token is fetched for the token scope of the command. On the marketplace path the mandatory
+        parameters of the configured auth type are validated, and ``MicrosoftClient`` handles authentication.
 
         Raises:
             DemistoException: If the CTS token is missing or mandatory auth parameters are not configured.
@@ -827,7 +909,8 @@ class AzureIntegration(CloudIntegration):
             # Marketplace path: ensure all mandatory parameters for the selected auth type are configured
             # before attempting any API call.
             self.validate_auth_params(self.params, connection_type, self.command)
-        return self.client_class(
+        client_class = self.service_client_classes.get(service, self.client_class)
+        return client_class(
             app_id=self.params.get("app_id", ""),
             subscription_id=self.params.get("subscription_id", ""),
             resource_group_name=self.params.get("resource_group_name", ""),
@@ -966,7 +1049,7 @@ class AzureIntegration(CloudIntegration):
         """Call an existing command: ``(args, client=, params=)`` for ``POLLING_COMMANDS``,
         ``(client=, params=, args=)`` otherwise."""
         client = self.get_client()
-        if self.command in POLLING_COMMANDS:
+        if self.is_polling_command():
             # Polling commands are decorated with @polling_function and therefore take args as their first
             # positional argument instead of receiving it as a keyword argument.
             return handler(self.args, client=client, params=self.params)
@@ -1018,6 +1101,23 @@ class AzureIntegration(CloudIntegration):
         API, so only 'storage-container' commands and ``STORAGE_SPECIAL_COMMANDS`` are storage commands.
         """
         return "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS
+
+    @staticmethod
+    def _resolve_service(command: str) -> AzureServices:
+        """Resolve the Azure service for ``command``.
+
+        Uses ``COMMAND_SERVICE_MAP`` first, then maps the second word of ``azure-<prefix>-...`` through
+        ``SERVICE_PREFIX_MAP``.
+
+        Raises:
+            DemistoException: If no service can be resolved for ``command``.
+        """
+        if command in COMMAND_SERVICE_MAP:
+            return COMMAND_SERVICE_MAP[command]
+        prefix = command.split("-")[1] if command.count("-") >= 1 else ""
+        if prefix not in SERVICE_PREFIX_MAP:
+            raise DemistoException(f"Could not resolve an Azure service for command '{command}'.")
+        return SERVICE_PREFIX_MAP[prefix]
 
     @staticmethod
     def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:

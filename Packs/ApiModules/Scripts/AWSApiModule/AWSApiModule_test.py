@@ -509,6 +509,38 @@ def build_registration_integration(mocker, args: dict | None = None, params: dic
     return RegistrationTestAWSIntegration("aws-test-registered", args or {}, params or {})
 
 
+def test_aws_integration_is_polling_command_with_polling_timeout(mocker):
+    """
+    Given: An AWSIntegration whose args contain polling_timeout.
+    When: is_polling_command is called.
+    Then: It returns True.
+    """
+    assert build_registration_integration(mocker, args={"polling_timeout": "600"}).is_polling_command() is True
+
+
+def test_aws_integration_is_polling_command_without_polling_timeout(mocker):
+    """
+    Given: An AWSIntegration whose args do not contain polling_timeout.
+    When: is_polling_command is called.
+    Then: It returns False.
+    """
+    assert build_registration_integration(mocker, args={"bucket": "b1"}).is_polling_command() is False
+
+
+def test_aws_integration_execute_mapped_command_polling_passes_args_first(mocker):
+    """
+    Given: An AWSIntegration whose args contain polling_timeout.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (args, client).
+    """
+    args = {"polling_timeout": "600"}
+    integration = build_registration_integration(mocker, args=args)
+    handler = MagicMock(return_value="result")
+
+    assert integration.execute_mapped_command(handler) == "result"
+    handler.assert_called_once_with(args, "boto-client")
+
+
 def test_aws_integration_cloud_type_class_attribute():
     """
     Given: The AWSIntegration class.

@@ -13794,8 +13794,14 @@ COMMANDS_MAPPING: dict[str, Callable] = {
 }
 
 
+class AzureCOOCIntegration(AzureIntegration):
+    """``AzureIntegration`` that builds the Azure integration client (``AzureClient``)."""
+
+    client_class = AzureClient
+
+
 def main():  # pragma: no cover
-    AzureIntegration(demisto.command(), demisto.args(), demisto.params(), client_class=AzureClient).run(COMMANDS_MAPPING)
+    AzureCOOCIntegration(demisto.command(), demisto.args(), demisto.params()).run(COMMANDS_MAPPING)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

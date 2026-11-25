@@ -1207,6 +1207,79 @@ def test_cloud_integration_get_accounts_with_max_results(mocker):
     assert [a["account_id"] for a in result] == ["account-1", "account-2"]
 
 
+def test_cloud_integration_get_accounts_max_results_zero_returns_empty(mocker):
+    """
+    Given: The onboarding API returns accounts.
+    When: get_accounts is called with max_results=0.
+    Then: No accounts are returned and the onboarding API is not called.
+    """
+    mock_api = mocker.patch.object(demisto, "_platformAPICall")
+    integration = _make_integration(mocker)
+
+    assert integration.get_accounts(max_results=0) == []
+    mock_api.assert_not_called()
+
+
+def test_cloud_integration_register_on_base_class_raises():
+    """
+    Given: The CloudIntegration base class.
+    When: register is called on it directly.
+    Then: A TypeError is raised and nothing is added to the base registry.
+    """
+    from COOCApiModule import CloudIntegration
+
+    with pytest.raises(TypeError, match="not on CloudIntegration"):
+        CloudIntegration.register("base-command")
+    assert "base-command" not in CloudIntegration._registry
+
+
+def test_cloud_integration_run_handle_proxy_failure_goes_to_handle_error(mocker):
+    """
+    Given: An integration class with uses_proxy_env set to True, and handle_proxy raises.
+    When: run is called.
+    Then: The exception is passed to handle_error and the command does not run.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mocker.patch.object(type(integration), "uses_proxy_env", True)
+    error = ValueError("bad proxy")
+    mocker.patch("COOCApiModule.handle_proxy", side_effect=error)
+    mocker.patch.object(demisto, "error")
+    mock_handle_error = mocker.patch.object(integration, "handle_error")
+    handler = mocker.Mock()
+
+    integration.run({"test-command": handler})
+
+    mock_handle_error.assert_called_once_with(error)
+    handler.assert_not_called()
+
+
+def test_cloud_integration_is_polling_command_from_polling_commands(mocker):
+    """
+    Given: An integration class whose polling_commands contains the current command.
+    When: is_polling_command is called.
+    Then: It returns True, and False when polling_commands is empty (the default).
+    """
+    integration = _make_integration(mocker)
+    assert integration.is_polling_command() is False
+
+    mocker.patch.object(type(integration), "polling_commands", frozenset({"test-command"}))
+    assert integration.is_polling_command() is True
+
+
+def test_cloud_integration_execute_mapped_command_polling_signature(mocker):
+    """
+    Given: A mapped handler for a command listed in polling_commands.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (args, client).
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"key": "value"})
+    mocker.patch.object(type(integration), "polling_commands", frozenset({"test-command"}))
+    handler = mocker.Mock(return_value="result")
+
+    assert integration.execute_mapped_command(handler) == "result"
+    handler.assert_called_once_with({"key": "value"}, {"creds": {}})
+
+
 def test_cloud_integration_get_accounts_stops_paging_at_max_results(mocker):
     """
     Given: The onboarding API returns two pages, and the first page has enough accounts.

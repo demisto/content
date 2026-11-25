@@ -14,7 +14,7 @@ QUICK_ACTION_SUFFIX = "-quick-action"
 _INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
 _YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
 _PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
-# Shared helpers (e.g. handle_port_range) live in AWSApiModule. It is copied next to AWS.py when tests
+# The AWSIntegration infrastructure lives in AWSApiModule. It is copied next to AWS.py when tests
 # run in Docker, and otherwise read from Packs/ApiModules.
 _API_MODULE_CANDIDATES = (
     os.path.join(_INTEGRATION_DIR, "AWSApiModule.py"),
@@ -8596,7 +8596,7 @@ def test_parse_target_field_max_values_limit(mocker):
     """
     from AWS import parse_target_field
 
-    mocker.patch("AWSApiModule.MAX_TARGET_VALUES", 3)
+    mocker.patch("AWS.MAX_TARGET_VALUES", 3)
     target_string = (
         "key=resource-groups:Name,values=resourcegroups1,resourcegroups2,resourcegroups3,resourcegroups4,resourcegroups5"
     )
@@ -22760,9 +22760,8 @@ def _load_yml_spec() -> dict:
 def _load_py_tree() -> ast.Module:
     """Parse AWS.py, plus AWSApiModule.py when it is available, into a single AST.
 
-    Shared helpers that handlers forward ``args`` to (e.g. ``handle_port_range``) live in
-    AWSApiModule, so its functions are appended after the AWS.py ones. AWS.py definitions
-    win on a short-name clash because they are indexed first.
+    The AWSApiModule body is appended after the AWS.py one, so handlers that call into the module
+    are still resolved. AWS.py definitions win on a short-name clash because they are indexed first.
 
     Returns:
         The parsed AWS.py module as an ``ast.Module``, extended with the AWSApiModule body.

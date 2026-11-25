@@ -86,7 +86,11 @@ def get_azure_client(params: dict, args: dict, command: str) -> AzureClient:
 
     ``Azure.AzureClient`` is looked up at call time, so tests can patch it with ``mocker.patch("Azure.AzureClient")``.
     """
-    return AzureIntegration(command, args, params, client_class=Azure.AzureClient).get_client()
+
+    class PatchableAzureIntegration(Azure.AzureCOOCIntegration):
+        client_class = Azure.AzureClient
+
+    return PatchableAzureIntegration(command, args, params).get_client()
 
 
 INTEGRATION_DIR = Path(__file__).parent
@@ -1846,9 +1850,9 @@ def test_main_function_success(mocker):
     # Mock return_results (called by CloudIntegration.run)
     mock_return_results = mocker.patch("COOCApiModule.return_results")
 
-    # Mock AzureClient (main() passes the Azure.AzureClient global as client_class)
+    # Mock the client class that main() builds (AzureCOOCIntegration.client_class)
     mock_client = mocker.Mock()
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
+    mocker.patch.object(Azure.AzureCOOCIntegration, "client_class", return_value=mock_client)
 
     # Replace the handler in COMMANDS_MAPPING with a mock that returns a CommandResults object
     mock_cmd_result = mocker.Mock()
@@ -1947,7 +1951,7 @@ def test_get_azure_client_no_token(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
 
     mocker.patch("COOCApiModule.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("COOCApiModule.get_cloud_credentials", return_value={})  # No token
@@ -1970,7 +1974,7 @@ def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
     Then: The function should raise a clear DemistoException about the missing Client Secret.
     """
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
 
     mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
 
@@ -1992,7 +1996,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
     mock_client = mocker.Mock()
 
     mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
@@ -2037,7 +2041,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
@@ -2088,7 +2092,7 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
     mocker.patch("COOCApiModule.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("COOCApiModule.get_cloud_credentials", return_value={})  # No access_token
 
@@ -2111,7 +2115,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-    command = "command"
+    command = "azure-nsg-security-rule-update"
     mock_client = mocker.Mock()
 
     mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
@@ -2145,7 +2149,7 @@ def test_get_azure_client_missing_optional_params(mocker):
     # Setup mocks
     args = {}
     mock_client = mocker.Mock()
-    command = "command"
+    command = "azure-nsg-security-rule-update"
 
     mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -6821,7 +6825,7 @@ def test_get_azure_client_device_code_no_secret(mocker, mock_params):
     params["credentials"] = {}
     params["auth_type"] = "Device Code"
 
-    get_azure_client(params, {}, "command")
+    get_azure_client(params, {}, "azure-nsg-security-rule-update")
 
     # The connection_type must be propagated to the client (no missing-secret exception raised).
     _, kwargs = mock_azure_client.call_args
@@ -7096,7 +7100,7 @@ def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_par
     params["auth_type"] = "Azure Managed Identities"
     params["managed_identities_client_id"] = {"password": "resolved-mi-id"}
 
-    get_azure_client(params, {}, "command")
+    get_azure_client(params, {}, "azure-nsg-security-rule-update")
 
     _, kwargs = mock_azure_client.call_args
     assert kwargs["connection_type"] == "Azure Managed Identities"
@@ -7119,7 +7123,7 @@ def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params
     params["auth_type"] = "Azure Managed Identities"
     params["managed_identities_client_id"] = {}  # no client id -> system assigned
 
-    get_azure_client(params, {}, "command")
+    get_azure_client(params, {}, "azure-nsg-security-rule-update")
 
     _, kwargs = mock_azure_client.call_args
     assert kwargs["managed_identities_client_id"] == MANAGED_IDENTITIES_SYSTEM_ASSIGNED
@@ -7139,7 +7143,7 @@ def test_get_azure_client_credentials_none(mocker, mock_params):
     params["auth_type"] = "Client Credentials"
 
     with pytest.raises(DemistoException) as excinfo:
-        get_azure_client(params, {}, "command")
+        get_azure_client(params, {}, "azure-nsg-security-rule-update")
 
     assert "Client Secret" in str(excinfo.value)
     assert "Client Credentials" in str(excinfo.value)
@@ -9919,10 +9923,12 @@ def read_register_decorator_command(decorator: ast.expr) -> str | None:
     for keyword in decorator.keywords:
         if keyword.arg == "command_name":
             command_node = keyword.value
-    assert isinstance(command_node, ast.Constant) and isinstance(command_node.value, str), (
+    unreadable_command_message = (
         f"Could not read the command name of '@{ast.unparse(decorator)}' in Azure.py. "
         "The register decorator shape has changed and this test helper needs updating."
     )
+    assert isinstance(command_node, ast.Constant), unreadable_command_message
+    assert isinstance(command_node.value, str), unreadable_command_message
     return command_node.value
 
 

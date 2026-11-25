@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 from http import HTTPStatus
-from datetime import datetime, timedelta, UTC
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -14,6 +14,13 @@ import copy
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_SSM_EMPTY_PAGES_TO_SKIP = 10  # Max number of empty pages (with a NextToken) to skip when listing SSM parameters.
+MAX_TAGS = 50
+MAX_FILTERS = 50
+MAX_FILTER_VALUES = 200
+MAX_LIMIT_VALUE = 1000
+DEFAULT_LIMIT_VALUE = 50
+MAX_TARGET_VALUES = 5
+MAX_TRIPLE_FILTER_VALUE = 5
 
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
@@ -33,6 +40,597 @@ TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
     "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
 }
+
+
+def handle_port_range(args: dict) -> tuple:
+    """
+    Parse and extract port range information from command arguments.
+
+    Handles port specification in multiple formats:
+    - Individual from_port and to_port arguments
+    - Single port argument that can be a port number or range (e.g., "80" or "80-443")
+
+    Args:
+        args (dict): Command arguments dictionary containing port specifications
+
+    Returns:
+        tuple: A tuple containing (from_port, to_port) as integers, or (None, None) if no ports specified
+    """
+    from_port = arg_to_number(args.get("from_port"))
+    to_port = arg_to_number(args.get("to_port"))
+
+    def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        """Parse port argument which can be a single port or range (min-max)."""
+        if not port:
+            return None, None
+
+        if "-" in port:
+            from_port, to_port = port.split("-", 1)
+            return int(from_port.strip()), int(to_port.strip())
+        else:
+            _port: int = int(port.strip())
+            return _port, _port
+
+    if args.get("port") and (not from_port and not to_port):
+        from_port, to_port = parse_port_range(args.get("port", ""))
+    return from_port, to_port
+
+
+def parse_tag_field(tags_string: str | None):
+    """
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
+    You can specify up to 50 tags per resource.
+    Args:
+        tags_string: The name and value list
+    Returns:
+        A list of dicts with the form {"key": <key>, "value": <value>}
+    """
+    tags = []
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:50]
+        demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            raise ValueError(
+                f"Could not parse field: {tag}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
+        tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
+
+    return tags
+
+
+def print_debug_logs(client: BotoClient, message: str):
+    """
+    Print debug logs with service prefix and command context.
+    Args:
+        client (BotoClient): The AWS client object
+        message (str): The debug message to log
+    """
+    service_name = client.meta.service_model.service_name
+    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
+
+
+def convert_datetimes_to_iso_safe(data):
+    """
+    Converts datetime objects in a data structure to ISO 8601 strings
+    by serializing to and then deserializing from JSON using a custom encoder.
+    """
+    json_string = json.dumps(data, cls=ISOEncoder)
+    return json.loads(json_string)
+
+
+def parse_filter_field(filter_string: str | None):
+    """
+    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
+    You can specify up to 50 filters and up to 200 values per filter in a single request.
+    Filter strings can be up to 255 characters in length.
+    Args:
+        filter_string: The name and values list
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    regex = re.compile(
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse field: {filter}. Please make sure you provided "
+                "like so: name=<name>,values=<values>;name=<name>,values=<value1>,<value2>..."
+            )
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
+
+    return filters
+
+
+def parse_resource_ids(resource_id: str | None) -> list[str]:
+    if resource_id is None:
+        raise ValueError("Resource ID cannot be empty")
+    id_list = resource_id.replace(" ", "")
+    resource_ids = id_list.split(",")
+    return resource_ids
+
+
+def parse_target_field(target_string: str | None):
+    """
+    Parses a list representation of key and values with the form of 'key=<key>,values=<values>.
+    the maximum number of values for a key might be lower than the global maximum of 50.
+    Key minimum length of 1, maximum length of 163.
+
+    Args:
+        target_string (str): The key and values list
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>]}
+    """
+    targets = []
+    list_targets = argToList(target_string, separator=";")
+    regex = re.compile(
+        r"^key=(^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name),"
+        r"values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for target in list_targets:
+        match_target = regex.match(target)
+        if match_target is None:
+            raise ValueError(
+                f"Could not parse target: {target}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>... And the key matches the regex "
+                "pattern required by AWS documentation. For more information see "
+                "https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_Target.html#API_Target_Contents"
+            )
+        demisto.debug(
+            f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'
+            f' if larger than {MAX_TARGET_VALUES},'
+            f' parsing only first {MAX_TARGET_VALUES} values.'
+        )
+        targets.append({"Key": match_target.group(1), "Values": match_target.group(2).split(",")[0:MAX_TARGET_VALUES]})
+
+    return targets
+
+
+def parse_key_values_2_dict(parameters_str: str) -> dict:
+    """
+    Parses a list representation of key and values 'key=<key1>,values=<value>,<value>;key=<key2>,values=<value>,<value>.
+
+    Args:
+        parameters_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : [ "string", "string"], "key2" : [ "string", "string"]}
+    """
+    if not parameters_str:
+        return {}
+
+    parameters = {}
+    list_parameters = argToList(parameters_str, separator=";")
+    regex = re.compile(
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for param in list_parameters:
+        match_param = regex.match(param)
+        if match_param is None:
+            raise ValueError(
+                f"Could not parse the parameter: {param}. Please make sure you provided "
+                "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>..."
+            )
+        demisto.debug(f'Number of parameter values for filter {match_param.group(1)} is {len(match_param.group(2).split(","))}')
+        parameters[match_param.group(1)] = match_param.group(2).split(",")
+    return parameters
+
+
+def parse_key_1_value_to_dict(key_value_str: str) -> dict:
+    """
+    Parses a list representation of key and value 'key=<key1>,value=<value>;key=<key2>,value=<value>.
+
+    Args:
+        key_value_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : "value", "key2" : "value"}
+    """
+    if not key_value_str:
+        return {}
+
+    results = {}
+    list_variables = argToList(key_value_str, separator=";")
+    regex = re.compile(
+        r"^key=(\b[^0-9][\w]+),value=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for var in list_variables:
+        match_var = regex.match(var)
+        if match_var is None:
+            raise ValueError(
+                f"Could not parse the parameter: {var}. Please make sure you provided "
+                "like so: key=<key>,value=<value>;key=<key>,value=<value2>..."
+            )
+        results[match_var.group(1)] = match_var.group(2)
+    return results
+
+
+def parse_name_value_type_format_filter(filter_string: str | None):
+    """
+    Parses a list representation of key, values and type with the form of 'key=<key>,values=<values>,type=<type>'.
+    You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
+    Args:
+        filter_string: The key, values and type list
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Type": <type>}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_TRIPLE_FILTER_VALUE:
+        list_filters = list_filters[0:MAX_TRIPLE_FILTER_VALUE]
+        demisto.debug(
+            f"Number of filter is larger then {MAX_TRIPLE_FILTER_VALUE}, parsing only first {MAX_TRIPLE_FILTER_VALUE} filters."
+        )
+    regex = re.compile(
+        r"^key=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
+        flags=re.I,
+    )
+    for f in list_filters:
+        match_filter = regex.match(f)
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided "
+                "like so: key=<key>,values=<values>,type=<type>;key=<key>,values=<value1>,<value2>,type=<type>..."
+            )
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append(
+            {
+                "Key": match_filter.group(1),
+                "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
+                "Type": match_filter.group(3),
+            }
+        )
+
+    return filters
+
+
+def parse_parameter_filters(filter_string: str | None) -> list[dict[str, Any]]:
+    """
+    Parses a list representation of SSM Parameter Store filters with the form of
+    'key=<key>,option=<option>,values=<values>'. The option pair is optional (AWS defaults it to Equals).
+    The values pair must be last, so everything after it is treated as a comma-separated list of values.
+    Args:
+        filter_string: The key, option and values list, separated by ';'.
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Option": <option>}
+    """
+    filters: list[dict[str, Any]] = []
+    # The key and values character sets follow the AWS tag key/value pattern (letters, digits, spaces, and _ . : / = + - @),
+    # plus * in values. The negative lookahead rejects an option pair placed after the values pair.
+    regex = re.compile(
+        r"^key=(?P<key>[\w :./=+@-]+),(?:option=(?P<option>\w+),)?values=(?!(?:[^,]*,)*\s*option=)(?P<values>[\w ,:./=+@*-]+)$",
+        flags=re.I,
+    )
+    for parameter_filter in argToList(filter_string, separator=";"):
+        if not parameter_filter:
+            continue
+        match_filter = regex.match(parameter_filter.strip())
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse the filter: {parameter_filter}. Please make sure you provided "
+                "like so: key=<key>,values=<value1>,<value2>;key=<key>,option=<option>,values=<value>..."
+            )
+        values = [value for value in argToList(match_filter["values"]) if value]
+        if not values:
+            raise ValueError(f"Could not parse the filter: {parameter_filter}. The values pair must contain at least one value.")
+        filters.append(
+            remove_empty_elements(
+                {
+                    "Key": match_filter["key"],
+                    "Option": match_filter["option"],
+                    "Values": values,
+                }
+            )
+        )
+
+    return filters
+
+
+def parse_resource_arn_priority_field(refs_string: str | None) -> list:
+    """
+    Parses a list representation of stateless rule group references with the form of
+    'ResourceArn=<arn>,Priority=<priority>;ResourceArn=<arn>,Priority=<priority>'.
+
+    Args:
+        refs_string: The references list string.
+    Returns:
+        A list of dicts with the form {"ResourceArn": <arn>, "Priority": <priority>}.
+    """
+    references: list = []
+    list_refs = argToList(refs_string, separator=";")
+    regex = re.compile(r"^ResourceArn=(arn:aws.*),Priority=(\d+)$", flags=re.UNICODE)
+    for ref in list_refs:
+        match_ref = regex.match(ref)
+        if match_ref is None:
+            raise ValueError(
+                f"Could not parse field: {ref}. Please make sure you provided like so: "
+                "ResourceArn=arn:aws1,Priority=priority1;ResourceArn=arn:aws2,Priority=priority2"
+            )
+        references.append({"ResourceArn": match_ref.group(1), "Priority": int(match_ref.group(2))})
+
+    return references
+
+
+def parse_key_value_items_field(items_string: str | None, required_key: str, format_hint: str) -> list[dict]:
+    """
+    Parses a list representation of items with the form of
+    'Key1=<value>,Key2=<value>;Key1=<value>,Key2=<value>'.
+
+    Each item is separated by ';' and its fields by ','. Every field must be provided as 'Key=Value',
+    and the given required_key must be present in each item.
+
+    Args:
+        items_string: The items list string.
+        required_key: The key that must be present in each parsed item.
+        format_hint: An example of the expected format, appended to error messages.
+    Returns:
+        A list of dicts, each mapping the parsed field keys to their values.
+    """
+    items: list[dict] = []
+    for item in argToList(items_string, separator=";"):
+        fields: dict = {}
+        for field in argToList(item, separator=","):
+            key, sep, value = field.partition("=")
+            if not sep or not value:
+                raise ValueError(f"Could not parse field: {item}. Please make sure you provided like so: {format_hint}")
+            fields[key.strip()] = value.strip()
+
+        if required_key not in fields:
+            raise ValueError(f"Could not parse field: {item}. {required_key} is required for each item.")
+
+        items.append(fields)
+
+    return items
+
+
+def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
+    """
+    Parses a list representation of stateful rule group references with the form of
+    'ResourceArn=<arn>,Priority=<priority>,Override=<action>,DeepThreatInspection=<bool>;ResourceArn=<arn>,Priority=<priority>'.
+
+    Each reference is separated by ';' and its fields by ','. Only ResourceArn is required; Priority, Override
+    (mapped to {"Action": <action>}) and DeepThreatInspection are optional and dropped when not provided.
+
+    Args:
+        refs_string: The references list string.
+    Returns:
+        A list of dicts with the form
+        {"ResourceArn": <arn>, "Priority": <priority>, "Override": {"Action": <action>}, "DeepThreatInspection": <bool>}.
+    """
+    format_hint = (
+        "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
+        "ResourceArn=arn:aws2,Priority=priority2"
+    )
+    references: list = []
+    for fields in parse_key_value_items_field(refs_string, required_key="ResourceArn", format_hint=format_hint):
+        if not re.match(r"^arn:aws", fields["ResourceArn"]):
+            raise ValueError(f"Could not parse field: {fields}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
+
+        reference = {
+            "ResourceArn": fields.get("ResourceArn"),
+            "Priority": arg_to_number(fields.get("Priority")),
+            "Override": {"Action": fields.get("Override")},
+            "DeepThreatInspection": arg_to_bool_or_none(fields.get("DeepThreatInspection")),
+        }
+        references.append(remove_empty_elements(reference))
+
+    return references
+
+
+def parse_subnet_mappings_field(mappings_string: str | None) -> list:
+    """
+    Parses a list representation of subnet mappings with the form of
+    'SubnetId=<id>,IPAddressType=<type>;SubnetId=<id>,IPAddressType=<type>'.
+
+    Each mapping is separated by ';' and its fields by ','. Only SubnetId is required; IPAddressType is
+    optional and dropped when not provided.
+
+    Args:
+        mappings_string: The subnet mappings list string.
+    Returns:
+        A list of dicts with the form {"SubnetId": <id>, "IPAddressType": <type>}.
+    """
+    format_hint = "SubnetId=id1,IPAddressType=type1;SubnetId=id2,IPAddressType=type2"
+    mappings: list = []
+    for fields in parse_key_value_items_field(mappings_string, required_key="SubnetId", format_hint=format_hint):
+        subnet_mapping = {
+            "SubnetId": fields.get("SubnetId"),
+            "IPAddressType": fields.get("IPAddressType"),
+        }
+        mappings.append(remove_empty_elements(subnet_mapping))
+
+    return mappings
+
+
+def parse_json_arg(args: dict, arg_name: str) -> dict | list | None:
+    """
+    Parses a single JSON-string command argument into its corresponding Python object, raising a clear
+    per-argument error when the value is not valid JSON so the user knows exactly which argument to fix.
+
+    Args:
+        args (dict): The command arguments dictionary to read the value from.
+        arg_name (str): The name of the command argument to read from ``args`` and parse as JSON.
+
+    Returns:
+        dict | list | None: The parsed Python object (typically a dict or list),
+            or None if the argument is missing or empty.
+
+    Raises:
+        DemistoException: If the argument value is present but is not valid JSON.
+    """
+    raw_value = args.get(arg_name)
+    if not raw_value:
+        return None
+    try:
+        return json.loads(raw_value)
+    except json.JSONDecodeError as error:
+        raise DemistoException(f"Invalid JSON in '{arg_name}': {error}")
+
+
+def validate_iso8601_date(dt: str | None) -> str | None:
+    """
+    Validates that a date string matches the AWS UTC timestamp format and returns it unchanged.
+
+    AWS requires timestamps in UTC format: YYYY-MM-DDTHH:MM:SSZ
+    (e.g. '2024-01-15T10:30:00Z').
+
+    Args:
+        dt (str | None): A date string expected in AWS UTC format (YYYY-MM-DDTHH:MM:SSZ).
+
+    Returns:
+        str | None: The original date string if valid, or None if dt is falsy.
+
+    Raises:
+        DemistoException: If the date string does not match the required AWS UTC format.
+    """
+    if not dt:
+        return None
+    try:
+        datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as e:
+        raise DemistoException(
+            f"Invalid date format: '{dt}'. " f"Expected AWS UTC format: YYYY-MM-DDTHH:MM:SSZ (e.g. '2024-01-15T10:30:00Z').\n{e}"
+        )
+    return dt
+
+
+def build_pagination_kwargs(
+    args: Dict[str, Any],
+    minimum_limit: int = 1,
+    max_limit: int = MAX_LIMIT_VALUE,
+    next_token_name: str = "NextToken",
+    limit_name: str = "MaxResults",
+) -> Dict[str, Any]:
+    """
+    Build pagination parameters for AWS API calls with proper validation and limits.
+
+    Args:
+        args (Dict[str, Any]): Command arguments containing pagination parameters
+        minimum_limit (int): The minimum possible limit for the pagination command.
+        max_limit (int): The maximum possible limit for the pagination command.
+        next_token_name (str): The name of the next token argument in AWS.
+        limit_name (str): The name of the limit argument in AWS.
+
+    Returns:
+        Dict[str, Any]: Validated pagination parameters for AWS API
+
+    Raises:
+        ValueError: If limit exceeds maximum allowed value or is invalid
+    """
+    kwargs: Dict[str, Any] = {}
+
+    limit_arg = args.get("limit")
+
+    # Parse and validate limit
+    try:
+        if limit_arg is not None:
+            limit = arg_to_number(limit_arg)
+        else:
+            limit = DEFAULT_LIMIT_VALUE  # Default limit
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
+
+    # Validate limit lower constraints
+    if limit is not None and limit < minimum_limit:
+        raise ValueError(f"Limit must be at least {minimum_limit}.")
+
+    # AWS API upper constraints
+    if limit is not None and limit > max_limit:
+        demisto.debug(f"Requested limit {limit} exceeds maximum {max_limit}, using {max_limit}")
+        limit = max_limit
+
+    # Handle pagination with next_token (for continuing previous requests)
+    if next_token := args.get("next_token"):
+        if (not isinstance(next_token, str)) or (len(next_token.strip()) == 0):
+            raise ValueError("next_token must be a non-empty string")
+        kwargs[next_token_name] = next_token.strip()
+    kwargs.update({limit_name: limit})
+    return kwargs
+
+
+def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Process and extract relevant data from a single EC2 instance.
+
+    Args:
+        instance (Dict[str, Any]): Raw instance data from AWS API
+
+    Returns:
+        Dict[str, Any]: Processed instance data
+    """
+    instance_data = {
+        "InstanceId": instance.get("InstanceId"),
+        "ImageId": instance.get("ImageId"),
+        "State": instance.get("State", {}).get("Name"),
+        "PublicIPAddress": instance.get("PublicIpAddress"),
+        "PrivateIpAddress": instance.get("PrivateIpAddress"),
+        "Type": instance.get("InstanceType"),
+        "LaunchDate": instance.get("LaunchTime"),
+        "PublicDNSName": instance.get("PublicDnsName"),
+        "Monitoring": instance.get("Monitoring", {}).get("State"),
+        "AvailabilityZone": instance.get("Placement", {}).get("AvailabilityZone"),
+    }
+    instance_data = remove_empty_elements(instance_data)
+    return instance_data
+
+
+def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Serialize AWS API response with proper datetime encoding for JSON compatibility.
+
+    Args:
+        response (Dict[str, Any]): Raw AWS API response containing datetime objects
+
+    Returns:
+        Dict[str, Any]: Serialized response with datetime objects converted to strings
+
+    Raises:
+        DemistoException: If serialization fails
+    """
+    try:
+        # Use DatetimeEncoder to handle datetime objects
+        serialized_json = json.dumps(response, cls=DatetimeEncoder)
+        return json.loads(serialized_json)
+    except (ValueError, TypeError) as e:
+        demisto.error(f"Failed to serialize response with datetime encoding: {str(e)}")
+    except Exception as e:
+        demisto.error(f"Unexpected error during response serialization: {str(e)}")
+    return response
+
+
+class DatetimeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime("%Y-%m-%dT%H:%M:%S")
+        elif isinstance(obj, date):
+            return obj.strftime("%Y-%m-%d")
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 
 def read_zip_to_bytes(filename: str) -> bytes:

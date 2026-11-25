@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import AzureApiModule
 import pytest
 from AzureApiModule import (
-    AzureBaseClient,
     AzureIntegration,
+    AzureServices,
     DEFAULT_AZURE_AD_ENDPOINT,
     DEFAULT_RESOURCE,
     DEFAULT_SCOPE,
@@ -33,13 +33,18 @@ def build_integration(
     args: dict | None = None,
     params: dict | None = None,
     connector_id: str | None = None,
-    client_class: Any = AzureBaseClient,
+    client_class: Any = None,
 ) -> AzureIntegration:
-    """Build an ``AzureIntegration`` with ``get_connector_id`` patched to return ``connector_id``."""
+    """Build an ``AzureIntegration`` with ``get_connector_id`` patched to return ``connector_id``.
+
+    When ``client_class`` is given, an ``AzureIntegration`` subclass with that ``client_class`` is built, the
+    same way integrations set their client.
+    """
     mocker.patch("COOCApiModule.get_connector_id", return_value=connector_id)
-    return AzureIntegration(
-        command, args or {}, params if params is not None else dict(MARKETPLACE_PARAMS), client_class=client_class
-    )
+    integration_class = AzureIntegration
+    if client_class is not None:
+        integration_class = type("ClientAzureIntegration", (AzureIntegration,), {"client_class": client_class})
+    return integration_class(command, args or {}, params if params is not None else dict(MARKETPLACE_PARAMS))
 
 
 def mock_accounts(mocker, accounts: list):
@@ -516,6 +521,121 @@ def test_get_command_resource_storage_and_default():
     """
     assert AzureIntegration.get_command_resource("azure-storage-blob-get") == STORAGE_RESOURCE
     assert AzureIntegration.get_command_resource("azure-nsg-security-rule-update") == DEFAULT_RESOURCE
+
+
+def test_resolve_service_storage_command():
+    """
+    Given: A storage data-plane command.
+    When: _resolve_service is called.
+    Then: AzureServices.STORAGE is returned.
+    """
+    assert AzureIntegration._resolve_service("azure-storage-container-create") is AzureServices.STORAGE
+
+
+def test_resolve_service_from_command_prefix():
+    """
+    Given: A command whose second word is an alias of a service (nsg).
+    When: _resolve_service is called.
+    Then: The service of the alias (NETWORK) is returned.
+    """
+    assert AzureIntegration._resolve_service("azure-nsg-security-rule-update") is AzureServices.NETWORK
+
+
+def test_resolve_service_from_command_service_map():
+    """
+    Given: A command whose service can't be derived from its name.
+    When: _resolve_service is called.
+    Then: The service from COMMAND_SERVICE_MAP is returned.
+    """
+    assert AzureIntegration._resolve_service("azure-set-storage-account-https-only-quick-action") is AzureServices.STORAGE
+
+
+def test_resolve_service_test_module():
+    """
+    Given: The test-module command.
+    When: _resolve_service is called.
+    Then: AzureServices.RESOURCE_MANAGER is returned.
+    """
+    assert AzureIntegration._resolve_service("test-module") is AzureServices.RESOURCE_MANAGER
+
+
+def test_resolve_service_unknown_command_raises():
+    """
+    Given: A command with an unknown service prefix.
+    When: _resolve_service is called.
+    Then: A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="Could not resolve an Azure service"):
+        AzureIntegration._resolve_service("azure-unknown-command")
+
+
+def test_get_client_storage_management_command_uses_management_scope(mocker):
+    """
+    Given: A storage-service command that uses the management API (azure-storage-account-update).
+    When: get_client is called.
+    Then: The client is built with the default management scope and resource, not the storage ones.
+    """
+    client_class = MagicMock()
+    integration = build_integration(mocker, command="azure-storage-account-update", client_class=client_class)
+    mocker.patch.object(AzureIntegration, "validate_auth_params")
+
+    integration.get_client()
+
+    assert client_class.call_args.kwargs["scope"] == DEFAULT_SCOPE
+    assert client_class.call_args.kwargs["resource"] == DEFAULT_RESOURCE
+
+
+def test_get_client_uses_service_client_class(mocker):
+    """
+    Given: An AzureIntegration subclass with a client class for AzureServices.STORAGE, and a storage command.
+    When: get_client is called.
+    Then: The storage client class is built instead of the default client_class.
+    """
+    default_client_class = MagicMock()
+    storage_client_class = MagicMock()
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    integration_class = type(
+        "ServiceAzureIntegration",
+        (AzureIntegration,),
+        {"client_class": default_client_class, "service_client_classes": {AzureServices.STORAGE: storage_client_class}},
+    )
+    integration = integration_class("azure-storage-container-create", {}, dict(MARKETPLACE_PARAMS))
+    mocker.patch.object(AzureIntegration, "validate_auth_params")
+
+    assert integration.get_client() == storage_client_class.return_value
+    default_client_class.assert_not_called()
+    assert storage_client_class.call_args.kwargs["scope"] == STORAGE_SCOPE
+
+
+def test_get_client_falls_back_to_client_class(mocker):
+    """
+    Given: An AzureIntegration subclass with a client class only for AzureServices.STORAGE, and a network command.
+    When: get_client is called.
+    Then: The default client_class is built.
+    """
+    default_client_class = MagicMock()
+    storage_client_class = MagicMock()
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    integration_class = type(
+        "ServiceAzureIntegration",
+        (AzureIntegration,),
+        {"client_class": default_client_class, "service_client_classes": {AzureServices.STORAGE: storage_client_class}},
+    )
+    integration = integration_class("azure-nsg-security-rule-update", {}, dict(MARKETPLACE_PARAMS))
+    mocker.patch.object(AzureIntegration, "validate_auth_params")
+
+    assert integration.get_client() == default_client_class.return_value
+    storage_client_class.assert_not_called()
+
+
+def test_is_polling_command_for_polling_commands(mocker):
+    """
+    Given: A command listed in POLLING_COMMANDS and a regular command.
+    When: is_polling_command is called.
+    Then: It returns True only for the polling command.
+    """
+    assert build_integration(mocker, command="azure-vn-ip-group-create").is_polling_command() is True
+    assert build_integration(mocker, command="azure-nsg-security-rule-update").is_polling_command() is False
 
 
 def test_validate_auth_params_missing_client_secret_raises():

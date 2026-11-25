@@ -103,6 +103,9 @@ class GCPServices(Enum):
         Used by existing handlers, which take ``(creds, args)`` and build their own client. New commands
         should register with ``@GCPIntegration.register`` and receive the client from ``get_client()``.
         """
+        # Existing handlers get only (creds, args), with no GCPIntegration instance. So the deployment path
+        # (connector ID) and the proxy and SSL params are read from the execution context here. Inside a
+        # single execution they are the same values that GCPIntegration was created with.
         return GCPIntegration.build_service_client(
             self, credentials, is_platform_path=bool(get_connector_id()), params=demisto.params()
         )
@@ -489,6 +492,7 @@ class GCPIntegration(CloudIntegration):
 
     cloud_type = CloudTypes.GCP.value
     account_id_arg = "project_id"
+    polling_commands = frozenset(POLLING_COMMANDS)
 
     def __init__(self, command: str, args: dict, params: dict) -> None:
         super().__init__(command, args, params)
@@ -636,10 +640,10 @@ class GCPIntegration(CloudIntegration):
         return_error(f"Failed to execute command {command_name}. Error: {str(error)}")
 
     def execute_mapped_command(self, handler: Callable) -> Any:
-        """Call an existing command with Google credentials: ``(args, creds)`` for ``POLLING_COMMANDS``,
-        ``(creds, args)`` otherwise."""
+        """Call an existing command with Google credentials instead of a client: ``(args, creds)`` for
+        polling commands (see ``is_polling_command``), ``(creds, args)`` otherwise."""
         creds = self._get_google_credentials()
-        if self.command in POLLING_COMMANDS:
+        if self.is_polling_command():
             demisto.debug(f"[GCP] The {self.command=} is a polling command, calling it with args as the first argument.")
             return handler(self.args, creds)
         return handler(creds, self.args)
@@ -729,9 +733,31 @@ class GCPIntegration(CloudIntegration):
         )
 
     def _get_google_credentials(self) -> Credentials:
-        """Return Google credentials based on the deployment type (service account JSON or CTS token)."""
+        """Return Google credentials based on the deployment type (service account JSON or CTS token).
+
+        On the marketplace path, the project ID is also resolved (see ``_resolve_project_id``).
+        """
         password = self._get_service_account_password()
-        return self._get_service_account_credentials(password) if password else self._get_cts_credentials()
+        if not password:
+            return self._get_cts_credentials()
+        creds = self._get_service_account_credentials(password)
+        self._resolve_project_id()
+        return creds
+
+    def _resolve_project_id(self) -> None:
+        """Set the project ID of the marketplace path in the args and as the account ID.
+
+        If ``project_id`` is not already in ``self.args``, it is set from ``_get_configured_project_id``
+        (the 'GCP Project ID' parameter, then the service account JSON). ``self.account_id`` is set to it
+        only when it is still empty, so an ``identifier`` argument keeps priority.
+
+        Raises:
+            DemistoException: If no project ID is configured.
+        """
+        if not self.args.get("project_id"):
+            self.args["project_id"] = self._get_configured_project_id()
+        if not self.account_id:
+            self.account_id = self.args["project_id"]
 
     def _get_service_account_password(self) -> str:
         """Return the service account JSON key from the ``credentials`` parameter, or ``""`` when not set."""
@@ -849,9 +875,8 @@ class GCPIntegration(CloudIntegration):
     def _get_service_account_credentials(self, password: str) -> Credentials:
         """Build credentials from the service account JSON key (marketplace path).
 
-        If ``project_id`` is not already in ``self.args``, it is set from ``_get_configured_project_id``
-        (the 'GCP Project ID' parameter, then the service account JSON). ``self.account_id`` is set to it
-        only when it is still empty, so an ``identifier`` argument keeps priority.
+        Raises:
+            DemistoException: If the JSON is invalid or the credentials cannot be built from it.
         """
         try:
             service_account_info = json.loads(password)
@@ -867,12 +892,6 @@ class GCPIntegration(CloudIntegration):
             )
         except Exception as e:
             raise DemistoException(f"Failed to build GCP credentials from service account JSON: {str(e)}")
-
-        # Propagate project_id to args using priority: args > params > service account JSON
-        if not self.args.get("project_id"):
-            self.args["project_id"] = self._get_configured_project_id(service_account_info)
-        if not self.account_id:
-            self.account_id = self.args["project_id"]
 
         demisto.debug("[GCP get_client] Using service account credentials (marketplace path)")
         return creds

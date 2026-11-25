@@ -379,6 +379,8 @@ class CloudIntegration(ABC):
         uses_proxy_env (bool): Class attribute. When ``True``, ``run`` calls ``handle_proxy()`` so the
             proxy settings are taken from the environment (AWS, Azure). GCP configures its proxy on
             the HTTP client instead.
+        polling_commands (frozenset[str]): Class attribute. Existing (``commands_mapping``) commands that are
+            decorated with ``@polling_function`` and therefore take ``args`` first (see ``is_polling_command``).
         command (str): The command name being executed.
         args (dict): Command arguments.
         params (dict): Integration configuration parameters.
@@ -393,6 +395,7 @@ class CloudIntegration(ABC):
     cloud_type: ClassVar[str]
     account_id_arg: ClassVar[str] = "account_id"
     uses_proxy_env: ClassVar[bool] = False
+    polling_commands: ClassVar[frozenset[str]] = frozenset()
     # command name -> (handler, is_polling). Each subclass gets its own dict (see __init_subclass__).
     _registry: ClassVar[dict[str, tuple[Callable, bool]]] = {}
 
@@ -420,8 +423,13 @@ class CloudIntegration(ABC):
             polling: Whether the handler is a polling command that takes ``args`` first.
 
         Raises:
+            TypeError: If called on ``CloudIntegration`` itself, which would expose the command to every CSP.
             ValueError: If ``command_name`` is already registered on this class.
         """
+        if cls is CloudIntegration:
+            raise TypeError(
+                f"Register '{command_name}' on a CSP integration class (for example AWSIntegration), not on CloudIntegration."
+            )
 
         def decorator(func: Callable) -> Callable:
             handler = func.__func__ if isinstance(func, staticmethod) else func
@@ -482,8 +490,8 @@ class CloudIntegration(ABC):
         """Retrieve accounts associated with this connector.
 
         Args:
-            max_results: Maximum number of accounts to return.
-                         ``None`` returns all accounts. Pages are fetched only until ``max_results`` is reached.
+            max_results: Maximum number of accounts to return. ``None`` returns all accounts, and ``0`` returns none.
+                         Pages are fetched only until ``max_results`` is reached.
 
         Returns:
             List of account dicts with at least ``account_id`` and
@@ -493,7 +501,7 @@ class CloudIntegration(ABC):
             DemistoException: If the connector ID is not set or the API call fails.
         """
         accounts = self.iter_accounts()
-        return list(islice(accounts, max_results)) if max_results else list(accounts)
+        return list(accounts) if max_results is None else list(islice(accounts, max_results))
 
     def iter_accounts(self) -> Iterator[dict]:
         """Yield the accounts of ``self.connector_id`` from the onboarding API, one page at a time.
@@ -509,8 +517,8 @@ class CloudIntegration(ABC):
         """
         if not self.connector_id:
             raise DemistoException(
-                "get_accounts() requires a connector ID. "
-                "This method should only be called on the Cortex Platform path."
+                "Fetching the connector accounts requires a connector ID. "
+                "This is only available on the Cortex Platform path."
             )
         next_token = ""
         while True:
@@ -616,16 +624,16 @@ class CloudIntegration(ABC):
 
         ``test-module`` runs the health check on the Cortex Platform path (connector ID present) and
         ``test_module`` on the marketplace path. Every other command runs through ``execute_command``.
-        The traceback of any exception is logged here, once for all CSPs, and the exception is then
-        passed to ``handle_error``.
+        The traceback of any exception (including a proxy setup failure) is logged here, once for all CSPs,
+        and the exception is then passed to ``handle_error``.
 
         Args:
             commands_mapping: Dict mapping existing command names to their handlers.
         """
         demisto.debug(f"[COOC] Command being called is {self.command}, {self.connector_id=}")
-        if self.uses_proxy_env:
-            handle_proxy()
         try:
+            if self.uses_proxy_env:
+                handle_proxy()
             if self.command == "test-module":
                 return_results(self.run_health_check() if self.connector_id else self.test_module())
             else:
@@ -661,7 +669,8 @@ class CloudIntegration(ABC):
         return self.execute_mapped_command(self.get_mapped_handler(commands_mapping))
 
     def execute_mapped_command(self, handler: Callable) -> Any:
-        """Call an existing (``commands_mapping``) handler. Defaults to ``(client, args)``.
+        """Call an existing (``commands_mapping``) handler: ``(args, client)`` for polling commands
+        (see ``is_polling_command``), ``(client, args)`` otherwise.
 
         CSPs override this method when their existing handlers use a different signature.
 
@@ -671,7 +680,18 @@ class CloudIntegration(ABC):
         Returns:
             The result of the handler.
         """
-        return handler(self.get_client(), self.args)
+        client = self.get_client()
+        if self.is_polling_command():
+            demisto.debug(f"[COOC] {self.command=} is a polling command, calling it with args as the first argument.")
+            return handler(self.args, client)
+        return handler(client, self.args)
+
+    def is_polling_command(self) -> bool:
+        """Return whether ``self.command`` is an existing polling command, which takes ``args`` first.
+
+        Defaults to membership in ``polling_commands``. CSPs that detect polling differently override this method.
+        """
+        return self.command in self.polling_commands
 
     def get_mapped_handler(self, commands_mapping: dict) -> Callable:
         """Return the ``commands_mapping`` handler for ``self.command``.
