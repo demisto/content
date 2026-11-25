@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Idira - Lock User](../doc_files/Idira_-_Lock_User.png)
+![Idira - Lock User](../doc_files/Idira_Lock_User.png)

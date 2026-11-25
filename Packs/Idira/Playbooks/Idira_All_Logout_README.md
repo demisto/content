@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Idira - All Logout](../doc_files/Idira_-_All_Logout.png)
+![Idira - All Logout](../doc_files/Idira_All_Logout.png)

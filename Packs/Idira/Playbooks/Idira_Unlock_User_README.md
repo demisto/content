@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Idira - Unlock User](../doc_files/Idira_-_Unlock_User.png)
+![Idira - Unlock User](../doc_files/Idira_Unlock_User.png)

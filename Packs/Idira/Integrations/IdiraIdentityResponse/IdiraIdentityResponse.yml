@@ -82,6 +82,8 @@ script:
       type: String
   - name: idira-identity-response-lock-user
     description: Locks a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: The user unique ID (from idira-identity-response-get-user-by-name).
@@ -98,6 +100,8 @@ script:
       type: Boolean
   - name: idira-identity-response-disable-user
     description: Disables a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: The user unique ID (from idira-identity-response-get-user-by-name).
@@ -114,6 +118,8 @@ script:
       type: Boolean
   - name: idira-identity-response-unlock-user
     description: Reverses a lock or disable by setting the user state back to None, restoring the ability to authenticate.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: The user unique ID (from idira-identity-response-get-user-by-name).
@@ -130,6 +136,8 @@ script:
       type: Boolean
   - name: idira-identity-response-force-logout
     description: Ends all of the user's active sessions and cookies, forcing them to sign in again.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: The user unique ID (from idira-identity-response-get-user-by-name).
@@ -143,6 +151,8 @@ script:
       type: Boolean
   - name: idira-identity-response-remove-role
     description: Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: role_id
       description: The unique ID of the role.
@@ -163,6 +173,8 @@ script:
       type: Boolean
   - name: idira-identity-response-expire-password
     description: Requires the user to set a new password at their next login.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: username
       description: The username of the cloud user.
@@ -335,6 +347,8 @@ script:
       type: Boolean
   - name: idira-identity-response-rotate-credential
     description: Triggers an immediate CPM credential change on a privileged account (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: account_id
       description: The internal account ID (from idira-identity-response-get-account).
@@ -358,6 +372,8 @@ script:
       type: Boolean
   - name: idira-identity-response-verify-credential
     description: Marks a privileged account for CPM verification to confirm the credential is valid (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: account_id
       description: The internal account ID (from idira-identity-response-get-account).
@@ -374,6 +390,8 @@ script:
       type: Boolean
   - name: idira-identity-response-vault-account
     description: Brings an unmanaged, risky privileged account under Idira management (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: platform_id
       description: The platform definition to assign (case-sensitive).
@@ -474,4 +492,5 @@ marketplaces:
 tests:
 - No tests (auto formatted)
 supportedModules:
+- agentix
 - xsiam
