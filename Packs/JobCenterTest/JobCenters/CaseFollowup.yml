@@ -1,0 +1,28 @@
+commonfields:
+  id: job-case-followup
+  version: -1
+name: Case Followup
+description: Runs the follow-up agent on a case every 30 minutes, up to 6 times.
+system: true
+locked: false
+fromversion: 8.10.0
+toversion: 99.99.99
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Case Followup
+uniquenessKey: case-followup
+metadata:
+  agent_id: followup-agent
+  prompt_id: followup-prompt
+entityType: case
+entityId: "1"
+assignee: analyst@example.com
+status: ENABLED
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 30
+  count: 6
+queuePolicy: skip

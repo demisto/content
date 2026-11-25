@@ -1,0 +1,24 @@
+commonfields:
+  id: job-case-escalation-check
+  version: -1
+name: Case Escalation Check
+description: Checks a case for escalation every 10 minutes, up to 12 times. Cancels the previous run if it is still running.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Case_Escalation-Check [beta]
+uniquenessKey: case-escalation-check
+metadata:
+  agent_id: case-investigation-agent
+  prompt_id: case-escalation-prompt
+entityType: case
+entityId: "2"
+status: DISABLED
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 10
+  count: 12
+queuePolicy: cancel_prev

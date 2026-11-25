@@ -1,0 +1,17 @@
+commonfields:
+  id: job-case-daily-summary
+  version: -1
+name: Case Daily Summary
+description: Runs the case investigation agent once to produce a case summary.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Case Daily Summary (v1)
+metadata:
+  agent_id: case-investigation-agent
+  prompt_id: case-summary-prompt
+status: ENABLED
+triggerType: onetime

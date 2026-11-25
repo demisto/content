@@ -1,0 +1,23 @@
+commonfields:
+  id: job-case-hourly-monitor
+  version: -1
+name: Case Hourly Monitor
+description: Runs the case investigation agent once after 120 minutes. Allows concurrent runs.
+system: false
+locked: true
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Case Hourly Monitor
+metadata:
+  agent_id: case-investigation-agent
+  prompt_id: case-followup-prompt
+status: ENABLED
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 120
+  count: 1
+queuePolicy: concurrent
