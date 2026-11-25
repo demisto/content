@@ -1,0 +1,29 @@
+{
+    "count": 2,
+    "field_searched": ["domain"],
+    "has_next": false,
+    "has_previous": true,
+    "page": 2,
+    "page_size": 20,
+    "search_term": "example.com",
+    "total_pages": 2,
+    "total_sources": 4,
+    "sources": [
+        {
+            "country": "DE",
+            "discovered": "2025-11-02 08:00:00.000000",
+            "id_source": "1002",
+            "leak_type": "traditional_breach",
+            "post_title": "Example Shop customer database",
+            "website": "shop.example.com"
+        },
+        {
+            "country": "FR",
+            "discovered": "2024-06-30 12:00:00.000000",
+            "id_source": "1003",
+            "leak_type": "combolist",
+            "post_title": "Example combolist",
+            "website": "example.com"
+        }
+    ]
+}

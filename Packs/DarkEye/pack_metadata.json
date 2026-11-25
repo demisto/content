@@ -1,0 +1,30 @@
+{
+    "name": "DarkEye",
+    "description": "Search a domain in DarkEye: ransomware leaks and data breaches in HaveIBeenRansom, and ransomware, breach, lead and stealer listings in Breach House.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "DarkEye",
+    "url": "https://darkeye.io",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "ransomware",
+        "data breach",
+        "leak",
+        "stealer",
+        "HaveIBeenRansom",
+        "Breach House"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "githubUser": [
+        "juanmill4"
+    ]
+}

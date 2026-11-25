@@ -1,0 +1,67 @@
+{
+    "ransomware": {
+        "total": 3,
+        "results": [
+            {
+                "id": 501,
+                "victim_id": "AbCdEf123456",
+                "post_title": "Example Corp",
+                "group_name": "examplegroup",
+                "country": "US",
+                "discovered": "2026-01-15 10:20:30.000000",
+                "website": "example.com",
+                "post_url": "http://exampleleaksite.onion/post/1001",
+                "download_link": "http://exampleleaksite.onion/download/1001",
+                "description": "Not kept by the integration."
+            },
+            {
+                "id": 502,
+                "victim_id": "GhIjKl789012",
+                "post_title": "Not Example Ltd",
+                "group_name": "othergroup",
+                "country": "GB",
+                "discovered": "2025-09-01 00:00:00.000000",
+                "website": "notexample.com"
+            },
+            {
+                "id": 503,
+                "victim_id": "MnOpQr345678",
+                "post_title": "Example Mail",
+                "group_name": "examplegroup",
+                "country": "US",
+                "discovered": "2025-12-24 00:00:00.000000",
+                "website": "mail.example.com"
+            }
+        ]
+    },
+    "breaches": {
+        "total": 2,
+        "results": [
+            {
+                "id": "b-77",
+                "post_title": "example.com user table",
+                "country": "",
+                "discovered": "2025-03-03 00:00:00",
+                "website": ""
+            },
+            {
+                "id": "b-78",
+                "post_title": "example.com.other.org user table",
+                "discovered": "2025-03-04 00:00:00",
+                "website": ""
+            }
+        ]
+    },
+    "leads": {
+        "total": 0,
+        "results": []
+    },
+    "stealers": [
+        {
+            "id": "s-9",
+            "name": "Stealer listing for example.com",
+            "website": "example.com",
+            "discovered": "2026-02-01"
+        }
+    ]
+}

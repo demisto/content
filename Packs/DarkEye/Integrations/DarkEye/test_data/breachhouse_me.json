@@ -1,0 +1,8 @@
+{
+    "daily_limit": 100,
+    "email": "user@example.org",
+    "last_reset": "2026-11-25",
+    "name": "Example User",
+    "plan": "advanced",
+    "used_today": 1
+}
