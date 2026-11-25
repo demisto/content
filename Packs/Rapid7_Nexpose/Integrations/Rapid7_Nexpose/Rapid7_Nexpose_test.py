@@ -3712,11 +3712,44 @@ def test_asset_query_uses_latest_completed_scan():
         - Only completed scans with a finish time are considered, so an unfinished scan (NULL finish time, which sorts
           first in DESC order) cannot hide an asset's earlier completed scans.
     """
-    cte = BASE_QUERY_FOR_ASSETS.split("asset_latest_scan AS (", 1)[1].split("latest_os_certainty AS (", 1)[0]
+    cte = BASE_QUERY_FOR_ASSETS.split("asset_latest_scan AS (", 1)[1].split("\nasset_tags AS (", 1)[0]
     where_clause = cte.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
 
     assert "ds.status_id = 'C'" in where_clause
     assert "ds.finished IS NOT NULL" in where_clause
+
+
+def test_asset_query_applies_lookback_before_aggregation():
+    """
+    Given:
+        - The asset collector SQL query.
+    When:
+        - Inspecting where the lookback filter is applied.
+    Then:
+        - The lookback filter is inside asset_latest_scan, which is the first CTE.
+        - Every per-asset aggregation CTE is limited to the assets in asset_latest_scan, so assets outside the
+          window are not aggregated.
+        - The filter is not repeated in the outer query.
+    """
+    ctes, outer_select = BASE_QUERY_FOR_ASSETS.split("\nSELECT\n    da.last_assessed", 1)
+    first_cte = ctes.split("\nasset_tags AS (", 1)[0]
+    scope_filter = ".asset_id IN (SELECT asset_id FROM asset_latest_scan)"
+
+    assert "asset_latest_scan AS (" in first_cte
+    assert "ds.finished >= CURRENT_DATE - INTERVAL '{lookback_days} days'" in first_cte
+    for cte_name in (
+        "asset_tags",
+        "asset_softwares",
+        "asset_macs",
+        "asset_ips",
+        "asset_files",
+        "asset_service",
+        "assets_host",
+        "latest_os_certainty",
+    ):
+        cte_body = ctes.split(f"{cte_name} AS (", 1)[1].split("\n)", 1)[0].split("\n    )", 1)[0]
+        assert scope_filter in cte_body, cte_name
+    assert "INTERVAL" not in outer_select
 
 
 @pytest.mark.parametrize(
