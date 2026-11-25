@@ -58,7 +58,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
 description: Enrich and pivot on domains, IP addresses, and registrants with ViewDNS.info DNS, IP, and WHOIS intelligence, including reverse IP, reverse WHOIS, IP history, and DNS record lookups.
-supportlevelheader: community
 script:
   commands:
   - name: viewdns-account-balance
