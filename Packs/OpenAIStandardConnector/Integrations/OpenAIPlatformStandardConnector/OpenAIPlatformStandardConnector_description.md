@@ -23,10 +23,6 @@ The GPT commands use the Chat Completions, Responses, Models and Moderations end
 
 Audit events are ingested into the `openai_admin_audit_raw` dataset.
 
-### Organization ID (optional)
-
-Your organization ID (`org-...`) is listed under **Organization settings**. When set, it is sent as the `OpenAI-Organization` header so requests are scoped to that organization.
-
 ### Verify
 
 **Verify** tests only the credentials of the capabilities you enabled: the OpenAI API Key against the Chat Completions and Responses endpoints, and the Admin API Key against the Audit logs endpoint. An authorization error names the key to fix.

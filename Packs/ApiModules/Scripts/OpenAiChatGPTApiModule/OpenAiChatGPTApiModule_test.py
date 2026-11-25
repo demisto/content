@@ -339,7 +339,6 @@ def _make_client(**overrides):
         admin_api_key=overrides.get("admin_api_key", "ADMIN_KEY"),
         compliance_api_key=overrides.get("compliance_api_key", "COMPLIANCE_KEY"),
         chatgpt_base_url=overrides.get("chatgpt_base_url", "https://api.chatgpt.com"),
-        organization_id=overrides.get("organization_id", ""),
     )
 
 
@@ -3322,27 +3321,6 @@ def test_parse_event_types_to_fetch_rejects_other_service_types(service, label):
     assert label not in valid_event_type_labels(service)
 
 
-@pytest.mark.parametrize(
-    "scope, expect_header",
-    [
-        pytest.param(CredentialScope.CHAT, True, id="chat-gets-org-header"),
-        pytest.param(CredentialScope.ADMIN, True, id="admin-gets-org-header"),
-        pytest.param(CredentialScope.COMPLIANCE, False, id="compliance-no-org-header"),
-    ],
-)
-def test_organization_header_only_on_api_openai_com(scope, expect_header):
-    """
-    Given: A client with an Organization ID.
-    When: Building headers for each scope.
-    Then: `OpenAI-Organization` is sent to api.openai.com only (chat and admin), never to api.chatgpt.com.
-    """
-    client = _make_client(organization_id="org-FAKE")
-
-    headers = client._build_auth_headers(scope, {})
-
-    assert ("OpenAI-Organization" in headers) is expect_header
-
-
 def test_parse_integration_params_handles_none_values():
     """
     Given: ConnectUs delivers unfilled or hidden fields as None.
@@ -3357,7 +3335,6 @@ def test_parse_integration_params_handles_none_values():
             "compliance_api_key",
             "chatgpt_api_url",
             "workspace_id",
-            "organization_id",
             "model-select",
             "model-freetext",
             "insecure",
@@ -3373,7 +3350,6 @@ def test_parse_integration_params_handles_none_values():
 
     assert config["base_url"] == "https://api.openai.com/"
     assert config["chatgpt_base_url"] == module.Config.DEFAULT_CHATGPT_URL
-    assert config["organization_id"] == ""
     assert config["workspace_id"] == ""
 
 

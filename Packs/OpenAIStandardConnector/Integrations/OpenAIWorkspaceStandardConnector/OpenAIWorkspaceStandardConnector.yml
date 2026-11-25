@@ -10,12 +10,6 @@ commonfields:
   id: OpenAIWorkspaceStandardConnector
   version: -1
 configuration:
-- display: Organization ID
-  name: organization_id
-  type: 0
-  required: false
-  section: Connect
-  additionalinfo: The OpenAI Organization ID (org-...). Sent as the OpenAI-Organization header on API Platform requests.
 - display: ChatGPT Server URL
   name: chatgpt_api_url
   type: 0

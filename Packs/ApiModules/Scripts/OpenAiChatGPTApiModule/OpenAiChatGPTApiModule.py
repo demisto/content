@@ -330,7 +330,6 @@ class OpenAiClient(BaseClient):
         admin_api_key: str = "",
         compliance_api_key: str = "",
         chatgpt_base_url: str = Config.DEFAULT_CHATGPT_URL,
-        organization_id: str = "",
         service: str = Service.LEGACY,
     ):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
@@ -340,7 +339,6 @@ class OpenAiClient(BaseClient):
         self.admin_api_key = admin_api_key
         self.compliance_api_key = compliance_api_key
         self.chatgpt_base_url = chatgpt_base_url.rstrip("/") + "/"
-        self.organization_id = organization_id
         self.service = service
         self.use_ucp_auth = should_use_ucp_auth()
         # Per-thread credential scope of the in-flight request: fetch-events runs streams in parallel threads.
@@ -353,7 +351,6 @@ class OpenAiClient(BaseClient):
 
         The legacy `Authorization` header is written only when UCP auth is off: under UCP the
         `BaseClient` dispatcher injects it from the selected connection profile.
-        `OpenAI-Organization` is sent to `api.openai.com` only (chat and admin scopes).
         """
         headers = dict(base_headers)
         if not self.use_ucp_auth:
@@ -363,8 +360,6 @@ class OpenAiClient(BaseClient):
                 CredentialScope.COMPLIANCE: self.compliance_api_key,
             }[scope]
             headers["Authorization"] = f"Bearer {legacy_key}"
-        if self.organization_id and scope in (CredentialScope.CHAT, CredentialScope.ADMIN):
-            headers["OpenAI-Organization"] = self.organization_id
         return headers
 
     def has_credential(self, scope: str) -> bool:
@@ -1813,7 +1808,6 @@ def parse_integration_params(params: dict[str, Any], service: str = Service.LEGA
     compliance_api_key = _extract_credential(params.get("compliance_api_key"))
     chatgpt_base_url = params.get("chatgpt_api_url") or Config.DEFAULT_CHATGPT_URL
     workspace_id = params.get("workspace_id") or ""
-    organization_id = (params.get("organization_id") or "").strip()
     model = params.get("model-freetext") or params.get("model-select") or ""
     # ConnectUs delivers unfilled checkboxes as None, which argToBoolean rejects.
     verify = not argToBoolean(params.get("insecure") or False)
@@ -1845,7 +1839,6 @@ def parse_integration_params(params: dict[str, Any], service: str = Service.LEGA
         "compliance_api_key": compliance_api_key,
         "chatgpt_base_url": chatgpt_base_url,
         "workspace_id": workspace_id,
-        "organization_id": organization_id,
     }
 
 
@@ -2794,7 +2787,6 @@ def run_openai_integration(service: str = Service.LEGACY) -> None:  # pragma: no
             admin_api_key=config["admin_api_key"],
             compliance_api_key=config["compliance_api_key"],
             chatgpt_base_url=config["chatgpt_base_url"],
-            organization_id=config["organization_id"],
             service=service,
         )
 

@@ -7,7 +7,6 @@ This integration was integrated and tested with version xx of OpenAIPlatformStan
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
-| Organization ID | The OpenAI Organization ID \(org-...\). Sent as the OpenAI-Organization header on API Platform requests. | False |
 | OpenAI API Key | The OpenAI Platform API key used by the chat-completion commands. Required only when running those commands or when running test-module without the event-collector keys. | False |
 | Admin API Key | The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type. | False |
 | Model | The model that will process the inputs and generate the completion. | False |

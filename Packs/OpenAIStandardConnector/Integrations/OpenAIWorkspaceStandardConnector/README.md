@@ -6,7 +6,6 @@ This integration was integrated and tested with version xx of OpenAIWorkspaceSta
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Organization ID | The OpenAI Organization ID \(org-...\). Sent as the OpenAI-Organization header on API Platform requests. | False |
 | ChatGPT Server URL | The base URL for the ChatGPT Platform Compliance APIs. | False |
 | Compliance API Key | The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types. | False |
 | Workspace ID | The Compliance workspace UUID \(for example, 4a4676f3-3d74-4723-b696-c93e6d01078a\). Required when fetching Compliance event types. | False |
