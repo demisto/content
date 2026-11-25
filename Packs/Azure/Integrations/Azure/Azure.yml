@@ -488,7 +488,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: "Updates a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Updates a specific account storage. Required permission: Microsoft.Storage/storageAccounts/write."
     name: azure-storage-account-update
     outputs:
     - contextPath: Azure.Storage.StorageAccounts.id
@@ -2159,7 +2159,7 @@ script:
       type: string
       description: This message will be part of the response in case of policy violation.
     name: azure-policy-assignment-create
-    description: "Creates a policy assignment. Required permission: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write."
+    description: "Creates a policy assignment. Required permission: Microsoft.Authorization/policyAssignments/write."
     outputs:
     - contextPath: Azure.Policy.PolicyAssignments.ID
       description: The resource ID of the policy assignment.
@@ -2279,7 +2279,7 @@ script:
       - '1.2'
       - '1.3'
     name: azure-webapp-config-set
-    description: "Updates the configuration settings of an existing Azure Web App. Deprecated. Use the azure-appservice-webapp-config-update command instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Updates the configuration settings of an existing Azure Web App. Deprecated. Use the azure-appservice-webapp-config-update command instead. Required permission: Microsoft.Web/sites/config/write."
     deprecated: true
     outputs:
     - contextPath: Azure.WebAppConfig.id
@@ -2370,7 +2370,7 @@ script:
       description: Azure API management integration ID.
       type: String
   - name: azure-appservice-webapp-config-update
-    description: "Updates the configuration settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/write, Microsoft.Web/sites/config/read."
+    description: "Updates the configuration settings of an existing Azure Web App. Required permission: Microsoft.Web/sites/config/write."
     arguments:
     - name: resource_group_name
       type: string
@@ -2518,7 +2518,7 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-auth-update
-    description: "Updates the authentication and authorization settings of an existing Azure Web App. Deprecated. Use the azure-appservice-webapp-auth-settings-update command instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Updates the authentication and authorization settings of an existing Azure Web App. Deprecated. Use the azure-appservice-webapp-auth-settings-update command instead. Required permission: Microsoft.Web/sites/config/write."
     deprecated: true
     outputs:
     - contextPath: Azure.WebAppAuth.id
@@ -2618,7 +2618,7 @@ script:
       description: The path to the authentication configuration file.
       type: String
   - name: azure-appservice-webapp-auth-settings-update
-    description: "Updates the authentication and authorization settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Updates the authentication and authorization settings of an existing Azure Web App. Required permission: Microsoft.Web/sites/config/write."
     arguments:
     - name: resource_group_name
       type: string
@@ -2765,7 +2765,7 @@ script:
       required: false
       description: Value of the configuration.
     name: azure-mysql-flexible-server-param-set
-    description: "Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
+    description: "Updates a server configuration. Required permission: Microsoft.DBforMySQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
   - name: azure-postgres-flexible-server-configuration-update
     description: "Updates the configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
@@ -3493,7 +3493,7 @@ script:
       - 'true'
       - 'false'
     name: azure-webapp-update
-    description: "Updates an Azure Web App. Deprecated. Use the azure-appservice-webapp-update command instead. Required permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    description: "Updates an Azure Web App. Deprecated. Use the azure-appservice-webapp-update command instead. Required permission: Microsoft.Web/sites/write."
     deprecated: true
     outputs:
     - contextPath: Azure.WebApp.id
@@ -4874,7 +4874,7 @@ script:
     - description: The name of the resource group.
       name: resource_group_name
       required: true
-    description: "Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write."
+    description: "Updates a logical database's transparent data encryption configuration. Required permission: Microsoft.Sql/servers/databases/transparentDataEncryption/write."
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
   - name: azure-aks-managed-clusters-list
@@ -5093,7 +5093,7 @@ script:
     - description: The name of the resource group.
       required: true
       name: resource_group_name
-    description: "Updates the properties of an existing Azure Cosmos DB database account. Deprecated. Use the azure-cosmosdb-db-account-update command instead. Required permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write."
+    description: "Updates the properties of an existing Azure Cosmos DB database account. Deprecated. Use the azure-cosmosdb-db-account-update command instead. Required permission: Microsoft.DocumentDB/databaseAccounts/write."
     name: azure-cosmos-db-update
     deprecated: true
     outputs:
@@ -5844,7 +5844,7 @@ script:
       description: The rule's direction, which can be "Inbound" or "Outbound".
       type: String
   - name: azure-nsg-security-rule-create
-    description: "Creates a security rule. Deprecated. Use the azure-vn-security-rule-create command instead. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    description: "Creates a security rule. Deprecated. Use the azure-vn-security-rule-create command instead. Required permission: Microsoft.Network/networkSecurityGroups/securityRules/write."
     deprecated: true
     outputs:
       - contextPath: Azure.NSGRule.name
@@ -5958,7 +5958,7 @@ script:
       - description: A description to add to the rule.
         name: description
   - name: azure-vn-security-rule-create
-    description: "Create a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
+    description: "Create a security rule. Required permission: Microsoft.Network/networkSecurityGroups/securityRules/write."
     arguments:
     - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: subscription_id
@@ -7656,7 +7656,7 @@ script:
       defaultValue: SystemAssigned
       description: Managed service identity type.
       hidden: true
-    description: "Assigns a system managed identity to the web app, enabling secure access to other Azure services without managing credentials. Deprecated. Use Assign Web App Managed Identity instead. Required permission: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    description: "Assigns a system managed identity to the web app, enabling secure access to other Azure services without managing credentials. Deprecated. Use Assign Web App Managed Identity instead. Required permission: Microsoft.Web/sites/write."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
     quickaction: true
@@ -7865,7 +7865,7 @@ script:
       description: Whether request tracing is enabled.
       type: Boolean
   - name: azure-appservice-webapp-update-quick-action
-    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Required permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Required permission: Microsoft.Web/sites/write."
     prettyname: Assign Web App Managed Identity
     quickaction: true
     hidden: true
@@ -8001,7 +8001,7 @@ script:
       auto: PREDEFINED
       isArray: true
       defaultValue: AzureServices
-    description: "Configures the storage account's network rules to allow traffic from trusted Azure services. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Configures the storage account's network rules to allow traffic from trusted Azure services. Required permission: Microsoft.Storage/storageAccounts/write."
     name: azure-storage-allow-access-quick-action
     prettyname: Allow Access by Trusted Services
     quickaction: true
@@ -8111,7 +8111,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enables HTTP 2.0 for the web app. Deprecated. Use Set Web App HTTP Version to 2.0 instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Enables HTTP 2.0 for the web app. Deprecated. Use Set Web App HTTP Version to 2.0 instead. Required permission: Microsoft.Web/sites/config/write."
     name: azure-webapp-set-http2-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
     quickaction: true
@@ -8208,7 +8208,7 @@ script:
   - name: azure-appservice-webapp-config-update-http2-quick-action
     prettyname: Set Web App HTTP Version to 2.0
     quickaction: true
-    description: "Enables HTTP 2.0 for the web app. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Enables HTTP 2.0 for the web app. Required permission: Microsoft.Web/sites/config/write."
     hidden: true
     arguments:
     - name: subscription_id
@@ -8359,7 +8359,7 @@ script:
       required: false
       description: Whether App Service Authentication/Authorization is enabled.
       defaultValue: 'true'
-    description: "Enables App Service Authentication for the web app. Deprecated. Use Enable Azure App Service Authentication instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Enables App Service Authentication for the web app. Deprecated. Use Enable Azure App Service Authentication instead. Required permission: Microsoft.Web/sites/config/write."
     deprecated: true
     name: azure-webapp-auth-update-quick-action
     prettyname: Enable Azure App Service Auth
@@ -8466,7 +8466,7 @@ script:
     prettyname: Enable Azure App Service Authentication
     quickaction: true
     hidden: true
-    description: "Enables App Service Authentication for the web app. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Enables App Service Authentication for the web app. Required permission: Microsoft.Web/sites/config/write."
     arguments:
     - name: subscription_id
       type: string
@@ -8626,7 +8626,7 @@ script:
       description: Whether to allow AD cross-tenant object replication.
       name: allow_cross_tenant_replication
       defaultValue: 'false'
-    description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants. Required permission: Microsoft.Storage/storageAccounts/write."
     name: azure-storage-disable-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
     quickaction: true
@@ -8739,7 +8739,7 @@ script:
       defaultValue: 'true'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
-    description: "Enables HTTP 2.0 for the Function App. Deprecated. Use Set Web App HTTP Version to 2.0 instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Enables HTTP 2.0 for the Function App. Deprecated. Use Set Web App HTTP Version to 2.0 instead. Required permission: Microsoft.Web/sites/config/write."
     quickaction: true
     hidden: true
     deprecated: true
@@ -8859,7 +8859,7 @@ script:
       name: allow_blob_public_access
       defaultValue: 'false'
     name: azure-storage-disable-storage-account-public-access-quick-action
-    description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs. Required permission: Microsoft.Storage/storageAccounts/write."
     prettyname: Disable Storage Account Public Access
     hidden: true
     quickaction: true
@@ -8966,7 +8966,7 @@ script:
       required: false
       description: Whether remote debugging is enabled.
       defaultValue: 'false'
-    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Deprecated. Use Disable Remote Debugging on Web App instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Deprecated. Use Disable Remote Debugging on Web App instead. Required permission: Microsoft.Web/sites/config/write."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App
     hidden: true
@@ -9060,7 +9060,7 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
   - name: azure-appservice-webapp-config-disable-remote-debugging-quick-action
-    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Required permission: Microsoft.Web/sites/config/write."
     prettyname: Disable Remote Debugging on Web App
     hidden: true
     quickaction: true
@@ -9592,7 +9592,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Deprecated. Use Set Web App Minimum TLS Version instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Deprecated. Use Set Web App Minimum TLS Version instead. Required permission: Microsoft.Web/sites/config/write."
     name: azure-webapp-set-min-tls-version-quick-action
     prettyname: Set Web App Min TLS Version
     hidden: true
@@ -9687,7 +9687,7 @@ script:
       description: Azure API management integration ID.
       type: String
   - name: azure-appservice-webapp-config-update-min-tls-version-quick-action
-    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Required permission: Microsoft.Web/sites/config/write."
     prettyname: Set Web App Minimum TLS Version
     hidden: true
     quickaction: true
@@ -9845,7 +9845,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: "Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. Deprecated. Use Set Web App Minimum TLS Version instead. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write."
+    description: "Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. Deprecated. Use Set Web App Minimum TLS Version instead. Required permission: Microsoft.Web/sites/config/write."
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
     hidden: true
@@ -9972,7 +9972,7 @@ script:
       type: string
       description: Configuration value.
       defaultValue: 'on'
-    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
+    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. Required permission: Microsoft.DBforMySQL/flexibleServers/configurations/write."
     name: azure-mysql-set-secure-transport-quick-action
     prettyname: Set Secure Transport for MySQL
     hidden: true
@@ -10005,7 +10005,7 @@ script:
       description: Default action when no other network rule matches.
       name: network_ruleset_default_action
       defaultValue: Deny
-    description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Required permission: Microsoft.Storage/storageAccounts/write."
     name: azure-network-disable-storage-account-access-quick-action
     prettyname: Disable Network Access to Storage Account
     hidden: true
@@ -10178,7 +10178,7 @@ script:
       description: Whether to allow only HTTPS traffic to the storage account.
       name: supports_https_traffic_only
       defaultValue: 'true'
-    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write."
+    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Required permission: Microsoft.Storage/storageAccounts/write."
     name: azure-set-storage-account-https-only-quick-action
     prettyname: Set Storage Account to HTTPS only
     hidden: true
@@ -10286,7 +10286,7 @@ script:
       prettyname: Identity Type
       defaultValue: 'SystemAssigned'
       hidden: true
-    description: "Assigns a system-managed identity to the identified Function App, enabling secure access to Azure services without manual credential management. Deprecated. Use Assign Web App Managed Identity instead. Required permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write."
+    description: "Assigns a system-managed identity to the identified Function App, enabling secure access to Azure services without manual credential management. Deprecated. Use Assign Web App Managed Identity instead. Required permission: Microsoft.Web/sites/write."
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
     hidden: true
@@ -11893,7 +11893,7 @@ script:
       Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
       for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
       disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
-      Rules for adaptive application controls, endpoint protection, and security configuration are excluded. Required permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded. Required permission: Microsoft.Authorization/policyAssignments/write.
     prettyname: Apply MS Defender Policy
     quickaction: true
     hidden: true

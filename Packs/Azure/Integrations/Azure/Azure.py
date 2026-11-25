@@ -66,10 +66,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
-        "azure-nsg-security-rule-create",
         "azure-nsg-security-rules-list",
         "azure-nsg-security-rule-get",
-        "azure-vn-security-rule-create",
         "azure-vn-security-rule-get",
         "azure-vn-security-rule-update",
         "azure-vn-security-rules-list",
@@ -87,12 +85,6 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Storage/storageAccounts/read": [
         "azure-storage-accounts-list",
-        "azure-storage-account-update",
-        "azure-storage-allow-access-quick-action",
-        "azure-storage-disable-cross-tenant-replication-quick-action",
-        "azure-storage-disable-storage-account-public-access-quick-action",
-        "azure-network-disable-storage-account-access-quick-action",
-        "azure-set-storage-account-https-only-quick-action",
     ],
     "Microsoft.Storage/storageAccounts/write": [
         "azure-storage-account-update",
@@ -171,10 +163,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-service-property-set",
         "azure-storage-blob-soft-deletion-enable-quick-action",
     ],
-    "Microsoft.Authorization/policyAssignments/read": [
-        "azure-policy-assignment-create",
-        "azure-policy-assignment-create-quick-action",
-    ],
     "Microsoft.Authorization/policyAssignments/write": [
         "azure-policy-assignment-create",
         "azure-policy-assignment-create-quick-action",
@@ -205,22 +193,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-postgres-config-set-log-retention-period-quick-action",
         "azure-postgres-config-set-statement-logging-quick-action",
     ],
-    "Microsoft.Web/sites/config/read": [
-        "azure-webapp-config-set",
-        "azure-webapp-auth-update",
-        "azure-webapp-set-http2-quick-action",
-        "azure-set-function-app-http-version2-0-quick-action",
-        "azure-webapp-disable-remote-debugging-quick-action",
-        "azure-webapp-auth-update-quick-action",
-        "azure-webapp-set-min-tls-version-quick-action",
-        "azure-function-app-set-min-tls-version-quick-action",
-        "azure-appservice-webapp-auth-settings-update",
-        "azure-appservice-webapp-auth-settings-update-quick-action",
-        "azure-appservice-webapp-config-update",
-        "azure-appservice-webapp-config-update-http2-quick-action",
-        "azure-appservice-webapp-config-disable-remote-debugging-quick-action",
-        "azure-appservice-webapp-config-update-min-tls-version-quick-action",
-    ],
     "Microsoft.Web/sites/config/write": [
         "azure-webapp-config-set",
         "azure-webapp-auth-update",
@@ -236,15 +208,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-appservice-webapp-config-update-http2-quick-action",
         "azure-appservice-webapp-config-disable-remote-debugging-quick-action",
         "azure-appservice-webapp-config-update-min-tls-version-quick-action",
-    ],
-    "Microsoft.Web/sites/read": [
-        "azure-webapp-update",
-        "azure-webapp-assign-managed-identity-quick-action",
-        "azure-webapp-update-assign-managed-identity-quick-action",
-        "azure-webapp-set-webapp-to-https-only-quick-action",
-        "azure-webapp-enable-client-cert-quick-action",
-        "azure-appservice-webapp-update",
-        "azure-appservice-webapp-update-quick-action",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
@@ -264,10 +227,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-postgres-flexible-server-set-log-retention-period-quick-action",
         "azure-postgres-flexible-server-set-statement-logging-quick-action",
         "azure-postgres-flexible-server-set-secure-transport-quick-action",
-    ],
-    "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
-        "azure-mysql-flexible-server-param-set",
-        "azure-mysql-set-secure-transport-quick-action",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": [
         "azure-mysql-flexible-server-param-set",
@@ -345,7 +304,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Sql/servers/databases/read": [
         "azure-sqldb-databases-list",
         "azure-sqldb-server-auditing-settings-list",
-        "azure-sqldb-security-alert-policy-create",
     ],
     "Microsoft.Sql/servers/databases/auditingSettings/read": [
         "azure-sqldb-server-auditing-settings-list",
@@ -375,19 +333,10 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
-    "Microsoft.DocumentDB/databaseAccounts/read": [
-        "azure-cosmos-db-update",
-        "azure-cosmos-db-disable-key-quick-action",
-        "azure-cosmosdb-db-account-update",
-    ],
     "Microsoft.DocumentDB/databaseAccounts/write": [
         "azure-cosmos-db-update",
         "azure-cosmos-db-disable-key-quick-action",
         "azure-cosmosdb-db-account-update",
-    ],
-    "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
-        "azure-sql-db-transparent-data-encryption-set",
-        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": [
         "azure-sql-db-transparent-data-encryption-set",

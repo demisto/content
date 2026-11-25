@@ -2364,7 +2364,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. The command is deprecated, please use gcp-gke-cluster-security-update. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. The command is deprecated, please use gcp-gke-cluster-security-update. Required permission: container.clusters.update."
     deprecated: true
     arguments:
     - name: project_id
@@ -2471,7 +2471,7 @@ script:
       type: String
 
   - name: gcp-gke-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permission: container.clusters.update."
     arguments:
     - name: project_id
       required: false
@@ -2612,7 +2612,7 @@ script:
       type: String
 
   - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
-    description: "Enables intra-node visibility on a GKE cluster for enhanced network monitoring. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Enables intra-node visibility on a GKE cluster for enhanced network monitoring. Required permission: container.clusters.update."
     prettyname: Enable GKE Cluster Intra-Node Visibility
     quickaction: true
     hidden: true
@@ -2722,7 +2722,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
-    description: "Enables Master Authorized Networks on a GKE cluster to restrict API server access. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Enables Master Authorized Networks on a GKE cluster to restrict API server access. Required permission: container.clusters.update."
     prettyname: Enable Master Authorized Networks on GKE
     quickaction: true
     hidden: true
@@ -5087,7 +5087,7 @@ script:
       description: The name of the bucket containing the object.
       type: String
   - name: gcp-storage-bucket-policy-list
-    description: "Retrieves the IAM policy for a bucket. The command is deprecated, please use gcp-storage-bucket-policies-list. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get."
+    description: "Retrieves the IAM policy for a bucket. The command is deprecated, please use gcp-storage-bucket-policies-list. Required permission: storage.buckets.getIamPolicy."
     deprecated: true
     arguments:
     - name: project_id
@@ -5115,7 +5115,7 @@ script:
       description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
       type: String
   - name: gcp-storage-bucket-policies-list
-    description: "Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get."
+    description: "Retrieves the IAM policy for a bucket. Required permission: storage.buckets.getIamPolicy."
     arguments:
       - name: project_id
         required: false

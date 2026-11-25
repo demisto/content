@@ -480,11 +480,11 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-storage-bucket-policy-list": (
         GCPServices.STORAGE,
-        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
+        ["storage.buckets.getIamPolicy"],
     ),
     "gcp-storage-bucket-policies-list": (
         GCPServices.STORAGE,
-        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
+        ["storage.buckets.getIamPolicy"],
     ),
     "gcp-storage-bucket-policy-set": (
         GCPServices.STORAGE,
@@ -574,14 +574,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-global-operation-delete": (GCPServices.COMPUTE, ["compute.globalOperations.delete"]),
     "gcp-compute-zone-operation-delete": (GCPServices.COMPUTE, ["compute.zoneOperations.delete"]),
     "gcp-compute-region-operation-delete": (GCPServices.COMPUTE, ["compute.regionOperations.delete"]),
-    "gcp-container-cluster-security-update": (
-        GCPServices.CONTAINER,
-        [
-            "container.clusters.update",
-            "container.clusters.get",
-            "container.clusters.list",
-        ],
-    ),
+    "gcp-container-cluster-security-update": (GCPServices.CONTAINER, ["container.clusters.update"]),
     "gcp-gke-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
     "gcp-gke-clusters-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
     "gcp-gke-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),

@@ -15450,7 +15450,9 @@ def test_cspm_remediation_allowed_permissions_are_mapped_to_commands():
     [
         ("azure-vn-security-rule-delete", True),
         ("azure-nsg-security-rule-delete-quick-action", True),
-        ("azure-storage-account-update", False),
+        ("azure-storage-account-update", True),
+        ("azure-webapp-update", True),
+        ("azure-nsg-security-rule-update", False),
         ("azure-storage-container-delete", False),
         ("azure-disk-update", False),
     ],

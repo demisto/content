@@ -131,7 +131,7 @@ Enables flow logs or Private Google Access on a subnet. Required permissions: co
 ### gcp-container-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Required permission: container.clusters.update.
 
 #### Base Command
 
@@ -1239,7 +1239,7 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 ### gcp-storage-bucket-policy-list
 
 ***
-Retrieves the IAM policy for a bucket. The command is deprecated, please use gcp-storage-bucket-policies-list. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
+Retrieves the IAM policy for a bucket. The command is deprecated, please use gcp-storage-bucket-policies-list. Required permission: storage.buckets.getIamPolicy.
 
 #### Base Command
 
@@ -2534,7 +2534,7 @@ Retrieves the list of buckets in the project associated with the client. Require
 ### gcp-storage-bucket-policies-list
 
 ***
-Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
+Retrieves the IAM policy for a bucket. Required permission: storage.buckets.getIamPolicy.
 
 #### Base Command
 
@@ -2586,7 +2586,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 ### gcp-gke-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permission: container.clusters.update.
 
 #### Base Command
 

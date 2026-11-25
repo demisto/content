@@ -16265,6 +16265,8 @@ def test_cspm_remediation_allowed_permissions_are_used_by_commands():
     [
         ("gcp-storage-bucket-metadata-update", True),
         ("gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action", True),
+        ("gcp-storage-bucket-policies-list", True),
+        ("gcp-container-cluster-security-update", True),
         ("gcp-compute-firewall-patch", False),
         ("gcp-compute-firewall-delete", False),
         ("gcp-compute-firewall-insert", False),

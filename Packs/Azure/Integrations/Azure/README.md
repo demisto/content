@@ -208,7 +208,7 @@ Lists blob containers, or retrieves a single blob container when a container nam
 ### azure-storage-account-update
 
 ***
-Updates a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
+Updates a specific account storage. Required permission: Microsoft.Storage/storageAccounts/write.
 
 #### Base Command
 
@@ -310,7 +310,7 @@ Sets properties for the blob service in a specific account storage. The command 
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment. Required permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
+Creates a policy assignment. Required permission: Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -379,7 +379,7 @@ There is no context output for this command.
 ### azure-webapp-config-set
 
 ***
-Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
+Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update. Required Permission: Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -433,7 +433,7 @@ Updates the configuration settings of an existing Azure Web App. The command is 
 ### azure-webapp-auth-update
 
 ***
-Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
+Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update. Required Permission: Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -488,7 +488,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 ### azure-mysql-flexible-server-param-set
 
 ***
-Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
+Updates a server configuration. Required permission: Microsoft.DBforMySQL/flexibleServers/configurations/write.
 
 #### Base Command
 
@@ -611,7 +611,7 @@ Updates a disk. The command is deprecated, please use azure-compute-disk-update.
 ### azure-webapp-update
 
 ***
-Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
+Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update. Required Permission: Microsoft.Web/sites/write.
 
 #### Base Command
 
@@ -870,7 +870,7 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 ### azure-sql-db-transparent-data-encryption-set
 
 ***
-Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
+Updates a logical database's transparent data encryption configuration. Required permission: Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
 #### Base Command
 
@@ -1258,7 +1258,7 @@ Gets the properties of a given public IP address. The command is deprecated, ple
 ### azure-nsg-security-rule-create
 
 ***
-Create a security rule. The command is deprecated, please use azure-vn-security-rule-create. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
+Create a security rule. The command is deprecated, please use azure-vn-security-rule-create. Required Permission: Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -2462,7 +2462,7 @@ List all network security groups. Required permissions: Microsoft.Network/networ
 ### azure-vn-security-rule-create
 
 ***
-Create a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
+Create a security rule. Required permission: Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -2970,7 +2970,7 @@ There is no context output for this command.
 ### azure-appservice-webapp-config-update
 
 ***
-Updates the configuration settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/write, Microsoft.Web/sites/config/read.
+Updates the configuration settings of an existing Azure Web App. Required permission: Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -3023,7 +3023,7 @@ Updates the configuration settings of an existing Azure Web App. Required permis
 ### azure-appservice-webapp-auth-settings-update
 
 ***
-Updates the authentication and authorization settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
+Updates the authentication and authorization settings of an existing Azure Web App. Required permission: Microsoft.Web/sites/config/write.
 
 #### Base Command
 
