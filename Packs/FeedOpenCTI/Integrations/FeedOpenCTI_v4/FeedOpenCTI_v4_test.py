@@ -1,3 +1,4 @@
+import pytest
 from CommonServerPython import CommandResults
 from FeedOpenCTI_v4 import *
 from pycti import StixCyberObservable
@@ -98,3 +99,143 @@ def test_get_indicators_command_with_no_data_to_return(mocker):
     mocker.patch.object(client.stix_cyber_observable, "list", return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
     results: CommandResults = get_indicators_command(client, args)
     assert "No indicators" in results.readable_output
+
+
+def test_get_indicators__deterministic_ordering(mocker):
+    """
+    Given
+        - A stored pagination cursor.
+    When
+        - Calling get_indicators.
+    Then
+        - Validate the API is called with explicit orderBy/orderMode so cursor pagination is stable.
+    """
+    client = Client
+    mock_request = mocker.patch.object(client.stix_cyber_observable, "list", return_value=RESPONSE_DATA)
+    get_indicators(client, indicator_types=["ALL"], limit=10, last_run_id="cursor")
+    call_kwargs = mock_request.call_args[1]
+    assert call_kwargs["orderBy"] == "updated_at"
+    assert call_kwargs["orderMode"] == "asc"
+    assert call_kwargs["after"] == "cursor"
+    assert call_kwargs["withPagination"] is True
+
+
+def test_get_indicators__pagination_error_raises_detailed_error(mocker):
+    """
+    Given
+        - OpenCTI fails with a DATABASE_ERROR pagination error for a stored cursor.
+    When
+        - Calling get_indicators.
+    Then
+        - Validate a DemistoException is raised with the original error, the cursor and remediation guidance.
+    """
+    client = Client
+    mocker.patch.object(
+        client.stix_cyber_observable,
+        "list",
+        side_effect=ValueError("[{'name': 'DATABASE_ERROR', 'error_message': 'Fail to execute engine pagination'}]"),
+    )
+    with pytest.raises(DemistoException) as e:
+        get_indicators(client, indicator_types=["ALL"], limit=10, last_run_id="stale_cursor")
+    message = str(e.value)
+    assert "Fail to execute engine pagination" in message
+    assert "stale_cursor" in message
+    assert "!opencti-reset-fetch-indicators" in message
+
+
+def test_get_indicators__empty_response_raises(mocker):
+    """
+    Given
+        - OpenCTI returns an empty response (None).
+    When
+        - Calling get_indicators.
+    Then
+        - Validate a DemistoException is raised instead of an AttributeError.
+    """
+    client = Client
+    mocker.patch.object(client.stix_cyber_observable, "list", return_value=None)
+    with pytest.raises(DemistoException, match="empty response"):
+        get_indicators(client, indicator_types=["ALL"], limit=10)
+
+
+def test_fetch_indicators_command__error_keeps_last_run(mocker):
+    """
+    Given
+        - A stored cursor and an API failure.
+    When
+        - Calling fetch_indicators_command.
+    Then
+        - Validate the error is propagated and the integration context is not modified.
+    """
+    client = Client
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"last_run_id": "cursor", "order_by": "updated_at"})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(client.stix_cyber_observable, "list", side_effect=Exception("DATABASE_ERROR"))
+    with pytest.raises(DemistoException, match="DATABASE_ERROR"):
+        fetch_indicators_command(client, indicator_types=["ALL"], max_fetch=10)
+    set_context.assert_not_called()
+
+
+def test_fetch_indicators_command__saves_cursor_with_ordering(mocker):
+    """
+    Given
+        - A stored cursor that was created with the current ordering.
+    When
+        - Calling fetch_indicators_command.
+    Then
+        - Validate the stored cursor is sent and the new cursor is saved together with the ordering marker.
+    """
+    client = Client
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"last_run_id": "cursor", "order_by": "updated_at"})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "createIndicators")
+    mock_request = mocker.patch.object(client.stix_cyber_observable, "list", return_value=RESPONSE_DATA)
+    fetch_indicators_command(client, indicator_types=["ALL"], max_fetch=10)
+    assert mock_request.call_args[1]["after"] == "cursor"
+    set_context.assert_called_once_with({"last_run_id": RESPONSE_DATA["pagination"]["endCursor"], "order_by": "updated_at"})
+
+
+@pytest.mark.parametrize(
+    "legacy_context",
+    [
+        pytest.param({"last_run_id": "legacy_cursor"}, id="no ordering marker"),
+        pytest.param({"last_run_id": "legacy_cursor", "order_by": "created_at"}, id="created_at ordering"),
+    ],
+)
+def test_fetch_indicators_command__ignores_legacy_cursor(mocker, legacy_context):
+    """
+    Given
+        - A cursor saved by a previous version (no ordering marker, or created_at ordering),
+          which is incompatible with the current updated_at ordering.
+    When
+        - Calling fetch_indicators_command.
+    Then
+        - Validate fetching restarts from the first page instead of sending the legacy cursor.
+    """
+    client = Client
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=legacy_context)
+    mocker.patch.object(demisto, "createIndicators")
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mock_request = mocker.patch.object(client.stix_cyber_observable, "list", return_value=RESPONSE_DATA)
+    fetch_indicators_command(client, indicator_types=["ALL"], max_fetch=10)
+    assert mock_request.call_args[1]["after"] is None
+    set_context.assert_called_once_with({"last_run_id": RESPONSE_DATA["pagination"]["endCursor"], "order_by": "updated_at"})
+
+
+def test_fetch_indicators_command__empty_page_keeps_cursor(mocker):
+    """
+    Given
+        - A stored cursor and no observables updated since it (fetch is caught up).
+    When
+        - Calling fetch_indicators_command.
+    Then
+        - Validate the stored cursor is kept (not reset) and no indicators are created.
+    """
+    client = Client
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"last_run_id": "cursor", "order_by": "updated_at"})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+    mocker.patch.object(client.stix_cyber_observable, "list", return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
+    assert fetch_indicators_command(client, indicator_types=["ALL"], max_fetch=10) == []
+    set_context.assert_not_called()
+    create_indicators.assert_not_called()
