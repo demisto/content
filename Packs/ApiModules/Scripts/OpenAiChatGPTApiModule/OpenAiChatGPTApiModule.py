@@ -98,7 +98,7 @@ class ResponsesConfig:
 class ApiPaths:
     """Centralized OpenAI API endpoint paths.
 
-    Chat-completions is hosted on `api.openai.com`; audit/compliance live on `api.chatgpt.com`.
+    Chat-completions and audit logs are hosted on `api.openai.com`; compliance logs live on `api.chatgpt.com`.
     """
 
     CHAT_COMPLETIONS = "v1/chat/completions"
