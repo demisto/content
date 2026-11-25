@@ -1,0 +1,2 @@
+!tlab-get-indicators limit=25
+!tlab-feed-reset-cursor

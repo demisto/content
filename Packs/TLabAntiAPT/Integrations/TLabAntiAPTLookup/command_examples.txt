@@ -1,0 +1,6 @@
+!file file=aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999
+!tlab-file-scan-result hash=aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999 limit=3
+!tlab-file-info sha256=aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999
+!tlab-search-reports date_from=2026-09-01 completeness=COMPLETE limit=20
+!tlab-hash-search hash_type=md5 hash_part=aaaabbbb
+!tlab-list-indicator-codes analysis_type=DYN_ANALYSIS

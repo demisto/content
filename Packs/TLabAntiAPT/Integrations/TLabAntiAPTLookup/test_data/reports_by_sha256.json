@@ -1,0 +1,24 @@
+{
+  "totalElements": 1,
+  "last": true,
+  "content": [
+    {
+      "sampleReportId": 412839,
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 91.5,
+      "verdict": "MALICIOUS",
+      "uploadedFilename": "invoice.exe",
+      "createTime": 1774512000000,
+      "file": {
+        "fileId": 5,
+        "hashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+        "hashSha1": "aaaabbbbccccddddeeeeffff0000111122223333",
+        "hashMd5": "aaaabbbbccccddddeeeeffff00001111",
+        "size": 2048,
+        "fileType": "PE",
+        "fileVerdict": "MALWARE"
+      }
+    }
+  ]
+}

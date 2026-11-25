@@ -1,0 +1,13 @@
+{
+  "fileId": 5,
+  "hashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+  "hashSha1": "aaaabbbbccccddddeeeeffff0000111122223333",
+  "hashMd5": "aaaabbbbccccddddeeeeffff00001111",
+  "size": 2048,
+  "fileType": "PE",
+  "mimeType": "application/x-dosexec",
+  "inferredExtension": "exe",
+  "fileVerdict": "MALWARE",
+  "signed": false,
+  "digitalSignatureCount": 0
+}

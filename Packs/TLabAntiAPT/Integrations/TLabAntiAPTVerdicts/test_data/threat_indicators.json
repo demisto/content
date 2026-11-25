@@ -1,0 +1,16 @@
+{
+  "sampleReportId": 412839,
+  "totals": {"MALICIOUS": 2, "SUSPICIOUS": 1, "INFO": 1},
+  "indicators": [
+    {"id": 1, "source": "BEHAVIOR", "analysisType": "DYN_ANALYSIS", "key": "inet", "level": "MALICIOUS",
+     "title": "Connects to a known bad host", "count": 3,
+     "objects": [{"kind": "VALUE", "name": "evil.example.com"}], "attack": ["T1071", "T1027.002", "bogus"]},
+    {"id": 2, "source": "AV", "analysisType": "AV_ANALYSIS", "key": "av", "level": "MALICIOUS",
+     "title": "Antivirus detection", "count": 1,
+     "objects": [{"kind": "SIGNATURE", "name": "Trojan.Win32.Emotet.abc"}], "attack": []},
+    {"id": 3, "source": "STATIC", "analysisType": "STAT_ANALYSIS", "key": "packer", "level": "SUSPICIOUS",
+     "title": "Packed executable", "count": 1, "objects": [], "attack": ["T1071"]},
+    {"id": 4, "source": "BEHAVIOR", "analysisType": "DYN_ANALYSIS", "key": "noise", "level": "INFO",
+     "title": "Reads the system language", "count": 1, "objects": [], "attack": []}
+  ]
+}

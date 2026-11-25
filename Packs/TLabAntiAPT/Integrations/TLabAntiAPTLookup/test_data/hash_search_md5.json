@@ -1,0 +1,5 @@
+[
+  {"fileId": 5, "hashMd5": "aaaabbbbccccddddeeeeffff00001111",
+   "hashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+   "fileType": "PE", "fileVerdict": "MALWARE"}
+]
