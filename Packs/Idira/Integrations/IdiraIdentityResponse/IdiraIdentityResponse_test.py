@@ -827,3 +827,52 @@ def test_main_passes_usage_reporting_setting_to_client(disable_param, expected_e
     )
     IdiraIdentityResponse.main()
     assert seen == [expected_enabled]
+
+
+# ========================================
+# Retry policy — only idempotent calls are retried
+# ========================================
+
+
+def test_non_idempotent_posts_are_not_retried(mocker, client, no_sleep):
+    """rotate-credential and vault-account must be single-attempt so a retry cannot duplicate the operation."""
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    send = mocker.patch("httpx.AsyncClient.send", side_effect=lambda *_: _httpx_response(503))
+
+    with pytest.raises(ContentClientError):
+        rotate_credential_command(client, {"account_id": "12_34"})
+    assert send.call_count == 1
+
+    with pytest.raises(ContentClientError):
+        vault_account_command(client, {"platform_id": "WinServerLocal", "safe_name": "IR", "name": "risky"})
+    assert send.call_count == 2
+
+
+@pytest.mark.parametrize(
+    "method, idempotent, expected_retries",
+    [
+        ("POST", None, 0),
+        ("POST", True, 3),
+        ("GET", None, 3),
+        ("PUT", None, 3),
+        ("GET", False, 0),
+    ],
+)
+def test_authenticated_request_retry_selection(mocker, client, method, idempotent, expected_retries):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200))
+
+    client._authenticated_request(method, "https://example.com/x", idempotent=idempotent)
+
+    assert resp.call_args.kwargs["retries"] == expected_retries
+
+
+@pytest.mark.parametrize("command", [get_account_command, list_sessions_command])
+@pytest.mark.parametrize("limit", ["0", "-5"])
+def test_limit_must_be_greater_than_zero(mocker, client, command, limit):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    send = mocker.patch.object(client, "_http_request")
+
+    with pytest.raises(DemistoException, match="limit must be greater than 0"):
+        command(client, {"limit": limit})
+    send.assert_not_called()

@@ -11,12 +11,12 @@ from ContentClientApiModule import *  # noqa: F401
 Idira Identity Response Actions
 Command-based SOAR response integration for the Idira Identity Security Platform.
 
-Implementation of the Identity (workforce) response actions: resolve a user, lock/disable/unlock, force logout, expire
-password, and remove a privileged role. All actions target the Idira Identity
-host (https://<tenant>.id.cyberark.cloud) with a single OAuth2 client_credentials
-Bearer token obtained from /oauth2/platformtoken.
-
-EPM endpoint containment is delegated to the IdiraEPMSOCResponse integration.
+Implementation of the response actions for three Idira services:
+- Identity (workforce): resolve a user, lock/disable/unlock, force logout, expire password, and remove a privileged role.
+- Privilege Cloud: get accounts, list/terminate/suspend/resume sessions, rotate/verify credentials, and vault an account.
+- Secure Infrastructure Access (SIA): disable/enable access policies.
+All actions use a single OAuth2 client_credentials Bearer token obtained from
+https://<tenant>.id.cyberark.cloud/oauth2/platformtoken. The Privilege Cloud and SIA hosts are optional instance parameters.
 """
 
 INTEGRATION_NAME = "Idira Identity Response"
@@ -44,8 +44,9 @@ class Config:
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60  # 6 hours
     CACHE_BUFFER_SECONDS = 60
 
-    # Retries for response actions (token and Feature Adoption calls are single-attempt).
+    # Retries for idempotent response actions only (token, Feature Adoption, and non-idempotent calls are single-attempt).
     ACTION_RETRIES = 3
+    IDEMPOTENT_METHODS = frozenset({"GET", "HEAD", "PUT", "DELETE"})
     RETRY_INITIAL_DELAY_SECONDS = 2.0
 
 
@@ -155,9 +156,7 @@ class Client(ContentClient):
     """Idira Identity Response API client.
 
     Holds a single ISPSS Bearer token (cached in integration context) and calls
-    the Identity host via absolute ``full_url``. Structured so Privilege Cloud
-    and SIA request wrappers can be added in a follow-up phase without touching
-    the token logic.
+    the Identity, Privilege Cloud, and SIA hosts via absolute ``full_url``.
     """
 
     def __init__(
@@ -284,14 +283,21 @@ class Client(ContentClient):
         full_url: str,
         json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
+        idempotent: bool | None = None,
         _is_retry: bool = False,
     ) -> Any:
         """Execute an authenticated request and map HTTP errors to actionable messages.
+
+        Transient failures (connection errors, 429/5xx) are retried only for idempotent calls, so a retry can never
+        create a duplicate resource or trigger a second operation. ``idempotent`` defaults to True for GET/HEAD/PUT/DELETE
+        and False for POST; pass ``idempotent=True`` for POSTs that set a state and are safe to repeat.
 
         Returns the parsed JSON body (``{}`` for 204/empty). A 409 is treated as
         an idempotent success and returns ``{"status_code": 409}`` so callers can
         surface an "already in requested state" note.
         """
+        if idempotent is None:
+            idempotent = method.upper() in Config.IDEMPOTENT_METHODS
         access_token = self._get_access_token()
         headers = {
             "Authorization": f"Bearer {access_token}",
@@ -308,14 +314,16 @@ class Client(ContentClient):
                 headers=headers,
                 resp_type="response",
                 ok_codes=(200, 201, 202, 204, 409),
-                retries=Config.ACTION_RETRIES,
+                retries=Config.ACTION_RETRIES if idempotent else 0,
             )
         except DemistoException as error:
             if _status_code(error) == 401 and not _is_retry:
                 # Token may have been revoked server-side before local expiry.
                 demisto.debug("[HTTP Error] 401 received; clearing cached token and retrying once.")
                 self._clear_cached_token()
-                return self._authenticated_request(method, full_url, json_data=json_data, params=params, _is_retry=True)
+                return self._authenticated_request(
+                    method, full_url, json_data=json_data, params=params, idempotent=idempotent, _is_retry=True
+                )
             mapped_error = self._map_http_error(error)
             if mapped_error:
                 raise mapped_error from error
@@ -371,10 +379,11 @@ class Client(ContentClient):
         json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         method: str = "POST",
+        idempotent: bool | None = None,
     ) -> Any:
         """Call an Idira Identity endpoint (host https://<tenant>.id.cyberark.cloud)."""
         return self._authenticated_request(
-            method=method, full_url=f"{self.identity_url}{path}", json_data=json_data, params=params
+            method=method, full_url=f"{self.identity_url}{path}", json_data=json_data, params=params, idempotent=idempotent
         )
 
     def privilege_cloud_request(
@@ -383,6 +392,7 @@ class Client(ContentClient):
         json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         method: str = "POST",
+        idempotent: bool | None = None,
     ) -> Any:
         """Call an Idira Privilege Cloud PVWA endpoint.
 
@@ -395,7 +405,9 @@ class Client(ContentClient):
                 "(e.g., https://<subdomain>.privilegecloud.cyberark.cloud)."
             )
         full_url = f"{self.privilege_cloud_url}/PasswordVault/API{path}"
-        return self._authenticated_request(method=method, full_url=full_url, json_data=json_data, params=params)
+        return self._authenticated_request(
+            method=method, full_url=full_url, json_data=json_data, params=params, idempotent=idempotent
+        )
 
     def sia_request(
         self,
@@ -403,6 +415,7 @@ class Client(ContentClient):
         json_data: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         method: str = "POST",
+        idempotent: bool | None = None,
     ) -> Any:
         """Call an Idira Secure Infrastructure Access (SIA) endpoint.
 
@@ -415,7 +428,9 @@ class Client(ContentClient):
                 "instance configuration (e.g., https://<subdomain>.dpa.cyberark.cloud)."
             )
         full_url = f"{self.sia_url}/api{path}"
-        return self._authenticated_request(method=method, full_url=full_url, json_data=json_data, params=params)
+        return self._authenticated_request(
+            method=method, full_url=full_url, json_data=json_data, params=params, idempotent=idempotent
+        )
 
 
 # endregion
@@ -437,7 +452,7 @@ def test_module(client: Client) -> str:
 def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Resolve a username to its user unique ID."""
     username = args["username"]
-    response = client.identity_request("/CDirectoryService/GetUserByName", {"username": username})
+    response = client.identity_request("/CDirectoryService/GetUserByName", {"username": username}, idempotent=True)
     user_id = _extract_user_id(response)
 
     outputs = {"ID": user_id, "Username": username}
@@ -452,7 +467,7 @@ def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandRes
 
 def _set_user_state(client: Client, user_id: str, state: str) -> CommandResults:
     """Set a user's account state via SetUserState."""
-    response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "state": state})
+    response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "state": state}, idempotent=True)
 
     success = _identity_success(response)
     outputs = {"ID": user_id, "State": state, "Success": success}
@@ -481,7 +496,7 @@ def unlock_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
 def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """End all of a user's sessions/cookies"""
     user_id = args["user_id"]
-    response = client.identity_request("/UserMgmt/SignOutEverywhere", {"ID": user_id})
+    response = client.identity_request("/UserMgmt/SignOutEverywhere", {"ID": user_id}, idempotent=True)
 
     outputs = {"ID": user_id, "Success": True}
     return CommandResults(
@@ -496,7 +511,9 @@ def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults
 def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Require the user to set a new password at next login."""
     username = args["username"]
-    response = client.identity_request("/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True})
+    response = client.identity_request(
+        "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}, idempotent=True
+    )
 
     success = _identity_success(response)
     outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": success}
@@ -513,7 +530,9 @@ def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Strip standing privilege by removing users from a role."""
     role_id = args["role_id"]
     user_ids = argToList(args["user_ids"])
-    response = client.identity_request("/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids})
+    response = client.identity_request(
+        "/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids}, idempotent=True
+    )
     success = _identity_success(response)
     outputs = {"RoleId": role_id, "Users": user_ids, "Success": success}
     return CommandResults(
@@ -540,7 +559,7 @@ def get_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
         "search": args.get("search"),
         "searchType": args.get("search_type", "contains"),
         "safeName": args.get("safe_name"),
-        "limit": arg_to_number(args.get("limit")) or 50,
+        "limit": arg_to_number(args.get("limit"), required=False) if args.get("limit") not in (None, "") else 50,
     }
     if params["limit"] <= 0:
         raise DemistoException("limit must be greater than 0.")
@@ -600,8 +619,10 @@ def list_sessions_command(client: Client, args: dict[str, Any]) -> CommandResult
     params: dict[str, Any] = {
         "Search": args.get("search"),
         "Safe": args.get("safe"),
-        "Limit": arg_to_number(args.get("limit")) or 25,
+        "Limit": arg_to_number(args.get("limit"), required=False) if args.get("limit") not in (None, "") else 25,
     }
+    if params["Limit"] <= 0:
+        raise DemistoException("limit must be greater than 0.")
     params = {key: value for key, value in params.items() if value not in (None, "")}
     response = client.privilege_cloud_request("/LiveSessions", params=params, method="GET")
 
@@ -621,7 +642,7 @@ def list_sessions_command(client: Client, args: dict[str, Any]) -> CommandResult
 def terminate_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Terminate a live privileged session by GUID."""
     session_guid = args["session_guid"]
-    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/Terminate/")
+    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/Terminate/", idempotent=True)
 
     outputs = {"SessionGuid": session_guid, "Action": "Terminate", "Success": True}
     return CommandResults(
@@ -635,7 +656,7 @@ def terminate_session_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 def _session_pause_action(client: Client, session_guid: str, action: str) -> CommandResults:
     """Suspend or resume a live session by GUID. Not for SSH/OPM."""
-    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/{action}/")
+    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/{action}/", idempotent=True)
 
     outputs = {"SessionGuid": session_guid, "Action": action, "Success": True}
     return CommandResults(
@@ -677,7 +698,7 @@ def rotate_credential_command(client: Client, args: dict[str, Any]) -> CommandRe
 def verify_credential_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Mark an account for CPM verification."""
     account_id = args["account_id"]
-    response = client.privilege_cloud_request(f"/Accounts/{account_id}/Verify/")
+    response = client.privilege_cloud_request(f"/Accounts/{account_id}/Verify/", idempotent=True)
 
     outputs = {"AccountId": account_id, "Action": "Verify", "Success": True}
     return CommandResults(

@@ -14,13 +14,13 @@ The integration uses the OAuth 2.0 **client-credentials** flow against `https://
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Identity URL | The Idira Identity tenant FQDN for OAuth2 authentication and Identity workforce actions (e.g., `https://abc1234.id.cyberark.cloud`). | True |
-| Client ID | Service username without domain (configured as an OAuth confidential client). | True |
+| Identity URL | The Idira Identity tenant FQDN used for OAuth2 authentication and Identity workforce actions \(e.g., https://abc1234.id.cyberark.cloud\). | True |
+| Client ID | Service username without domain \(configured as an OAuth confidential client\) with system-administrator or user-management rights. | True |
 | Client Secret | Service user password for OAuth2 client_credentials authentication. | True |
-| Privilege Cloud URL | The Idira Privilege Cloud PVWA host (e.g., `https://abc1234.privilegecloud.cyberark.cloud`). Required only for the account, session, and credential commands. | False |
-| Secure Infrastructure Access (SIA) URL | The Idira SIA host (e.g., `https://abc1234.dpa.cyberark.cloud`). Required only for the disable-access-policy and enable-access-policy commands. | False |
-| Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
-| Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
+| Privilege Cloud URL | The Idira Privilege Cloud PVWA host \(e.g., https://abc1234.privilegecloud.cyberark.cloud\). Required only for the account, session, and credential commands. | False |
+| Secure Infrastructure Access (SIA) URL | The Idira Secure Infrastructure Access host \(e.g., https://abc1234.dpa.cyberark.cloud\). Required only for the disable-access-policy and enable-access-policy commands. | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
 | Disable usage reporting | When selected, the integration does not send usage events \(command executed, integration version\) to Palo Alto Networks. | False |
 
 All three hosts (Identity, Privilege Cloud, SIA) authenticate with the same ISPSS Bearer token, so a single service user with the appropriate rights is sufficient. The Privilege Cloud and SIA hosts are optional: commands that need them raise a clear error if the corresponding URL is not configured. Privilege Cloud actions require the relevant Safe permissions (List Accounts, Initiate CPM operations, Add account), and SIA policy actions require the `DpaAdmin` role.
@@ -36,15 +36,20 @@ Some commands need an optional instance parameter:
 
 ### idira-identity-response-get-user-by-name
 
-Resolves a username to its Idira Identity user unique ID.
+***
+Resolves a username to its Idira Identity user unique ID. Run this first - the lock, disable, unlock, and force-logout actions target the user by unique ID, not username.
+
+#### Base Command
+
+`idira-identity-response-get-user-by-name`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the cloud user (format `username@suffix` if a suffix is required). | Required |
+| username | The username of the cloud user to resolve. Format: username@suffix if a suffix is required, otherwise username. | Required |
 
-**Context Output**
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -76,13 +81,26 @@ Resolves a username to its Idira Identity user unique ID.
 
 ### idira-identity-response-lock-user
 
-Locks a user, blocking them from authenticating. Reversible with `idira-identity-response-unlock-user`.
+***
+Locks a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+
+#### Base Command
+
+`idira-identity-response-lock-user`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user unique ID. | Required |
+| user_id | The user unique ID (from idira-identity-response-get-user-by-name). | Required |
 
-**Context Output**: `IdiraIdentityResponse.UserState` (`ID`, `State`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.UserState.ID | String | The user unique ID. |
+| IdiraIdentityResponse.UserState.State | String | The state the user was set to \(Locked\). |
+| IdiraIdentityResponse.UserState.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -110,13 +128,26 @@ Locks a user, blocking them from authenticating. Reversible with `idira-identity
 
 ### idira-identity-response-disable-user
 
-Disables a user. Reversible with `idira-identity-response-unlock-user`.
+***
+Disables a user, blocking them from authenticating. Reversible with idira-identity-response-unlock-user.
+
+#### Base Command
+
+`idira-identity-response-disable-user`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user unique ID. | Required |
+| user_id | The user unique ID (from idira-identity-response-get-user-by-name). | Required |
 
-**Context Output**: `IdiraIdentityResponse.UserState` (`ID`, `State`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.UserState.ID | String | The user unique ID. |
+| IdiraIdentityResponse.UserState.State | String | The state the user was set to \(Disabled\). |
+| IdiraIdentityResponse.UserState.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -144,13 +175,26 @@ Disables a user. Reversible with `idira-identity-response-unlock-user`.
 
 ### idira-identity-response-unlock-user
 
-Reverses a lock or disable by setting the user state back to `None`.
+***
+Reverses a lock or disable by setting the user state back to None, restoring the ability to authenticate.
+
+#### Base Command
+
+`idira-identity-response-unlock-user`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user unique ID. | Required |
+| user_id | The user unique ID (from idira-identity-response-get-user-by-name). | Required |
 
-**Context Output**: `IdiraIdentityResponse.UserState` (`ID`, `State`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.UserState.ID | String | The user unique ID. |
+| IdiraIdentityResponse.UserState.State | String | The state the user was set to \(None\). |
+| IdiraIdentityResponse.UserState.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -178,13 +222,25 @@ Reverses a lock or disable by setting the user state back to `None`.
 
 ### idira-identity-response-force-logout
 
+***
 Ends all of the user's active sessions and cookies, forcing them to sign in again.
+
+#### Base Command
+
+`idira-identity-response-force-logout`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user unique ID. | Required |
+| user_id | The user unique ID (from idira-identity-response-get-user-by-name). | Required |
 
-**Context Output**: `IdiraIdentityResponse.ForceLogout` (`ID`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.ForceLogout.ID | String | The user unique ID. |
+| IdiraIdentityResponse.ForceLogout.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -209,9 +265,64 @@ Ends all of the user's active sessions and cookies, forcing them to sign in agai
 >|---|---|
 >| 00000000-0000-0000-0000-000000000000 | true |
 
+### idira-identity-response-remove-role
+
+***
+Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
+
+#### Base Command
+
+`idira-identity-response-remove-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_id | The unique ID of the role. | Required |
+| user_ids | Comma-separated list of user unique IDs (or usernames) to remove from the role. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.RoleRemoval.RoleId | String | The role unique ID. |
+| IdiraIdentityResponse.RoleRemoval.Users | Unknown | The user IDs removed from the role. |
+| IdiraIdentityResponse.RoleRemoval.Success | Boolean | Whether the action succeeded. |
+
+#### Command example
+
+```!idira-identity-response-remove-role role_id=role-123 user_ids=00000000-0000-0000-0000-000000000000```
+
+#### Context Example
+
+```json
+{
+    "IdiraIdentityResponse.RoleRemoval": {
+        "RoleId": "role-123",
+        "Users": [
+            "00000000-0000-0000-0000-000000000000"
+        ],
+        "Success": true
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Removed 1 user(s) from role role-123
+>
+>|RoleId|Success|Users|
+>|---|---|---|
+>| role-123 | true | 00000000-0000-0000-0000-000000000000 |
+
 ### idira-identity-response-expire-password
 
+***
 Requires the user to set a new password at their next login.
+
+#### Base Command
+
+`idira-identity-response-expire-password`
 
 #### Input
 
@@ -219,7 +330,7 @@ Requires the user to set a new password at their next login.
 | --- | --- | --- |
 | username | The username of the cloud user. | Required |
 
-**Context Output**
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -251,55 +362,35 @@ Requires the user to set a new password at their next login.
 >|---|---|---|
 >| true | jdoe | true |
 
-### idira-identity-response-remove-role
-
-Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| role_id | The unique ID of the role. | Required |
-| user_ids | Comma-separated list of user unique IDs (or usernames) to remove from the role. | Required |
-
-**Context Output**: `IdiraIdentityResponse.RoleRemoval` (`RoleId`, `Users`, `Success`).
-
-#### Command example
-
-```!idira-identity-response-remove-role role_id=role-123 user_ids=00000000-0000-0000-0000-000000000000```
-
-#### Context Example
-
-```json
-{
-    "IdiraIdentityResponse.RoleRemoval": {
-        "RoleId": "role-123",
-        "Users": [
-            "00000000-0000-0000-0000-000000000000"
-        ],
-        "Success": true
-    }
-}
-```
-
-#### Human Readable Output
-
->### Removed 1 user(s) from role role-123
->
->|RoleId|Success|Users|
->|---|---|---|
->| role-123 | true | 00000000-0000-0000-0000-000000000000 |
-
 ### idira-identity-response-get-account
 
-Resolves privileged accounts to their internal account IDs. Run this first — rotate and verify target the account by internal ID.
+***
+Resolves privileged accounts to their internal account IDs (Idira Privilege Cloud). Run this first - the rotate and verify actions target the account by internal ID. Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-get-account`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | Keywords to search for (e.g., account name or address). | Optional |
-| search_type | Search mode: `contains` (default) or `startswith`. | Optional |
+| search | Keywords to search for (for example, account name or address). | Optional |
+| search_type | Search mode. Possible values are: contains, startswith. Default is contains. | Optional |
 | safe_name | Filter results to a specific Safe. | Optional |
-| limit | Maximum number of accounts to return (max 1000, default 50). | Optional |
+| limit | Maximum number of accounts to return (max 1000). Default is 50. | Optional |
 
-**Context Output**: `IdiraIdentityResponse.Account` (`id`, `name`, `userName`, `safeName`, `platformId`, `address`, `secretType`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.Account.id | String | The internal account ID. |
+| IdiraIdentityResponse.Account.name | String | The account object name. |
+| IdiraIdentityResponse.Account.userName | String | The account username. |
+| IdiraIdentityResponse.Account.safeName | String | The Safe the account belongs to. |
+| IdiraIdentityResponse.Account.platformId | String | The platform of the account. |
+| IdiraIdentityResponse.Account.address | String | The machine address of the account. |
+| IdiraIdentityResponse.Account.secretType | String | The secret type of the account. |
 
 #### Command example
 
@@ -333,13 +424,30 @@ Resolves privileged accounts to their internal account IDs. Run this first — r
 
 ### idira-identity-response-get-account-details
 
-Fetches a single account's details by its internal ID.
+***
+Fetches the details of a single privileged account by its internal ID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-get-account-details`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The internal account ID. | Required |
+| account_id | The internal account ID (from idira-identity-response-get-account). | Required |
 
-**Context Output**: `IdiraIdentityResponse.Account` (as above).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.Account.id | String | The internal account ID. |
+| IdiraIdentityResponse.Account.name | String | The account object name. |
+| IdiraIdentityResponse.Account.userName | String | The account username. |
+| IdiraIdentityResponse.Account.safeName | String | The Safe the account belongs to. |
+| IdiraIdentityResponse.Account.platformId | String | The platform of the account. |
+| IdiraIdentityResponse.Account.address | String | The machine address of the account. |
+| IdiraIdentityResponse.Account.secretType | String | The secret type of the account. |
 
 #### Command example
 
@@ -371,15 +479,35 @@ Fetches a single account's details by its internal ID.
 
 ### idira-identity-response-list-sessions
 
-Lists active privileged sessions to resolve a `SessionGuid`. Check the `CanTerminate` / `CanSuspend` flags before acting.
+***
+Lists active privileged sessions (Idira Privilege Cloud) to resolve a SessionGuid. Check the CanTerminate/CanSuspend flags before acting. Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-list-sessions`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | Keywords to search for (e.g., the username). | Optional |
+| search | Keywords to search for (for example, the username). | Optional |
 | safe | Filter results to a specific Safe. | Optional |
-| limit | Maximum number of sessions to return (default 25). | Optional |
+| limit | Maximum number of sessions to return. Default is 25. | Optional |
 
-**Context Output**: `IdiraIdentityResponse.Session` (`SessionGuid`, `User`, `AccountUsername`, `AccountAddress`, `RemoteMachine`, `Protocol`, `RiskScore`, `CanTerminate`, `CanSuspend`, `CanMonitor`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.Session.SessionGuid | String | The session GUID \(use to terminate/suspend, not the numeric SessionID\). |
+| IdiraIdentityResponse.Session.User | String | The user of the session. |
+| IdiraIdentityResponse.Session.AccountUsername | String | The account username used in the session. |
+| IdiraIdentityResponse.Session.AccountAddress | String | The account address used in the session. |
+| IdiraIdentityResponse.Session.RemoteMachine | String | The remote machine of the session. |
+| IdiraIdentityResponse.Session.Protocol | String | The session protocol. |
+| IdiraIdentityResponse.Session.RiskScore | Number | The risk score of the session. |
+| IdiraIdentityResponse.Session.CanTerminate | Boolean | Whether the session can be terminated. |
+| IdiraIdentityResponse.Session.CanSuspend | Boolean | Whether the session can be suspended. |
+| IdiraIdentityResponse.Session.CanMonitor | Boolean | Whether the session can be monitored. |
 
 #### Command example
 
@@ -416,13 +544,26 @@ Lists active privileged sessions to resolve a `SessionGuid`. Check the `CanTermi
 
 ### idira-identity-response-terminate-session
 
-Ends a live privileged session immediately by GUID.
+***
+Terminates a live privileged session by GUID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-terminate-session`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_guid | The session GUID (from list-sessions). | Required |
+| session_guid | The session GUID (from idira-identity-response-list-sessions). | Required |
 
-**Context Output**: `IdiraIdentityResponse.SessionAction` (`SessionGuid`, `Action`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.SessionAction.SessionGuid | String | The session GUID. |
+| IdiraIdentityResponse.SessionAction.Action | String | The action performed \(Terminate\). |
+| IdiraIdentityResponse.SessionAction.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -450,13 +591,26 @@ Ends a live privileged session immediately by GUID.
 
 ### idira-identity-response-suspend-session
 
-Pauses a live session by GUID. Reversible with resume-session. Not supported for SSH/OPM sessions.
+***
+Suspends a live privileged session by GUID (Idira Privilege Cloud). Reversible with idira-identity-response-resume-session. Not supported for SSH/OPM sessions. Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-suspend-session`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_guid | The session GUID (from list-sessions). | Required |
+| session_guid | The session GUID (from idira-identity-response-list-sessions). | Required |
 
-**Context Output**: `IdiraIdentityResponse.SessionAction` (`SessionGuid`, `Action`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.SessionAction.SessionGuid | String | The session GUID. |
+| IdiraIdentityResponse.SessionAction.Action | String | The action performed \(Suspend\). |
+| IdiraIdentityResponse.SessionAction.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -484,13 +638,26 @@ Pauses a live session by GUID. Reversible with resume-session. Not supported for
 
 ### idira-identity-response-resume-session
 
-Lifts the pause on a suspended session by GUID.
+***
+Resumes a suspended privileged session by GUID (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-resume-session`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_guid | The session GUID (from list-sessions). | Required |
+| session_guid | The session GUID (from idira-identity-response-list-sessions). | Required |
 
-**Context Output**: `IdiraIdentityResponse.SessionAction` (`SessionGuid`, `Action`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.SessionAction.SessionGuid | String | The session GUID. |
+| IdiraIdentityResponse.SessionAction.Action | String | The action performed \(Resume\). |
+| IdiraIdentityResponse.SessionAction.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -518,14 +685,27 @@ Lifts the pause on a suspended session by GUID.
 
 ### idira-identity-response-rotate-credential
 
-Triggers an immediate CPM credential change on an account.
+***
+Triggers an immediate CPM credential change on a privileged account (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-rotate-credential`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The internal account ID (from get-account). | Required |
-| change_creds_for_group | Whether the CPM changes credentials on all accounts in the same group. Default `false`. | Optional |
+| account_id | The internal account ID (from idira-identity-response-get-account). | Required |
+| change_creds_for_group | Whether the CPM changes credentials on all accounts in the same group. Possible values are: true, false. Default is false. | Optional |
 
-**Context Output**: `IdiraIdentityResponse.CredentialAction` (`AccountId`, `Action`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.CredentialAction.AccountId | String | The internal account ID. |
+| IdiraIdentityResponse.CredentialAction.Action | String | The action performed \(Rotate\). |
+| IdiraIdentityResponse.CredentialAction.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -553,13 +733,26 @@ Triggers an immediate CPM credential change on an account.
 
 ### idira-identity-response-verify-credential
 
-Marks an account for CPM verification to confirm the credential is valid.
+***
+Marks a privileged account for CPM verification to confirm the credential is valid (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-verify-credential`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The internal account ID (from get-account). | Required |
+| account_id | The internal account ID (from idira-identity-response-get-account). | Required |
 
-**Context Output**: `IdiraIdentityResponse.CredentialAction` (`AccountId`, `Action`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.CredentialAction.AccountId | String | The internal account ID. |
+| IdiraIdentityResponse.CredentialAction.Action | String | The action performed \(Verify\). |
+| IdiraIdentityResponse.CredentialAction.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -587,7 +780,14 @@ Marks an account for CPM verification to confirm the credential is valid.
 
 ### idira-identity-response-vault-account
 
-Brings an unmanaged, risky privileged account under Idira management.
+***
+Brings an unmanaged, risky privileged account under Idira management (Idira Privilege Cloud). Requires the Privilege Cloud URL.
+
+#### Base Command
+
+`idira-identity-response-vault-account`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -596,11 +796,19 @@ Brings an unmanaged, risky privileged account under Idira management.
 | name | The account object name. | Optional |
 | address | The machine name or address. | Optional |
 | username | The account username. | Optional |
-| secret_type | The secret type: `password` or `key`. | Optional |
+| secret_type | The secret type. Possible values are: password, key. | Optional |
 | secret | The password or SSH key value. | Optional |
-| automatic_management_enabled | Whether to enable CPM automatic management. | Optional |
+| automatic_management_enabled | Whether to enable CPM automatic management. Possible values are: true, false. | Optional |
 
-**Context Output**: `IdiraIdentityResponse.Account` (`id`, `name`, `safeName`, `platformId`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.Account.id | String | The assigned internal account ID. |
+| IdiraIdentityResponse.Account.name | String | The account object name. |
+| IdiraIdentityResponse.Account.safeName | String | The Safe the account was added to. |
+| IdiraIdentityResponse.Account.platformId | String | The platform of the account. |
+| IdiraIdentityResponse.Account.Success | Boolean | Whether the account was vaulted. |
 
 #### Command example
 
@@ -630,13 +838,28 @@ Brings an unmanaged, risky privileged account under Idira management.
 
 ### idira-identity-response-disable-access-policy
 
-Revokes standing or just-in-time access by disabling a SIA access policy. The current policy is read first and written back with only its status changed, so all other settings are preserved. Reversible with `idira-identity-response-enable-access-policy`.
+***
+Revokes standing or just-in-time access by disabling a Secure Infrastructure Access (SIA) policy. All other policy settings are preserved. Reversible with idira-identity-response-enable-access-policy. Requires the SIA URL.
+
+#### Base Command
+
+`idira-identity-response-disable-access-policy`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy UUID. | Required |
+| policy_id | The policy UUID (from the SIA access-policies list). | Required |
 
-**Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `PreviousStatus`, `Status`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.AccessPolicy.PolicyId | String | The policy UUID. |
+| IdiraIdentityResponse.AccessPolicy.PolicyName | String | The policy name. |
+| IdiraIdentityResponse.AccessPolicy.PreviousStatus | String | The policy status before the action. |
+| IdiraIdentityResponse.AccessPolicy.Status | String | The status the policy was set to. |
+| IdiraIdentityResponse.AccessPolicy.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 
@@ -666,13 +889,28 @@ Revokes standing or just-in-time access by disabling a SIA access policy. The cu
 
 ### idira-identity-response-enable-access-policy
 
-Restores access by enabling a previously disabled SIA access policy. All other policy settings are preserved.
+***
+Restores access by enabling a previously disabled Secure Infrastructure Access (SIA) policy. All other policy settings are preserved. Requires the SIA URL.
+
+#### Base Command
+
+`idira-identity-response-enable-access-policy`
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy UUID. | Required |
+| policy_id | The policy UUID (from the SIA access-policies list). | Required |
 
-**Context Output**: `IdiraIdentityResponse.AccessPolicy` (`PolicyId`, `PolicyName`, `PreviousStatus`, `Status`, `Success`).
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IdiraIdentityResponse.AccessPolicy.PolicyId | String | The policy UUID. |
+| IdiraIdentityResponse.AccessPolicy.PolicyName | String | The policy name. |
+| IdiraIdentityResponse.AccessPolicy.PreviousStatus | String | The policy status before the action. |
+| IdiraIdentityResponse.AccessPolicy.Status | String | The status the policy was set to. |
+| IdiraIdentityResponse.AccessPolicy.Success | Boolean | Whether the action succeeded. |
 
 #### Command example
 

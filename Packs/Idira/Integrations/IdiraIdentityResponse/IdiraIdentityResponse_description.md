@@ -19,6 +19,8 @@ Complete the following steps in Identity Administration before configuring the i
 
 Assign the service user a role that grants **system-administrator** or **user-management** rights. Identity workforce actions (lock/disable user, force logout, expire password, remove role) require these rights.
 
+Privilege Cloud actions (account, session, and credential commands) also require the relevant Safe permissions (List Accounts, Initiate CPM operations, Add account), and Secure Infrastructure Access (SIA) policy actions require the `DpaAdmin` role.
+
 ### Step 3: Configure the integration instance
 
 | Parameter | Value |
@@ -26,3 +28,5 @@ Assign the service user a role that grants **system-administrator** or **user-ma
 | **Identity URL** | The Idira Identity tenant FQDN, e.g. `https://abc1234.id.cyberark.cloud` |
 | **Client ID** | The service username without domain |
 | **Client Secret** | The service user password |
+| **Privilege Cloud URL** | Optional. The Privilege Cloud PVWA host, e.g. `https://abc1234.privilegecloud.cyberark.cloud`. Required only for the account, session, and credential commands. |
+| **Secure Infrastructure Access (SIA) URL** | Optional. The SIA host, e.g. `https://abc1234.dpa.cyberark.cloud`. Required only for the access-policy commands. |

@@ -1,16 +1,18 @@
 ## What does this pack do?
 
-The **Idira** pack lets you trigger identity (workforce) response actions in the Idira Identity Security Platform as part of a detection-to-containment playbook. From an incident or automation you can:
+The **Idira** pack lets you trigger response actions in the Idira Identity Security Platform as part of a detection-to-containment playbook. From an incident or automation you can:
 
 * Resolve a username to its Idira Identity user unique ID.
 * Lock, disable, or unlock a user account.
 * Force logout of all of a user's active sessions and cookies.
 * Expire a user's password, requiring a reset at next login.
 * Remove one or more users from a privileged role.
+* Get Privilege Cloud accounts, list, terminate, suspend, or resume their sessions, and rotate or verify credentials.
+* Disable or enable Secure Infrastructure Access (SIA) access policies.
 
 ## This pack includes
 
-* The **Idira Identity Response** integration, which authenticates to the Idira Identity Security Platform Shared Services (ISPSS) using the OAuth 2.0 client-credentials flow and calls the Identity workforce APIs to run containment actions.
+* The **Idira Identity Response** integration, which authenticates to the Idira Identity Security Platform Shared Services (ISPSS) using the OAuth 2.0 client-credentials flow and calls the Identity workforce, Privilege Cloud, and SIA APIs to run containment actions.
 * Playbooks that run a single containment action on the issue's user (`${issue.userid}` by default):
   * **Idira - Lock User** - locks the user.
   * **Idira - Unlock User** - reverses a lock or disable.
@@ -33,4 +35,3 @@ Complete the service-user setup in Identity Administration before configuring th
 ***
 
 For more information, see the [Idira Identity Response](Integrations/IdiraIdentityResponse/README.md) integration documentation.
-
