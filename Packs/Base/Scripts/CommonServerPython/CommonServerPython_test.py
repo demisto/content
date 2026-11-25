@@ -45,7 +45,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
                                 execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal,
-                                safe_pickle_loads, UnsafePickleError, _PICKLE_FUNCTION_ALLOWLIST
+                                safe_pickle_loads, UnsafePickleError
                                 )
 
 
