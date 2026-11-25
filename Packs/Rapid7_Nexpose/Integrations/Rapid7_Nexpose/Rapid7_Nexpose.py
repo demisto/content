@@ -52,7 +52,34 @@ XSIAM_SEND_TIMEOUT_SECONDS = 60
 # can finish in a single fetch; fails only if the connection stalls for this long.
 RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS = 120
 RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS = 30
-BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
+BASE_QUERY_FOR_ASSETS = """WITH
+-- Finds the latest completed scan for each asset within the lookback window. Unfinished scans (running, paused,
+-- stopped, aborted) have a NULL finish time, which sorts first in DESC order and would otherwise hide the asset's
+-- completed scans. It is defined first so the per-asset CTEs below only aggregate the assets in scope.
+asset_latest_scan AS (
+    SELECT DISTINCT ON (fas.asset_id)
+        fas.asset_id,
+        ds.finished AS last_scan_date,
+        ds.status_id AS last_scan_status_id,
+        ds.scan_id AS scan_id,
+        ds.started AS started,
+        ds.type_id AS type_id,
+        ds.scan_name AS scan_name,
+        fas.vulnerabilities AS vulnerabilities,
+        fas.aggregated_credential_status_id AS aggregated_credential_status_id
+
+    FROM
+        fact_asset_scan fas
+    JOIN
+        dim_scan ds ON fas.scan_id = ds.scan_id
+    WHERE
+        ds.status_id = 'C'
+        AND ds.finished IS NOT NULL
+        AND ds.finished >= CURRENT_DATE - INTERVAL '{lookback_days} days'
+    ORDER BY
+        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the latest completed scan
+),
+asset_tags AS (
     SELECT
         dta.asset_id,
         json_agg(
@@ -65,6 +92,8 @@ BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
         dim_tag_asset dta
     JOIN
         dim_tag dt USING (tag_id)
+    WHERE
+        dta.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         dta.asset_id
 ),
@@ -87,6 +116,8 @@ asset_softwares AS (
         dim_software ds
     JOIN
         dim_asset_software das ON ds.software_id = das.software_id
+    WHERE
+        das.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         das.asset_id
 ),
@@ -96,6 +127,8 @@ asset_macs AS (
         json_agg(dama.mac_address) AS aggregated_mac_addresses
     FROM
         dim_asset_mac_address dama
+    WHERE
+        dama.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         dama.asset_id
 ),
@@ -105,6 +138,8 @@ asset_ips AS (
         json_agg(daia.ip_address) AS aggregated_ip_addresses
     FROM
         dim_asset_ip_address daia
+    WHERE
+        daia.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         daia.asset_id
 ),
@@ -121,6 +156,8 @@ asset_files AS (
         ) AS aggregated_files_json
     FROM
         dim_asset_file daf
+    WHERE
+        daf.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         daf.asset_id
 ),
@@ -138,6 +175,8 @@ asset_service AS (
         ) AS asset_services
     FROM
         dim_asset_service dase
+    WHERE
+        dase.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     GROUP BY
         dase.asset_id
 ),
@@ -154,33 +193,11 @@ asset_service AS (
             dim_asset_host_name dahn
         JOIN
             dim_host_name_source_type dhnst ON dahn.source_type_id = dhnst.type_id
+        WHERE
+            dahn.asset_id IN (SELECT asset_id FROM asset_latest_scan)
         GROUP BY
             dahn.asset_id
     ),
--- Finds the latest completed scan for each asset. Unfinished scans (running, paused, stopped, aborted) have a NULL
--- finish time, which sorts first in DESC order and would otherwise hide the asset's completed scans.
-asset_latest_scan AS (
-    SELECT DISTINCT ON (fas.asset_id)
-        fas.asset_id,
-        ds.finished AS last_scan_date,
-        ds.status_id AS last_scan_status_id,
-        ds.scan_id AS scan_id,
-        ds.started AS started,
-        ds.type_id AS type_id,
-        ds.scan_name AS scan_name,
-        fas.vulnerabilities AS vulnerabilities,
-        fas.aggregated_credential_status_id AS aggregated_credential_status_id
-
-    FROM
-        fact_asset_scan fas
-    JOIN
-        dim_scan ds ON fas.scan_id = ds.scan_id
-    WHERE
-        ds.status_id = 'C'
-        AND ds.finished IS NOT NULL
-    ORDER BY
-        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the latest completed scan
-),
 latest_os_certainty AS (
     SELECT DISTINCT ON (fasos.asset_id)
         fasos.asset_id,
@@ -189,6 +206,8 @@ latest_os_certainty AS (
         fact_asset_scan_operating_system fasos
     JOIN
         dim_scan ds ON fasos.scan_id = ds.scan_id
+    WHERE
+        fasos.asset_id IN (SELECT asset_id FROM asset_latest_scan)
     ORDER BY
         fasos.asset_id, ds.finished DESC, fasos.certainty DESC -- Use certainty as a tie-breaker if dates are equal
 )
@@ -267,10 +286,6 @@ LEFT JOIN
     latest_os_certainty loc ON da.asset_id = loc.asset_id -- Join the new CTE
 LEFT JOIN
     asset_service ase ON da.asset_id = ase.asset_id
-
-WHERE
-    als.last_scan_date >= CURRENT_DATE - INTERVAL '{lookback_days} days'
-    AND als.last_scan_status_id = 'C'
 
 ORDER BY
     da.asset_id ASC"""
