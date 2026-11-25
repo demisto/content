@@ -4,6 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
+from AzureTestApiModule import *  # noqa: E402
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
 import itertools
@@ -966,6 +967,9 @@ FIREWALL_FAILED_PROVISIONING_STATE = "Failed"
 FIREWALL_TERMINAL_PROVISIONING_STATES = {"Succeeded", FIREWALL_FAILED_PROVISIONING_STATE}
 # Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
 # first positional argument, so main() dispatches these commands differently from the regular ones.
+# Commands that do not call the Azure API. main() runs them before resolving the subscription and building the
+# AzureClient, so they do not require Azure credentials or a subscription ID.
+COMMANDS_WITHOUT_AZURE_CLIENT = {"azure-test-command"}
 POLLING_COMMANDS = {
     "azure-vn-ip-group-create",
     "azure-vn-ip-group-update",
@@ -14540,6 +14544,21 @@ def get_command_resource(command: str) -> str:
     return DEFAULT_RESOURCE
 
 
+def azure_test_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Verifies that arg1 and arg2 are not empty using AzureTestApiModule and returns its result.
+
+    Args:
+        args (dict[str, Any]): Command arguments including arg1 and arg2.
+
+    Returns:
+        CommandResults: The value returned by AzureTestApiModule ("ok" on success).
+    """
+    # Raises a ValueError naming the empty arguments; main() turns it into a user-facing error.
+    result = azure_test_verify_arguments({"arg1": args.get("arg1"), "arg2": args.get("arg2")})
+    return CommandResults(readable_output=result, raw_response=result)
+
+
 def switch_to_gov_account() -> None:
     global BLOB_SERVICE_PREFIX
     global SCOPE_BY_CONNECTION
@@ -14794,7 +14813,11 @@ def main():  # pragma: no cover
             "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
             "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
             "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
+            "azure-test-command": azure_test_command,
         }
+
+        if command in COMMANDS_WITHOUT_AZURE_CLIENT:
+            return return_results(commands_with_params_and_args[command](args=args))
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
 
