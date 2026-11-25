@@ -1,8 +1,12 @@
 import base64
+import hashlib
 import re
+import secrets
 
 # pylint: disable=E9010, E9011
 import traceback
+from collections.abc import Callable
+from urllib.parse import parse_qs, quote, urlencode, urlparse
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -39,6 +43,11 @@ DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
 REGEX_SEARCH_URL = r"(?P<url>https?://[^\s]+)"
 REGEX_SEARCH_ERROR_DESC = r"^[^:]+:\s(?P<desc>.*?)(?:\s*Trace ID:| Correlation ID:| Timestamp:|$)"
 SESSION_STATE = "session_state"
+
+# Integration context keys used by the single-command authorization code flow (start_auth_code_flow/complete_auth_code_flow).
+AUTH_CODE_FLOW_STATE_KEY = "auth_code_flow_state"
+AUTH_CODE_FLOW_CODE_VERIFIER_KEY = "auth_code_flow_code_verifier"
+AUTH_CODE_FLOW_COMPLETED_KEY = "auth_code_flow_completed"
 
 # Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
@@ -1560,14 +1569,284 @@ def generate_login_url(client: MicrosoftClient, login_url: str = "https://login.
         f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}',
     )
 
-    result_msg = f"""### Authorization instructions
-1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
-You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
-and paste it in your instance configuration under the **Authorization code** parameter.
- """
+    # Built from single-line strings: a multi-line string is rendered as a code block in the platform War Room.
+    result_msg = "\n\n".join(
+        [
+            "**Authorization instructions**",
+            f"**Step 1:** Open the [login URL]({login_url}) and sign in.",
+            "**Step 2:** The page will not load, this is expected.",
+            "**Step 3:** From that URL, copy only the value of the code parameter.",
+            "**Step 4:** Paste it in the **Authorization code** field of the integration settings.",
+        ]
+    )
     return CommandResults(readable_output=result_msg)
+
+
+def is_auth_code_flow_completed() -> bool:
+    """
+    Checks whether the single-command authorization code flow was completed, meaning a refresh token obtained by
+    complete_auth_code_flow is stored in the integration context.
+    Integrations use it to keep the authorization code grant type when the Authorization code parameter is empty.
+
+    Returns:
+        bool: True if the flow was completed and a refresh token is stored, False otherwise.
+    """
+    try:
+        integration_context = get_integration_context()
+    except Exception as e:  # the integration context is not available in some executions (for example test-module)
+        demisto.debug(f"Could not read the integration context: {e}")
+        return False
+    return bool(integration_context.get(AUTH_CODE_FLOW_COMPLETED_KEY) and integration_context.get("current_refresh_token"))
+
+
+def _validate_auth_code_flow_client(client: MicrosoftClient) -> None:
+    """
+    Validates that the client is configured for the self-deployed authorization code flow.
+
+    Raises:
+        DemistoException: If the client is not self-deployed or a required parameter is missing.
+    """
+    if client.auth_type != SELF_DEPLOYED_AUTH_TYPE:
+        raise DemistoException("The authorization code flow is supported only for a self-deployed Azure application.")
+    if client.multi_resource:
+        raise DemistoException("The single-command authorization code flow does not support multi-resource clients.")
+    missing = [
+        name
+        for name, value in (
+            ("client_id", getattr(client, "client_id", None)),
+            ("tenant_id", client.tenant_id),
+            ("scope", getattr(client, "scope", None)),
+            ("redirect_uri", getattr(client, "redirect_uri", None)),
+        )
+        if not value
+    ]
+    if missing:
+        raise DemistoException(
+            f"Please make sure you entered the Authorization configuration correctly. Missing: {', '.join(missing)}"
+        )
+
+
+def _get_auth_code_flow_scope(client: MicrosoftClient) -> str:
+    """Returns the scope used for the authorization code flow. offline_access is required to get a refresh token."""
+    return f"offline_access {client.scope}"
+
+
+def _create_pkce_pair() -> tuple[str, str]:
+    """
+    Creates a PKCE code verifier and its S256 code challenge (RFC 7636).
+
+    Returns:
+        tuple: The code verifier and the code challenge.
+    """
+    code_verifier = secrets.token_urlsafe(64)
+    digest = hashlib.sha256(code_verifier.encode("ascii")).digest()
+    code_challenge = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+    return code_verifier, code_challenge
+
+
+def start_auth_code_flow(client: MicrosoftClient, complete_command: str) -> CommandResults:
+    """
+    First step of the single-command authorization code flow.
+    Creates a state and a PKCE pair, stores them in the integration context and returns the Microsoft login URL.
+
+    Args:
+        client: A self-deployed MicrosoftClient.
+        complete_command: The command the user runs with the redirect_url argument to complete the flow.
+
+    Returns:
+        CommandResults: The authorization instructions with the login URL.
+    """
+    _validate_auth_code_flow_client(client)
+    state = secrets.token_urlsafe(32)
+    code_verifier, code_challenge = _create_pkce_pair()
+
+    integration_context = get_integration_context()
+    integration_context.update({AUTH_CODE_FLOW_STATE_KEY: state, AUTH_CODE_FLOW_CODE_VERIFIER_KEY: code_verifier})
+    set_integration_context(integration_context)
+
+    query = urlencode(
+        {
+            "client_id": client.client_id,
+            "response_type": "code",
+            "redirect_uri": client.redirect_uri,
+            "response_mode": "query",
+            "scope": _get_auth_code_flow_scope(client),
+            "state": state,
+            "code_challenge": code_challenge,
+            "code_challenge_method": "S256",
+        },
+        quote_via=quote,
+    )
+    login_url = f"{client.azure_ad_endpoint.rstrip('/')}/{client.tenant_id}/oauth2/v2.0/authorize?{query}"
+
+    # Built from single-line strings: a multi-line string is rendered as a code block in the platform War Room.
+    result_msg = "\n\n".join(
+        [
+            "**Authorization instructions**",
+            f"**Step 1:** Open the [login URL]({login_url}) and sign in.",
+            "**Step 2:** The page may not load, this is expected. Copy the **entire** URL from the browser address bar.",
+            f"**Step 3:** Run **{complete_command}** with the **redirect_url** argument set to the copied URL.",
+        ]
+    )
+    return CommandResults(readable_output=result_msg)
+
+
+def _parse_auth_code_redirect_url(redirect_url: str) -> tuple[str, str | None]:
+    """
+    Extracts the authorization code and state from the URL the user was redirected to.
+    A bare authorization code is also accepted, in which case the state is not returned.
+
+    Returns:
+        tuple: The authorization code and the state (None if not present).
+
+    Raises:
+        DemistoException: If Microsoft returned an error or the code is missing.
+    """
+    redirect_url = redirect_url.strip()
+    if "code=" not in redirect_url and "error=" not in redirect_url:
+        return redirect_url, None
+
+    query_params = parse_qs(urlparse(redirect_url).query or redirect_url.split("?")[-1])
+    if error := query_params.get("error", [""])[0]:
+        error_description = query_params.get("error_description", [""])[0]
+        raise DemistoException(f"Microsoft returned an authorization error: {error}. {error_description}")
+
+    code = query_params.get("code", [""])[0]
+    if not code:
+        raise DemistoException("Could not find the authorization code in the provided redirect URL.")
+    return code, query_params.get("state", [None])[0]
+
+
+def _redeem_auth_code(client: MicrosoftClient, code: str, code_verifier: str) -> dict:
+    """
+    Redeems the authorization code for an access token and a refresh token.
+
+    Returns:
+        dict: The JSON response of the token endpoint.
+    """
+    data = {
+        "client_id": client.client_id,
+        "client_secret": getattr(client, "client_secret", None),
+        "grant_type": AUTHORIZATION_CODE,
+        "code": code,
+        "redirect_uri": client.redirect_uri,
+        "scope": _get_auth_code_flow_scope(client),
+        "code_verifier": code_verifier,
+    }
+    if jwt := getattr(client, "jwt", None):
+        data.pop("client_secret", None)
+        data["client_assertion_type"] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        data["client_assertion"] = jwt
+
+    response = requests.post(client.token_retrieval_url, data, verify=client.verify)
+    if response.status_code not in {200, 201}:
+        raise DemistoException(
+            f"Error in Microsoft authorization. Status: {response.status_code}, body: {client.error_parser(response)}"
+        )
+    return response.json()
+
+
+def complete_auth_code_flow(client: MicrosoftClient, redirect_url: str) -> None:
+    """
+    Second step of the single-command authorization code flow.
+    Validates the state, redeems the code with the PKCE code verifier, and stores the access and refresh tokens
+    in the integration context under the same keys get_access_token uses, so the following calls are authenticated.
+    The caller should then run an API call to verify the connection.
+
+    Args:
+        client: A self-deployed MicrosoftClient.
+        redirect_url: The full URL the user was redirected to after signing in (or only the authorization code).
+
+    Raises:
+        DemistoException: If the flow was not started, the state does not match, or the code redemption failed.
+    """
+    _validate_auth_code_flow_client(client)
+    integration_context = get_integration_context()
+    expected_state = integration_context.get(AUTH_CODE_FLOW_STATE_KEY)
+    code_verifier = integration_context.get(AUTH_CODE_FLOW_CODE_VERIFIER_KEY)
+    if not expected_state or not code_verifier:
+        raise DemistoException("The authorization flow was not started. Run the command without arguments to get a login URL.")
+
+    code, state = _parse_auth_code_redirect_url(redirect_url)
+    if state is not None and state != expected_state:
+        raise DemistoException(
+            "The state in the redirect URL does not match the latest login URL. "
+            "Make sure you used the login URL from the latest run of the command."
+        )
+
+    response_json = _redeem_auth_code(client, code, code_verifier)
+    refresh_token = response_json.get("refresh_token", "")
+    if not refresh_token:
+        raise DemistoException(
+            "Microsoft did not return a refresh token. Make sure the offline_access permission is granted to the application."
+        )
+
+    expires_in = int(response_json.get("expires_in", 3595))
+    integration_context.pop(AUTH_CODE_FLOW_STATE_KEY, None)
+    integration_context.pop(AUTH_CODE_FLOW_CODE_VERIFIER_KEY, None)
+    integration_context.update(
+        {
+            "access_token": response_json.get("access_token", ""),
+            "valid_until": client.epoch_seconds() + max(expires_in - 5, 0),
+            "current_refresh_token": refresh_token,
+            AUTH_CODE_FLOW_COMPLETED_KEY: True,
+        }
+    )
+    set_integration_context(integration_context)
+    demisto.debug("Authorization code flow completed, tokens stored in the integration context.")
+
+
+def get_auth_code_grant_type(auth_code: str | None, redirect_uri: str | None, self_deployed: bool) -> str:
+    """
+    Returns the grant type for integrations that choose between client credentials and the authorization code flow.
+    Keeps the existing behavior (the Authorization code parameter selects the authorization code flow), and also selects it
+    when the Authorization code parameter is empty but the single-command authorization code flow was completed.
+
+    Args:
+        auth_code: The Authorization code instance parameter.
+        redirect_uri: The Application redirect URI instance parameter.
+        self_deployed: Whether the instance uses a self-deployed application.
+
+    Returns:
+        str: AUTHORIZATION_CODE or CLIENT_CREDENTIALS.
+    """
+    if not redirect_uri:
+        return CLIENT_CREDENTIALS
+    if auth_code or (self_deployed and is_auth_code_flow_completed()):
+        return AUTHORIZATION_CODE
+    return CLIENT_CREDENTIALS
+
+
+def auth_code_login_command(
+    client: MicrosoftClient, args: dict, command_name: str, test_connection: Callable[[], Any]
+) -> CommandResults:
+    """
+    Runs the authorization code flow in a single command, without editing the instance configuration.
+    Without the redirect_url argument, returns a login URL. With it, redeems the authorization code, stores the
+    refresh token in the integration context and tests the connection.
+
+    Args:
+        client: A self-deployed MicrosoftClient.
+        args: The command arguments.
+        command_name: The integration command name (without "!"), shown in the instructions.
+        test_connection: A function that runs an API call to verify the connection. Raises an exception on failure.
+
+    Returns:
+        CommandResults: The login instructions, or a success message.
+    """
+    redirect_url = args.get("redirect_url")
+    if not redirect_url:
+        return start_auth_code_flow(client, complete_command=f"!{command_name}")
+
+    complete_auth_code_flow(client, redirect_url)
+    client.grant_type = AUTHORIZATION_CODE  # the next token refreshes must use the stored refresh token
+    try:
+        test_connection()
+    except Exception as e:
+        raise DemistoException(f"The refresh token was saved, but the connection test failed: {e}") from e
+    return CommandResults(
+        readable_output="Authorization completed successfully. The refresh token was saved and the connection was tested."
+    )
 
 
 def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:

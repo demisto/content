@@ -2625,6 +2625,16 @@ def test_auth_code_command(client: MsGraphClient, args):
     return CommandResults(readable_output="Authentication was successful.")
 
 
+def msg_auth_code_login_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Runs the authorization code flow in a single command, without editing the instance configuration.
+    Without the redirect_url argument, returns a login URL. With it, saves the refresh token and tests the connection.
+    """
+    return auth_code_login_command(
+        client.ms_client, args, "msg-auth-code-login", test_connection=lambda: test_auth_code_command(client, args)
+    )
+
+
 def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandResults] | CommandResults:
     """
     Sends a query for the advanced hunting tool.
@@ -3916,6 +3926,7 @@ def main():
     commands = {
         "test-module": test_function,
         "msg-auth-test": test_auth_code_command,
+        "msg-auth-code-login": msg_auth_code_login_command,
         "msg-search-alerts": search_alerts_command,
         "msg-get-alert-details": get_alert_details_command,
         "msg-update-alert": update_alert_command,
@@ -3963,7 +3974,7 @@ def main():
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        grant_type = get_auth_code_grant_type(auth_code, redirect_uri, self_deployed)
 
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,

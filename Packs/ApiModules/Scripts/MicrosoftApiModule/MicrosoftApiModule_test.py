@@ -5,6 +5,7 @@ from MicrosoftApiModule import *
 from requests import Response
 
 from collections.abc import Iterable
+from urllib.parse import parse_qs, urlparse
 
 TOKEN = "dummy_token"
 TENANT = "dummy_tenant"
@@ -1005,3 +1006,387 @@ def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
     assert isinstance(
         status_list, Iterable
     ), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
+
+
+def auth_code_flow_client(redirect_uri: str = "https://localhost/myapp") -> MicrosoftClient:
+    return MicrosoftClient(
+        self_deployed=True,
+        tenant_id=TENANT,
+        auth_id=CLIENT_ID,
+        enc_key=CLIENT_SECRET,
+        grant_type=AUTHORIZATION_CODE,
+        redirect_uri=redirect_uri,
+        base_url=BASE_URL,
+        verify=True,
+        proxy=False,
+        ok_codes=OK_CODES,
+    )
+
+
+def test_start_auth_code_flow(mocker):
+    """
+    Given:
+        - A self-deployed client configured for the authorization code flow.
+    When:
+        - Calling start_auth_code_flow.
+    Then:
+        - Ensure the state and PKCE code verifier are stored in the integration context, preserving existing keys.
+        - Ensure the login URL contains the state, the S256 code challenge of the stored verifier and an encoded redirect URI.
+    """
+    import base64 as b64
+    import hashlib
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"existing_key": "value"})
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+
+    result = start_auth_code_flow(auth_code_flow_client(), complete_command="!test-auth-code-login")
+
+    stored_context = set_context_mock.call_args[0][0]
+    assert stored_context["existing_key"] == "value"
+    state = stored_context[AUTH_CODE_FLOW_STATE_KEY]
+    code_verifier = stored_context[AUTH_CODE_FLOW_CODE_VERIFIER_KEY]
+
+    login_url = re.search(r"\[login URL\]\((?P<url>[^)]+)\)", result.readable_output)["url"]
+    parsed_url = urlparse(login_url)
+    query = parse_qs(parsed_url.query)
+    expected_challenge = b64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).decode().rstrip("=")
+
+    assert f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}" == (
+        f"https://login.microsoftonline.com/{TENANT}/oauth2/v2.0/authorize"
+    )
+    assert "redirect_uri=https%3A%2F%2Flocalhost%2Fmyapp" in login_url
+    assert query["state"] == [state]
+    assert query["code_challenge"] == [expected_challenge]
+    assert query["code_challenge_method"] == ["S256"]
+    assert query["scope"] == [f"offline_access {SCOPE}"]
+    assert query["client_id"] == [CLIENT_ID]
+    assert "**!test-auth-code-login**" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "client_kwargs, expected_error",
+    [
+        ({"redirect_uri": ""}, "redirect_uri"),
+    ],
+)
+def test_start_auth_code_flow_missing_params(mocker, client_kwargs, expected_error):
+    """
+    Given:
+        - A self-deployed client without a redirect URI.
+    When:
+        - Calling start_auth_code_flow.
+    Then:
+        - Ensure an error mentions the missing parameter and nothing is written to the integration context.
+    """
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    with pytest.raises(DemistoException, match=expected_error):
+        start_auth_code_flow(auth_code_flow_client(**client_kwargs), complete_command="cmd")
+    assert not set_context_mock.called
+
+
+def test_start_auth_code_flow_oproxy_not_supported():
+    """
+    Given:
+        - An oproxy (not self-deployed) client.
+    When:
+        - Calling start_auth_code_flow.
+    Then:
+        - Ensure an error is raised.
+    """
+    with pytest.raises(DemistoException, match="self-deployed"):
+        start_auth_code_flow(oproxy_client_tenant(), complete_command="cmd")
+
+
+@freezegun.freeze_time(FREEZE_STR_DATE)
+def test_complete_auth_code_flow(mocker, requests_mock):
+    """
+    Given:
+        - A started authorization code flow (state and code verifier in the integration context).
+        - The full redirect URL with the matching state and a session_state parameter.
+    When:
+        - Calling complete_auth_code_flow.
+    Then:
+        - Ensure the token request uses the code, the redirect URI and the PKCE code verifier.
+        - Ensure the tokens are stored under the keys get_access_token reads, and the flow keys are removed.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={AUTH_CODE_FLOW_STATE_KEY: "expected_state", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "verifier", "other": 1},
+    )
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    token_mock = requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": 3600, "refresh_token": REFRESH_TOKEN})
+
+    complete_auth_code_flow(
+        auth_code_flow_client(),
+        "https://localhost/myapp?code=the_code&state=expected_state&session_state=abc",
+    )
+
+    request_body = parse_qs(token_mock.last_request.text)
+    assert request_body["grant_type"] == [AUTHORIZATION_CODE]
+    assert request_body["code"] == ["the_code"]
+    assert request_body["code_verifier"] == ["verifier"]
+    assert request_body["redirect_uri"] == ["https://localhost/myapp"]
+    assert request_body["client_secret"] == [CLIENT_SECRET]
+
+    stored_context = set_context_mock.call_args[0][0]
+    assert stored_context == {
+        "other": 1,
+        "access_token": TOKEN,
+        "valid_until": 3595,
+        "current_refresh_token": REFRESH_TOKEN,
+        AUTH_CODE_FLOW_COMPLETED_KEY: True,
+    }
+
+
+def test_complete_auth_code_flow_then_get_access_token_uses_refresh_token(mocker, requests_mock):
+    """
+    Given:
+        - A completed authorization code flow, with an expired access token in the integration context.
+        - A client without the auth_code parameter.
+    When:
+        - Calling get_access_token.
+    Then:
+        - Ensure the stored refresh token is used with the refresh_token grant type.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"access_token": "old", "valid_until": 0, "current_refresh_token": REFRESH_TOKEN},
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    token_mock = requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": 3600, "refresh_token": "new_refresh"})
+
+    assert auth_code_flow_client().get_access_token() == TOKEN
+    request_body = parse_qs(token_mock.last_request.text)
+    assert request_body["grant_type"] == ["refresh_token"]
+    assert request_body["refresh_token"] == [REFRESH_TOKEN]
+
+
+def test_complete_auth_code_flow_accepts_bare_code(mocker, requests_mock):
+    """
+    Given:
+        - A started authorization code flow.
+    When:
+        - Calling complete_auth_code_flow with only the authorization code (not the full URL).
+    Then:
+        - Ensure the code is redeemed.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={AUTH_CODE_FLOW_STATE_KEY: "s", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "v"},
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    token_mock = requests_mock.post(APP_URL, json={"access_token": TOKEN, "refresh_token": REFRESH_TOKEN})
+
+    complete_auth_code_flow(auth_code_flow_client(), " bare_code ")
+
+    assert parse_qs(token_mock.last_request.text)["code"] == ["bare_code"]
+
+
+@pytest.mark.parametrize(
+    "context, redirect_url, expected_error",
+    [
+        ({}, "https://localhost/myapp?code=c&state=s", "was not started"),
+        (
+            {AUTH_CODE_FLOW_STATE_KEY: "s", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "v"},
+            "https://localhost/myapp?code=c&state=other",
+            "does not match",
+        ),
+        (
+            {AUTH_CODE_FLOW_STATE_KEY: "s", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "v"},
+            "https://localhost/myapp?error=access_denied&error_description=User+declined&state=s",
+            "access_denied. User declined",
+        ),
+    ],
+)
+def test_complete_auth_code_flow_errors(mocker, requests_mock, context, redirect_url, expected_error):
+    """
+    Given:
+        - A flow that was not started, a mismatching state, or a Microsoft error in the redirect URL.
+    When:
+        - Calling complete_auth_code_flow.
+    Then:
+        - Ensure a clear error is raised and no token request is sent.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    token_mock = requests_mock.post(APP_URL, json={})
+
+    with pytest.raises(DemistoException, match=expected_error):
+        complete_auth_code_flow(auth_code_flow_client(), redirect_url)
+
+    assert not token_mock.called
+    assert not set_context_mock.called
+
+
+def test_complete_auth_code_flow_token_error(mocker, requests_mock):
+    """
+    Given:
+        - A started flow and a token endpoint that rejects the code.
+    When:
+        - Calling complete_auth_code_flow.
+    Then:
+        - Ensure the Microsoft error is raised and the flow keys are kept (so the user can retry with a new code).
+    """
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value={AUTH_CODE_FLOW_STATE_KEY: "s", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "v"}
+    )
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    requests_mock.post(
+        APP_URL, status_code=400, json={"error": "invalid_grant", "error_description": "AADSTS54005: code already redeemed."}
+    )
+
+    with pytest.raises(DemistoException, match="invalid_grant"):
+        complete_auth_code_flow(auth_code_flow_client(), "https://localhost/myapp?code=c&state=s")
+    assert not set_context_mock.called
+
+
+def test_complete_auth_code_flow_no_refresh_token(mocker, requests_mock):
+    """
+    Given:
+        - A started flow and a token response without a refresh token.
+    When:
+        - Calling complete_auth_code_flow.
+    Then:
+        - Ensure an error about offline_access is raised.
+    """
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value={AUTH_CODE_FLOW_STATE_KEY: "s", AUTH_CODE_FLOW_CODE_VERIFIER_KEY: "v"}
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    requests_mock.post(APP_URL, json={"access_token": TOKEN})
+
+    with pytest.raises(DemistoException, match="offline_access"):
+        complete_auth_code_flow(auth_code_flow_client(), "https://localhost/myapp?code=c&state=s")
+
+
+@pytest.mark.parametrize(
+    "context, expected",
+    [
+        ({AUTH_CODE_FLOW_COMPLETED_KEY: True, "current_refresh_token": REFRESH_TOKEN}, True),
+        ({AUTH_CODE_FLOW_COMPLETED_KEY: True}, False),
+        ({"current_refresh_token": REFRESH_TOKEN}, False),
+        ({}, False),
+    ],
+)
+def test_is_auth_code_flow_completed(mocker, context, expected):
+    """
+    Given:
+        - Different integration contexts.
+    When:
+        - Calling is_auth_code_flow_completed.
+    Then:
+        - Ensure True is returned only when the flow was completed and a refresh token is stored.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    assert is_auth_code_flow_completed() is expected
+
+
+def test_is_auth_code_flow_completed_context_unavailable(mocker):
+    """
+    Given:
+        - An execution where reading the integration context raises an error.
+    When:
+        - Calling is_auth_code_flow_completed.
+    Then:
+        - Ensure False is returned.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", side_effect=Exception("not available"))
+    assert is_auth_code_flow_completed() is False
+
+
+@pytest.mark.parametrize(
+    "auth_code, redirect_uri, self_deployed, context, expected",
+    [
+        ("code", "https://localhost/myapp", True, {}, AUTHORIZATION_CODE),
+        ("code", "", True, {}, CLIENT_CREDENTIALS),
+        ("", "https://localhost/myapp", True, {}, CLIENT_CREDENTIALS),
+        (
+            "",
+            "https://localhost/myapp",
+            True,
+            {AUTH_CODE_FLOW_COMPLETED_KEY: True, "current_refresh_token": REFRESH_TOKEN},
+            AUTHORIZATION_CODE,
+        ),
+        (
+            "",
+            "https://localhost/myapp",
+            False,
+            {AUTH_CODE_FLOW_COMPLETED_KEY: True, "current_refresh_token": REFRESH_TOKEN},
+            CLIENT_CREDENTIALS,
+        ),
+        ("", "", True, {AUTH_CODE_FLOW_COMPLETED_KEY: True, "current_refresh_token": REFRESH_TOKEN}, CLIENT_CREDENTIALS),
+    ],
+)
+def test_get_auth_code_grant_type(mocker, auth_code, redirect_uri, self_deployed, context, expected):
+    """
+    Given:
+        - Different combinations of the auth_code and redirect_uri parameters, self_deployed and the integration context.
+    When:
+        - Calling get_auth_code_grant_type.
+    Then:
+        - Ensure the existing behavior is kept, and an empty auth_code selects the authorization code grant type only
+          after the single-command flow was completed on a self-deployed instance with a redirect URI.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    assert get_auth_code_grant_type(auth_code, redirect_uri, self_deployed) == expected
+
+
+def test_auth_code_login_command_start(mocker):
+    """
+    Given:
+        - No redirect_url argument.
+    When:
+        - Calling auth_code_login_command.
+    Then:
+        - Ensure the login instructions include the integration command, and the connection test is not run.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    test_connection = mocker.Mock()
+
+    result = auth_code_login_command(auth_code_flow_client(), {}, "my-auth-code-login", test_connection)
+
+    assert "Run **!my-auth-code-login** with the **redirect_url** argument" in result.readable_output
+    assert not test_connection.called
+
+
+def test_auth_code_login_command_complete(mocker):
+    """
+    Given:
+        - A redirect_url argument.
+    When:
+        - Calling auth_code_login_command.
+    Then:
+        - Ensure the flow is completed, the grant type is switched to authorization code and the connection is tested.
+    """
+    client = MicrosoftClient(
+        self_deployed=True, tenant_id=TENANT, auth_id=CLIENT_ID, enc_key=CLIENT_SECRET, redirect_uri="https://localhost/myapp"
+    )
+    complete_mock = mocker.patch("MicrosoftApiModule.complete_auth_code_flow")
+    test_connection = mocker.Mock()
+
+    result = auth_code_login_command(client, {"redirect_url": "the_url"}, "my-auth-code-login", test_connection)
+
+    complete_mock.assert_called_once_with(client, "the_url")
+    test_connection.assert_called_once_with()
+    assert client.grant_type == AUTHORIZATION_CODE
+    assert "Authorization completed successfully" in result.readable_output
+
+
+def test_auth_code_login_command_test_fails(mocker):
+    """
+    Given:
+        - A redirect_url argument and a connection test that fails.
+    When:
+        - Calling auth_code_login_command.
+    Then:
+        - Ensure the error says the refresh token was saved but the test failed.
+    """
+    mocker.patch("MicrosoftApiModule.complete_auth_code_flow")
+    test_connection = mocker.Mock(side_effect=Exception("Forbidden"))
+
+    with pytest.raises(DemistoException, match="refresh token was saved, but the connection test failed: Forbidden"):
+        auth_code_login_command(auth_code_flow_client(), {"redirect_url": "url"}, "cmd", test_connection)
