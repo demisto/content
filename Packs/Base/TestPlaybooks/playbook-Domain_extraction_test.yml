@@ -120,7 +120,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\",\n\"sub_domain.domain.com\""
+        simple: "\"none.zip\",\n\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\",\n\"sub_domain.domain.com\",\n\"`backtick.example.com`\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -160,6 +160,7 @@ tasks:
       - "80"
       - "25"
       - "85"
+      - "89"
     scriptarguments:
       execution-timeout:
         simple: "30"
@@ -243,7 +244,7 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\",\n\"example.ps1\""
+        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\",\n\"example.ps1\",\n\"foo.com-bar\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -280,6 +281,8 @@ tasks:
       - "86"
       - "87"
       - "88"
+      - "90"
+      - "91"
     scriptarguments:
       value:
         simple: ${invalid_domains}
@@ -824,13 +827,136 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: de0dab38-5f54-4748-843f-0d365bd7a19c
+    type: condition
+    task:
+      id: de0dab38-5f54-4748-843f-0d365bd7a19c
+      version: -1
+      name: check auto extract - backtick.example.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: backtick.example.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: d9060b5f-c240-4875-8892-321313a9f750
+    type: condition
+    task:
+      id: d9060b5f-c240-4875-8892-321313a9f750
+      version: -1
+      name: non extraction - foo.com-bar
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: foo.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2845,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 59716d7a-4f46-4fe4-a94a-25c7dcc37dbb
+    type: condition
+    task:
+      id: 59716d7a-4f46-4fe4-a94a-25c7dcc37dbb
+      version: -1
+      name: non extraction - backtick.example.com`
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: backtick.example.com`
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 3390,
+        "width": 3600,
         "x": 50,
         "y": 50
       }
