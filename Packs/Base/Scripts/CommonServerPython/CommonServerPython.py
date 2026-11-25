@@ -15857,6 +15857,26 @@ BASE_PICKLE_ALLOWED_CLASSES = {
 }
 
 
+# Functions that are NOT types but are needed for legitimate ML model deserialization.
+# Discovered by pickling DataFrame, Series, and ndarray with protocols 2 and 4,
+# then enumerating all GLOBAL opcodes and checking isinstance(obj, type).
+_PICKLE_FUNCTION_ALLOWLIST = {
+    # numpy reconstruction (both old and new module paths)
+    ("numpy._core.multiarray", "_reconstruct"),  # numpy 2.x
+    ("numpy.core.multiarray", "_reconstruct"),  # numpy 1.x
+    ("numpy._core.multiarray", "scalar"),  # numpy 2.x
+    ("numpy.core.multiarray", "scalar"),  # numpy 1.x
+    # pandas internals
+    ("pandas._libs.internals", "_unpickle_block"),
+    ("pandas._libs.arrays", "__pyx_unpickle_NDArrayBacked"),
+    ("pandas.core.indexes.base", "_new_Index"),
+    ("pandas.core.internals.blocks", "new_block"),
+    # codecs and copyreg
+    ("_codecs", "encode"),
+    ("copyreg", "_reconstructor"),
+}
+
+
 class UnsafePickleError(Exception):
     """Raised when a pickle payload contains unsafe opcodes or classes.
 
@@ -15920,13 +15940,31 @@ def _make_restricted_unpickler(allowed_classes, safe_module_prefixes):
 
         def find_class(self, module, name):
             # type: (str, str) -> type
+            # Normalize __builtin__ to builtins (Python 2 protocol 2 compatibility)
+            if module == '__builtin__':
+                module = 'builtins'
+
+            # Gate 1: explicit (module, name) pair in allowlist (unchanged)
             if (module, name) in allowed_classes:
                 return _pickle.Unpickler.find_class(self, module, name)
+
+            # Gate 2: module prefix check (unchanged — blocks subprocess, os, etc.)
             top_module = module.split(".")[0]
-            if top_module in safe_module_prefixes:
-                return _pickle.Unpickler.find_class(self, module, name)
+            if top_module not in safe_module_prefixes:
+                raise _pickle.UnpicklingError(
+                    "Blocked unauthorized class: '{}.{}'".format(module, name)
+                )
+
+            # Gate 3 (NEW): within allowed modules, allow types and allowlisted functions only
+            obj = _pickle.Unpickler.find_class(self, module, name)
+            if isinstance(obj, type):
+                return obj
+            if (module, name) in _PICKLE_FUNCTION_ALLOWLIST:
+                return obj
             raise _pickle.UnpicklingError(
-                "Blocked unauthorized class: '{}.{}'".format(module, name)
+                "Blocked non-allowlisted callable: '{}.{}' ({})".format(
+                    module, name, type(obj).__name__
+                )
             )
 
     return RestrictedUnpickler

