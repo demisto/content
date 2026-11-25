@@ -706,7 +706,7 @@ There is no context output for this command.
 ### fortimanager-address-group-update
 
 ***
-Create a new address group.
+Update an existing address group.
 
 #### Base Command
 
@@ -718,7 +718,7 @@ Create a new address group.
 | --- | --- | --- |
 | adom | The ADOM on which to update the address group. Leave empty to use the instance ADOM. | Optional |
 | name | Address group name. | Required |
-| member | A comma-separated list of the address or address group objects contained within the group. | Optional |
+| member | A comma-separated list of the address or address group objects contained within the group. The list replaces the group's existing members, so include the existing members to keep them. | Optional |
 | comment | A comment about the address group. | Optional |
 
 #### Context Output
@@ -2080,7 +2080,7 @@ Get installation status.
 
 ### Write commands fail with `no write permission`
 
-When Workspace Mode is enabled on FortiManager, configuration changes are accepted only from a session that has locked the ADOM first. Enable the **Workspace Mode - lock the ADOM before changes** instance parameter. Each write command (create, update, delete, move) then locks the ADOM, applies the change, commits it, and unlocks the ADOM. If another administrator holds the ADOM lock, the command fails and can be retried later.
+When Workspace Mode is enabled on FortiManager, configuration changes are accepted only from a session that has locked the ADOM first. Enable the **Workspace Mode - lock the ADOM before changes** instance parameter. Each write command (create, update, delete, move) then locks the ADOM, applies the change, commits it, and unlocks the ADOM. The fortimanager-firewall-policy-package-install command keeps the ADOM locked until the install task finishes, for up to 4 minutes. If another administrator holds the ADOM lock, the command fails and can be retried later.
 
 ## Known Limitations
 

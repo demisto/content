@@ -653,11 +653,11 @@ script:
     - description: Address group name.
       name: name
       required: true
-    - description: A comma-separated list of the address or address group objects contained within the group.
+    - description: A comma-separated list of the address or address group objects contained within the group. The list replaces the group's existing members, so include the existing members to keep them.
       name: member
     - description: A comment about the address group.
       name: comment
-    description: Create a new address group.
+    description: Update an existing address group.
     name: fortimanager-address-group-update
   - arguments:
     - description: The ADOM from which to delete the address group. Leave empty to use the default integration ADOM.
