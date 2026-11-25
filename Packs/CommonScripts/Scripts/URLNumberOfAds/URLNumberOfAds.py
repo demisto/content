@@ -16,14 +16,7 @@ def is_ip_internal_or_restricted(ip_str: str) -> bool:
     """
     try:
         ip = ipaddress.ip_address(ip_str)
-        return (
-            ip.is_private
-            or ip.is_loopback
-            or ip.is_link_local
-            or ip.is_multicast
-            or ip.is_reserved
-            or ip.is_unspecified
-        )
+        return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved or ip.is_unspecified
     except ValueError:
         return False
 
@@ -38,9 +31,7 @@ def validate_url_safe(url: str, arg_name: str = "url") -> str:
 
     parsed = urlparse(url)
     if parsed.scheme.lower() not in ("http", "https"):
-        raise ValueError(
-            f"Invalid scheme '{parsed.scheme}' in '{arg_name}'. Only HTTP and HTTPS URLs are supported."
-        )
+        raise ValueError(f"Invalid scheme '{parsed.scheme}' in '{arg_name}'. Only HTTP and HTTPS URLs are supported.")
 
     hostname = parsed.hostname
     if not hostname:
@@ -59,9 +50,7 @@ def validate_url_safe(url: str, arg_name: str = "url") -> str:
     for info in addr_info:
         resolved_ip = str(info[4][0])
         if is_ip_internal_or_restricted(resolved_ip):
-            raise ValueError(
-                f"URL '{url}' in '{arg_name}' resolves to an internal or restricted IP address ({resolved_ip})."
-            )
+            raise ValueError(f"URL '{url}' in '{arg_name}' resolves to an internal or restricted IP address ({resolved_ip}).")
 
     return url
 

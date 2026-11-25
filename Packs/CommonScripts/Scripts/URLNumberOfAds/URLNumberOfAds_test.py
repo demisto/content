@@ -163,4 +163,3 @@ def test_main_ssrf_blocked_easylist(mocker):
 
     return_error_mock.assert_called_once()
     assert "internal or restricted IP address" in return_error_mock.call_args[0][0]
-
