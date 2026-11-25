@@ -2427,3 +2427,67 @@ def test_create_access_token_command(mocker):
 
     assert result.outputs["AccessToken"] == "access_token_value"
     assert result.outputs["ValidUntil"] == "2023-01-01T01:00:00Z"
+
+
+def test_msgraph_user_auth_code_login_command(mocker, client):
+    """
+    Given:
+        - Command arguments.
+    When:
+        - Calling msgraph_user_auth_code_login_command.
+    Then:
+        - Ensure the shared auth_code_login_command is called with the command name, and the connection test runs
+          test_function.
+    """
+    from CommonServerPython import CommandResults
+    from MicrosoftGraphUser import msgraph_user_auth_code_login_command
+
+    shared_mock = mocker.patch("MicrosoftGraphUser.auth_code_login_command", return_value=CommandResults(readable_output="done"))
+    test_mock = mocker.patch("MicrosoftGraphUser.test_function")
+    args = {"redirect_url": "url"}
+
+    result = msgraph_user_auth_code_login_command(client, args)
+
+    assert result.readable_output == "done"
+    assert shared_mock.call_args.args == (client.ms_client, args, "msgraph-user-auth-code-login")
+    shared_mock.call_args.kwargs["test_connection"]()
+    test_mock.assert_called_once_with(client, args)
+
+
+@pytest.mark.parametrize(
+    "auth_code, redirect_uri, context, expected_grant_type",
+    [
+        ("code", "https://localhost/myapp", {}, "authorization_code"),
+        ("", "https://localhost/myapp", {"auth_code_flow_completed": True, "current_refresh_token": "r"}, "authorization_code"),
+        ("", "https://localhost/myapp", {}, "client_credentials"),
+        ("", "", {}, "client_credentials"),
+    ],
+)
+def test_client_grant_type(mocker, auth_code, redirect_uri, context, expected_grant_type):
+    """
+    Given:
+        - Different combinations of the auth_code and redirect_uri parameters and the integration context.
+    When:
+        - Creating the MsGraphClient of a self-deployed instance.
+    Then:
+        - Ensure the existing behavior is kept, and an empty auth_code selects the authorization code grant type only
+          after msgraph-user-auth-code-login completed.
+    """
+    from MicrosoftGraphUser import MsGraphClient
+
+    mocker.patch("MicrosoftApiModule.get_integration_context", return_value=context)
+    graph_client = MsGraphClient(
+        tenant_id="tenant",
+        auth_id="client_id",
+        enc_key="secret",
+        app_name="ms-graph-user",
+        base_url="https://graph.microsoft.com/v1.0",
+        verify=True,
+        proxy=False,
+        self_deployed=True,
+        redirect_uri=redirect_uri,
+        auth_code=auth_code,
+        handle_error=True,
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+    assert graph_client.ms_client.grant_type == expected_grant_type

@@ -5959,3 +5959,69 @@ def test_invoke_action_command(mocker):
         identity_provider="entraID",
     )
     assert result.readable_output == "Action: revokeAllSessions was successfully performed for account: account-1."
+
+
+def test_msg_auth_code_login_command(mocker):
+    """
+    Given:
+        - Command arguments.
+    When:
+        - Calling msg_auth_code_login_command.
+    Then:
+        - Ensure the shared auth_code_login_command is called with the command name, and the connection test runs
+          test_auth_code_command with the same arguments.
+    """
+    from MicrosoftGraphSecurity import msg_auth_code_login_command
+
+    shared_mock = mocker.patch(
+        "MicrosoftGraphSecurity.auth_code_login_command", return_value=CommandResults(readable_output="done")
+    )
+    test_mock = mocker.patch("MicrosoftGraphSecurity.test_auth_code_command")
+    args = {"redirect_url": "url", "permission_type": "alerts"}
+
+    result = msg_auth_code_login_command(client_mocker, args)
+
+    assert result.readable_output == "done"
+    ms_client, passed_args, command_name = shared_mock.call_args.args
+    assert (ms_client, passed_args, command_name) == (client_mocker.ms_client, args, "msg-auth-code-login")
+    shared_mock.call_args.kwargs["test_connection"]()
+    test_mock.assert_called_once_with(client_mocker, args)
+
+
+@pytest.mark.parametrize(
+    "auth_code, redirect_uri, context, expected_grant_type",
+    [
+        ("code", "https://localhost/myapp", {}, "authorization_code"),
+        ("", "https://localhost/myapp", {"auth_code_flow_completed": True, "current_refresh_token": "r"}, "authorization_code"),
+        ("", "https://localhost/myapp", {}, "client_credentials"),
+        ("", "", {"auth_code_flow_completed": True, "current_refresh_token": "r"}, "client_credentials"),
+    ],
+)
+def test_main_grant_type_selection(mocker, auth_code, redirect_uri, context, expected_grant_type):
+    """
+    Given:
+        - Different combinations of the auth_code and redirect_uri parameters and the integration context.
+    When:
+        - Running main.
+    Then:
+        - Ensure the existing behavior is kept (auth_code parameter selects the authorization code grant type), and an
+          empty auth_code parameter selects it only after msg-auth-code-login completed.
+    """
+    params = {
+        "self_deployed": True,
+        "creds_tenant_id": {"password": "tenant"},
+        "creds_auth_id": {"password": "client_id"},
+        "creds_enc_key": {"password": "secret"},
+        "auth_code": {"password": auth_code},
+        "redirect_uri": redirect_uri,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="msg-auth-test")
+    mocker.patch("MicrosoftApiModule.get_integration_context", return_value=context)
+    test_mock = mocker.patch("MicrosoftGraphSecurity.test_auth_code_command", return_value=CommandResults(readable_output="ok"))
+    mocker.patch("MicrosoftGraphSecurity.return_results")
+
+    main()
+
+    assert test_mock.call_args[0][0].ms_client.grant_type == expected_grant_type

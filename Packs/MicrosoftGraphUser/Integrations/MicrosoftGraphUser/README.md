@@ -740,6 +740,32 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### msgraph-user-auth-code-login
+
+***
+Runs the authorization code flow without editing the instance configuration. Run it without arguments to get a login URL, then run it again with the redirect_url argument to save the refresh token and test the connection. Relevant only for a self-deployed application with the Application redirect URI parameter set.
+
+#### Base Command
+
+`msgraph-user-auth-code-login`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| redirect_url | The full URL the browser was redirected to after signing in with the login URL. Run the command without this argument first to get the login URL. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Usage
+
+1. Configure a self-deployed instance with the **Application ID**, **Tenant ID**, **Key** (or certificate), and **Application redirect URI** parameters. Leave the **Authorization code** parameter empty.
+2. Run `!msgraph-user-auth-code-login` and click the login URL.
+3. After signing in, copy the entire URL from the browser address bar.
+4. Within 10 minutes, run `!msgraph-user-auth-code-login redirect_url=<COPIED_URL>`. The refresh token is saved and the connection is tested.
+
 ### msgraph-user-tap-policy-delete
 
 ***

@@ -144,7 +144,7 @@ class MsGraphClient:
         private_key: Optional[str] = None,
         managed_identities_client_id: Optional[str] = None,
     ):
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        grant_type = get_auth_code_grant_type(auth_code, redirect_uri, self_deployed)
         resource = None if self_deployed else ""
         client_args = {
             "tenant_id": tenant_id,
@@ -973,6 +973,16 @@ def test_function(client, _):
 
     client.ms_client.http_request(method="GET", url_suffix="users/")
     return response
+
+
+def msgraph_user_auth_code_login_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Runs the authorization code flow in a single command, without editing the instance configuration.
+    Without the redirect_url argument, returns a login URL. With it, saves the refresh token and tests the connection.
+    """
+    return auth_code_login_command(
+        client.ms_client, args, "msgraph-user-auth-code-login", test_connection=lambda: test_function(client, args)
+    )
 
 
 @suppress_errors_with_404_code
@@ -2206,6 +2216,7 @@ def main():  # pragma: no cover
 
     commands = {
         "msgraph-user-test": test_function,
+        "msgraph-user-auth-code-login": msgraph_user_auth_code_login_command,
         "test-module": test_function,
         "msgraph-user-unblock": unblock_user_command,
         "msgraph-user-terminate-session": disable_user_account_command,

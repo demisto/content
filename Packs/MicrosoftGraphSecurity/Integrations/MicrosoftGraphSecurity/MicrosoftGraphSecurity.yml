@@ -898,6 +898,22 @@ script:
     execution: false
     name: msg-generate-login-url
   - arguments:
+    - description: The full URL the browser was redirected to after signing in with the login URL. Run the command without this argument first to get the login URL.
+      name: redirect_url
+    - description: Which permissions to test after the authorization is completed.
+      name: permission_type
+      isArray: true
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'ediscovery'
+      - 'alerts'
+      - 'threat assessment'
+      - 'all'
+    description: Runs the authorization code flow without editing the instance configuration. Run it without arguments to get a login URL, then run it again with the redirect_url argument to save the refresh token and test the connection. Relevant only for a self-deployed application with the Application redirect URI parameter set.
+    execution: false
+    name: msg-auth-code-login
+  - arguments:
     - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
       isArray: false
       name: identity_accounts_id
