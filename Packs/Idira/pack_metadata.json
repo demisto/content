@@ -1,0 +1,43 @@
+{
+    "name": "Idira",
+    "description": "Trigger response actions in the Idira Identity Security Platform as part of a detection-to-containment playbook - identity (workforce) actions (lock, disable, or unlock a user, force logout, expire a password, remove a privileged role), Privilege Cloud account, session, and credential actions, and Secure Infrastructure Access (SIA) access-policy actions.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "cybr-bizdevtech@paloaltonetworks.com",
+    "created": "2026-08-26T21:49:36Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "defaultDataSource": "IdiraIdentityResponse",
+    "tags": [
+        "IAM"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "Idira",
+        "Identity",
+        "ISP"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "dependencies": {
+        "CyberArkPAS": {
+            "mandatory": true,
+            "display_name": "CyberArk"
+        }
+    },
+    "displayedImages": [
+        "CyberArkPAS"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
