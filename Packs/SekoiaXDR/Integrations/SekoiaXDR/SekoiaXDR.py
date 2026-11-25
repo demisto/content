@@ -938,6 +938,7 @@ def fetch_incidents(
             except Exception as e:
                 # Don't block the whole fetch: create the incident without its events
                 demisto.error(f"Failed to query events for alert {alert_id}, creating the incident without events: {e}")
+                demisto.debug(traceback.format_exc())
 
         # Start building the incident
         incident = {
