@@ -3229,7 +3229,8 @@
         },
         {
             "integrations": "MailListener - POP3",
-            "playbookID": "MailListener-POP3 - Test"
+            "playbookID": "MailListener-POP3 - Test",
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "sumList - Test"
@@ -5949,6 +5950,7 @@
         }
     ],
     "skipped_tests": {
+        "IBM Resilient Systems Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-19401",
         "Gmail Convert Html Test": "Gmail test instance service account key is invalid (invalid_grant: Invalid signature for token), test-module fails before and after content updates - CIAC-12587",
         "Get Original Email - Gmail v2 - test": "Gmail test instance service account key is invalid (invalid_grant: Invalid signature for token), test-module fails before and after content updates - CIAC-12587",
         "Microsoft_365_Defender-Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-18016",

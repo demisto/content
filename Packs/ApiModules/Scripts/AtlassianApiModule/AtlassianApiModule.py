@@ -182,9 +182,11 @@ class AtlassianOAuthClient(ABC):
 
         # Build the authorization URL directly instead of making a request
         # Atlassian OAuth 2.0 (3LO) requires the user to visit the URL directly
-        from urllib.parse import urlencode
+        from urllib.parse import quote, urlencode
 
-        auth_url = f"{ATLASSIAN_AUTH_URL}/authorize?{urlencode(params)}"
+        # Encode spaces as %20 (not '+'): the URL is shown in the War Room as markdown, where '+text+'
+        # is underline markup that strips the '+' scope separators and breaks the authorization.
+        auth_url = f"{ATLASSIAN_AUTH_URL}/authorize?{urlencode(params, quote_via=quote)}"
 
         return auth_url
 
