@@ -3538,7 +3538,10 @@ def get_host_list_detections_events(
     except DemistoException as e:
         if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
             raise
-        demisto.debug("[HTTP Error] Host list request hit the concurrency limit; failing fast for the interactive call.")
+        demisto.debug(
+            "[HTTP Error] Host list request hit the concurrency limit; failing fast for the interactive call.\n"
+            f"{traceback.format_exc()}"
+        )
         raise DemistoException(f"{CONCURRENCY_LIMIT_INTERACTIVE_ERROR}\n{e}", res=e.res) from e
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
