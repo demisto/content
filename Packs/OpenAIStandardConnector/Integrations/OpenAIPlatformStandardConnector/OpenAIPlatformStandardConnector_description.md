@@ -25,7 +25,7 @@ Audit events are ingested into the `openai_admin_audit_raw` dataset.
 
 ### Verify
 
-**Verify** tests only the credentials of the capabilities you enabled: the OpenAI API Key against the Chat Completions and Responses endpoints, and the Admin API Key against the Audit logs endpoint. An authorization error names the key to fix.
+**Verify** tests only the credentials of the capabilities you enabled: the OpenAI API Key against the Models endpoint (no model is called, so the selected model does not affect Verify), and the Admin API Key against the Audit logs endpoint. An authorization error names the key to fix.
 
 ### Moving from the OpenAI GPT integration
 

@@ -999,7 +999,10 @@ def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]
 
 
 def test_module(client: OpenAiClient, params: dict) -> str:
-    """Probe chat-completions (when its API Key is set) and each selected/credentialed event-collector stream.
+    """Probe the API Key (when set) and each selected/credentialed event-collector stream.
+
+    The API Key is checked with GET /v1/models, which needs no model name, so a retired or
+    unavailable model never fails the test.
 
     Each capability is independent: an instance using only chat commands needs the API Key; an
     instance using only the event collector needs the matching Admin/Compliance keys (and
@@ -1009,42 +1012,20 @@ def test_module(client: OpenAiClient, params: dict) -> str:
     demisto.debug("[Test Module] Starting test-module probes.")
 
     if client.has_credential(CredentialScope.CHAT):
-        demisto.debug("[Test Module] Probing chat-completions endpoint...")
+        # GET /v1/models validates the API Key without naming a model, so the test never fails
+        # because a model was retired or is not enabled for the project.
+        demisto.debug("[Test Module] Probing the models endpoint with the API Key...")
         try:
-            chat_message = {"role": "user", "content": ""}
-            completion_params = {
-                ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
-                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
-                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
-            }
-            client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
+            client.list_models()
         except DemistoException as e:
-            if "Forbidden" in str(e) or "Authorization" in str(e):
-                demisto.error(f"[Test Module] Chat-completions probe failed with auth error: {e}")
+            if "Forbidden" in str(e) or "Authorization" in str(e) or "Unauthorized" in str(e):
+                demisto.error(f"[Test Module] Models probe failed with auth error: {e}")
                 return "Authorization Error: make sure API Key is correctly set"
-            demisto.error(f"[Test Module] Chat-completions probe raised non-auth error: {e}")
+            demisto.error(f"[Test Module] Models probe raised non-auth error: {e}")
             raise
-        demisto.debug("[Test Module] Chat-completions probe passed.")
-
-        demisto.debug("[Test Module] Probing Responses API endpoint...")
-        try:
-            response_params = {
-                ArgAndParamNames.MODEL: client.model or "gpt-3.5-turbo",
-                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
-                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
-                "max_output_tokens": params.get(ArgAndParamNames.MAX_TOKENS, None),
-                "input": "Present random english sentence",
-            }
-            client.create_response(body=response_params)
-        except DemistoException as e:
-            if "Forbidden" in str(e) or "Authorization" in str(e):
-                demisto.error(f"[Test Module] Responses API probe failed with auth error: {e}")
-                return "Authorization Error: make sure API Key is correctly set"
-            demisto.error(f"[Test Module] Responses API probe raised non-auth error: {e}")
-            raise
-        demisto.debug("[Test Module] Responses API probe passed.")
+        demisto.debug("[Test Module] Models probe passed.")
     else:
-        demisto.debug("[Test Module] Chat-completions and Responses API probes skipped (no API Key configured).")
+        demisto.debug("[Test Module] Models probe skipped (no API Key configured).")
 
     collector_params = parse_collector_params(params, service=client.service)
     streams_to_probe = [
@@ -1062,7 +1043,7 @@ def test_module(client: OpenAiClient, params: dict) -> str:
             )
         demisto.debug(
             "[Test Module] No collector streams to probe (none selected, or missing credentials/workspace_id)."
-            " Returning 'ok' after chat-completions probe only."
+            " Returning 'ok' after the API Key probe only."
         )
         return "ok"
 

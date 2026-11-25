@@ -1728,24 +1728,55 @@ def test_push_result_isolates_send_failure(mocker, capfd):
 
 # region Event Collector tests - test_module
 def test_test_module_chat_only_returns_ok(mocker):
-    """Happy path: chat-completions probe passes and no collector streams selected returns ok."""
+    """
+    Given: Only the API Key is configured and no collector stream is selected.
+    When: Running test-module.
+    Then: The key is checked with the models endpoint, no model-specific call is made, and "ok" is returned.
+    """
 
-    client = _make_client(admin_api_key="", compliance_api_key="")
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
-    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    client = _make_client(admin_api_key="", compliance_api_key="", model="")
+    models_mock = mocker.patch.object(module.OpenAiClient, "list_models", return_value={"data": []})
+    chat_mock = mocker.patch.object(module.OpenAiClient, "get_chat_completions")
+    responses_mock = mocker.patch.object(module.OpenAiClient, "create_response")
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     result = module.test_module(client=client, params={})
 
     assert result == "ok"
+    models_mock.assert_called_once()
+    chat_mock.assert_not_called()
+    responses_mock.assert_not_called()
     fetch_mock.assert_not_called()
 
 
-def test_test_module_chat_completions_auth_error_returns_friendly_message(mocker, capfd):
-    """Bad path: a chat-completions auth error returns the friendly auth-error string instead of raising."""
+def test_test_module_does_not_depend_on_the_model(requests_mock):
+    """
+    Given: A retired model is configured (the API would reject it with model_not_found).
+    When: Running test-module with only the API Key.
+    Then: The test passes, because it only calls GET /v1/models.
+    """
+
+    client = _make_client(admin_api_key="", compliance_api_key="", model="gpt-3.5-turbo")
+    models = requests_mock.get("https://api.openai.com/v1/models", json={"object": "list", "data": []})
+    chat = requests_mock.post("https://api.openai.com/v1/chat/completions", status_code=404)
+    responses = requests_mock.post("https://api.openai.com/v1/responses", status_code=404)
+
+    assert module.test_module(client=client, params={}) == "ok"
+    assert models.called_once
+    assert not chat.called
+    assert not responses.called
+
+
+@pytest.mark.parametrize("error", ["Error in API call [401] - Unauthorized", "403 Forbidden access"])
+def test_test_module_api_key_auth_error_returns_friendly_message(mocker, capfd, error):
+    """
+    Given: The models endpoint rejects the API Key.
+    When: Running test-module.
+    Then: The friendly auth-error string is returned instead of raising.
+    """
 
     client = _make_client()
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("403 Forbidden access"))
+    mocker.patch.object(module.OpenAiClient, "list_models", side_effect=DemistoException(error))
 
     # `test_module` calls `demisto.error(...)` on the auth-error path which writes to stdout in the test runtime.
     with capfd.disabled():
@@ -1754,11 +1785,11 @@ def test_test_module_chat_completions_auth_error_returns_friendly_message(mocker
     assert "Authorization Error" in result
 
 
-def test_test_module_chat_completions_non_auth_error_propagates(mocker, capfd):
-    """Bad path: a non-auth error from chat-completions propagates so the test still fails clearly."""
+def test_test_module_api_key_non_auth_error_propagates(mocker, capfd):
+    """Bad path: a non-auth error from the models endpoint propagates so the test still fails clearly."""
 
     client = _make_client()
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("simulated 500 error"))
+    mocker.patch.object(module.OpenAiClient, "list_models", side_effect=DemistoException("simulated 500 error"))
 
     # `test_module` calls `demisto.error(...)` on the failure path which writes to stdout in the test runtime;
     # disable the stdout-capture fixture for this test so we can assert on the raise.
@@ -1771,8 +1802,7 @@ def test_test_module_probes_collector_streams_with_max_one(mocker):
     """Happy path: with audit selected + admin key, fetch_stream is called once with max_fetch=1."""
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
-    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    mocker.patch.object(module.OpenAiClient, "list_models", return_value={"data": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
@@ -1791,8 +1821,7 @@ def test_test_module_skips_compliance_when_workspace_id_missing(mocker):
     """Bad path: compliance selected + key set, but no workspace_id - compliance probe is skipped."""
 
     client = _make_client(admin_api_key="", compliance_api_key="COMPLIANCE_KEY")
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
-    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    mocker.patch.object(module.OpenAiClient, "list_models", return_value={"data": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["Compliance Audit"], "workspace_id": ""}
@@ -1806,8 +1835,7 @@ def test_test_module_propagates_collector_probe_failure(mocker, capfd):
     """Bad path: a fetch_stream failure during the probe raises a stream-tagged DemistoException."""
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
-    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
-    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    mocker.patch.object(module.OpenAiClient, "list_models", return_value={"data": []})
     mocker.patch.object(module, "fetch_stream", side_effect=DemistoException("simulated audit probe failure"))
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
@@ -1839,14 +1867,14 @@ def test_test_module_skips_chat_probe_when_api_key_missing(mocker):
     """Happy path: with no chat key but a configured collector, the chat probe is skipped and only the collector runs."""
 
     client = _make_client(api_key="", admin_api_key="ADMIN_KEY", compliance_api_key="")
-    chat_mock = mocker.patch.object(module.OpenAiClient, "get_chat_completions")
+    models_mock = mocker.patch.object(module.OpenAiClient, "list_models")
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
     result = module.test_module(client=client, params=params)
 
     assert result == "ok"
-    chat_mock.assert_not_called()
+    models_mock.assert_not_called()
     fetch_mock.assert_called_once()
 
 
@@ -3220,17 +3248,15 @@ def test_test_module_platform_under_ucp_probes_chat_and_audit(mocker, ucp):
     """
     Given: The API Platform service with both profiles and default (unset) event types.
     When: Running test-module.
-    Then: Chat, Responses and the Audit stream are probed; the Compliance stream is not.
+    Then: The API Key (models endpoint) and the Audit stream are probed; the Compliance stream is not.
     """
     ucp(PLATFORM_PROFILES, "test-module")
     client = _ucp_client(Service.API_PLATFORM)
-    chat = mocker.patch.object(OpenAiClient, "get_chat_completions", return_value={})
-    responses = mocker.patch.object(OpenAiClient, "create_response", return_value={})
+    models = mocker.patch.object(OpenAiClient, "list_models", return_value={"data": []})
     probe = mocker.patch("OpenAiChatGPTApiModule.fetch_stream")
 
     assert module.test_module(client, {"workspace_id": "FAKE_WORKSPACE_ID"}) == "ok"
-    chat.assert_called_once()
-    responses.assert_called_once()
+    models.assert_called_once()
     assert [c.kwargs["stream"] for c in probe.call_args_list] == [module.Stream.AUDIT]
 
 
@@ -3242,11 +3268,11 @@ def test_test_module_workspace_under_ucp_probes_compliance_only(mocker, ucp):
     """
     ucp(WORKSPACE_PROFILES, "test-module")
     client = _ucp_client(Service.WORKSPACE)
-    chat = mocker.patch.object(OpenAiClient, "get_chat_completions")
+    models = mocker.patch.object(OpenAiClient, "list_models")
     probe = mocker.patch("OpenAiChatGPTApiModule.fetch_stream")
 
     assert module.test_module(client, {"workspace_id": "FAKE_WORKSPACE_ID"}) == "ok"
-    chat.assert_not_called()
+    models.assert_not_called()
     assert [c.kwargs["stream"] for c in probe.call_args_list] == [module.Stream.COMPLIANCE]
 
 
