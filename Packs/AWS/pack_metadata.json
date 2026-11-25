@@ -18,7 +18,8 @@
         "cloud",
         "cloud_runtime_security",
         "xsiam",
-        "edr"
+        "edr",
+        "data_security"
     ],
     "marketplaces": [
         "xsoar",
