@@ -117,7 +117,7 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-- additionalinfo: Products to fetch alerts for. If none is selected, alerts for all products are fetched.
+- additionalinfo: The products to fetch alerts for. If none is selected, alerts for all products are fetched.
   display: Select products to fetch
   name: fetch_products
   type: 16

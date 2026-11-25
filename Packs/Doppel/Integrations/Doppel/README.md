@@ -32,7 +32,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-| Select products to fetch | Products to fetch alerts for. If none is selected, alerts for all products are fetched. | False |
+| Select products to fetch | The products to fetch alerts for. If none is selected, alerts for all products are fetched. | False |
 | Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
