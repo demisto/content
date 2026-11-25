@@ -209,8 +209,9 @@ class MerakiOAuthTokenManager:
             )
 
         raise DemistoException(
-            "OAuth 2.0 authorization is required. Run the generate-login-url command, sign in, paste the `code` value "
-            "from the redirect URL into the Authorization code parameter, save the instance and run the auth-test command."
+            "OAuth 2.0 authorization is required. Run the generate-login-url command, sign in, copy only the `code` value "
+            "from the redirect URL (the text between `code=` and `&state`) into the Authorization code parameter, save the "
+            "instance and run the auth-test command."
         )
 
     def _request_token(self, data: dict[str, str], oauth_context: dict[str, Any]) -> str:
@@ -378,7 +379,8 @@ def oauth_generate_login_url_command(client: MerakiBaseClient, command_prefix: s
     readable_output = (
         "### Authorization instructions\n"
         f"1. Click the [login URL]({login_url}) to sign in to Cisco Meraki and grant access.\n"
-        "2. You will be redirected to the Redirect URI. Copy the `code` query parameter value from the address bar.\n"
+        "2. You will be redirected to the Redirect URI (the page itself may not load). From the address bar, copy only "
+        "the `code` value: the text between `code=` and `&state`. The code is valid for 10 minutes and can be used once.\n"
         "3. Paste it into the **Authorization code** parameter of the instance and save the instance.\n"
         f"4. Run `!{command_prefix}-auth-test` to complete the authorization."
     )

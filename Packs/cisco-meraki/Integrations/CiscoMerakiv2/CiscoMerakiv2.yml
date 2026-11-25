@@ -31,7 +31,7 @@ configuration:
   - name: credentials
     display: Client ID
     displaypassword: Client Secret
-    additionalinfo: OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. Required when the Authentication Method is "OAuth 2.0".
+    additionalinfo: OAuth 2.0 client ID and secret of the integration registered at https://integrate.cisco.com. Required when the Authentication Method is "OAuth 2.0".
     required: false
     type: 9
     section: Connect
@@ -43,7 +43,7 @@ configuration:
     section: Connect
   - name: auth_code
     displaypassword: Authorization code
-    additionalinfo: The `code` value received after running the meraki-generate-login-url command and signing in. Required for OAuth 2.0.
+    additionalinfo: The `code` value from the redirect URL after running the meraki-generate-login-url command and signing in. Copy only the text between `code=` and `&state`. Valid for 10 minutes and for one use. Required for OAuth 2.0.
     required: false
     type: 9
     hiddenusername: true

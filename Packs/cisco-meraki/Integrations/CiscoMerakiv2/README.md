@@ -11,10 +11,10 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Base URL | The API base URL. Use https://api.meraki.com for the global cluster (North America, South America, Europe, Asia-Pacific), https://api.meraki.ca for Canada, https://api.meraki.cn for China, https://api.meraki.in for India, or https://api.gov-meraki.com for United States FedRAMP. OAuth 2.0 is supported only for https://api.meraki.com. | True |
 | Authentication Method | The authentication method to use. "API Key" works for all clusters. "OAuth 2.0" works only for https://api.meraki.com and needs the Client ID, Client Secret, Redirect URI and Authorization code. | False |
 | API Key | An API key can be generated through 'My Profile' in 'API access'. Required when the Authentication Method is "API Key". | False |
-| Client ID | OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. Required when the Authentication Method is "OAuth 2.0". | False |
+| Client ID | OAuth 2.0 client ID and secret of the integration registered at https://integrate.cisco.com. Required when the Authentication Method is "OAuth 2.0". | False |
 | Client Secret |  | False |
 | Redirect URI | The redirect URI registered on the Meraki OAuth 2.0 integration. Required for OAuth 2.0. | False |
-| Authorization code | The `code` value received after running the meraki-generate-login-url command and signing in. Required for OAuth 2.0. | False |
+| Authorization code | The `code` value from the redirect URL after running the meraki-generate-login-url command and signing in. Copy only the text between `code=` and `&state`. Valid for 10 minutes and for one use. Required for OAuth 2.0. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Organization ID | A default ID to be used in all commands that require an organization. | False |
