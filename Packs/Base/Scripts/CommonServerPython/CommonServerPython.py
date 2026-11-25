@@ -15948,7 +15948,7 @@ def _make_restricted_unpickler(allowed_classes, safe_module_prefixes):
             if (module, name) in allowed_classes:
                 return _pickle.Unpickler.find_class(self, module, name)
 
-            # Gate 2: module prefix check (unchanged — blocks subprocess, os, etc.)
+            # Gate 2: module prefix check
             top_module = module.split(".")[0]
             if top_module not in safe_module_prefixes:
                 raise _pickle.UnpicklingError(
