@@ -64,13 +64,13 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
-- display: Model
-  additionalinfo: The model that will process the inputs and generate the completion.
+- display: Model (deprecated)
+  additionalinfo: Deprecated. Use the Model parameter instead. Kept hidden so existing instances keep their selected model.
   name: model-select
   type: 15
   required: false
   section: Connect
-  defaultvalue: gpt-3.5-turbo
+  hidden: true
   options:
   - gpt-5
   - gpt-5-mini
@@ -93,8 +93,8 @@ configuration:
   - gpt-4o-mini
   - gpt-4o-mini-search-preview
   - gpt-4o-search-preview
-- display: Model (Optional - overrides selected choice)
-  additionalinfo: The model that will process the inputs and generate the completion.
+- display: Model
+  additionalinfo: 'The ID of the model that processes the inputs and generates the completion (for example, gpt-5.5). Available model IDs: https://developers.openai.com/api/docs/models (or run the gpt-list-models command). The model is checked before each GPT command runs.'
   name: model-freetext
   type: 0
   required: false

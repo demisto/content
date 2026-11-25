@@ -2080,6 +2080,84 @@ def test_list_models_requires_api_key():
         client.list_models()
 
 
+@pytest.mark.parametrize(
+    "instance_model, args",
+    [
+        pytest.param("gpt-5.5", {}, id="instance-model"),
+        pytest.param("", {"model": "gpt-5.5"}, id="command-argument"),
+        pytest.param("gpt-3.5-turbo", {"model": "gpt-5.5"}, id="argument-overrides-instance"),
+    ],
+)
+def test_validate_model_accepts_an_available_model(mocker, instance_model, args):
+    """
+    Given: The model a command will use (its argument, else the instance Model) is returned by GET /v1/models.
+    When: Validating the model.
+    Then: No error is raised.
+    """
+    client = _make_client(model=instance_model)
+    mocker.patch.object(client, "list_models", return_value={"data": [{"id": "gpt-5.5"}, {"id": "gpt-5.4-mini"}]})
+
+    module.validate_model(client, args)
+
+
+def test_validate_model_rejects_an_unavailable_model(mocker):
+    """
+    Given: The instance Model is not returned by GET /v1/models (for example, it was retired).
+    When: Validating the model.
+    Then: A clear error names the model and links to the models page.
+    """
+    client = _make_client(model="gpt-3.5-turbo")
+    mocker.patch.object(client, "list_models", return_value={"data": [{"id": "gpt-5.5"}]})
+
+    with pytest.raises(DemistoException) as exc_info:
+        module.validate_model(client, {})
+
+    assert "'gpt-3.5-turbo' is not available" in str(exc_info.value)
+    assert module.Config.MODELS_DOCS_URL in str(exc_info.value)
+
+
+def test_validate_model_requires_a_model(mocker):
+    """
+    Given: No instance Model and no model argument.
+    When: Validating the model.
+    Then: The "No model specified" error is raised without calling the API.
+    """
+    client = _make_client(model="")
+    list_models = mocker.patch.object(client, "list_models")
+
+    with pytest.raises(DemistoException, match="No model specified"):
+        module.validate_model(client, {})
+    list_models.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        pytest.param({"model-freetext": " gpt-5.5 "}, "gpt-5.5", id="free-text"),
+        pytest.param({"model-freetext": "gpt-5.5", "model-select": "gpt-4o"}, "gpt-5.5", id="free-text-wins"),
+        pytest.param({"model-select": "gpt-4o"}, "gpt-4o", id="hidden-legacy-select"),
+        pytest.param({"model-freetext": "", "model-select": "gpt-4o"}, "gpt-4o", id="empty-free-text-falls-back"),
+        pytest.param({"model-freetext": "   ", "model-select": "gpt-4o"}, "gpt-4o", id="blank-free-text-falls-back"),
+        pytest.param({"model-freetext": None, "model-select": "gpt-4o"}, "gpt-4o", id="none-free-text-falls-back"),
+        pytest.param({}, "", id="unset"),
+    ],
+)
+def test_parse_integration_params_model(params, expected):
+    """
+    Given: The Model params of an instance.
+    When: Parsing the integration params.
+    Then: Model is the free-text value, else the hidden legacy model-select value kept for existing instances.
+    """
+    assert parse_integration_params(params)["model"] == expected
+
+
+def test_model_commands_are_registered_commands():
+    """Every command whose model is validated exists in the command map, and moderation is excluded."""
+    assert set(module.COMMAND_MAP) >= module.MODEL_COMMANDS
+    assert "gpt-create-moderation" not in module.MODEL_COMMANDS
+    assert "gpt-list-models" not in module.MODEL_COMMANDS
+
+
 def test_create_response_requires_api_key():
     """create_response raises DemistoException when no API key is configured."""
     client = _make_client(api_key="")

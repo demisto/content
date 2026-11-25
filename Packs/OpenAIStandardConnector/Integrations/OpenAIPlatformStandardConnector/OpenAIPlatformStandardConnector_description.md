@@ -14,7 +14,7 @@ Each capability uses its own credential, and you can enable either one alone:
 1. Sign in to [https://platform.openai.com](https://platform.openai.com).
 2. Generate a project API key at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys). See [API keys](https://developers.openai.com/api/docs/guides/api-keys).
 
-The GPT commands use the Chat Completions, Responses, Models and Moderations endpoints on `https://api.openai.com`. Each model has its own rate limit: see [rate limits](https://platform.openai.com/docs/guides/rate-limits).
+The GPT commands use the Chat Completions, Responses, Models and Moderations endpoints on `https://api.openai.com`. Set **Model** to a model ID from the [OpenAI models page](https://developers.openai.com/api/docs/models) (or run `gpt-list-models`). Before each GPT command runs, the model is checked against the models available to the API Key. Each model has its own rate limit: see [rate limits](https://platform.openai.com/docs/guides/rate-limits).
 
 ### Log Collection - Admin API Key (OpenAI Audit logs)
 

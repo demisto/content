@@ -9,8 +9,7 @@ This integration was integrated and tested with version xx of OpenAIPlatformStan
 | Server URL |  | True |
 | OpenAI API Key | The OpenAI Platform API key used by the chat-completion commands. Required only when running those commands or when running test-module without the event-collector keys. | False |
 | Admin API Key | The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type. | False |
-| Model | The model that will process the inputs and generate the completion. | False |
-| Model (Optional - overrides selected choice) | The model that will process the inputs and generate the completion. | False |
+| Model | The ID of the model that processes the inputs and generates the completion \(for example, gpt-5.5\). Available model IDs: https://developers.openai.com/api/docs/models \(or run the gpt-list-models command\). The model is checked before each GPT command runs. | False |
 | Max tokens | The maximum number of tokens that can be generated for the response. \(Allows controlling tokens' consumption\). | False |
 | Temperature | Sets the randomness in responses. Lower values \(closer to 0\) produce more deterministic and consistent outputs, while higher values \(up to 2\) increase randomness and variety. It is generally recommended altering this or top_p but not both. | False |
 | Top P | Enables nucleus sampling where only the top 'p' percent \(0 to 1\) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both. | False |

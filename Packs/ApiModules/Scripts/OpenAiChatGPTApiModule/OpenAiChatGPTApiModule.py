@@ -41,6 +41,8 @@ INTEGRATION_NAME = "OpenAI GPT"
 class Config:
     """Global static configuration shared across all integration features."""
 
+    MODELS_DOCS_URL = "https://developers.openai.com/api/docs/models"
+
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
     VENDOR = "openai"
@@ -756,6 +758,41 @@ def _resolve_model(args: dict[str, Any], client: OpenAiClient) -> str:
     if not model:
         raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
     return model
+
+
+# Commands that send the instance Model (or their `model` argument) to OpenAI. The model is
+# checked against GET /v1/models before they run. gpt-create-moderation is excluded: it uses a
+# moderation model with its own default, not the instance Model.
+MODEL_COMMANDS = frozenset(
+    {
+        "gpt-send-message",
+        "gpt-check-email-header",
+        "gpt-check-email-body",
+        "gpt-create-soc-email-template",
+        "gpt-draft-soc-email",
+        "gpt-analyze-email-header",
+        "gpt-analyze-email-body",
+        "gpt-create-response",
+    }
+)
+
+
+def validate_model(client: OpenAiClient, args: dict[str, Any]) -> None:
+    """Check that the model a command will use exists for this API Key.
+
+    The model is the command's `model` argument, else the instance Model. A missing model, or
+    one GET /v1/models does not return (retired, misspelled, or not enabled for the project),
+    raises a clear error before any model request is sent.
+    """
+    model = _resolve_model(args, client)
+    available = {m.get("id") for m in client.list_models().get("data") or [] if isinstance(m, dict)}
+    if model not in available:
+        raise DemistoException(
+            f"The model '{model}' is not available for this API Key: it may be retired, misspelled or not "
+            f"enabled for the project. Set the Model parameter to an available model ID (see "
+            f"{Config.MODELS_DOCS_URL}, or run gpt-list-models)."
+        )
+    demisto.debug(f"[Model] Model '{model}' is available.")
 
 
 def _build_responses_api_body(
@@ -1789,7 +1826,9 @@ def parse_integration_params(params: dict[str, Any], service: str = Service.LEGA
     compliance_api_key = _extract_credential(params.get("compliance_api_key"))
     chatgpt_base_url = params.get("chatgpt_api_url") or Config.DEFAULT_CHATGPT_URL
     workspace_id = params.get("workspace_id") or ""
-    model = params.get("model-freetext") or params.get("model-select") or ""
+    # Model is free text (model-freetext). model-select is a hidden legacy dropdown, still read so
+    # existing instances that only picked a value there keep their model.
+    model = (params.get("model-freetext") or "").strip() or (params.get("model-select") or "").strip()
     # ConnectUs delivers unfilled checkboxes as None, which argToBoolean rejects.
     verify = not argToBoolean(params.get("insecure") or False)
     proxy = argToBoolean(params.get("proxy") or False)
@@ -2770,6 +2809,10 @@ def run_openai_integration(service: str = Service.LEGACY) -> None:  # pragma: no
             chatgpt_base_url=config["chatgpt_base_url"],
             service=service,
         )
+
+        # Polling re-entries of gpt-create-response only read an existing response, so they skip the check.
+        if command in MODEL_COMMANDS and not args.get("_polling_response_id"):
+            validate_model(client, args)
 
         demisto.debug("[Main] Client built. Dispatching command...")
         result = handler(client, args, params)

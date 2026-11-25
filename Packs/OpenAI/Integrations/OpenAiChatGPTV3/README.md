@@ -14,7 +14,7 @@
 
     2. For tasks requiring deep understanding and extensive inputs, opt for more advanced models (e.g. gpt-4). These models offer a larger context window, allowing them to process bigger documents, and provide more refined and comprehensive responses.
     The more elementary models (e.g. gpt-3.5) often provide shallower answers and input analysis.
-    Refer to [Models overview](https://platform.openai.com/docs/models/overview) for more information.
+    3. Set **Model** to a model ID from the [OpenAI models page](https://developers.openai.com/api/docs/models) (or run the `gpt-list-models` command). Before each GPT command runs, the model is checked against the models available to the API Key.
 
 - #### Text generation setting (Optional)
 
