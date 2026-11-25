@@ -1,0 +1,17 @@
+commonfields:
+  id: job-neg-st110-missingmetadata
+  version: -1
+name: Negative ST110_MissingMetadata
+description: Intentionally invalid Job Center job (ST110_MissingMetadata) for negative testing.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Negative ST110_MissingMetadata
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 30
+  count: 6
+queuePolicy: skip

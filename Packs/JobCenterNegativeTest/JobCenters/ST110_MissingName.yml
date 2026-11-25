@@ -1,0 +1,19 @@
+commonfields:
+  id: job-neg-st110-missingname
+  version: -1
+description: Intentionally invalid Job Center job (ST110_MissingName) for negative testing.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Negative ST110_MissingName
+metadata:
+  agent_id: negative-test-agent
+  prompt_id: negative-test-prompt
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 30
+  count: 6
+queuePolicy: skip
