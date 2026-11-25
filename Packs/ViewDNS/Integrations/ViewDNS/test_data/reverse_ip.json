@@ -1,0 +1,31 @@
+{
+    "query": {
+        "tool": "reverseip_PRO",
+        "host": "example.com"
+    },
+    "response": {
+        "domain_count": "5",
+        "domains": [
+            {
+                "name": "atlabs.dev",
+                "last_resolved": "2024-09-28"
+            },
+            {
+                "name": "example.com",
+                "last_resolved": "2024-10-02"
+            },
+            {
+                "name": "example.edu",
+                "last_resolved": "2024-10-02"
+            },
+            {
+                "name": "example.net",
+                "last_resolved": "2024-10-02"
+            },
+            {
+                "name": "example.org",
+                "last_resolved": "2024-10-02"
+            }
+        ]
+    }
+}

@@ -1,0 +1,290 @@
+id: ViewDNS - Infrastructure Pivot
+version: -1
+name: ViewDNS - Infrastructure Pivot
+description: Pivots from a known piece of attacker infrastructure to related domains with ViewDNS.info. Given an IP address, the playbook lists the domains hosted on the same server (reverse IP). Given a registrant email address, it lists the domains registered with that address (reverse WHOIS, which requires a paid ViewDNS API key). To keep API usage predictable, the playbook retrieves only the first page of results for each input, so it consumes exactly one ViewDNS API query per IP address and one per email address. The MaxResults input caps how many domains are written to the context for each lookup; the total number of matches is always reported.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0da09642-42eb-5004-aaac-c12ec755b21a
+    type: start
+    task:
+      id: 0da09642-42eb-5004-aaac-c12ec755b21a
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+      - '3'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 87f74584-18f4-5c00-bb2e-bd616b28e175
+    type: condition
+    task:
+      id: 87f74584-18f4-5c00-bb2e-bd616b28e175
+      version: -1
+      name: Is there an IP address?
+      description: Checks whether an IP address was provided in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+  '2':
+    id: '2'
+    taskid: 26237579-248f-529b-8e5d-a0ee1e71f4c5
+    type: regular
+    task:
+      id: 26237579-248f-529b-8e5d-a0ee1e71f4c5
+      version: -1
+      name: Find co-hosted domains
+      description: Finds the domains hosted on the same server as the IP address. Consumes one API query per IP address.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-reverse-ip
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      host:
+        simple: ${inputs.IP}
+      limit:
+        simple: ${inputs.MaxResults}
+    continueonerror: true
+  '3':
+    id: '3'
+    taskid: 68ab0153-1a7a-53f3-a588-aa5db9927a8f
+    type: condition
+    task:
+      id: 68ab0153-1a7a-53f3-a588-aa5db9927a8f
+      version: -1
+      name: Is there a registrant email?
+      description: Checks whether a registrant email address was provided in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.RegistrantEmail
+            iscontext: true
+  '4':
+    id: '4'
+    taskid: 3eca871a-b9d9-546d-bbff-55a7f393b75f
+    type: regular
+    task:
+      id: 3eca871a-b9d9-546d-bbff-55a7f393b75f
+      version: -1
+      name: Find domains of the registrant
+      description: Finds the domains registered with the email address. Requires a paid ViewDNS API key. Consumes one API query per email address.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-reverse-whois
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      query:
+        simple: ${inputs.RegistrantEmail}
+      limit:
+        simple: ${inputs.MaxResults}
+    continueonerror: true
+  '5':
+    id: '5'
+    taskid: bca1c6d0-a75c-58cb-8aa5-1eef3bdffe8b
+    type: title
+    task:
+      id: bca1c6d0-a75c-58cb-8aa5-1eef3bdffe8b
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 1180,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: The IP address to find co-hosted domains for.
+  playbookInputQuery:
+- key: RegistrantEmail
+  value: {}
+  required: false
+  description: The registrant email address to find registered domains for.
+  playbookInputQuery:
+- key: MaxResults
+  value:
+    simple: '50'
+  required: false
+  description: The maximum number of domains to return for each lookup. Only the first page of API results is retrieved, so each IP address and each email address consumes one API query regardless of this value.
+  playbookInputQuery:
+outputs:
+- contextPath: ViewDNS.ReverseIP
+  description: The reverse IP lookup results.
+  type: unknown
+- contextPath: ViewDNS.ReverseIP.Host
+  description: The IP address that was searched for.
+  type: string
+- contextPath: ViewDNS.ReverseIP.DomainCount
+  description: The total number of domains hosted on the server.
+  type: number
+- contextPath: ViewDNS.ReverseIP.Domains.Name
+  description: A domain hosted on the server.
+  type: string
+- contextPath: ViewDNS.ReverseIP.Domains.LastResolved
+  description: The date the domain was last seen resolving to the server.
+  type: date
+- contextPath: ViewDNS.ReverseWhois
+  description: The reverse WHOIS lookup results.
+  type: unknown
+- contextPath: ViewDNS.ReverseWhois.Query
+  description: The email address that was searched for.
+  type: string
+- contextPath: ViewDNS.ReverseWhois.ResultCount
+  description: The total number of matching domains.
+  type: number
+- contextPath: ViewDNS.ReverseWhois.Matches.Domain
+  description: A domain registered with the email address.
+  type: string
+- contextPath: ViewDNS.ReverseWhois.Matches.CreatedDate
+  description: The date the domain was registered.
+  type: date
+- contextPath: ViewDNS.ReverseWhois.Matches.Registrar
+  description: The registrar of the domain.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

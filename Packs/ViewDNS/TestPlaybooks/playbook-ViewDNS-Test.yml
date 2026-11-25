@@ -1,0 +1,338 @@
+id: ViewDNS-Test
+version: -1
+name: ViewDNS-Test
+description: 'Tests the ViewDNS integration with commands that work with any API key: account balance, DNS record lookup, and reverse IP lookup. Each run consumes two ViewDNS API queries.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: fc09ae43-7226-5010-8ae5-2fb4bc45288e
+    type: start
+    task:
+      id: fc09ae43-7226-5010-8ae5-2fb4bc45288e
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 3a7e3393-eb98-5021-8efb-b48ca5d333eb
+    type: regular
+    task:
+      id: 3a7e3393-eb98-5021-8efb-b48ca5d333eb
+      version: -1
+      name: Delete context
+      description: Deletes the context before the test starts.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: DeleteContext
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+  '2':
+    id: '2'
+    taskid: e9b4126a-a7d8-580b-b2f6-81d52534d9b7
+    type: regular
+    task:
+      id: e9b4126a-a7d8-580b-b2f6-81d52534d9b7
+      version: -1
+      name: Get account balance
+      description: Retrieves the query usage of the API key. Does not consume API queries.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-account-balance
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments: {}
+  '3':
+    id: '3'
+    taskid: 1d7c2cc8-a34b-5b4a-855e-524442773dc1
+    type: condition
+    task:
+      id: 1d7c2cc8-a34b-5b4a-855e-524442773dc1
+      version: -1
+      name: Verify account balance
+      description: Verifies that ViewDNS.Account.Plan was written to the context.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '4'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ViewDNS.Account.Plan
+            iscontext: true
+  '4':
+    id: '4'
+    taskid: 478ed4c7-1ee6-58b7-8e4c-6d5e67b81e52
+    type: regular
+    task:
+      id: 478ed4c7-1ee6-58b7-8e4c-6d5e67b81e52
+      version: -1
+      name: Get DNS records
+      description: Retrieves the A records of example.com.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-dns-record
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      domain:
+        simple: example.com
+      record_type:
+        simple: A
+  '5':
+    id: '5'
+    taskid: f09f20cd-21e1-5050-8ba7-b74a067960ee
+    type: condition
+    task:
+      id: f09f20cd-21e1-5050-8ba7-b74a067960ee
+      version: -1
+      name: Verify DNS records
+      description: Verifies that ViewDNS.DNSRecord.Records.Data was written to the context.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ViewDNS.DNSRecord.Records.Data
+            iscontext: true
+  '6':
+    id: '6'
+    taskid: 8be5189c-df4e-5b74-8e01-3b9b45e4dc22
+    type: regular
+    task:
+      id: 8be5189c-df4e-5b74-8e01-3b9b45e4dc22
+      version: -1
+      name: Find co-hosted domains
+      description: Finds the domains hosted on the same server as example.com.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-reverse-ip
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      host:
+        simple: example.com
+      limit:
+        simple: '5'
+  '7':
+    id: '7'
+    taskid: ff41e975-edec-566e-9b36-112be6bb8241
+    type: condition
+    task:
+      id: ff41e975-edec-566e-9b36-112be6bb8241
+      version: -1
+      name: Verify co-hosted domains
+      description: Verifies that ViewDNS.ReverseIP.Domains.Name was written to the context.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '8'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ViewDNS.ReverseIP.Domains.Name
+            iscontext: true
+  '8':
+    id: '8'
+    taskid: de1cb8a6-0987-5575-b4f0-07a69d894d0c
+    type: title
+    task:
+      id: de1cb8a6-0987-5575-b4f0-07a69d894d0c
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0

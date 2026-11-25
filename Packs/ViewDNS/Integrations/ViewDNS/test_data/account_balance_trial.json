@@ -1,0 +1,15 @@
+{
+    "query": {
+        "tool": "account_PRO",
+        "action": "balance"
+    },
+    "response": {
+        "trial": {
+            "limit": "250",
+            "usage": "12"
+        },
+        "prepaid": {
+            "balance": "0"
+        }
+    }
+}

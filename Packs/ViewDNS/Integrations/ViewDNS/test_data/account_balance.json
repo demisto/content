@@ -1,0 +1,15 @@
+{
+    "query": {
+        "tool": "account_PRO",
+        "action": "balance"
+    },
+    "response": {
+        "monthly": {
+            "limit": "10000",
+            "usage": "3197"
+        },
+        "prepaid": {
+            "balance": "2000"
+        }
+    }
+}
