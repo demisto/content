@@ -1,5 +1,6 @@
+import json
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -466,6 +467,202 @@ def test_fetch_incidents_with_filters(mock_client, mocker):
     assert call_kwargs["status"] == ["OPEN"]
     assert call_kwargs["severities"] == ["HIGH"]
     assert call_kwargs["alarm_main_types"] == ["Phishing"]
+
+
+# ---------------------------------------------------------------------------
+# Hourly check for alarms missed by the regular fetch window
+# ---------------------------------------------------------------------------
+
+
+def _hourly_check_side_effect(regular_alarms, approved_alarms):
+    """Return regular-window alarms for normal calls and approved alarms for hourly-check calls."""
+
+    def side_effect(**kwargs):
+        if kwargs.get("approved_at_start"):
+            return _mock_response(approved_alarms)
+        return _mock_response(regular_alarms)
+
+    return side_effect
+
+
+def test_hourly_check_initialises_checkpoint_without_extra_call(mock_client, mocker):
+    """
+    Given: A last_run without an hourly check checkpoint (first run or upgrade).
+    When: fetch_incidents runs.
+    Then: The checkpoint is set to now and no hourly check request is made.
+    """
+    from SOCRadarIncidentsV4 import fetch_incidents
+
+    mock_search = mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([]))
+    last_fetch_time = (datetime.now() - timedelta(minutes=5)).isoformat()
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={"last_fetch": last_fetch_time, "last_alarm_ids": []},
+        first_fetch_time="3 days",
+    )
+
+    assert incidents == []
+    assert next_run["last_approved_check"]
+    assert all(not call.kwargs.get("approved_at_start") for call in mock_search.call_args_list)
+
+
+def test_hourly_check_not_due_yet(mock_client, mocker):
+    """
+    Given: The previous hourly check ran 10 minutes ago.
+    When: fetch_incidents runs.
+    Then: No hourly check request is made and the checkpoint is kept.
+    """
+    from SOCRadarIncidentsV4 import fetch_incidents, format_utc
+
+    mock_search = mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([]))
+    last_check = format_utc(datetime.now(UTC) - timedelta(minutes=10))
+
+    next_run, _ = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={
+            "last_fetch": (datetime.now() - timedelta(minutes=1)).isoformat(),
+            "last_alarm_ids": [],
+            "last_approved_check": last_check,
+        },
+        first_fetch_time="3 days",
+    )
+
+    assert next_run["last_approved_check"] == last_check
+    assert all(not call.kwargs.get("approved_at_start") for call in mock_search.call_args_list)
+
+
+def test_hourly_check_picks_up_missed_alarm_without_duplicates(mock_client, mocker):
+    """
+    Given: The previous hourly check ran more than an hour ago, alarm 100 was already fetched,
+           and alarm 200 was not returned by the regular fetch window.
+    When: fetch_incidents runs.
+    Then: Only alarm 200 is created, the window overlaps the previous check, and the checkpoint advances.
+    """
+    from SOCRadarIncidentsV4 import APPROVED_CHECK_OVERLAP_MINUTES, fetch_incidents, format_utc, parse_checkpoint
+
+    last_check_time = (datetime.now(UTC) - timedelta(minutes=61)).replace(microsecond=0)
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        side_effect=_hourly_check_side_effect([], [_make_alarm(alarm_id=100), _make_alarm(alarm_id=200)]),
+    )
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={
+            "last_fetch": (datetime.now() - timedelta(minutes=1)).isoformat(),
+            "last_alarm_ids": [100],
+            "last_approved_check": format_utc(last_check_time),
+        },
+        first_fetch_time="3 days",
+        status=["OPEN"],
+    )
+
+    assert [json.loads(incident["rawJSON"])["alarm_id"] for incident in incidents] == [200]
+    assert 200 in next_run["last_alarm_ids"]
+    assert parse_checkpoint(next_run["last_approved_check"]) > last_check_time
+
+    hourly_call = next(call for call in mock_search.call_args_list if call.kwargs.get("approved_at_start"))
+    expected_start = last_check_time - timedelta(minutes=APPROVED_CHECK_OVERLAP_MINUTES)
+    assert hourly_call.kwargs["approved_at_start"] == format_utc(expected_start)
+    assert hourly_call.kwargs["approved_at_end"]
+    assert hourly_call.kwargs["status"] == ["OPEN"]
+
+
+def test_hourly_check_failure_keeps_checkpoint_and_ids(mock_client, mocker, capfd):
+    """
+    Given: The hourly check is due but its API request fails.
+    When: fetch_incidents runs.
+    Then: The regular fetch result is kept, the checkpoint is unchanged so it is retried, and no alarm is marked as fetched.
+    """
+    from SOCRadarIncidentsV4 import fetch_incidents, format_utc
+
+    def side_effect(**kwargs):
+        if kwargs.get("approved_at_start"):
+            raise Exception("API Error")
+        return _mock_response([_make_alarm(alarm_id=300)])
+
+    mocker.patch.object(mock_client, "search_incidents", side_effect=side_effect)
+    last_check = format_utc(datetime.now(UTC) - timedelta(hours=2))
+
+    with capfd.disabled():
+        next_run, incidents = fetch_incidents(
+            client=mock_client,
+            max_results=100,
+            last_run={
+                "last_fetch": (datetime.now() - timedelta(minutes=1)).isoformat(),
+                "last_alarm_ids": [],
+                "last_approved_check": last_check,
+            },
+            first_fetch_time="3 days",
+        )
+
+    assert len(incidents) == 1
+    assert next_run["last_alarm_ids"] == [300]
+    assert next_run["last_approved_check"] == last_check
+
+
+def test_hourly_check_budget_exhausted_keeps_checkpoint(mock_client, mocker):
+    """
+    Given: The hourly check is due and returns more new alarms than the remaining max_results budget.
+    When: fetch_incidents runs.
+    Then: Only the budget is created and the checkpoint is kept so the rest is picked up next run.
+    """
+    from SOCRadarIncidentsV4 import fetch_incidents, format_utc
+
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        side_effect=_hourly_check_side_effect([], [_make_alarm(alarm_id=alarm_id) for alarm_id in (1, 2, 3)]),
+    )
+    last_check = format_utc(datetime.now(UTC) - timedelta(hours=2))
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=2,
+        last_run={
+            "last_fetch": (datetime.now() - timedelta(minutes=1)).isoformat(),
+            "last_alarm_ids": [],
+            "last_approved_check": last_check,
+        },
+        first_fetch_time="3 days",
+    )
+
+    assert len(incidents) == 2
+    assert next_run["last_approved_check"] == last_check
+    assert sorted(next_run["last_alarm_ids"]) == [1, 2]
+
+
+def test_sort_alarm_ids_for_storage_keeps_most_recent(mocker):
+    """
+    Given: More stored alarm IDs than the storage cap.
+    When: sort_alarm_ids_for_storage is called.
+    Then: The highest (most recent) alarm IDs are kept.
+    """
+    from SOCRadarIncidentsV4 import sort_alarm_ids_for_storage
+
+    mocker.patch("SOCRadarIncidentsV4.MAX_STORED_ALARM_IDS", 3)
+
+    assert sort_alarm_ids_for_storage({5, 1, 9, 7, 3}) == [9, 7, 5]
+
+
+def test_search_incidents_sends_approved_at_params(mock_client, mocker):
+    """
+    Given: approved_at_start and approved_at_end values.
+    When: search_incidents is called.
+    Then: Both values are sent as request params.
+    """
+    mock_http = mocker.patch.object(mock_client, "_http_request", return_value={"is_success": True, "data": []})
+
+    mock_client.search_incidents(approved_at_start="2026-11-16T20:00:00", approved_at_end="2026-11-16T21:00:00")
+
+    params = mock_http.call_args.kwargs["params"]
+    assert params["approved_at_start"] == "2026-11-16T20:00:00"
+    assert params["approved_at_end"] == "2026-11-16T21:00:00"
 
 
 # ---------------------------------------------------------------------------
@@ -1120,3 +1317,56 @@ def test_add_remove_tag_no_company_id(mocker):
     )
     with pytest.raises(ValueError, match="company_id"):
         client.add_remove_tag(1, "tag")
+
+
+def test_parse_checkpoint_handles_naive_zulu_and_invalid_values():
+    """
+    Given: Checkpoint values in different formats.
+    When: parse_checkpoint is called.
+    Then: Naive and Z-suffixed values are read as UTC and invalid values return None.
+    """
+    from SOCRadarIncidentsV4 import parse_checkpoint
+
+    expected = datetime(2026, 11, 16, 21, 0, tzinfo=UTC)
+    assert parse_checkpoint("2026-11-16T21:00:00Z") == expected
+    assert parse_checkpoint("2026-11-16T21:00:00") == expected
+    assert parse_checkpoint("not-a-date") is None
+    assert parse_checkpoint(None) is None
+
+
+def test_search_incidents_retries_on_rate_limit(mock_client, mocker):
+    """
+    Given: A search request.
+    When: search_incidents is called.
+    Then: The request is sent with retries for rate limiting and transient server errors.
+    """
+    mock_http = mocker.patch.object(mock_client, "_http_request", return_value={"is_success": True, "data": []})
+
+    mock_client.search_incidents()
+
+    kwargs = mock_http.call_args.kwargs
+    assert kwargs["retries"] == 3
+    assert 429 in kwargs["status_list_to_retry"]
+
+
+def test_fetch_approved_alarms_stops_at_page_limit(mocker):
+    """
+    Given: The API keeps returning full pages of already fetched alarms.
+    When: fetch_approved_alarms pages through the check window.
+    Then: Paging stops at MAX_APPROVED_CHECK_PAGES and the window is reported as completed.
+    """
+    from SOCRadarIncidentsV4 import MAX_INCIDENTS_PER_PAGE, fetch_approved_alarms
+
+    mocker.patch("SOCRadarIncidentsV4.MAX_APPROVED_CHECK_PAGES", 3)
+    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(MAX_INCIDENTS_PER_PAGE)]
+    client = mocker.Mock()
+    client.search_incidents.return_value = {"data": page_alarms, "total_pages": 1000}
+    now = datetime.now(UTC)
+
+    incidents, completed = fetch_approved_alarms(
+        client, now - timedelta(hours=1), now, 10, {alarm["alarm_id"] for alarm in page_alarms}, {}, {}
+    )
+
+    assert incidents == []
+    assert completed is True
+    assert client.search_incidents.call_count == 3

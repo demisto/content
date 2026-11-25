@@ -387,64 +387,124 @@ class Client(BaseClient):
         if res.status_code == 502:
             raise DemistoException(f"Bad gateway. Origin response from server: {err_msg.title}")
 
-    def computer_lock_request(self, computer_id: str, passcode: str, lock_message: str = None):
+    def _json_api_request(
+        self,
+        method: str,
+        url_suffix: str,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        error_handler: Any = None,
+    ) -> Any:
+        """Generic helper for making JSON requests to the Jamf Pro API.
+
+        Unlike ``_pro_api_get`` this does not prepend an API version prefix, so the
+        caller must pass the full versioned ``url_suffix`` (e.g. ``/api/v2/mdm/commands``).
+
+        Args:
+            method (str): HTTP method (e.g. "GET", "POST").
+            url_suffix (str): Full versioned URL suffix to append to the base URL.
+            json_data (dict[str, Any] | None): JSON body for the request.
+            params (dict[str, Any] | None): Query parameters for the request.
+            error_handler (Any): Optional error handler for the request.
+
+        Returns:
+            Any: The parsed JSON response from the API.
         """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
-        """
-        uri = "/computercommands/command/DeviceLock"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<computer_command>"
-            + "<general>"
-            + f"<passcode>{passcode}</passcode>"
-            + f"<lock_message>{lock_message}</lock_message>"
-            + "</general>"
-            + "<computers>"
-            + "<computer>"
-            + f"<id>{computer_id}</id>"
-            + "</computer>"
-            + "</computers>"
-            + "</computer_command>"
+        headers = (self._headers or {}) | GET_HEADERS  # merge the token with JSON content-type/accept headers
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            json_data=json_data,
+            params=params,
+            resp_type="json",
+            error_handler=error_handler or self._generic_error_handler,
+            auth=self.auth,
         )
 
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._computer_lock_erase_error_handler)
+    def resolve_computer_management_id(self, computer_id: str) -> str:
+        """Resolve the device-level managementId for a computer from its numeric id.
 
-        json_res = json.loads(xml2json(res.content))
-        return json_res
+        Calls GET /api/v3/computers-inventory/{id}?section=GENERAL and reads
+        general.managementId (clientType COMPUTER).
 
-    @staticmethod
-    def _computer_lock_erase_error_handler(res):
-        err_msg = BeautifulSoup(res.text)
-        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
-        if res.status_code == 400 and "Unable to match computer" in res.text:
-            raise DemistoException(f"ID doesn't exist. Origin error from server: {err_msg}")
-        if res.status_code == 400 and "is not managed" in res.text:
-            raise DemistoException(f"Device is unmanaged. Origin error from server: {err_msg}")
+        Args:
+            computer_id (str): The numeric computer id.
 
-    def computer_erase_request(self, computer_id: str, passcode: str):
+        Returns:
+            str: The device-level managementId.
         """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
+        demisto.debug(f"Resolving managementId for computer id {computer_id} via computers-inventory GENERAL section.")
+        response = self._json_api_request(
+            method="GET",
+            url_suffix=f"/api/v3/computers-inventory/{computer_id}",
+            params={"section": ComputersInventorySection.GENERAL.value},
+        )
+        management_id = (response.get("general") or {}).get("managementId")
+        if not management_id:
+            raise DemistoException(f"Could not resolve managementId for computer id {computer_id}.")
+        return management_id
+
+    def post_mdm_command(self, management_id: str, command_data: dict[str, Any]) -> list[dict[str, Any]]:
+        """Queue an MDM command via POST /api/v2/mdm/commands.
+
+        Args:
+            management_id (str): The device-level managementId to target.
+            command_data (dict[str, Any]): The commandData payload (must include commandType).
+
+        Returns:
+            list[dict[str, Any]]: The API response, a list of created command objects
+                (each with "id" and "href").
         """
-        uri = "/computercommands/command/EraseDevice"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<computer_command>"
-            + "<general>"
-            + "<command> EraseDevice </command>"
-            + f"<passcode>{passcode}</passcode>"
-            + "</general>"
-            + "<computers>"
-            + "<computer>"
-            + f"<id>{computer_id}</id>"
-            + "</computer>"
-            + "</computers>"
-            + "</computer_command>"
+        body = {
+            "clientData": [{"managementId": management_id}],
+            "commandData": command_data,
+        }
+        demisto.debug(f"Queuing MDM command '{command_data.get('commandType')}' for managementId {management_id}.")
+        return self._json_api_request(method="POST", url_suffix="/api/v2/mdm/commands", json_data=body)
+
+    def computer_erase_request(self, computer_id: str, passcode: str | None = None) -> dict[str, Any]:
+        """Erase a computer via the dedicated POST /api/v1/computer-inventory/{id}/erase endpoint.
+
+        Args:
+            computer_id (str): The numeric computer id (used in the path).
+            passcode (str | None): Optional 6-char Find My PIN, sent as body "pin".
+
+        Returns:
+            dict[str, Any]: The API response ({deviceId, commandUuid}).
+        """
+        demisto.debug(f"Sending erase command to computer id {computer_id} via computer-inventory/erase endpoint.")
+        # Only include the "pin" field when a passcode is actually provided; avoid sending {"pin": null}.
+        json_data: dict[str, Any] = {}
+        if passcode:
+            json_data["pin"] = passcode
+        return self._json_api_request(
+            method="POST",
+            url_suffix=f"/api/v1/computer-inventory/{computer_id}/erase",
+            json_data=json_data,
         )
 
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._computer_lock_erase_error_handler)
+    def resolve_mobile_device_management_id(self, mobile_device_id: str) -> str:
+        """Resolve the managementId for a mobile device from its numeric id.
 
-        raw_action = json.loads(xml2json(res.content))
-        return raw_action
+        Calls GET /api/v2/mobile-devices/{id}/detail and reads the top-level
+        managementId.
+
+        Args:
+            mobile_device_id (str): The numeric mobile device id.
+
+        Returns:
+            str: The mobile device managementId.
+        """
+        demisto.debug(f"Resolving managementId for mobile device id {mobile_device_id} via mobile-devices detail.")
+        response = self._json_api_request(
+            method="GET",
+            url_suffix=f"/api/v2/mobile-devices/{mobile_device_id}/detail",
+        )
+        management_id = response.get("managementId")
+        if not management_id:
+            raise DemistoException(f"Could not resolve managementId for mobile device id {mobile_device_id}.")
+        return management_id
 
     def get_users_request(self, user_id: str = None, name: str = None, email: str = None):
         """Get users.
@@ -458,15 +518,72 @@ class Client(BaseClient):
 
         uri = "/users"
         if user_id:
-            res = self._classic_api_get(url_suffix=f"{uri}/id/{user_id}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/id/{user_id}"
         elif name:
-            res = self._classic_api_get(url_suffix=f"{uri}/name/{name}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/name/{name}"
         elif email:
-            res = self._classic_api_get(url_suffix=f"{uri}/email/{email}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/email/{email}"
         else:
-            res = self._classic_api_get(url_suffix=f"{uri}", error_handler=self._generic_error_handler)
+            url_suffix = uri
 
-        return res
+        return self._classic_api_get(url_suffix=url_suffix, error_handler=self._generic_error_handler)
+
+    def get_user_by_id_request(self, user_id: str) -> dict[str, Any]:
+        """Get a single user by id via the Pro API GET /api/v1/users/{id}.
+
+        Args:
+            user_id (str): The numeric user id.
+
+        Returns:
+            dict[str, Any]: The Pro API user object.
+        """
+        demisto.debug(f"Sending a Pro API /api/v1/users/{user_id} request.")
+        return self._json_api_request(method="GET", url_suffix=f"/api/v1/users/{user_id}")
+
+    def get_users_pro_request(
+        self,
+        limit: int = 50,
+        page: int = 0,
+        filter_query: str | None = None,
+    ) -> dict[str, Any]:
+        """List users via the Pro API GET /api/v1/users with server-side pagination.
+
+        Args:
+            limit (int): Maximum number of results per page (page-size).
+            page (int): Page number.
+            filter_query (str | None): Optional RSQL filter query.
+
+        Returns:
+            dict[str, Any]: The Pro API response (results under "results", "totalCount").
+        """
+        params: dict[str, Any] = {"page": page, "page-size": limit}
+        if filter_query:
+            params["filter"] = filter_query
+
+        demisto.debug(f"Sending a Pro API /api/v1/users request with params: {params}")
+        return self._json_api_request(method="GET", url_suffix="/api/v1/users", params=params)
+
+    def get_mdm_commands_request(
+        self,
+        filter_query: str,
+        limit: int = 50,
+        page: int = 0,
+    ) -> dict[str, Any]:
+        """List MDM commands via the Pro API GET /api/v2/mdm/commands.
+
+        The ``filter`` query param is required by the API (no filter -> 400).
+
+        Args:
+            filter_query (str): Required RSQL filter query.
+            limit (int): Maximum number of results per page (page-size).
+            page (int): Page number.
+
+        Returns:
+            dict[str, Any]: The Pro API response (results under "results").
+        """
+        params: dict[str, Any] = {"page": page, "page-size": limit, "filter": filter_query}
+        demisto.debug(f"Sending a Pro API /api/v2/mdm/commands request with params: {params}")
+        return self._json_api_request(method="GET", url_suffix="/api/v2/mdm/commands", params=params)
 
     def get_mobile_devices_request(self, mobile_id: str = None, match: str = None):
         """Get mobile devices.
@@ -518,69 +635,37 @@ class Client(BaseClient):
 
         return res
 
-    @staticmethod
-    def _mobile_lost_erase_error_handler(res):
-        err_msg = BeautifulSoup(res.text)
-        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
-        if res.status_code == 400 and "Unable to match mobile device" in res.text:
-            raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
-        if res.status_code == 400 and "not support" in res.text:
-            raise DemistoException(f"The device does not support lost mode. Origin error from server: {err_msg}")
-
-    def mobile_device_lost_request(self, mobile_id: str, lost_message: str = None):
-        """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
-        """
-
-        uri = "/mobiledevicecommands/command/DeviceLock"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<mobile_device_command>"
-            + "<general>"
-            + "<command>EnableLostMode</command>"
-            + f"<lost_mode_message>{lost_message}</lost_mode_message>"
-            + "</general>"
-            + "<mobile_devices>"
-            + "<mobile_device>"
-            + f"<id>{mobile_id}</id>"
-            + "</mobile_device>"
-            + "</mobile_devices>"
-            + "</mobile_device_command>"
-        )
-
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._mobile_lost_erase_error_handler)
-
-        json_response = json.loads(xml2json(res.content))
-        return json_response
-
     def mobile_device_erase_request(
-        self, mobile_id: str = None, preserve_data_plan: bool = False, clear_activation_code: bool = False
-    ):
-        """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
-        """
+        self,
+        mobile_id: str,
+        preserve_data_plan: bool = False,
+        disallow_proximity_setup: bool = False,
+        clear_activation_lock: bool = False,
+        return_to_service: bool = False,
+    ) -> dict[str, Any]:
+        """Erase a mobile device via the dedicated POST /api/v2/mobile-devices/{id}/erase endpoint.
 
-        uri = "/mobiledevicecommands/command/EraseDevice"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<mobile_device_command>"
-            + "<general>"
-            + "<command>EraseDevice</command>"
-            + f"<preserve_data_plan>{preserve_data_plan}</preserve_data_plan>"
-            + f"<clear_activation_code>{clear_activation_code}</clear_activation_code>"
-            + "</general>"
-            + "<mobile_devices>"
-            + "<mobile_device>"
-            + f"<id>{mobile_id}</id>"
-            + "</mobile_device>"
-            + "</mobile_devices>"
-            + "</mobile_device_command>"
+        Args:
+            mobile_id (str): The numeric mobile device id (used in the path).
+            preserve_data_plan (bool): Whether to retain cellular data plans.
+            disallow_proximity_setup (bool): Whether to disallow proximity setup.
+            clear_activation_lock (bool): Whether to clear the activation lock on the device.
+            return_to_service (bool): Whether to enable Return to Service.
+
+        Returns:
+            dict[str, Any]: The API response ({deviceId, commandUuid}).
+        """
+        demisto.debug(f"Sending erase command to mobile device id {mobile_id} via mobile-devices/erase endpoint.")
+        return self._json_api_request(
+            method="POST",
+            url_suffix=f"/api/v2/mobile-devices/{mobile_id}/erase",
+            json_data={
+                "preserveDataPlan": preserve_data_plan,
+                "disallowProximitySetup": disallow_proximity_setup,
+                "clearActivationLock": clear_activation_lock,
+                "returnToService": return_to_service,
+            },
         )
-
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._mobile_lost_erase_error_handler)
-
-        json_response = json.loads(xml2json(res.content))
-        return json_response
 
     def get_mobiledeviceconfigurationprofiles_by_id(self, jamf_id):
         """
@@ -1037,16 +1122,6 @@ def get_computer_subset_context_mapping(response, subset):
     return context
 
 
-def computer_commands_readable_output(response):
-    computer_response = response.get("computer_command").get("command")
-    readable_output = {
-        "Name": computer_response.get("name"),
-        "Computer ID": computer_response.get("computer_id"),
-        "Command UUID": computer_response.get("command_uuid"),
-    }
-    return readable_output
-
-
 def get_users_readable_output(users_response, user_id=None, name=None, email=None):
     if user_id or name:
         readable_output = {
@@ -1257,15 +1332,6 @@ def get_computers_by_app_readable_output(response):
         readable_output.append({"version": version.get("number"), "Total number of computers": total_computers})
 
     return readable_output
-
-
-def mobile_device_commands_readable_output(response):
-    mobile_device_response = response.get("mobile_device_command").get("mobile_devices").get("mobile_device")
-    readable_output = {
-        "ID": mobile_device_response.get("id"),
-        "Management ID": mobile_device_response.get("management_id"),
-    }
-    return mobile_device_response, readable_output
 
 
 def generate_endpoint_by_context_standard(endpoints):
@@ -1834,61 +1900,176 @@ def get_computer_id_deprecated(client: Client, response, subset_name, identifier
 
 
 def computer_lock_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    computer_id = args["id"]
-    passcode = args["passcode"]
-    lock_msg = args.get("lock_message")
+    computer_id = args.get("id")
+    management_id = args.get("management_id")
 
-    computer_response = client.computer_lock_request(computer_id, passcode, lock_msg)
-    computer_lock_hr = computer_commands_readable_output(computer_response)
-    outputs = computer_response.get("computer_command").get("command")
+    if not computer_id and not management_id:
+        return_error("Either 'id' or 'management_id' must be provided.")
+
+    # If management_id is supplied use it directly, otherwise resolve it from the computer id.
+    resolved_management_id = management_id or client.resolve_computer_management_id(str(computer_id))
+
+    command_data: dict[str, Any] = {"commandType": "DEVICE_LOCK"}
+    if passcode := args.get("passcode"):
+        command_data["pin"] = passcode
+    if lock_message := args.get("lock_message"):
+        command_data["message"] = lock_message
+    if phone_number := args.get("phone_number"):
+        command_data["phoneNumber"] = phone_number
+
+    response = client.post_mdm_command(resolved_management_id, command_data)
+
+    first_command = response[0] if response else {}
+    command_uuid = first_command.get("id")
+    href = first_command.get("href")
+
+    outputs = {
+        "name": "DeviceLock",
+        "command_uuid": command_uuid,
+        "href": href,
+        "computer_id": computer_id,
+        "management_id": management_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "DeviceLock",
+        "Computer ID": computer_id,
+        "Command UUID": command_uuid,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
-            f"Computer {computer_id} locked successfully", computer_lock_hr, removeNull=True, headerTransform=pascalToSpace
+            f"Computer {computer_id or resolved_management_id} locked successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="JAMF.ComputerCommand",
-        outputs_key_field="id",
+        outputs_key_field="command_uuid",
         outputs=outputs,
-        raw_response=computer_response,
+        raw_response=response,
     )
 
 
 def computer_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     computer_id = args["id"]
-    passcode = args["passcode"]
+    passcode = args.get("passcode")
 
-    computer_response = client.computer_erase_request(computer_id, passcode)
-    computer_erase_outputs = computer_commands_readable_output(computer_response)
-    outputs = computer_response.get("computer_command").get("command")
+    response = client.computer_erase_request(computer_id, passcode)
 
+    command_uuid = response.get("commandUuid")
+    device_id = response.get("deviceId")
+
+    outputs = {
+        "name": "EraseDevice",
+        "command_uuid": command_uuid,
+        "computer_id": device_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EraseDevice",
+        "Computer ID": device_id,
+        "Command UUID": command_uuid,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
-            f"Computer {computer_id} erased successfully", computer_erase_outputs, removeNull=True, headerTransform=pascalToSpace
+            f"Computer {computer_id} erased successfully", readable_output, removeNull=True, headerTransform=pascalToSpace
         ),
         outputs_prefix="JAMF.ComputerCommand",
-        outputs_key_field="id",
+        outputs_key_field="command_uuid",
         outputs=outputs,
-        raw_response=computer_response,
+        raw_response=response,
     )
 
 
+def normalize_pro_user(user: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a Pro API user object so existing JAMF.User context field names are preserved.
+
+    Maps Pro API fields to the legacy context field names:
+      - realname -> name
+      - phone -> phone_number
+    Keeps id and email as-is, and includes new Pro API fields
+    (position, enableCustomPhotoUrl, customPhotoUrl, managedAppleId) additively.
+
+    Args:
+        user (dict[str, Any]): A single user object from the Pro API.
+
+    Returns:
+        dict[str, Any]: The normalized user object for the JAMF.User context.
+    """
+    normalized: dict[str, Any] = dict(user)
+    normalized["name"] = user.get("realname")
+    normalized["phone_number"] = user.get("phone")
+    return normalized
+
+
+def get_pro_users_readable_output(users: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Build the Human Readable table rows for get-users from Pro API user objects.
+
+    Args:
+        users (list[dict[str, Any]]): List of Pro API user objects.
+
+    Returns:
+        list[dict[str, Any]]: Mapped fields for the Human Readable table.
+    """
+    return [
+        {
+            "ID": user.get("id"),
+            "Name": user.get("realname"),
+            "Email": user.get("email"),
+            "Phone": user.get("phone"),
+        }
+        for user in users
+    ]
+
+
 def get_users_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    """Get users via the Jamf Pro API.
+
+    Supports lookup by id (GET /api/v1/users/{id}), by name/email via RSQL filter,
+    or a paginated list (GET /api/v1/users). Pagination is server-side.
+
+    Args:
+        client (Client): Jamf client.
+        args (dict[str, Any]): Command arguments (id, name, email, limit, page).
+
+    Returns:
+        List[CommandResults]: Command results.
+    """
+    user_id = args.get("id")
+    name = args.get("name")
+    email = args.get("email")
     limit = arg_to_number(args.get("limit", 50))
     page = arg_to_number(args.get("page", 0))
-    user_response = client.get_users_request()
-    total_results = len(user_response.get("users"))
-    user_response = pagination(user_response.get("users"), limit, page)
+
+    if user_id:
+        response = client.get_user_by_id_request(user_id)
+        users = [response]
+        total_results = 1
+    else:
+        filter_query = None
+        if name:
+            filter_query = f'username=="{name}"'
+        elif email:
+            filter_query = f'email=="{email}"'
+
+        response = client.get_users_pro_request(limit=limit, page=page, filter_query=filter_query)  # type: ignore
+        users = response.get("results", [])
+        total_results = response.get("totalCount", len(users))
+
+    context_outputs = [normalize_pro_user(user) for user in users]
+    readable_output = get_pro_users_readable_output(users)
 
     paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
-
-    readable_output = get_users_readable_output(user_response)
 
     return [
         CommandResults(
             readable_output=tableToMarkdown("Jamf get users results", readable_output, removeNull=True),
             outputs_prefix="JAMF.User",
             outputs_key_field="id",
-            outputs=user_response,
-            raw_response=user_response,
+            outputs=context_outputs,
+            raw_response=response,
         ),
         CommandResults(
             readable_output=tableToMarkdown("Paging for get users", paging_readable_output, removeNull=True),
@@ -1922,6 +2103,119 @@ def get_users_by_identifier_command(client: Client, args: dict[str, Any]) -> Com
         outputs=user_response,
         raw_response=user_response,
     )
+
+
+def build_mdm_command_filter(args: dict[str, Any]) -> str:
+    """Build the RSQL filter for the jamf-mdm-command-status command.
+
+    If the raw ``filter`` arg is provided it is returned as-is (overrides the individual
+    args). Otherwise an RSQL filter is constructed by ANDing (";") the individual args:
+      - command_uuid  -> uuid==<value>
+      - management_id -> clientManagementId==<value>
+      - status        -> status==<value>
+      - command_name  -> command==<value>
+
+    The API requires a filter (no filter -> 400), so at least one of the individual args
+    must be provided when no raw filter is given.
+
+    Args:
+        args (dict[str, Any]): Command arguments.
+
+    Returns:
+        str: The RSQL filter string.
+
+    Raises:
+        SystemExit: via return_error if no filter can be built.
+    """
+    raw_filter = args.get("filter")
+    if raw_filter:
+        return raw_filter
+
+    field_by_arg = {
+        "command_uuid": "uuid",
+        "management_id": "clientManagementId",
+        "status": "status",
+        "command_name": "command",
+    }
+
+    conditions = [f'{rsql_field}=="{args.get(arg_name)}"' for arg_name, rsql_field in field_by_arg.items() if args.get(arg_name)]
+
+    if not conditions:
+        return_error(
+            "The jamf-mdm-command-status command requires a filter. Provide the 'filter' argument, "
+            "or at least one of: command_uuid, management_id, status, command_name."
+        )
+
+    return ";".join(conditions)
+
+
+def get_mdm_commands_readable_output(commands: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Build the Human Readable table rows for jamf-mdm-command-status.
+
+    Args:
+        commands (list[dict[str, Any]]): List of MDM command objects from the Pro API.
+
+    Returns:
+        list[dict[str, Any]]: Mapped fields for the Human Readable table.
+    """
+    readable_output = []
+    for command in commands:
+        client_info = command.get("client", {})
+        readable_output.append(
+            {
+                "UUID": command.get("uuid"),
+                "Command Type": command.get("commandType"),
+                "Command State": command.get("commandState"),
+                "Date Sent": command.get("dateSent"),
+                "Date Completed": command.get("dateCompleted"),
+                "Management ID": client_info.get("managementId"),
+                "Client Type": client_info.get("clientType"),
+            }
+        )
+    return readable_output
+
+
+def mdm_command_status_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    """Get the status of MDM commands via GET /api/v2/mdm/commands.
+
+    The API requires an RSQL filter. The filter is either taken from the raw ``filter``
+    arg or built from the individual args (command_uuid / management_id / status /
+    command_name).
+
+    Args:
+        client (Client): Jamf client.
+        args (dict[str, Any]): Command arguments.
+
+    Returns:
+        List[CommandResults]: Command results.
+    """
+    limit = arg_to_number(args.get("limit", 50))
+    page = arg_to_number(args.get("page", 0))
+
+    filter_query = build_mdm_command_filter(args)
+
+    response = client.get_mdm_commands_request(filter_query=filter_query, limit=limit, page=page)  # type: ignore
+    commands = response.get("results", [])
+    total_results = response.get("totalCount", len(commands))
+
+    readable_output = get_mdm_commands_readable_output(commands)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Jamf MDM command status results", readable_output, removeNull=True),
+            outputs_prefix="JAMF.MdmCommand",
+            outputs_key_field="uuid",
+            outputs=commands,
+            raw_response=response,
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown("Paging for MDM command status", paging_readable_output, removeNull=True),
+            outputs_prefix="JAMF.MdmCommand.Paging",
+            outputs_key_field="uuid",
+            outputs=paging_outputs,
+        ),
+    ]
 
 
 def get_mobile_devices_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -2037,36 +2331,115 @@ def get_computers_by_app_command(client: Client, args: dict[str, Any]) -> List[C
 
 
 def mobile_device_lost_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    mobile_id = args["id"]
-    lost_mode_msg = args.get("lost_mode_message")
+    mobile_id = args.get("id")
+    management_id = args.get("management_id")
+    lost_mode_message = args.get("lost_mode_message")
+    lost_mode_phone = args.get("lost_mode_phone")
+    lost_mode_footnote = args.get("lost_mode_footnote")
 
-    mobile_response = client.mobile_device_lost_request(mobile_id, lost_mode_msg)
-    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
-    mobile_outputs["name"] = "EnableLostMode"
+    # Either the mobile device id or the management_id must be provided to target the device.
+    if not mobile_id and not management_id:
+        return_error("Either 'id' or 'management_id' must be provided.")
 
+    # The MDM API requires at least one of lostModeMessage / lostModePhone.
+    if not lost_mode_message and not lost_mode_phone:
+        return_error("At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.")
+
+    # If management_id is supplied use it directly, otherwise resolve it from the mobile device id.
+    resolved_management_id = management_id or client.resolve_mobile_device_management_id(str(mobile_id))
+
+    command_data: dict[str, Any] = {"commandType": "ENABLE_LOST_MODE"}
+    if lost_mode_message:
+        command_data["lostModeMessage"] = lost_mode_message
+    if lost_mode_phone:
+        command_data["lostModePhone"] = lost_mode_phone
+    if lost_mode_footnote:
+        command_data["lostModeFootnote"] = lost_mode_footnote
+
+    response = client.post_mdm_command(resolved_management_id, command_data)
+
+    first_command = response[0] if response else {}
+    command_id = first_command.get("id")
+    href = first_command.get("href")
+
+    outputs = {
+        "name": "EnableLostMode",
+        "id": command_id,
+        "href": href,
+        "management_id": resolved_management_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EnableLostMode",
+        "ID": command_id,
+        "Management ID": resolved_management_id,
+    }
     return CommandResults(
-        readable_output=tableToMarkdown(f"Computer {mobile_id} locked successfully", readable_output, removeNull=True),
+        readable_output=tableToMarkdown(
+            f"Mobile device {mobile_id or resolved_management_id} lost mode enabled successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         outputs_prefix="JAMF.MobileDeviceCommands",
         outputs_key_field="id",
-        outputs=mobile_outputs,
-        raw_response=mobile_response,
+        outputs=outputs,
+        raw_response=response,
     )
 
 
 def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mobile_id = args["id"]
-    preserve_data_plan = args.get("preserve_data_plan", False)
-    clear_activation_code = args.get("clear_activation_code", False)
+    preserve_data_plan = argToBoolean(args.get("preserve_data_plan", False))
+    disallow_proximity_setup = argToBoolean(args.get("disallow_proximity_setup", False))
+    return_to_service = argToBoolean(args.get("return_to_service", False))
 
-    mobile_response = client.mobile_device_erase_request(mobile_id, preserve_data_plan, clear_activation_code)
-    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
-    mobile_outputs["name"] = "EraseDevice"
+    # clear_activation_code is a deprecated alias of clear_activation_lock; the canonical arg wins if both supplied.
+    if "clear_activation_lock" in args:
+        clear_activation_lock = argToBoolean(args.get("clear_activation_lock"))
+    else:
+        clear_activation_lock = argToBoolean(args.get("clear_activation_code", False))
+
+    response = client.mobile_device_erase_request(
+        mobile_id,
+        preserve_data_plan=preserve_data_plan,
+        disallow_proximity_setup=disallow_proximity_setup,
+        clear_activation_lock=clear_activation_lock,
+        return_to_service=return_to_service,
+    )
+
+    command_uuid = response.get("commandUuid")
+    device_id = response.get("deviceId")
+
+    # Preserve the management_id output by resolving it from the mobile device id.
+    management_id = client.resolve_mobile_device_management_id(str(mobile_id))
+
+    outputs = {
+        "name": "EraseDevice",
+        "command_uuid": command_uuid,
+        "id": device_id,
+        "management_id": management_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EraseDevice",
+        "ID": device_id,
+        "Command UUID": command_uuid,
+        "Management ID": management_id,
+    }
     return CommandResults(
-        readable_output=tableToMarkdown(f"Mobile device {mobile_id} erased successfully", readable_output, removeNull=True),
+        readable_output=tableToMarkdown(
+            f"Mobile device {mobile_id} erased successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         outputs_prefix="JAMF.MobileDeviceCommands",
         outputs_key_field="id",
-        outputs=mobile_outputs,
-        raw_response=mobile_response,
+        outputs=outputs,
+        raw_response=response,
     )
 
 
@@ -2307,6 +2680,9 @@ def main() -> None:
 
         elif demisto.command() == "jamf-mobile-device-erase":
             return_results(mobile_device_erase_command(client, demisto.args()))
+
+        elif demisto.command() == "jamf-mdm-command-status":
+            return_results(mdm_command_status_command(client, demisto.args()))
 
         elif demisto.command() == "endpoint":
             return_results(endpoint_command(client, demisto.args()))

@@ -1,4 +1,5 @@
 import time
+import traceback
 import uuid
 
 from CommonServerPython import *
@@ -10,9 +11,10 @@ API_REQUEST_TIMEOUT = 115  # seconds; keep under the upstream gateway timeout to
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
+MAX_COMMENT_PAGES = 100
 WIZ = "wiz"
 
-WIZ_VERSION = "1.7.0"
+WIZ_VERSION = "1.8.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -173,19 +175,6 @@ query IssuesTable(
         externalId
         name
         url
-      }
-      notes {
-        id
-        createdAt
-        updatedAt
-        text
-        user {
-          name
-          email
-        }
-        serviceAccount {
-          name
-        }
       }
     }
     pageInfo {
@@ -1419,53 +1408,35 @@ mutation UpdateIssue(
     updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
       issue {
         id
-        notes {
-          ...IssueNoteDetails
-        }
         status
         dueAt
         resolutionReason
       }
     }
   }
-
-  fragment IssueNoteDetails on IssueNote {
-    id
-    text
-    updatedAt
-    createdAt
-    user {
-      id
-      email
-    }
-    serviceAccount {
-      id
-      name
-    }
-  }
 """
 CREATE_COMMENT_QUERY = """
-mutation CreateIssueComment($input: CreateIssueNoteInput!) {
-    createIssueNote(input: $input) {
-      issueNote {
-        createdAt
-        id
-        text
-        user {
-          id
-          email
-        }
+mutation CreateCommentThreadComment($input: AddCommentInput!) {
+  createCommentThreadComment(input: $input) { commentThread { id } }
+}
+"""
+DELETE_COMMENT_QUERY = """
+mutation DeleteComment($input: DeleteCommentInput!) {
+  deleteComment(input: $input) { commentThread { id } }
+}
+"""
+ISSUE_COMMENTS_QUERY = """
+query IssueComments($id: ID!, $after: String) {
+  issue(id: $id) {
+    commentThread {
+      comments(first: 500, after: $after, orderBy: { field: CREATED_AT, direction: ASC }) {
+        nodes { id body createdAt updatedAt author { name } serviceAccount { name } }
+        pageInfo { hasNextPage endCursor }
       }
     }
   }
-    """
-DELETE_NOTE_QUERY = """
-    mutation DeleteIssueNote($input: DeleteIssueNoteInput!) {
-    deleteIssueNote(input: $input) {
-      _stub
-    }
-  }
-    """
+}
+"""
 
 # Resources Queries
 PULL_RESOURCES_ID_NATIVE_QUERY = """
@@ -1657,6 +1628,7 @@ class WizMirrorField:
 
 
 XSOAR_MIRROR_MARKER = "Mirrored from Cortex XSOAR"
+XSOAR_STATUS_NOTE = "Status mirrored from Cortex XSOAR"
 DEFAULT_RESOLUTION_REASON = "WONT_FIX"
 
 WIZ_MIRRORED_FIELDS = ["status", "notes", "dueAt", "resolutionReason"]
@@ -2495,14 +2467,37 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         "issueId": issue_id,
         "patch": {
             "status": status,
-            "note": truncate_note(reject_or_resolve_comment),
             "resolutionReason": reject_or_resolve_reason,
         },
     }
     query = UPDATE_ISSUE_QUERY
 
-    response = checkAPIerrors(query, variables)
+    try:
+        response = checkAPIerrors(query, variables)
+    except Exception as e:
+        if status != "REJECTED" or "A note is required for rejection" not in str(e):
+            raise
+        # Only the legacy `note` field satisfies a required rejection note.
+        variables["patch"]["note"] = truncate_note(reject_or_resolve_comment)
+        try:
+            return checkAPIerrors(query, variables)
+        except Exception as retry_error:
+            raise Exception(
+                "This Wiz tenant requires a note to reject issues, and the note could not be added. "
+                "If the Wiz Issue Notes API is retired, disable 'Require note on rejection' in Wiz Issue settings "
+                f"or reject the issue in Wiz. Wiz API error: {retry_error}"
+            ) from retry_error
 
+    return _add_note_after_status_update(issue_id, reject_or_resolve_comment, response)
+
+
+def _add_note_after_status_update(issue_id: str, note: str, response: dict) -> dict:
+    try:
+        set_issue_comment(issue_id, note)
+    except Exception as e:
+        warning = f"The issue status was updated, but the note could not be added: {e}"
+        demisto.error(f"[add_note_after_status_update] {warning}\n{traceback.format_exc()}")
+        response["warning"] = warning
     return response
 
 
@@ -2523,7 +2518,7 @@ def reopen_issue(issue_id, reopen_note):
     response = checkAPIerrors(query, variables)
 
     if reopen_note:
-        set_issue_comment(issue_id, reopen_note)
+        return _add_note_after_status_update(issue_id, reopen_note, response)
 
     return response
 
@@ -2570,6 +2565,20 @@ def _get_issue(issue_id, is_evidence=False):
     issue_response = checkAPIerrors(issue_query, issue_variables)
 
     return issue_response
+
+
+def get_issue_comments(issue_id: str) -> list[dict]:
+    """Needs read:comments, so keep it off the fetch and get paths."""
+    comments: list[dict] = []
+    after = None
+    for _ in range(MAX_COMMENT_PAGES):
+        data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
+        page = (data["data"]["issue"]["commentThread"] or {}).get("comments") or {}
+        comments.extend(page.get("nodes") or [])
+        if not (page.get("pageInfo") or {}).get("hasNextPage"):
+            return comments
+        after = page["pageInfo"]["endCursor"]
+    raise DemistoException(f"Issue {issue_id} has more than {MAX_COMMENT_PAGES} pages of comments.")
 
 
 def _get_issue_type(issue_id):
@@ -2630,7 +2639,7 @@ def set_issue_comment(issue_id, comment):
         return message
 
     comment = truncate_note(comment)
-    issue_variables = {"input": {"issueId": issue_id, "text": comment}}
+    issue_variables = {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": comment}}
     issue_query = CREATE_COMMENT_QUERY
 
     response = checkAPIerrors(issue_query, issue_variables)
@@ -2668,17 +2677,9 @@ def clear_issue_note(issue_id):
     if not is_valid_id:
         return message
 
-    issue_object = _get_issue(issue_id)
-
-    issue_notes = issue_object["data"]["issues"]["nodes"][0].get("notes") or []
-    demisto.info(f"The issue notes are: {issue_notes}")
-
-    query = DELETE_NOTE_QUERY
     response = None
-    for note in issue_notes:
-        variables = {"input": {"id": note["id"]}}
-
-        response = checkAPIerrors(query, variables)
+    for comment in get_issue_comments(issue_id):
+        response = checkAPIerrors(DELETE_COMMENT_QUERY, {"input": {"id": comment["id"]}})
 
     return response
 
@@ -2955,7 +2956,15 @@ def get_remote_data_command(args):
     issue = issues[0]
     _attach_mirror_metadata(issue)
 
-    entries = _build_new_note_entries(issue, last_update)
+    entries: list[dict] = []
+    if last_update:  # first sync: don't back-fill the comment history
+        try:
+            entries = _build_new_note_entries(get_issue_comments(issue_id), last_update)
+        except Exception as e:
+            # Other errors must re-raise so lastUpdate is not advanced.
+            if "read:comments" not in str(e):
+                raise
+            demisto.info(f"[get_remote_data] skipping comments for issue {issue_id}: {e}")
     return GetRemoteDataResponse(issue, entries)
 
 
@@ -2986,20 +2995,11 @@ def _parse_iso_timestamp(value):
         return None
 
 
-def _build_new_note_entries(issue, last_update):
-    """Build war room entries for notes added since last_update.
-
-    First sync (no last_update) returns []: we intentionally avoid back-filling
-    the entire pre-existing note history into a fresh war room. Subsequent
-    syncs surface only notes newer than the previous sync.
-    """
+def _build_new_note_entries(comments, last_update):
     entries: list[dict] = []
-    if not last_update:
-        return entries
-
     last_update_dt = _parse_iso_timestamp(last_update)
-    for note in issue.get("notes") or []:
-        if XSOAR_MIRROR_MARKER in note.get("text", ""):
+    for note in comments:
+        if XSOAR_MIRROR_MARKER.lower() in note.get("body", "").lower():
             continue
         note_time = note.get("updatedAt") or note.get("createdAt", "")
         note_dt = _parse_iso_timestamp(note_time)
@@ -3008,15 +3008,15 @@ def _build_new_note_entries(issue, last_update):
         )
         if is_newer:
             author = ""
-            if note.get("user"):
-                author = note["user"].get("name", "")
+            if note.get("author"):
+                author = note["author"].get("name", "")
             elif note.get("serviceAccount"):
                 author = f"[SA] {note['serviceAccount'].get('name', '')}"
 
             entries.append(
                 {
                     "Type": entryTypes["note"],
-                    "Contents": f"**{author}** ({note_time}):\n{note.get('text', '')}",
+                    "Contents": f"**{author}** ({note_time}):\n{note.get('body', '')}",
                     "ContentsFormat": formats["markdown"],
                     "Note": True,
                 }
@@ -3078,10 +3078,10 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
             if not _can_resolve_issue(issue_id):
                 return
             resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
-            reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
+            reject_or_resolve_issue(issue_id, resolution_reason, XSOAR_STATUS_NOTE, "RESOLVED")
         elif status_lower in ("rejected",):
             reject_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
-            reject_or_resolve_issue(issue_id, reject_reason, "Status mirrored from Cortex XSOAR", "REJECTED")
+            reject_or_resolve_issue(issue_id, reject_reason, XSOAR_STATUS_NOTE, "REJECTED")
         elif status_lower in ("active", "open", "reopened"):
             reopen_issue(issue_id=issue_id, reopen_note="")
         elif status_lower in ("in_progress", "in progress"):
@@ -3099,7 +3099,7 @@ def _handle_incident_closed(remote_id, resolution_reason=None):
     try:
         if not _can_resolve_issue(remote_id):
             return
-        reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
+        reject_or_resolve_issue(remote_id, reason, XSOAR_STATUS_NOTE, "RESOLVED")
     except Exception as e:
         demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")
 

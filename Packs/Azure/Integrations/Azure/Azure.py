@@ -14,7 +14,8 @@ import defusedxml.ElementTree as defused_ET
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 from datetime import UTC
-
+import copy
+from pathlib import Path
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,6 +32,13 @@ TABLE_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{2,62}$"
 TABLE_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 # The Azure Table data-plane caps the number of results a single query can return via the $top parameter.
 TABLE_MAX_PAGE_SIZE = 1000
+FILE_SERVICE_PREFIX = "file.core.windows.net"
+FILESHARE_GENERAL_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+FILESHARE_STORAGE_API_VERSION = "2025-05-05"
+# Azure Files data-plane requests authorized with an OAuth token must declare the request intent.
+FILESHARE_OAUTH_HEADERS = {"x-ms-file-request-intent": "backup"}
+# Microsoft.Storage resource provider (ARM control plane) API version used for share-level operations.
+FILESHARE_ARM_API_VERSION = "2026-06-01"
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -61,7 +69,7 @@ STORAGE_RESOURCE = "https://storage.azure.com/"
 DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
-    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations"],
+    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations", "azure-rg-operations-list"],
     "Microsoft.ResourceGraph/resources/read": ["azure-rg-query"],
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
@@ -338,12 +346,39 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-key-vault-purge-and-soft-delete-enable-quick-action",
         "azure-keyvault-vault-update",
     ],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
+    "Microsoft.Sql/servers/read": [
+        "azure-sqldb-servers-list",
+        "azure-sqldb-databases-list",
+    ],
+    "Microsoft.Sql/servers/databases/read": [
+        "azure-sqldb-databases-list",
+        "azure-sqldb-server-auditing-settings-list",
+        "azure-sqldb-security-alert-policy-create",
+    ],
+    "Microsoft.Sql/servers/databases/auditingSettings/read": [
+        "azure-sqldb-server-auditing-settings-list",
+        "azure-sqldb-audit-policy-create-update",
+    ],
+    "Microsoft.Sql/servers/databases/auditingSettings/write": [
+        "azure-sqldb-audit-policy-create-update",
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+        "azure-sqldb-security-alert-policy-create",
         "azure-sql-db-threat-policy-update",
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+    "Microsoft.Sql/servers/firewallRules/read": [
+        "azure-sqldb-firewall-rules-list",
+    ],
+    "Microsoft.Sql/servers/firewallRules/write": [
+        "azure-sqldb-firewall-rule-create-update",
+        "azure-sqldb-firewall-rule-replace",
+    ],
+    "Microsoft.Sql/servers/firewallRules/delete": [
+        "azure-sqldb-firewall-rule-delete",
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
         "azure-sql-db-threat-policy-update",
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
@@ -523,6 +558,24 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.DBforPostgreSQL/servers/configurations/write",
     ],
     "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
+    "sql_servers_list": ["Microsoft.Sql/servers/read"],
+    "sql_db_list": ["Microsoft.Sql/servers/read", "Microsoft.Sql/servers/databases/read"],
+    "sql_db_server_auditing_settings_list": [
+        "Microsoft.Sql/servers/databases/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/read",
+    ],
+    "sql_db_audit_policy_list": [
+        "Microsoft.Sql/servers/databases/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/read",
+    ],
+    "sql_db_audit_policy_create_update": [
+        "Microsoft.Sql/servers/databases/auditingSettings/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/write",
+    ],
+    "sql_firewall_rules_list": ["Microsoft.Sql/servers/firewallRules/read"],
+    "sql_firewall_rule_create_update": ["Microsoft.Sql/servers/firewallRules/write"],
+    "sql_firewall_rule_delete": ["Microsoft.Sql/servers/firewallRules/delete"],
+    "sql_firewall_rule_replace": ["Microsoft.Sql/servers/firewallRules/write"],
     "postgres_flexible_server_configuration_update": ["Microsoft.DBforPostgreSQL/flexibleServers/configurations/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
@@ -655,6 +708,37 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.OperationalInsights/workspaces/searchJobs/write",
     ],
     "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
+    "create_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/write"],
+    "delete_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/delete"],
+    "list_shares_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/read"],
+    "list_directories_and_files_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "create_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "delete_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "create_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "add_file_content_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "get_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "delete_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -758,6 +842,21 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.OperationalInsights/workspaces/tables/write",
     "Microsoft.OperationalInsights/workspaces/tables/delete",
     "Microsoft.OperationalInsights/workspaces/searchJobs/write",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/read",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/write",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    "Microsoft.Sql/servers/read",
+    "Microsoft.Sql/servers/databases/read",
+    "Microsoft.Sql/servers/databases/auditingSettings/read",
+    "Microsoft.Sql/servers/databases/auditingSettings/write",
+    "Microsoft.Sql/servers/firewallRules/read",
+    "Microsoft.Sql/servers/firewallRules/write",
+    "Microsoft.Sql/servers/firewallRules/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -772,12 +871,15 @@ MONITOR_API_VERSION = "2016-03-01"
 DISKS_API_VERSION = "2024-03-02"
 ACR_API_VERSION = "2023-07-01"
 KEY_VAULT_API_VERSION = "2022-07-01"
-SQL_DB_API_VERSION = "2021-11-01"
+SQL_DB_API_VERSION = "2025-01-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NETWORK_INTERFACE_API_VERSION = "2026-01-01"
-NSG_API_VERSION = "2025-01-01"
+NSG_API_VERSION = "2026-01-01"
+PUBLIC_IP_API_VERSION = "2026-01-01"
+BLOB_SERVICE_API_VERSION = "2026-09-01"
+RESOURCE_GROUPS_API_VERSION = "2021-04-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
 WAF_POLICY_API_VERSION = "2025-09-01"
@@ -884,7 +986,7 @@ POLLING_COMMANDS = {
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
-STORAGE_BLOB_SPECIAL_COMMANDS = [
+STORAGE_SPECIAL_COMMANDS = [
     "azure-storage-blob-property-get",
     "azure-storage-blob-property-set",
     "azure-storage-blob-tag-get",
@@ -902,6 +1004,15 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blobs-list",
     "azure-storage-blob-update",
     "azure-storage-blob-delete",
+    # File share DATA-PLANE commands (file.core.windows.net) require the storage scope/resource.
+    # The share-level commands (create/delete/list) use the Microsoft.Storage ARM control plane
+    # and therefore stay on the default management scope, so they are intentionally excluded here.
+    "azure-storage-fileshare-content-list",
+    "azure-storage-fileshare-directory-create",
+    "azure-storage-fileshare-directory-delete",
+    "azure-storage-fileshare-file-create",
+    "azure-storage-fileshare-file-get",
+    "azure-storage-fileshare-file-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -1166,7 +1277,9 @@ class AzureClient:
             DemistoException: For permission errors and other API errors
         """
         error_msg = str(e).lower()
-        demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
+        demisto.debug(
+            f"Azure API error for {subscription_id=} {error_msg=} {resource_type} '{resource_name}': {type(e).__name__}"
+        )
 
         if "404" in error_msg or "not found" in error_msg:
             error_details = f'{resource_type} "{resource_name}"'
@@ -1177,7 +1290,7 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
-            demisto.debug("Permission error, trying to find the missing permission.")
+            demisto.debug(f"Permission error, trying to find the missing permission. {e=}")
             found_permission = []
             # If we have api_function_name, use the reverse mapping for O(1) lookup
             if api_function_name in API_FUNCTION_TO_PERMISSIONS:
@@ -1225,8 +1338,9 @@ class AzureClient:
                 "PUT",
                 full_url=(
                     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}"
                 ),
+                params={"api-version": NSG_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -1261,6 +1375,7 @@ class AzureClient:
             return self.http_request(
                 "GET",
                 full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1291,7 +1406,8 @@ class AzureClient:
             demisto.debug("Retrieving security rules list.")
             return self.http_request(
                 "GET",
-                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules?{NSG_API_VERSION}",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1721,14 +1837,14 @@ class AzureClient:
         Returns:
             The json response from the API call.
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2024-01-01&utm_source=chatgpt.com&tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2026-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": BLOB_SERVICE_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1785,6 +1901,7 @@ class AzureClient:
             return self.http_request(
                 method=method,
                 full_url=full_url,
+                params={"api-version": BLOB_SERVICE_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -1797,14 +1914,16 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_container_set_headers(self, custom_headers: dict = {}):
+    def storage_container_set_headers(self, custom_headers: dict = {}, api_version: str = STORAGE_API_VERSION):
         """
         Set the headers for the storage container request.
         Args:
             custom_headers (dict, optional): Custom headers to be added to the request.
+            api_version (str, optional): The storage data-plane REST API version sent in the x-ms-version header.
+                Defaults to STORAGE_API_VERSION.
         """
         request_headers = {
-            "x-ms-version": STORAGE_API_VERSION,
+            "x-ms-version": api_version,
             "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
         }
         if self.headers:
@@ -3082,6 +3201,388 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def sql_servers_list(self, subscription_id: str, resource_group_name: str | None = None, next_link: str | None = None):
+        """
+        Lists all SQL servers, optionally filtered by resource group.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str | None): If provided, lists servers in this resource group only.
+            next_link (str | None): If provided, fetches the next page using this URL.
+
+        Returns:
+            dict: The API response containing the list of servers.
+
+        Raises:
+            ValueError: If the resource group is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        params: dict = {"api-version": SQL_DB_API_VERSION}
+        if next_link:
+            demisto.debug("Listing SQL servers (next page).")
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
+        else:
+            if resource_group_name:
+                full_url = (
+                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Sql/servers"
+                )
+            else:
+                full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Sql/servers"
+            demisto.debug("Listing SQL servers.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name or subscription_id,
+                resource_type="SQL Servers",
+                api_function_name="sql_servers_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name or "",
+            )
+
+    def sql_db_list(self, server_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None):
+        """
+        Lists all databases for a given SQL server.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            next_link (str | None): If provided, fetches the next page using this URL.
+
+        Returns:
+            dict: The API response containing the list of databases.
+
+        Raises:
+            ValueError: If the server is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        params: dict = {"api-version": SQL_DB_API_VERSION}
+        if next_link:
+            demisto.debug(f"Listing SQL databases for server {server_name} (next page).")
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Sql/servers/{server_name}/databases"
+            )
+            demisto.debug(f"Listing SQL databases for server {server_name}.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=server_name,
+                resource_type="SQL Databases",
+                api_function_name="sql_db_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_db_server_auditing_settings_list(
+        self, server_name: str, db_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None
+    ):
+        """
+        Lists the auditing settings for a SQL database.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            db_name (str): Name of the database.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            next_link (str | None): If provided, fetches the next page using this URL.
+
+        Returns:
+            dict: The API response containing the database audit settings list.
+
+        Raises:
+            ValueError: If the database or server is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        params: dict = {"api-version": SQL_DB_API_VERSION}
+        if next_link:
+            demisto.debug(f"Listing SQL DB audit policies for {server_name}/{db_name} (next page).")
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/auditingSettings"
+            )
+            demisto.debug(f"Listing SQL DB audit policies for {server_name}/{db_name}.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{db_name}",
+                resource_type="SQL Database Audit Policy",
+                api_function_name="sql_db_server_auditing_settings_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_db_audit_policy_create_update(
+        self,
+        server_name: str,
+        db_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        state: str,
+        audit_actions_groups: list | None = None,
+        is_azure_monitor_target_enabled: bool | None = None,
+        is_storage_secondary_key_in_use: bool | None = None,
+        queue_delay_ms: str | None = None,
+        retention_days: int | None = None,
+        storage_account_access_key: str | None = None,
+        storage_account_subscription_id: str | None = None,
+        storage_endpoint: str | None = None,
+        is_managed_identity_in_use: bool | None = None,
+    ):
+        """
+        Creates or updates the auditing policy for a SQL database.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            db_name (str): Name of the database.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            state (str): The state of the audit policy (Enabled/Disabled).
+            audit_actions_groups (list | None): Actions and groups to audit.
+            is_azure_monitor_target_enabled (bool | None): Whether to send events to Azure Monitor.
+            is_storage_secondary_key_in_use (bool | None): Whether to use the secondary storage key.
+            queue_delay_ms (str | None): Queue delay in milliseconds.
+            retention_days (int | None): Number of days to retain audit logs.
+            storage_account_access_key (str | None): Storage account access key.
+            storage_account_subscription_id (str | None): Storage account subscription ID.
+            storage_endpoint (str | None): Storage endpoint URL.
+            is_managed_identity_in_use (bool | None): Whether managed identity is used.
+
+        Returns:
+            dict: The API response after applying the update.
+
+        Raises:
+            ValueError: If the database or server is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        properties = assign_params(
+            state=state,
+            auditActionsAndGroups=audit_actions_groups,
+            isAzureMonitorTargetEnabled=is_azure_monitor_target_enabled,
+            isStorageSecondaryKeyInUse=is_storage_secondary_key_in_use,
+            queueDelayMs=queue_delay_ms,
+            retentionDays=retention_days,
+            storageAccountAccessKey=storage_account_access_key,
+            storageAccountSubscriptionId=storage_account_subscription_id,
+            storageEndpoint=storage_endpoint,
+            isManagedIdentityInUse=is_managed_identity_in_use,
+        )
+        data = {"properties": properties} if properties else {}
+        params = {"api-version": SQL_DB_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/auditingSettings/default"
+        )
+        demisto.debug(f"Creating/updating SQL DB audit policy for {server_name}/{db_name}.")
+        try:
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{db_name}",
+                resource_type="SQL Database Audit Policy",
+                api_function_name="sql_db_audit_policy_create_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_firewall_rules_list(
+        self,
+        server_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        firewall_rule_name: str | None = None,
+        next_link: str | None = None,
+    ):
+        """
+        Lists firewall rules for a SQL server, or retrieves a specific rule.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            firewall_rule_name (str | None): If provided, retrieves only this specific rule.
+            next_link (str | None): If provided, fetches the next page using this URL.
+
+        Returns:
+            dict: The API response containing the firewall rule(s).
+
+        Raises:
+            ValueError: If the server or rule is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        params: dict = {"api-version": SQL_DB_API_VERSION}
+        if next_link:
+            demisto.debug(f"Listing SQL firewall rules for server {server_name} (next page).")
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules"
+            )
+            if firewall_rule_name:
+                full_url += f"/{firewall_rule_name}"
+            demisto.debug(f"Listing SQL firewall rules for server {server_name}.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=server_name,
+                resource_type="SQL Firewall Rule",
+                api_function_name="sql_firewall_rules_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_firewall_rule_create_update(
+        self,
+        server_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        firewall_rule_name: str,
+        start_ip_address: str,
+        end_ip_address: str,
+    ):
+        """
+        Creates or updates a firewall rule for a SQL server.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            firewall_rule_name (str): Name of the firewall rule.
+            start_ip_address (str): Start IP address of the firewall rule.
+            end_ip_address (str): End IP address of the firewall rule.
+
+        Returns:
+            dict: The API response after creating/updating the rule.
+
+        Raises:
+            ValueError: If the server is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        data = {"properties": {"startIpAddress": start_ip_address, "endIpAddress": end_ip_address}}
+        params = {"api-version": SQL_DB_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules/{firewall_rule_name}"
+        )
+        demisto.debug(f"Creating/updating SQL firewall rule {firewall_rule_name} for server {server_name}.")
+        try:
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{firewall_rule_name}",
+                resource_type="SQL Firewall Rule",
+                api_function_name="sql_firewall_rule_create_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_firewall_rule_delete(
+        self, server_name: str, subscription_id: str, resource_group_name: str, firewall_rule_name: str
+    ) -> None:
+        """
+        Deletes a firewall rule from a SQL server.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            firewall_rule_name (str): Name of the firewall rule to delete.
+
+        Raises:
+            ValueError: If the server or rule is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        params = {"api-version": SQL_DB_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules/{firewall_rule_name}"
+        )
+        demisto.debug(f"Deleting SQL firewall rule {firewall_rule_name} from server {server_name}.")
+        try:
+            self.http_request("DELETE", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{firewall_rule_name}",
+                resource_type="SQL Firewall Rule",
+                api_function_name="sql_firewall_rule_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def sql_firewall_rule_replace(
+        self,
+        server_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        firewall_rule_name: str | None = None,
+        start_ip_address: str | None = None,
+        end_ip_address: str | None = None,
+        request_body: dict | None = None,
+    ):
+        """
+        Replaces all firewall rules on a SQL server.
+
+        Args:
+            server_name (str): Name of the SQL server.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group.
+            firewall_rule_name (str | None): Name of the firewall rule (used when request_body is None).
+            start_ip_address (str | None): Start IP address (used when request_body is None).
+            end_ip_address (str | None): End IP address (used when request_body is None).
+            request_body (dict | None): Pre-built request body in FirewallRuleList format.
+
+        Returns:
+            dict: The API response after replacing the rules.
+
+        Raises:
+            ValueError: If the server is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        if request_body is None:
+            properties = assign_params(startIpAddress=start_ip_address, endIpAddress=end_ip_address)
+            rule: dict = {"name": firewall_rule_name}
+            if properties:
+                rule["properties"] = properties
+            request_body = {"values": [rule]}
+        params = {"api-version": SQL_DB_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules"
+        )
+        demisto.debug(f"Replacing SQL firewall rules for server {server_name}.")
+        try:
+            return self.http_request("PUT", full_url=full_url, json_data=request_body, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=server_name,
+                resource_type="SQL Firewall Rules",
+                api_function_name="sql_firewall_rule_replace",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def aks_clusters_list(self, subscription_id: str, next_token: str = ""):
         """
         Lists all managed AKS clusters in the specified subscription.
@@ -3325,7 +3826,7 @@ class AzureClient:
             A dictionary containing the network security group information.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3334,7 +3835,7 @@ class AzureClient:
         json_data = {
             "location": location,
         }
-        params = {"api-version": "2025-05-01"}
+        params = {"api-version": NSG_API_VERSION}
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=remove_empty_elements(json_data), params=params)
         except Exception as e:
@@ -3359,14 +3860,14 @@ class AzureClient:
             A dictionary containing the list of network security groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Network/networkSecurityGroups"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": NSG_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3391,7 +3892,7 @@ class AzureClient:
             The HTTP response object from the delete operation.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3399,7 +3900,9 @@ class AzureClient:
             f"/securityRules/{security_rule_name}"
         )
         try:
-            response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+            response = self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": NSG_API_VERSION}, resp_type="response"
+            )
             if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
                 return response
             else:
@@ -3599,11 +4102,15 @@ class AzureClient:
             A dictionary containing the list of resource groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2022-09-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
         try:
-            return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+            return self.http_request(
+                method="GET",
+                full_url=full_url,
+                params={"api-version": RESOURCE_GROUPS_API_VERSION, "$filter": filter_by_tag, "$top": limit},
+            )
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3656,14 +4163,14 @@ class AzureClient:
             A dictionary containing the list of public IP addresses.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -4199,11 +4706,11 @@ class AzureClient:
             List of PublicIPAddressListResult objects.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?view=rest-virtualnetwork-2026-01-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/publicIPAddresses"
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -5302,6 +5809,363 @@ class AzureClient:
                 api_function_name="resource_graph_query_resources",
             )
 
+    def _fileshare_arm_url(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str = "") -> str:
+        """
+        Build the Microsoft.Storage resource provider (ARM control plane) URL for file share operations.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): The storage account name.
+            share_name (str): The share name. If empty, returns the shares collection URL.
+
+        Returns:
+            str: The full ARM URL for the file share resource or collection.
+        """
+        base = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Storage/storageAccounts/{account_name}/fileServices/default/shares"
+        )
+        return f"{base}/{share_name}" if share_name else base
+
+    def create_share_request(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str):
+        """
+        Create a new Azure file share via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name, share_name)
+        params = {"api-version": FILESHARE_ARM_API_VERSION}
+        data: dict = {"properties": {}}
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share",
+                api_function_name="create_share_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def delete_share_request(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str):
+        """
+        Delete a file share via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name, share_name)
+        params = {"api-version": FILESHARE_ARM_API_VERSION}
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share",
+                api_function_name="delete_share_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_shares_request(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        account_name: str,
+        limit: str | None = None,
+        next_token: str | None = None,
+    ):
+        """
+        List Azure file shares via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            limit (str): Maximum number of shares to retrieve per page.
+            next_token (str): The nextLink URI returned by a previous page. When provided, it is requested as-is,
+                since it already carries the api-version, $maxpagesize and $skipToken query parameters.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of file shares.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict = {}
+        else:
+            full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name)
+            params = assign_params(**{"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": limit})
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=account_name,
+                resource_type="Storage File Shares",
+                api_function_name="list_shares_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_directories_and_files_request(
+        self,
+        account_name: str,
+        share_name: str,
+        directory_path: str = None,
+        prefix: str = None,
+        limit: str = None,
+        marker: str = None,
+    ):
+        """
+        List files and directories under the specified share or directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_path (str): The path to the directory.
+            prefix (str): Filters the results to return only entries whose name begins with the specified prefix.
+            limit (str): Number of directories and files to retrieve.
+            marker (str): Identifies the portion of the list to be returned.
+
+        Returns:
+            str: API response from Azure (XML text).
+        """
+        suffix = f"{share_name}/{directory_path}" if directory_path else f"{share_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(
+            restype="directory", comp="list", include="Timestamps", prefix=prefix, maxresults=limit, marker=marker
+        )
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share Content",
+                api_function_name="list_directories_and_files_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def create_directory_request(self, account_name: str, share_name: str, directory_name: str, directory_path: str = None):
+        """
+        Create a new directory under the specified share or parent directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_name (str): New directory name.
+            directory_path (str): The path to the parent directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(restype="directory")
+        headers = {
+            "x-ms-file-permission": "inherit",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=directory_name,
+                resource_type="Storage File Share Directory",
+                api_function_name="create_directory_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def delete_directory_request(self, account_name: str, share_name: str, directory_name: str, directory_path: str = None):
+        """
+        Delete the specified empty directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_name (str): Directory name.
+            directory_path (str): The path to the parent directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(restype="directory")
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=directory_name,
+                resource_type="Storage File Share Directory",
+                api_function_name="delete_directory_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def create_file_request(
+        self, account_name: str, share_name: str, file_name: str, content_length: int, directory_path: str = None
+    ):
+        """
+        Create a new empty file in a Share. Only initializes the file - content is added via add_file_content_request.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            content_length (int): The size in bytes of the file to create.
+            directory_path (str): The path to the directory where the file should be created.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        headers = {
+            "x-ms-type": "file",
+            "x-ms-file-permission": "inherit",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+            "x-ms-content-length": str(content_length),
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="create_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def add_file_content_request(
+        self, account_name: str, share_name: str, file_name: str, file_data, content_length: int, directory_path: str = None
+    ):
+        """
+        Write a range of bytes to a file (Put Range operation).
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            file_data: Open binary file object positioned at the start.
+            content_length (int): The size in bytes of the content.
+            directory_path (str): The path to the directory where the file resides.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        max_range = int(content_length) - 1
+        headers = {
+            "x-ms-write": "update",
+            "x-ms-range": f"bytes=0-{max_range}",
+            "Content-Length": str(content_length),
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        params = {"comp": "range"}
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, data=file_data, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="add_file_content_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def get_file_request(self, account_name: str, share_name: str, file_name: str, directory_path: str = None):
+        """
+        Get a file from a Share.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            directory_path (str): The path to the file's directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="GET", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="get_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def delete_file_request(self, account_name: str, share_name: str, file_name: str, directory_path: str = None):
+        """
+        Delete a file from a Share.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            directory_path (str): The path to the file's directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="delete_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -6219,6 +7083,129 @@ def log_analytics_tags_arg_to_request_format(tags: str | None) -> list[dict[str,
         if len(tag) != 2:
             raise DemistoException(bad_arg_msg)
     return [{"name": tag[0], "value": tag[1]} for tag in parsed_tags]
+
+
+def fileshare_validate_characters(string: str, invalid_characters: str) -> bool:
+    """
+    Validate that a string does not contain any invalid characters.
+
+    Args:
+        string (str): String to validate.
+        invalid_characters (str): Characters that are not allowed.
+
+    Returns:
+        bool: True if the string is valid, otherwise False.
+    """
+    return all(character not in string for character in invalid_characters)
+
+
+def fileshare_handle_content_properties_information(element: object) -> dict:
+    """
+    Handle API response 'Properties' information for a file/directory element.
+
+    Args:
+        element (object): An XML element hierarchy data.
+
+    Returns:
+        dict: Transformed dictionary of the element's name and properties.
+    """
+    data = {"Name": element.findtext("Name")}  # type: ignore
+    properties: dict = {}
+    for element_property in element.findall("Properties"):  # type: ignore
+        for attribute in element_property:
+            properties[attribute.tag] = attribute.text
+    data["Properties"] = properties  # type: ignore
+    return data
+
+
+def fileshare_handle_directory_content_response(response: str) -> dict:
+    """
+    Convert an XML schema directory content response to a dictionary data structure.
+
+    Args:
+        response (str): XML schema string response.
+
+    Returns:
+        dict: Raw response with Directory, File, DirectoryId and NextToken keys.
+    """
+    root = defused_ET.fromstring(response)
+
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    raw_response: dict = {
+        "Directory": [],
+        "File": [],
+        "DirectoryId": root.findtext("DirectoryId"),
+        "NextToken": root.findtext("NextMarker") or None,
+    }
+
+    for path in ("Directory", "File"):
+        for element in root.iter(path):
+            data = fileshare_handle_content_properties_information(element)
+            data["FileId"] = element.findtext("FileId")
+            raw_response[path].append(data)
+
+    return raw_response
+
+
+def fileshare_create_directory_content_output(share_name: str, raw_response: dict, directory_path: str = "") -> dict:
+    """
+    Create an XSOAR context output for the list directory content command.
+
+    Args:
+        share_name (str): Share name.
+        raw_response (dict): Request raw response.
+        directory_path (str): Source directory path.
+
+    Returns:
+        dict: XSOAR command context output.
+    """
+    outputs: dict = {
+        "name": share_name,
+        # The token is a pagination value for the whole listing, so it is exposed next to the content rather than inside it.
+        "ContentNextToken": raw_response.pop("NextToken", None),
+        "Content": {"Path": directory_path, "DirectoryId": raw_response["DirectoryId"]},
+    }
+
+    time_headers = ["CreationTime", "LastAccessTime", "LastWriteTime", "ChangeTime"]
+
+    for path in ("Directory", "File"):
+        for element in raw_response.get(path, []):
+            for header in time_headers:
+                str_time = element["Properties"].get(header)
+                if str_time:
+                    str_time = str_time[:-2] + "Z"
+                    element["Properties"][header] = FormatIso8601(datetime.strptime(str_time, FILESHARE_GENERAL_DATE_FORMAT))
+            last_modified = element["Properties"].get("Last-Modified")
+            if last_modified:
+                element["Properties"]["Last-Modified"] = FormatIso8601(datetime.strptime(last_modified, STORAGE_DATE_FORMAT))
+            element["Property"] = element.pop("Properties")
+
+    outputs["Content"].update(raw_response)
+
+    return outputs
+
+
+def fileshare_create_content_readable_output(outputs: dict, prefix: str = "") -> str:
+    """
+    Create the readable output for the list directory content command.
+
+    Args:
+        outputs (dict): Command outputs.
+        prefix (str): Readable output prefix.
+
+    Returns:
+        str: Command readable output.
+    """
+    directories_outputs = tableToMarkdown(
+        "Directories:", outputs["Content"]["Directory"], headers=["Name", "FileId"], headerTransform=pascalToSpace
+    )
+    files_outputs = tableToMarkdown(
+        "Files:", outputs["Content"]["File"], headers=["Name", "FileId"], headerTransform=pascalToSpace
+    )
+    readable_output = prefix + "\n" + directories_outputs + "\n" + files_outputs
+    if outputs.get("ContentNextToken"):
+        readable_output += "\nMore pages are available - re-run the command with the next_token argument to continue."
+    return readable_output
 
 
 """ COMMAND FUNCTIONS """
@@ -10965,6 +11952,434 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     )
 
 
+def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists all SQL servers, optionally filtered by resource group.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including optional resource_group_name and next_link.
+
+    Returns:
+        CommandResults: The list of SQL servers formatted for display.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = args.get("resource_group_name") or params.get("resource_group_name")
+    next_token = args.get("next_token")
+
+    response = client.sql_servers_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
+    )
+
+    servers = response.get("value", [])
+
+    name = f"SQL Servers in resource group: {resource_group_name}" if resource_group_name else "SQL Servers List"
+    if not servers:
+        return CommandResults(readable_output="No SQL servers found.")
+
+    outputs = remove_empty_elements(
+        {
+            "Azure.SqlDB.Servers(val.id && val.id == obj.id)": servers,
+            "Azure.SqlDB(true)": {"ServersNextToken": response.get("nextLink")},
+        }
+    )
+    readable_output = tableToMarkdown(name, servers, headerTransform=pascalToSpace, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists all databases for a SQL server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name.
+
+    Returns:
+        CommandResults: The list of SQL databases formatted for display.
+    """
+    server_name = args.get("server_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token")
+
+    response = client.sql_db_list(
+        server_name=server_name, subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
+    )
+
+    databases = response.get("value", [])
+
+    if not databases:
+        return CommandResults(readable_output=f"No databases found for server {server_name}.")
+
+    outputs = remove_empty_elements(
+        {
+            "Azure.SqlDB.Databases(val.id && val.id == obj.id)": databases,
+            "Azure.SqlDB(true)": {"DatabasesNextToken": response.get("nextLink")},
+        }
+    )
+    readable_output = tableToMarkdown(
+        f"Databases for server {server_name}",
+        databases,
+        headers=["name", "location", "kind", "type"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def sql_db_server_auditing_settings_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists the auditing settings for a SQL database.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name and db_name.
+
+    Returns:
+        CommandResults: The list of database audit settings formatted for display.
+    """
+    server_name = args.get("server_name", "")
+    db_name = args.get("db_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token")
+
+    response = client.sql_db_server_auditing_settings_list(
+        server_name=server_name,
+        db_name=db_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        next_link=next_token,
+    )
+
+    policies = response.get("value", [])
+
+    if not policies:
+        return CommandResults(readable_output=f"No audit policies found for database {db_name}.")
+
+    outputs = remove_empty_elements(
+        {
+            "Azure.SqlDB.ServerAuditingSettings(val.id && val.id == obj.id)": policies,
+            "Azure.SqlDB(true)": {"ServerAuditingSettingsNextToken": response.get("nextLink")},
+        }
+    )
+    readable_output = tableToMarkdown(
+        f"Database Audit Settings for {server_name}/{db_name}",
+        policies,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def sql_db_audit_policy_create_update_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates or updates the auditing policy for a SQL database.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name, db_name, state, and optional audit settings.
+
+    Returns:
+        CommandResults: The updated audit policy formatted for display.
+    """
+    server_name = args.get("server_name", "")
+    db_name = args.get("db_name", "")
+    state = args.get("state", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.sql_db_audit_policy_create_update(
+        server_name=server_name,
+        db_name=db_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        state=state,
+        audit_actions_groups=argToList(args.get("audit_actions_groups")),
+        is_azure_monitor_target_enabled=arg_to_bool_or_none(args.get("is_azure_monitor_target_enabled")),
+        is_storage_secondary_key_in_use=arg_to_bool_or_none(args.get("is_storage_secondary_key_in_use")),
+        queue_delay_ms=args.get("queue_delay_ms"),
+        retention_days=arg_to_number(args.get("retention_days")),
+        storage_account_access_key=args.get("storage_account_access_key"),
+        storage_account_subscription_id=args.get("storage_account_subscription_id"),
+        storage_endpoint=args.get("storage_endpoint"),
+        is_managed_identity_in_use=arg_to_bool_or_none(args.get("is_managed_identity_in_use")),
+    )
+
+    readable_output = tableToMarkdown(
+        f"Create Or Update Database Auditing Settings for {server_name}/{db_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.SqlDB.ServerAuditingSettings",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def sql_db_threat_policy_create_update_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates or updates the threat detection policy for a SQL database.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name, db_name, state, and optional threat settings.
+
+    Returns:
+        CommandResults: The updated threat detection policy formatted for display.
+    """
+    server_name = args.get("server_name", "")
+    db_name = args.get("db_name", "")
+    state = args.get("state", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    disabled_alerts_raw = argToList(args.get("disabled_alerts"))
+    disabled_alerts = [""] if "None" in disabled_alerts_raw else disabled_alerts_raw
+
+    properties = assign_params(
+        state=state,
+        retentionDays=arg_to_number(args.get("retention_days")),
+        storageAccountAccessKey=args.get("storage_account_access_key"),
+        storageEndpoint=args.get("storage_endpoint"),
+        disabledAlerts=disabled_alerts or None,
+        emailAccountAdmins=arg_to_bool_or_none(args.get("email_account_admins")),
+        emailAddresses=argToList(args.get("email_addresses")) or None,
+    )
+    current = {"properties": properties} if properties else {}
+
+    response = client.sql_db_threat_policy_update(
+        server_name=server_name,
+        db_name=db_name,
+        subscription_id=subscription_id,
+        current=current,
+        resource_group_name=resource_group_name,
+    )
+
+    readable_output = tableToMarkdown(
+        f"Create Or Update Database Threat Detection Policies for {server_name}/{db_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.SqlDB.SecurityAlertPolicies",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def sql_firewall_rules_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists firewall rules for a SQL server, or retrieves a specific rule.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name and optional firewall_rule_name.
+
+    Returns:
+        CommandResults: The list of firewall rules formatted for display.
+    """
+    server_name = args.get("server_name", "")
+    firewall_rule_name = args.get("firewall_rule_name")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token")
+
+    response = client.sql_firewall_rules_list(
+        server_name=server_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_rule_name=firewall_rule_name,
+        next_link=next_token,
+    )
+
+    if firewall_rule_name:
+        readable_output = tableToMarkdown(
+            "Firewall Rules",
+            [response],
+            headers=["id", "name", "type"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Azure.SqlDB.FirewallRules",
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        )
+
+    rules = response.get("value", [])
+    if not rules:
+        return CommandResults(readable_output="No firewall rules were found.")
+
+    outputs = remove_empty_elements(
+        {
+            "Azure.SqlDB.FirewallRules(val.id && val.id == obj.id)": rules,
+            "Azure.SqlDB(true)": {"FirewallRulesNextToken": response.get("nextLink")},
+        }
+    )
+    readable_output = tableToMarkdown(
+        "Firewall Rules",
+        rules,
+        headers=["id", "name", "type"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def sql_firewall_rule_create_update_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates or updates a firewall rule for a SQL server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name, firewall_rule_name, start_ip_address, end_ip_address.
+
+    Returns:
+        CommandResults: A success message with the updated firewall rule.
+    """
+    server_name = args.get("server_name", "")
+    firewall_rule_name = args.get("firewall_rule_name", "")
+    start_ip_address = args.get("start_ip_address", "")
+    end_ip_address = args.get("end_ip_address", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.sql_firewall_rule_create_update(
+        server_name=server_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_rule_name=firewall_rule_name,
+        start_ip_address=start_ip_address,
+        end_ip_address=end_ip_address,
+    )
+    return CommandResults(
+        readable_output=f"Successfully updated the firewall rule {firewall_rule_name}.",
+        outputs_prefix="Azure.SqlDB.FirewallRules",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def sql_firewall_rule_delete_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes a firewall rule from a SQL server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name and firewall_rule_name.
+
+    Returns:
+        CommandResults: A success message confirming deletion.
+    """
+    server_name = args.get("server_name", "")
+    firewall_rule_name = args.get("firewall_rule_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    client.sql_firewall_rule_delete(
+        server_name=server_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_rule_name=firewall_rule_name,
+    )
+    return CommandResults(readable_output=f"The firewall rule {firewall_rule_name} has been successfully deleted.")
+
+
+def sql_firewall_rule_replace_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Replaces all firewall rules on a SQL server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server_name and either entry_id or rule IP arguments.
+
+    Returns:
+        CommandResults: A success message with the updated firewall rules.
+    """
+    server_name = args.get("server_name", "")
+    entry_id = args.get("entry_id")
+    firewall_rule_name = args.get("firewall_rule_name")
+    start_ip_address = args.get("start_ip_address")
+    end_ip_address = args.get("end_ip_address")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    request_body = None
+    if entry_id:
+        if firewall_rule_name or start_ip_address or end_ip_address:
+            raise DemistoException(
+                "When 'entry_id' is provided, the 'firewall_rule_name', 'start_ip_address', and "
+                "'end_ip_address' arguments must not be set, as the request body is taken entirely from the file."
+            )
+        file_path = demisto.getFilePath(entry_id).get("path")
+        if not file_path:
+            raise DemistoException(f"Could not find a file for entry_id '{entry_id}'. Verify the entry ID is correct.")
+        with open(file_path) as f:
+            try:
+                request_body = json.loads(f.read())
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Failed to parse the JSON file in entry_id '{entry_id}': {e}")
+    else:
+        if not (firewall_rule_name and start_ip_address and end_ip_address):
+            raise DemistoException(
+                "Either 'entry_id' must be provided, or all of 'firewall_rule_name', 'start_ip_address', "
+                "and 'end_ip_address' must be provided."
+            )
+
+    response = client.sql_firewall_rule_replace(
+        server_name=server_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_rule_name=firewall_rule_name,
+        start_ip_address=start_ip_address,
+        end_ip_address=end_ip_address,
+        request_body=request_body,
+    )
+    return CommandResults(
+        readable_output="Successfully updated the firewall rules.",
+        outputs_prefix="Azure.SqlDB.FirewallRules",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Retrieves budget information from Azure Consumption API.
@@ -11369,7 +12784,7 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
     )
 
 
-def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+def resource_graph_operations_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Lists all available Azure Resource Graph operations and their descriptions.
 
@@ -12581,6 +13996,265 @@ def log_analytics_table_delete_command(client: AzureClient, params: dict, args: 
     return CommandResults(readable_output=f"Search job {table_name} deleted successfully.")
 
 
+def storage_fileshare_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new Azure file share under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: a success readable output.
+    """
+    share_name = args["share_name"]
+    account_name = args.get("account_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    # Rules for naming shares:
+    # https://learn.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
+    share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    if not re.search(share_name_regex, share_name):
+        raise DemistoException("The specified share name is invalid.")
+
+    client.create_share_request(subscription_id, resource_group_name, account_name, share_name)
+
+    return CommandResults(readable_output=f"Share {share_name} successfully created.")
+
+
+def storage_fileshare_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a file share under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    share_name = args["share_name"]
+    account_name = args.get("account_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    client.delete_share_request(subscription_id, resource_group_name, account_name, share_name)
+
+    return CommandResults(readable_output=f"Share {share_name} successfully deleted.")
+
+
+def storage_fileshare_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Azure file shares under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    limit = args.get("limit") or DEFAULT_LIMIT
+    next_token = args.get("next_token", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    validate_limit(arg_to_number(limit))
+
+    response = client.list_shares_request(subscription_id, resource_group_name, account_name, limit, next_token)
+
+    shares = response.get("value", [])
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] Retrieved {len(shares)} file shares, {bool(next_link)=}")
+
+    readable_output = (
+        "No Shares were found."
+        if not shares
+        else tableToMarkdown(
+            "Shares List", shares, headers=["name", "type", "etag"], headerTransform=pascalToSpace, removeNull=True
+        )
+    )
+
+    outputs = {
+        "Azure.Storage.FileShares(val.id && val.id == obj.id)": shares,
+        "Azure.Storage(true)": {"FileSharesNextToken": next_link},
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def storage_fileshare_content_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List files and directories under the specified share or directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_path = args.get("directory_path", "")
+    prefix = args.get("prefix")
+    limit = args.get("limit") or DEFAULT_LIMIT
+    next_token = args.get("next_token")
+    validate_limit(arg_to_number(limit), max_limit=5000)
+
+    response = client.list_directories_and_files_request(account_name, share_name, directory_path, prefix, limit, next_token)
+
+    raw_response = fileshare_handle_directory_content_response(response)
+    outputs = fileshare_create_directory_content_output(share_name, copy.deepcopy(raw_response), directory_path)
+
+    readable_message = f"Directories and Files List (page size: {limit}):"
+    readable_output = fileshare_create_content_readable_output(outputs, readable_message)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.Storage.FileShares",
+        outputs_key_field="name",
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
+
+def storage_fileshare_directory_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new directory under the specified share or parent directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
+
+    if not fileshare_validate_characters(directory_name, r'"\/:|<>*?'):
+        raise DemistoException("The specified directory name is invalid.")
+
+    client.create_directory_request(account_name, share_name, directory_name, directory_path)
+
+    return CommandResults(readable_output=f"{directory_name} Directory successfully created in {share_name}.")
+
+
+def storage_fileshare_directory_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete the specified empty directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
+
+    client.delete_directory_request(account_name, share_name, directory_name, directory_path)
+
+    return CommandResults(readable_output=f"{directory_name} Directory successfully deleted from {share_name}.")
+
+
+def storage_fileshare_file_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a file in a Share from a War Room file Entry ID.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_entry_id = args["file_entry_id"]
+    directory_path = args.get("directory_path")
+    file_name = args.get("file_name")
+
+    xsoar_file_data = demisto.getFilePath(file_entry_id)
+    if not xsoar_file_data:
+        raise ValueError(f"Could not find entry ID '{file_entry_id}' or it is not an uploaded file.")
+    system_file_path = Path(xsoar_file_data["path"])
+    new_file_name = file_name or xsoar_file_data["name"]
+
+    content_length = system_file_path.stat().st_size
+
+    if content_length > 0:
+        client.create_file_request(account_name, share_name, new_file_name, content_length, directory_path)
+        with system_file_path.open("rb") as file_data:
+            client.add_file_content_request(account_name, share_name, new_file_name, file_data, content_length, directory_path)
+
+        return CommandResults(readable_output=f"File successfully created in {share_name}.")
+    else:
+        return CommandResults(readable_output=f"The file {file_entry_id} is empty.")
+
+
+def storage_fileshare_file_get_command(client: AzureClient, params: dict, args: dict) -> Any:
+    """
+    Get a file from a Share.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        fileResult: XSOAR File Result.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
+
+    response = client.get_file_request(account_name, share_name, file_name, directory_path)
+
+    return fileResult(filename=file_name, data=response.content)
+
+
+def storage_fileshare_file_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a file from a Share.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
+
+    client.delete_file_request(account_name, share_name, file_name, directory_path)
+
+    return CommandResults(readable_output=f"File {file_name} successfully deleted from {share_name}.")
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication.
 
@@ -12853,7 +14527,7 @@ def get_azure_client(params: dict, args: dict, command: str, azure_ad_endpoint: 
 def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
+    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
         return STORAGE_SCOPE, [TokenScope.STORAGE]
     return DEFAULT_SCOPE, [TokenScope.DEFAULT]
 
@@ -12861,7 +14535,7 @@ def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
 def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
+    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
         return STORAGE_RESOURCE
     return DEFAULT_RESOURCE
 
@@ -12897,7 +14571,8 @@ def main():  # pragma: no cover
     handle_proxy()
     try:
         commands_with_params_and_args = {
-            "azure-rg-list-operations": resource_graph_list_operations_command,
+            "azure-rg-list-operations": resource_graph_operations_list_command,
+            "azure-rg-operations-list": resource_graph_operations_list_command,
             "azure-rg-query": resource_graph_query_resources_command,
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-vn-security-rule-update": update_security_rule_command,
@@ -12969,6 +14644,15 @@ def main():  # pragma: no cover
             "azure-cr-registry-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
+            "azure-sqldb-servers-list": sql_servers_list_command,
+            "azure-sqldb-databases-list": sql_db_list_command,
+            "azure-sqldb-server-auditing-settings-list": sql_db_server_auditing_settings_list_command,
+            "azure-sqldb-audit-policy-create-update": sql_db_audit_policy_create_update_command,
+            "azure-sqldb-security-alert-policy-create": sql_db_threat_policy_create_update_command,
+            "azure-sqldb-firewall-rules-list": sql_firewall_rules_list_command,
+            "azure-sqldb-firewall-rule-create-update": sql_firewall_rule_create_update_command,
+            "azure-sqldb-firewall-rule-delete": sql_firewall_rule_delete_command,
+            "azure-sqldb-firewall-rule-replace": sql_firewall_rule_replace_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-threat-policy-update-quick-action": sql_db_threat_policy_update_command,
             "azure-keyvault-vault-update": update_key_vault_command,
@@ -13101,6 +14785,15 @@ def main():  # pragma: no cover
             "azure-log-analytics-table-get": log_analytics_table_get_command,
             "azure-log-analytics-table-delete": log_analytics_table_delete_command,
             "azure-log-analytics-table-run": log_analytics_table_run_command,
+            "azure-storage-fileshare-create": storage_fileshare_create_command,
+            "azure-storage-fileshare-delete": storage_fileshare_delete_command,
+            "azure-storage-fileshares-list": storage_fileshare_list_command,
+            "azure-storage-fileshare-content-list": storage_fileshare_content_list_command,
+            "azure-storage-fileshare-directory-create": storage_fileshare_directory_create_command,
+            "azure-storage-fileshare-directory-delete": storage_fileshare_directory_delete_command,
+            "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
+            "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
+            "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT

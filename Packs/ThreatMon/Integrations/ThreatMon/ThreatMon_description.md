@@ -1,41 +1,26 @@
-## Threatmon Integration
+## ThreatMon Incident Management
 
-The Threatmon integration allows Cortex XSOAR to connect with the Threatmon platform to automatically retrieve and update incident data. This integration is designed to help security teams streamline incident management workflows by synchronizing Threatmon alarms and their status directly into XSOAR.
+Fetches ThreatMon alarms as **ThreatMon Alert** incidents, mirrors their status between ThreatMon and Cortex, submits takedown and data removal requests, and enriches CVEs and files with ThreatMon intelligence.
 
-### Use Cases
-- Automatically fetch and ingest Threatmon alarms as XSOAR incidents.
-- Update the status of Threatmon incidents from within XSOAR.
-- Submit takedown requests for eligible findings (Phishing Domains, Rogue Mobile Apps, Fake Social Media Accounts).
-- Request data removal for Black Market Monitoring findings directly from XSOAR playbooks.
-- Maintain a consistent incident lifecycle between Threatmon and XSOAR.
+### Get the API key
+1. Sign in to the ThreatMon dashboard.
+2. Go to **Settings > Integrations > Settings** and copy the **External API Key**.
 
-### Key Features
-- Fetch Threatmon alarms into Cortex XSOAR.
-- Update the status of existing Threatmon incidents (e.g., Open, In Progress, Resolved).
-- Submit takedown requests for eligible threat findings.
-- Submit Black Market Monitoring data removal requests — checks company credit rights and returns an appropriate error if the quota is exceeded.
-- Query all CVEs monitored by ThreatMon, including CVSS v2, v3, v3.1, and v4 scores.
-- Query CVEs affecting products the company is subscribed to.
-- Supports automated playbooks for streamlined response.
+If IP whitelisting is enabled for your ThreatMon account, send the public IP address of the Cortex server or engine to [support@threatmonit.io](mailto:support@threatmonit.io).
 
-### Commands
-- **threatmon_update_incident_status** — Update the status of a specific Threatmon incident using its unique ID.
-- **threatmon_request_takedown** — Submit a takedown request for an eligible Threatmon finding.
-- **threatmon_request_data_removal** — Submit a Black Market Monitoring data removal request for a specific finding.
-- **threatmon_list_cves** — Retrieve a paginated list of all CVEs monitored by ThreatMon.
-- **threatmon_list_subscribed_cves** — Retrieve CVEs affecting products the company is subscribed to.
+### Fetching
+- Changes are followed by change time, so alarms that are approved later and alarms that move to a fetched status are fetched as well. Alarms that already exist are never created again.
+- **Alarm Statuses to Fetch** defaults to *Open* and *In Progress*.
+- **Attach Screenshots** adds the screenshots of the findings to the incident.
+- Leak findings can contain passwords. **Mask Secrets in Findings** shortens them before they are stored.
 
-### Requirements
-- Threatmon API credentials (API key).
-- Access to Threatmon’s external API endpoints.
-- For data removal: the authenticated company must have remaining Black Market Data Removal credits.
+### Mirroring (Cortex XSOAR)
+Set **Incident Mirroring Direction** to mirror the alarm status:
+- **Incoming**: status changes in ThreatMon update the **ThreatMon Status** field. Select **Close Mirrored Cortex Incident** to close incidents when the alarm is set to Resolved or Ignore.
+- **Outgoing**: changing **ThreatMon Status** sets the alarm status. Select **Close Mirrored ThreatMon Alarm** to set the alarm to Resolved (or Ignore for False Positive and Duplicate) when the incident is closed.
 
-### Additional Information
-Threatmon is a threat intelligence and monitoring platform that provides actionable alerts to security teams. Integrating Threatmon with XSOAR enables more efficient triage, faster response times, and better visibility into your security operations.
+### Modules
+CVE enrichment needs the Vulnerability Knowledge module, the sandbox needs the Sandbox module, and MSSP customer management needs the External API Key of the MSSP administrator account.
 
-For more information about Threatmon, visit: [https://www.threatmon.io](https://www.threatmon.io)
-
----
-
-**Support**
-For support, please contact the Threatmon team at: [integration@threatmonit.io](mailto:integration@threatmonit.io)
+### MSSP
+Enter the exact sub company name in **Customer Name (MSSP)**. A name that does not match is rejected by ThreatMon like a wrong API key. ThreatMon currently rejects sub company names that contain a space.

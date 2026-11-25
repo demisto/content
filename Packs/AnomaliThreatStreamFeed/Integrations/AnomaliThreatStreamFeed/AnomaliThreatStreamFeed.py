@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from collections.abc import Callable
 from typing import Any
 
 # Disable insecure warnings
@@ -17,6 +18,8 @@ INDICATOR_STATUS = "active"
 URL_SUFFIX = "v2/intelligence"
 DEFAULT_CONFIDENCE_THRESHOLD = 65
 DEFAULT_FEED_FETCH_INTERVAL = 240
+CREATE_INDICATORS_BATCH_SIZE = 2000
+DEFAULT_MAX_INDICATORS_PER_FETCH = 50000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 INDICATOR_TYPE = {
@@ -391,27 +394,96 @@ def get_past_time(minutes_interval):
     return past_time.replace(tzinfo=None).isoformat(timespec="milliseconds")
 
 
-def handle_fetch_pagination(client: Client, initial_response: dict[str, Any]) -> list[dict[str, Any]]:
+def parse_timestamp(timestamp: Any) -> datetime | None:
+    """
+    Parses an ISO 8601 timestamp into an aware UTC datetime, for safe comparison.
+
+    The feed mixes formats ('2026-11-06T00:00:00Z' from last run, '2026-11-06T00:00:00.123' from
+    get_past_time and '2026-11-06T00:00:00.123Z' from the API), so string comparison is unreliable.
+
+    Args:
+        timestamp (Any): The timestamp to parse.
+
+    Returns:
+        datetime | None: The parsed UTC datetime, or None if the value cannot be parsed.
+    """
+    try:
+        parsed = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def push_indicators_in_batches(indicators: list[dict[str, Any]], batch_size: int = CREATE_INDICATORS_BATCH_SIZE) -> None:
+    """
+    Push indicators to the server immediately in fixed-size batches.
+
+    This avoids holding large lists of already-fetched indicators in memory:
+    each page fetched from the API is pushed to the server right away instead
+    of being accumulated together with all other pages until the end of the
+    fetch cycle.
+
+    Args:
+        indicators (list[dict[str, Any]]): Indicators to push to the server.
+        batch_size (int): Maximum number of indicators to send in a single createIndicators call.
+    """
+    for indicators_batch in batch(indicators, batch_size=batch_size):
+        demisto.debug(f"{THREAT_STREAM} - Pushing {len(indicators_batch)} indicators to the server.")
+        demisto.createIndicators(indicators_batch)
+
+
+def handle_fetch_pagination(
+    client: Client,
+    initial_response: dict[str, Any],
+    parse_and_push: Callable,
+    max_indicators: int | None = None,
+) -> tuple[int, bool]:
     """
     Handles fetching all indicators from an API feed that supports pagination.
 
     This function takes the initial API response and iteratively fetches subsequent pages
     until no more 'next' pages are indicated or an error occurs during pagination.
 
+    Each page is handed to `parse_and_push` as soon as it is fetched, and is not retained
+    afterwards. Only a bounded buffer of indicators is ever held in memory, instead of
+    accumulating every page of the feed until the cycle ends. This prevents the
+    out-of-memory failures seen on feeds that return hundreds of pages per cycle.
+
     Args:
         client (Client): The client object configured for API requests.
         initial_response (dict[str, Any]): The response from the initial API call.
                                             Expected to contain 'objects' (list of indicators)
                                             and 'meta' (with a 'next' key for pagination).
+        parse_and_push (Callable): Callback invoked with each page's raw indicators. It is
+                                    responsible for parsing them and pushing them to the server.
+        max_indicators (int | None): Stop paginating once at least this many raw indicators were
+                                    fetched in this run. None means no limit.
 
     Returns:
-        list[dict[str, Any]]: A consolidated list of all raw indicators fetched from
-                              the initial response and all subsequent paginated responses.
+        tuple[int, bool]:
+            - int: The total number of raw indicators fetched across all pages.
+            - bool: True if every page was consumed (the feed is exhausted for this window), False if
+                    pagination stopped early because of the per-run limit or an API error.
     """
-    all_raw_indicators: list[dict[str, Any]] = initial_response.get("objects", [])
+    total_fetched = 0
+    current_page_indicators = initial_response.get("objects", [])
+    if current_page_indicators:
+        total_fetched += len(current_page_indicators)
+        parse_and_push(current_page_indicators)
+
     next_page = initial_response.get("meta", {}).get("next")
 
     while next_page:  # Loop continues as long as there's a next page link
+        if max_indicators and total_fetched >= max_indicators:
+            demisto.info(
+                f"{THREAT_STREAM} - Reached the per-fetch limit of {max_indicators} indicators "
+                f"({total_fetched} fetched). The remaining indicators will be fetched in the next run."
+            )
+            return total_fetched, False
+
+        # Only the API call is guarded: a failure to retrieve another page is tolerated and we keep
+        # the indicators already pushed. Pushing itself is deliberately left outside this block, so
+        # a createIndicators failure propagates and prevents last_run from advancing over lost data.
         try:
             # Determine the URL suffix for the next page
             if next_page.startswith("/api/"):
@@ -423,28 +495,41 @@ def handle_fetch_pagination(client: Client, initial_response: dict[str, Any]) ->
             demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
             response = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
             current_page_indicators = response.get("objects", [])
-
-            if current_page_indicators:
-                all_raw_indicators.extend(current_page_indicators)
-            else:
-                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
-                break
-
             next_page = response.get("meta", {}).get("next")  # Get the 'next' link for the subsequent page
         except Exception as e:
-            # Log the error and break the pagination, but keep already fetched indicators
-            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
-            break  # Break pagination on error but process what's already fetched
+            # Log the error and stop the pagination, but keep already pushed indicators.
+            # The run is reported as not exhausted, so the next run resumes from the last checkpoint.
+            demisto.error(
+                f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.\n{traceback.format_exc()}"
+            )
+            return total_fetched, False
 
-    return all_raw_indicators
+        if not current_page_indicators:
+            demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
+            break
+
+        # Parse and push this page immediately, then drop it, so memory stays bounded.
+        total_fetched += len(current_page_indicators)
+        parse_and_push(current_page_indicators)
+
+    return total_fetched, True
 
 
-def fetch_indicators_command(
-    client: Client, params: dict[str, Any], last_run: dict[str, Any]
-) -> tuple[str, list[dict[str, Any]]]:
+def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: dict[str, Any]) -> tuple[str, int]:
     """
     Wrapper for fetching indicators from the feed to the Threat Intel Management (TIM) in Cortex XSOAR.
     This function handles pagination and updates the last run time.
+
+    Indicators are parsed and pushed to the server as soon as each page is fetched, rather
+    than being accumulated in memory until the entire fetch cycle completes. Only a bounded
+    buffer of up to CREATE_INDICATORS_BATCH_SIZE indicators is held at any time, which
+    prevents out-of-memory failures when the feed returns a large number of indicators.
+
+    Progress is checkpointed with setLastRun after every pushed batch (using the newest
+    created/modified timestamp pushed so far), and a single run fetches at most
+    `maxIndicatorsPerFetch` indicators. If a run is killed by the Docker timeout, or stops at
+    the per-run limit, the next run resumes from the checkpoint instead of re-fetching the
+    whole, ever-growing window from the last fully successful run.
 
     Args:
         client (Client): The client object to use for API requests.
@@ -452,12 +537,13 @@ def fetch_indicators_command(
         last_run (dict[str, Any]): The last run object from Demisto, used for incremental fetching.
 
     Returns:
-        Tuple[str, list[dict[str, Any]]]: A tuple containing:
+        Tuple[str, int]: A tuple containing:
             - str: The timestamp for the next successful run.
-            - list[dict[str, Any]]: A list of parsed indicators ready for Cortex XSOAR.
+            - int: The number of indicators that were parsed and pushed to the server.
     """
     create_relationship = argToBoolean(params.get("createRelationships", True))
     tlp_color = params.get("tlp_color", "WHITE")
+    feed_tags = argToList(params.get("feedTags"))
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
     now = get_current_utc_time()
     order_by = params.get("fetchBy", "Modified Time")
@@ -466,6 +552,9 @@ def fetch_indicators_command(
     else:  # order_by == "Modified Time"
         order_by = "modified_ts"
     confidence_threshold = arg_to_number(params.get("confidenceThreshold", DEFAULT_CONFIDENCE_THRESHOLD))
+    max_indicators_per_fetch = (
+        arg_to_number(params.get("maxIndicatorsPerFetch") or DEFAULT_MAX_INDICATORS_PER_FETCH) or DEFAULT_MAX_INDICATORS_PER_FETCH
+    )
 
     # Initialize last_fetch_time based on the last_run object.
     # If it's the first run, or last_run is empty, fetch from a default interval.
@@ -490,30 +579,73 @@ def fetch_indicators_command(
     else:  # order_by == "created_ts"
         query["created_ts__gte"] = last_fetch_time
 
+    # Buffer of parsed indicators pending a push. Kept bounded by flushing at
+    # CREATE_INDICATORS_BATCH_SIZE, so the whole feed is never held in memory at once.
+    pending_indicators: list[dict[str, Any]] = []
+    total_pushed = 0
+    # Newest created/modified timestamp among indicators already pushed to the server.
+    checkpoint: str = last_fetch_time
+    checkpoint_dt = parse_timestamp(last_fetch_time)
+
+    def save_checkpoint(pushed_batch: list[dict[str, Any]]) -> None:
+        """Persist the newest timestamp of a pushed batch, so a killed run resumes from here."""
+        nonlocal checkpoint, checkpoint_dt
+        for indicator in pushed_batch:
+            raw_timestamp = (indicator.get("rawJSON") or {}).get(order_by)
+            parsed = parse_timestamp(raw_timestamp)
+            if parsed and (checkpoint_dt is None or parsed > checkpoint_dt):
+                checkpoint, checkpoint_dt = parsed.strftime(DATE_FORMAT), parsed
+        if checkpoint == last_fetch_time:
+            return  # Nothing newer than where this run started; keep the existing last run.
+        demisto.setLastRun({"last_successful_run": checkpoint})
+        demisto.debug(f"{THREAT_STREAM} - Checkpoint saved: {checkpoint}")
+
+    def parse_and_push(raw_indicators: list[dict[str, Any]], flush: bool = False) -> None:
+        """Parse a page of raw indicators and push to the server once a full batch accumulates."""
+        nonlocal pending_indicators, total_pushed
+
+        for indicator_raw in raw_indicators:
+            try:
+                # Parse each raw indicator and calculate its DBot score
+                pending_indicators.append(
+                    parse_indicator_for_fetch(indicator_raw, tlp_color, create_relationship, reliability, feed_tags)
+                )
+            except Exception as e:
+                demisto.error(
+                    f"{THREAT_STREAM} - Error parsing indicator ID {indicator_raw.get('id')}:{e}. Skipping this indicator."
+                    f"\n{traceback.format_exc()}"
+                )
+                continue  # Continue to the next indicator even if one fails
+
+        # Push only whole batches while paginating; on the final flush push whatever remains.
+        while pending_indicators and (flush or len(pending_indicators) >= CREATE_INDICATORS_BATCH_SIZE):
+            current_batch = pending_indicators[:CREATE_INDICATORS_BATCH_SIZE]
+            pending_indicators = pending_indicators[CREATE_INDICATORS_BATCH_SIZE:]
+            push_indicators_in_batches(current_batch)
+            total_pushed += len(current_batch)
+            save_checkpoint(current_batch)
+
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=query)
-    all_raw_indicators: list[dict[str, Any]] = handle_fetch_pagination(client, response)
+    total_fetched, exhausted = handle_fetch_pagination(client, response, parse_and_push, max_indicators_per_fetch)
 
-    if not all_raw_indicators:
+    # Flush any indicators left over from the final, partially-filled batch.
+    parse_and_push([], flush=True)
+
+    if not total_fetched:
         demisto.info(f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.")
         # Update last_run even if no indicators are found, to avoid refetching the same period.
-        return now.strftime(DATE_FORMAT), []
+        return now.strftime(DATE_FORMAT), 0
 
-    demisto.debug(f"{THREAT_STREAM} - Total raw indicators fetched: {len(all_raw_indicators)}")
-    parsed_indicators_list: list[dict[str, Any]] = []
-
-    for indicator_raw in all_raw_indicators:
-        try:
-            # Parse each raw indicator and calculate its DBot score
-            parsed_indicator = parse_indicator_for_fetch(indicator_raw, tlp_color, create_relationship, reliability)
-            parsed_indicators_list.append(parsed_indicator)
-        except Exception as e:
-            demisto.error(f"{THREAT_STREAM} - Error parsing indicator ID {indicator_raw.get('id')}:{e}. Skipping this indicator.")
-            continue  # Continue to the next indicator even if one fails
-
-    demisto.debug(f"{THREAT_STREAM} - Successfully parsed {len(parsed_indicators_list)} indicators for fetch.")
-    # Return the current UTC timestamp for the next successful run and the list of parsed indicators
-    return now.strftime(DATE_FORMAT), parsed_indicators_list
+    demisto.debug(f"{THREAT_STREAM} - Total raw indicators fetched: {total_fetched}")
+    demisto.debug(f"{THREAT_STREAM} - Successfully parsed and pushed {total_pushed} indicators for fetch.")
+    if not exhausted:
+        # More indicators remain in the window: resume from the newest pushed timestamp, not from `now`,
+        # otherwise the indicators that were not fetched in this run would be skipped permanently.
+        demisto.info(f"{THREAT_STREAM} - Fetch stopped before the end of the feed. Next run resumes from {checkpoint}.")
+        return checkpoint, total_pushed
+    # The whole window was consumed: the next run starts from the time this run began.
+    return now.strftime(DATE_FORMAT), total_pushed
 
 
 def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[dict[str, Any]]:
@@ -562,7 +694,11 @@ def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[di
 
 
 def parse_indicator_for_fetch(
-    indicator: dict[str, Any], tlp_color: str, create_relationship_param: bool, reliability: str
+    indicator: dict[str, Any],
+    tlp_color: str,
+    create_relationship_param: bool,
+    reliability: str,
+    feed_tags: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Parses a single raw indicator from the API response into a format suitable for Cortex XSOAR's Indicators tab.
@@ -573,6 +709,7 @@ def parse_indicator_for_fetch(
         tlp_color (str): The TLP color to assign to the indicator.
         create_relationship_param (bool): Flag to determine if relationships should be created.
         reliability (str): The reliability score for the indicator source.
+        feed_tags (list[str] | None): Tags configured on the instance (feedTags) to add to the indicator.
 
     Returns:
         dict[str, Any]: An indicator dictionary formatted for Cortex XSOAR's `createIndicators` API.
@@ -610,7 +747,7 @@ def parse_indicator_for_fetch(
         Confidence=str(indicator.get("confidence")),
         Creation=indicator.get("created_ts"),
         Expiration=indicator.get("expires_ts"),
-        Tags=extract_tag_names(indicator),
+        Tags=extract_tag_names(indicator) + (feed_tags or []),
         TrafficLightProtocol=tlp_color,  # Use the configured TLP color
         Location=indicator.get("locations"),
         ASN=indicator.get("asn"),
@@ -656,12 +793,14 @@ def main():
             return_results(get_indicators_command(client, demisto.args()))
 
         elif command == "fetch-indicators":
-            next_run, res = fetch_indicators_command(client, params, demisto.getLastRun())
-            for b in batch(res, batch_size=2000):
-                demisto.debug(f"{THREAT_STREAM} {b=}")
-                demisto.createIndicators(b)
+            # Indicators are pushed to the server inside fetch_indicators_command as each page is
+            # fetched, to keep memory bounded. Only the last run is updated here.
+            next_run, total_pushed = fetch_indicators_command(client, params, demisto.getLastRun())
             demisto.setLastRun({"last_successful_run": next_run})
-            demisto.info(f"{THREAT_STREAM} - Fetch-indicators completed. Next run will fetch from: {next_run}")
+            demisto.info(
+                f"{THREAT_STREAM} - Fetch-indicators completed. Pushed {total_pushed} indicators. "
+                f"Next run will fetch from: {next_run}"
+            )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

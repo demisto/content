@@ -1887,14 +1887,15 @@ def test_iter_host_list_detections_matches_handle_host_list_detection_result(moc
         - The yielded hosts and the captured next_url match handle_host_list_detection_result's output.
     """
     hosts = [{"HOST": _make_host("h1", 1)}, {"HOST": _make_host("h2", 1)}]
-    stream_elements = [("HOST", f"elem{i}") for i in range(len(hosts))] + [("WARNING", "warn")]
+    host_elements = [ElementTree.fromstring(f"<HOST><ID>{host['HOST']['ID']}</ID></HOST>") for host in hosts]
+    stream_elements = [("HOST", element) for element in host_elements] + [("WARNING", "warn")]
 
     mocker.patch("Qualysv2.stream_xml_elements", return_value=iter(stream_elements))
 
     def fake_elem_to_internal(element):
         if element == "warn":
             return {"WARNING": {"URL": "https://qualys/next?id_min=42"}}
-        return hosts[int(str(element).replace("elem", ""))]
+        return hosts[host_elements.index(element)]
 
     mocker.patch("Qualysv2.elem_to_internal", side_effect=fake_elem_to_internal)
 
@@ -3985,8 +3986,9 @@ def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mo
     When:
         - Calling fetch_and_send_vulnerabilities_streamed.
     Then:
-        - Both full batches reach the send, the send error propagates, and the streamed response is closed.
+        - Both full batches reach the send, the stage is kept with a counted failure, and the response is closed.
     """
+    mocker.patch("Qualysv2.demisto.error")
     raw_response = Mock()
     mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
     mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter([{"QID": str(i)} for i in range(4)]))
@@ -4000,11 +4002,62 @@ def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mo
 
     mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry", side_effect=send)
 
-    with pytest.raises(Qualysv2.XSIAMSendError, match="send failed"):
-        Qualysv2.fetch_and_send_vulnerabilities_streamed(client, {"since_datetime": "2024-10-03"})
+    last_run = {"stage": "vulnerabilities", "since_datetime": "2024-10-03"}
+    next_run = Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
 
     assert sent_batches == [[{"QID": "0"}, {"QID": "1"}], [{"QID": "2"}, {"QID": "3"}]]
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["consecutive_failures"] == 1
     raw_response.close.assert_called_once()
+
+
+def test_fetch_and_send_vulnerabilities_streamed_connection_broken_keeps_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A vulnerabilities stream whose connection drops after the first record (urllib3 ProtocolError).
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - The stage and since_datetime are kept, the failure is counted, the next run is triggered immediately,
+          and the streamed response is closed.
+    """
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+    raw_response = Mock()
+    mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
+
+    def broken_stream(_raw_response):
+        yield {"QID": "0"}
+        raise Qualysv2.ProtocolError("Connection broken: IncompleteRead(8518 bytes read)")
+
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", side_effect=broken_stream)
+    last_run = {"stage": "vulnerabilities", "since_datetime": "2024-10-03", "snapshot_id": "1", "consecutive_failures": 1}
+
+    next_run = Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
+
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["since_datetime"] == "2024-10-03"
+    assert next_run["consecutive_failures"] == 2
+    assert next_run["nextTrigger"] == Qualysv2.ASSETS_NEXT_TRIGGER
+    raw_response.close.assert_called_once()
+    mock_error.assert_called_once()
+
+
+def test_fetch_and_send_vulnerabilities_streamed_connection_broken_raises_at_threshold(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A vulnerabilities stream whose connection drops, with one failure left before the threshold.
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - The fetch raises so the repeated failure is visible.
+    """
+    mocker.patch("Qualysv2.demisto.error")
+    mocker.patch.object(client, "get_vulnerabilities", return_value=Mock())
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", side_effect=Qualysv2.ProtocolError("Connection broken"))
+    last_run = {"stage": "vulnerabilities", "consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1}
+
+    with pytest.raises(DemistoException, match="times in a row without progress"):
+        Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
 
 
 @pytest.mark.parametrize(
@@ -4249,6 +4302,99 @@ def test_iter_committable_host_batches_next_page_follows_last_host_with_no_detec
 
     assert next_page == "201"
     assert is_full_batch is True
+
+
+@pytest.mark.parametrize(
+    "detections_per_host, expected_batches",
+    [
+        pytest.param([1, 1, 1, 1], [(["0", "1", "2"], True), (["3"], False)], id="closed_by_host_count"),
+        pytest.param([2, 2, 2], [(["0", "1"], True), (["2"], False)], id="closed_before_going_over_rows"),
+        pytest.param([2, 3, 1], [(["0", "1"], True), (["2"], False)], id="closed_on_reaching_rows"),
+        pytest.param([1, 10, 1], [(["0"], True), (["1"], True), (["2"], False)], id="host_over_rows_alone"),
+        pytest.param([0, 0, 0, 0, 0, 0], [(["0", "1", "2"], True), (["3", "4", "5"], True)], id="no_detections_one_row"),
+        pytest.param([], [], id="no_hosts"),
+    ],
+)
+def test_iter_host_batches(detections_per_host: list[int], expected_batches: list[tuple]):
+    """
+    Given:
+        - Hosts with the given detection counts, with at most 3 hosts and 5 rows per batch.
+    When:
+        - Grouping them with iter_host_batches.
+    Then:
+        - A batch closes at 3 hosts, on reaching 5 rows, or before a host that would take it over 5 rows.
+        - A host is never split: a host with more than 5 detections is a batch of its own.
+        - A host without detections counts as one row.
+        - Only the last batch, closed by the end of the hosts, has closed_by_limit=False.
+    """
+    hosts = [_make_host(str(host_id), count) for host_id, count in enumerate(detections_per_host)]
+
+    batches = list(Qualysv2.iter_host_batches(iter(hosts), max_hosts=3, max_rows=5))
+
+    assert [([host["ID"] for host in batch], closed_by_limit) for batch, closed_by_limit in batches] == expected_batches
+
+
+@pytest.mark.parametrize(
+    "host, expected_detections",
+    [
+        pytest.param({"DETECTION_LIST": {"DETECTION": [{"QID": "1"}, {"QID": "2"}]}}, [{"QID": "1"}, {"QID": "2"}], id="list"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {"QID": "1"}}}, [{"QID": "1"}], id="single_detection_as_dict"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {}}}, [{}], id="empty_detection"),
+        pytest.param({"DETECTION_LIST": None}, [{}], id="empty_detection_list"),
+        pytest.param({}, [{}], id="no_detection_list"),
+    ],
+)
+def test_get_host_detections(host: dict, expected_detections: list[dict]):
+    """
+    Given:
+        - A host with detections parsed as a list, a single dict, or with no detections.
+    When:
+        - Calling get_host_detections.
+    Then:
+        - The detections are returned as a list, and a host without detections yields a single empty detection.
+    """
+    assert Qualysv2.get_host_detections(host) == expected_detections
+
+
+def test_iter_host_batches_single_detection_as_dict():
+    """
+    Given:
+        - A host whose single detection is parsed as a dict rather than a list, with at most 1 row per batch.
+    When:
+        - Grouping it with iter_host_batches.
+    Then:
+        - The host counts as one row, so the next host starts a new batch.
+    """
+    host_with_dict_detection = {"ID": "1", "DETECTION_LIST": {"DETECTION": {"QID": "1"}}}
+
+    batches = list(Qualysv2.iter_host_batches(iter([host_with_dict_detection, _make_host("2", 1)]), max_hosts=3, max_rows=1))
+
+    assert [[host["ID"] for host in batch] for batch, _ in batches] == [["1"], ["2"]]
+
+
+def test_iter_committable_host_batches_closed_by_detections(mocker: MockerFixture):
+    """
+    Given:
+        - Hosts with 2, 2, 1 and 1 detections, with a commit batch of up to 10 hosts and 3 detections.
+    When:
+        - Iterating iter_committable_host_batches.
+    Then:
+        - Batches close on the detections limit, before the hosts limit, without splitting a host.
+        - Each batch closed by the limit is committable, with next_page set to its last host ID + 1.
+        - The last batch, closed by the end of the page, is the remainder (next_page=None, is_full_batch=False).
+    """
+    hosts = [_make_host("100", 2), _make_host("200", 2), _make_host("300", 1), _make_host("400", 1)]
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 10)
+    mocker.patch("Qualysv2.ASSETS_COMMIT_DETECTIONS_BATCH_SIZE", 3)
+
+    batches = list(Qualysv2.iter_committable_host_batches(Mock(), {}))
+
+    assert [([row["ID"] for row in rows], next_page, is_full) for rows, next_page, is_full in batches] == [
+        (["100", "100"], "101", True),
+        (["200", "200", "300"], "301", True),
+        (["400"], None, False),
+    ]
 
 
 def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: MockerFixture, client: Client):

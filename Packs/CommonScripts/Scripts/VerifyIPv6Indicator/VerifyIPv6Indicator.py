@@ -26,7 +26,7 @@ def main():
             continue
 
         else:
-            item = re.sub("[^a-f0-9:%th.]+", "", item)  # Remove leading char caught as part of the regex
+            item = re.sub("[^a-fA-F0-9:%th.]+", "", item)  # Remove leading char caught as part of the regex
             demisto.info(f"Changed item to {item!s}")
 
         if is_valid_ipv6_address(item):
