@@ -3052,21 +3052,43 @@ class Settings:
         self.__ro_username = creds.get("identifier") or ""
         self.__ro_password = creds.get("password") or ""
 
-    def get_user_password(self, username: str | None) -> str | None:
-        if username == self.__rw_username:
-            return self.__rw_password
-        elif username == self.__ro_username:
-            return self.__ro_password
-        else:
+    def validate_credentials(self) -> None:
+        """Ensures the credentials are complete when an authentication method is set.
+
+        :raises DemistoException: When the configured credentials cannot protect the service.
+        """
+        if not self.__auth_method:
+            return
+
+        if not (self.__rw_username and self.__rw_password):
+            raise DemistoException("'User ID for Read/Write' and its password are required when an Authentication Method is set.")
+
+        if bool(self.__ro_username) != bool(self.__ro_password):
+            raise DemistoException("'User ID for Read-Only' and its password must either both be set or both be empty.")
+
+    def __find_user(self, username: str | None) -> tuple[str, set[PERMISSION]] | None:
+        """Finds a configured user by its username.
+
+        Only users with both a username and a password are considered configured.
+
+        :param username: The username given by the client.
+        :return: The password and the permissions of the user, or None if no such user is configured.
+        """
+        if not username:
             return None
+        if username == self.__rw_username and self.__rw_password:
+            return self.__rw_password, {PERMISSION.READ, PERMISSION.WRITE}
+        if username == self.__ro_username and self.__ro_password:
+            return self.__ro_password, {PERMISSION.READ}
+        return None
+
+    def get_user_password(self, username: str | None) -> str | None:
+        user = self.__find_user(username)
+        return user[0] if user else None
 
     def get_user_permissions(self, username: str | None) -> set[PERMISSION]:
-        if username == self.__rw_username:
-            return set({PERMISSION.READ, PERMISSION.WRITE})
-        elif username == self.__ro_username:
-            return set({PERMISSION.READ})
-        else:
-            return set()
+        user = self.__find_user(username)
+        return user[1] if user else set()
 
     def get_content_type_from_file_extension(self, ext: str) -> str:
         if content_type := self.__ext_to_mimetype.get(ext):
@@ -3843,7 +3865,12 @@ class ServiceHandler:
         :param auth_value: Credentials given to the Authentication header
         :return: Aquired permissions.
         """
-        username, sep, password = base64.b64decode(auth_value.encode()).decode().partition(":")
+        try:
+            decoded_auth_value = base64.b64decode(auth_value.encode(), validate=True).decode()
+        except ValueError:  # Covers both binascii.Error and UnicodeDecodeError
+            return set()
+
+        username, sep, password = decoded_auth_value.partition(":")
         if sep == ":" and self.__settings.get_user_password(username) == password:
             return self.__settings.get_user_permissions(username)
         return set()
@@ -4513,6 +4540,7 @@ def main() -> None:
         "wfr-archive-zip": command_archive_zip,
     }
     try:
+        SETTINGS.validate_credentials()
         if command == "long-running-execution":
             run_long_running(SETTINGS)
         else:
