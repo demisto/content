@@ -1,3 +1,4 @@
+# xsoar-lint: skip-parse-file  # CIAC-17462: validation, this file uses Python 3.12 syntax
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -159,3 +160,10 @@ except Exception as e:
     LOG(str(e))
     LOG.print_log()
     raise
+
+
+type CentreonHost = dict[str, Any]  # CIAC-17462: PEP 695 type alias (Python 3.12+), not for merge
+
+
+def xsoar_lint_validation_skipped_sample() -> None:  # CIAC-17462: not reported, the file is skipped
+    print("not reported: E9002")
