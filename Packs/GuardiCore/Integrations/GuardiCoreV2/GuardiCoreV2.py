@@ -95,7 +95,7 @@ class Client(BaseClient):
         new_token = new_token.get("access_token")
         return new_token
 
-    def _authenticated_request(self, **kwargs):
+    def _authenticated_request(self, **kwargs: Any) -> Any:
         """
         Sends an API request with the current access token. If the server rejects the token with 401
         (e.g. a cached JWT that was revoked before its expiration time, such as after a password rotation),

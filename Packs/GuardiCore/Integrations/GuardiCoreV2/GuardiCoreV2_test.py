@@ -481,7 +481,6 @@ def test_revoked_cached_token_is_regenerated_and_request_retried(mocker, request
       and the original request is retried once and succeeds.
     """
     import GuardiCoreV2
-    from GuardiCoreV2 import Client, fetch_incidents
 
     integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
     mocker.patch.object(GuardiCoreV2, "get_integration_context", side_effect=lambda: integration_context)
@@ -497,10 +496,10 @@ def test_revoked_cached_token_is_regenerated_and_request_retried(mocker, request
         ],
     )
 
-    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="new-password")
+    client = GuardiCoreV2.Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="new-password")
     assert client.access_token == OLD_REVOKED_TOKEN  # cached token reused at init
 
-    incidents, last_fetch, last_ids = fetch_incidents(client, {"limit": 50})
+    incidents, last_fetch, last_ids = GuardiCoreV2.fetch_incidents(client, {"limit": 50})
 
     assert incidents == []
     assert last_fetch == 1611322250000  # checkpoint preserved
@@ -522,7 +521,6 @@ def test_revoked_token_and_failed_reauthentication_raises(mocker, requests_mock)
     - An authentication error is raised, with no retry loop (one auth call, one API call).
     """
     import GuardiCoreV2
-    from GuardiCoreV2 import Client
 
     integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
     mocker.patch.object(GuardiCoreV2, "get_integration_context", return_value=integration_context)
@@ -531,7 +529,7 @@ def test_revoked_token_and_failed_reauthentication_raises(mocker, requests_mock)
     auth_mock = requests_mock.post(f"{BASE_URL}/authenticate", status_code=401, json={"message": "Authentication failed"})
     assets_mock = requests_mock.get(f"{BASE_URL}/assets", status_code=401, json=REVOKED_RESPONSE)
 
-    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="bad-password")
+    client = GuardiCoreV2.Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="bad-password")
     with raises(DemistoException, match="401"):
         client.get_assets({})
 
@@ -549,7 +547,6 @@ def test_non_401_error_is_not_retried(mocker, requests_mock):
     - The error is raised without re-authenticating or retrying.
     """
     import GuardiCoreV2
-    from GuardiCoreV2 import Client
 
     integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
     mocker.patch.object(GuardiCoreV2, "get_integration_context", return_value=integration_context)
@@ -558,7 +555,7 @@ def test_non_401_error_is_not_retried(mocker, requests_mock):
     auth_mock = requests_mock.post(f"{BASE_URL}/authenticate", json={"access_token": NEW_TOKEN})
     incident_mock = requests_mock.get(f"{BASE_URL}/incidents/1", status_code=500, json={"message": "boom"})
 
-    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="test")
+    client = GuardiCoreV2.Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="test")
     with raises(DemistoException, match="500"):
         client.get_incident("1")
 
