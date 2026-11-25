@@ -310,9 +310,12 @@ RULEBASE_CONTAINER_TYPES: Dict[type, Tuple[type, ...]] = {
     PreRulebase: (DeviceGroup, Panorama),
     PostRulebase: (DeviceGroup, Panorama),
 }
-# Anti-spyware, vulnerability, URL filtering and log forwarding profiles are objects, so they live in vsys, device groups
-# and shared, not in templates or template stacks.
+# Anti-spyware, vulnerability and URL filtering profiles are objects, so they live in vsys, device groups and shared, not in
+# templates or template stacks.
 PROFILE_CONTAINER_TYPES: Tuple[type, ...] = (Vsys, DeviceGroup, Panorama)
+# Log forwarding profiles live in the same containers, and a Panorama expert said they can also be configured in a
+# template and pushed to the managed firewalls, so templates and template stacks are read for them too.
+LOG_FORWARDING_PROFILE_CONTAINER_TYPES: Tuple[type, ...] = (*PROFILE_CONTAINER_TYPES, Template, TemplateStack)
 # Zones are network configuration, so they live in vsys, templates and template stacks, not in device groups or shared.
 ZONE_CONTAINER_TYPES: Tuple[type, ...] = (Vsys, Template, TemplateStack)
 
@@ -11282,7 +11285,7 @@ class HygieneLookups:
         lf_profile_list: List[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-1", "BP-V-2", "BP-V-3"])
         for device, container in topology.get_all_object_containers(device_filter_str):
-            if not isinstance(container, PROFILE_CONTAINER_TYPES):
+            if not isinstance(container, LOG_FORWARDING_PROFILE_CONTAINER_TYPES):
                 continue
 
             log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)

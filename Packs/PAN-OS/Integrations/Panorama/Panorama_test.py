@@ -4518,6 +4518,9 @@ class TestContainerAwareReads:
     """
 
     PROFILE_CONTAINERS = {"vsys", "device-group", "shared"}
+    # A Panorama expert said log forwarding profiles can also be configured in a template and pushed to the firewalls,
+    # so templates and template stacks are still read for them.
+    LOG_FORWARDING_CONTAINERS = {"vsys", "device-group", "shared", "template", "template-stack"}
     ZONE_CONTAINERS = {"vsys", "template", "template-stack"}
 
     @staticmethod
@@ -4563,7 +4566,7 @@ class TestContainerAwareReads:
     @pytest.mark.parametrize(
         "check_name, kwargs, class_name, supported_containers",
         [
-            ("check_log_forwarding_profiles", {}, "LogForwardingProfile", PROFILE_CONTAINERS),
+            ("check_log_forwarding_profiles", {}, "LogForwardingProfile", LOG_FORWARDING_CONTAINERS),
             ("check_security_profiles", {"profile_type": "spyware"}, "AntiSpywareProfile", PROFILE_CONTAINERS),
             ("check_security_profiles", {"profile_type": "vulnerability"}, "VulnerabilityProfile", PROFILE_CONTAINERS),
             ("check_security_profiles", {"profile_type": "url"}, "URLFilteringProfile", PROFILE_CONTAINERS),
@@ -4589,8 +4592,9 @@ class TestContainerAwareReads:
         """
         Given one container of each kind,
         When running a hygiene check or lookup,
-        Then the object type is only read from the container kinds that can hold it. Security, log forwarding and
-        conforming-profile lookups skip templates and template stacks; the zone check skips device groups and shared.
+        Then the object type is only read from the container kinds that can hold it. Security-profile and
+        conforming-profile lookups skip templates and template stacks; the log forwarding check reads them too; the zone
+        check skips device groups and shared.
         """
         import Panorama
 
