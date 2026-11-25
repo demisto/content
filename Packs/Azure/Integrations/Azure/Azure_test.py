@@ -33,7 +33,6 @@ from Azure import (
     aks_cluster_addon_update_command,
     cosmosdb_update_command,
     remove_member_from_group_command,
-    get_azure_client,
     remove_member_from_role,
     postgres_server_update_command,
     extract_azure_resource_info,
@@ -60,11 +59,9 @@ from Azure import (
     DEFAULT_RESOURCE,
     DEFAULT_SCOPE,
     TokenScope,
-    get_command_resource,
     STORAGE_RESOURCE,
     STORAGE_SCOPE,
     STORAGE_DATE_FORMAT,
-    get_command_and_token_scopes,
     create_set_tags_request_body,
     nsg_security_rules_list_command,
     sql_servers_list_command,
@@ -81,6 +78,15 @@ from MicrosoftApiModule import Resources
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 from COOCApiModule import CloudTypes
+from AzureApiModule import AzureIntegration
+
+
+def get_azure_client(params: dict, args: dict, command: str) -> AzureClient:
+    """Build the Azure client for ``command`` the same way ``main()`` does, via ``AzureIntegration.get_client``.
+
+    ``Azure.AzureClient`` is looked up at call time, so tests can patch it with ``mocker.patch("Azure.AzureClient")``.
+    """
+    return AzureIntegration(command, args, params, client_class=Azure.AzureClient).get_client()
 
 
 INTEGRATION_DIR = Path(__file__).parent
@@ -1834,19 +1840,20 @@ def test_main_function_success(mocker):
         return_value={"account_name": "teststorage", "sku": "Standard_LRS", "kind": "StorageV2", "location": "eastus"},
     )
 
-    # mock is_gov_account
-    mocker.patch("Azure.is_gov_account", return_value=False)
+    # Marketplace path (no connector)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
 
-    # Mock return_results
-    mock_return_results = mocker.patch("Azure.return_results")
+    # Mock return_results (called by CloudIntegration.run)
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
 
-    # Mock AzureClient
+    # Mock AzureClient (main() passes the Azure.AzureClient global as client_class)
     mock_client = mocker.Mock()
     mocker.patch("Azure.AzureClient", return_value=mock_client)
 
-    # Mock storage_account_update_command to return a CommandResults object
+    # Replace the handler in COMMANDS_MAPPING with a mock that returns a CommandResults object
     mock_cmd_result = mocker.Mock()
-    mock_storage_account_update = mocker.patch("Azure.storage_account_update_command", return_value=mock_cmd_result)
+    mock_storage_account_update = mocker.Mock(return_value=mock_cmd_result)
+    mocker.patch.dict(Azure.COMMANDS_MAPPING, {"azure-storage-account-update": mock_storage_account_update})
 
     # Call main function
     main()
@@ -1942,9 +1949,8 @@ def test_get_azure_client_no_token(mocker, mock_params):
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
 
-    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
-    mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
-    mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
+    mocker.patch("COOCApiModule.get_connector_id", return_value="connector-123")  # Platform path
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={})  # No token
 
     # Test without credentials and no token
     params = mock_params.copy()
@@ -1966,7 +1972,7 @@ def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
 
-    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
 
     params = mock_params.copy()
     params["credentials"] = {}
@@ -1989,8 +1995,8 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     command = "command"
     mock_client = mocker.Mock()
 
-    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
-    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
+    mock_get_managed = mocker.patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with credentials (stored credentials path)
@@ -2035,10 +2041,9 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
-    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
-    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
-    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
-    mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
+    mocker.patch("COOCApiModule.get_connector_id", return_value="connector-123")  # Platform path
+    mock_get_managed = mocker.patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
+    mock_get_cloud_credentials = mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": mock_token})
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test without stored credentials (cloud credentials path)
@@ -2051,8 +2056,8 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     # Verify results
     assert result == mock_client
 
-    # Verify cloud credentials were retrieved with correct parameters
-    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id", scopes=["DEFAULT"])
+    # Verify cloud credentials were retrieved for the subscription_id argument
+    mock_get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "arg_subscription_id", scopes=["DEFAULT"])
 
     # Verify AzureClient was instantiated with correct parameters including headers
     expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
@@ -2084,9 +2089,8 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
-    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
-    mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
-    mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
+    mocker.patch("COOCApiModule.get_connector_id", return_value="connector-123")  # Platform path
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={})  # No access_token
 
     # Test without credentials and no token
     params = mock_params.copy()
@@ -2110,6 +2114,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     command = "command"
     mock_client = mocker.Mock()
 
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with insecure and proxy settings
@@ -2142,7 +2147,7 @@ def test_get_azure_client_missing_optional_params(mocker):
     mock_client = mocker.Mock()
     command = "command"
 
-    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Mandatory params for Client Credentials present; optional fields omitted.
@@ -2297,9 +2302,9 @@ def test_azure_client_handle_azure_error_using_return_multiple_permissions_error
     """
     from Azure import AzureClient
 
-    mock_get_permissions_from_api = mocker.patch("Azure.get_permissions_from_api_function_name")
-    mock_get_permissions_from_required = mocker.patch("Azure.get_permissions_from_required_role_permissions_list")
-    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    mock_get_permissions_from_api = mocker.patch("AzureApiModule.get_permissions_from_api_function_name")
+    mock_get_permissions_from_required = mocker.patch("AzureApiModule.get_permissions_from_required_role_permissions_list")
+    mock_return_multiple_permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
     client = AzureClient("tenant_id", "client_id", "client_secret")
 
     # Test case 1: Permission found via API function mapping
@@ -2394,8 +2399,8 @@ def test_azure_client_http_request_with_headers(mocker, mock_params):
     # Setup mocks
     headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
     mock_base_client = mocker.Mock()
-    mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
-    mocker.patch("Azure.BaseClient", return_value=mock_base_client)
+    mocker.patch("AzureApiModule.get_proxydome_token", return_value="proxy_token")
+    mocker.patch("AzureApiModule.BaseClient", return_value=mock_base_client)
 
     # Create client with headers
     client = AzureClient(headers=headers)
@@ -2421,7 +2426,7 @@ def test_azure_client_http_request_without_headers(mocker, mock_params):
     """
     # Setup mocks
     mock_ms_client = mocker.Mock()
-    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", return_value=mock_ms_client)
 
     # Create client without headers
     client = AzureClient()
@@ -2443,7 +2448,7 @@ def test_azure_client_http_request_api_version_override(mocker, mock_params):
     """
     # Setup mocks
     mock_ms_client = mocker.Mock()
-    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", return_value=mock_ms_client)
 
     # Create client
     client = AzureClient()
@@ -2466,9 +2471,9 @@ def test_azure_client_initialization_without_refresh_token(mocker):
     Then: The client should not modify the integration context.
     """
     # Mock integration context functions
-    mocker.patch("Azure.get_integration_context", return_value={})
-    mock_set_context = mocker.patch("Azure.set_integration_context")
-    mocker.patch("Azure.MicrosoftClient")
+    mocker.patch("AzureApiModule.get_integration_context", return_value={})
+    mock_set_context = mocker.patch("AzureApiModule.set_integration_context")
+    mocker.patch("AzureApiModule.MicrosoftClient")
 
     # Initialize client without refresh token
     AzureClient(app_id="test_app_id")
@@ -2487,8 +2492,8 @@ def test_azure_client_http_request_with_base_client(mocker):
     headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
     mock_base_client = mocker.Mock()
     mock_base_client._http_request.return_value = {"result": "success"}
-    mocker.patch("Azure.BaseClient", return_value=mock_base_client)
-    mocker.patch("Azure.get_proxydome_token", return_value="proxy_token")
+    mocker.patch("AzureApiModule.BaseClient", return_value=mock_base_client)
+    mocker.patch("AzureApiModule.get_proxydome_token", return_value="proxy_token")
 
     # Create client with headers
     client = AzureClient(headers=headers)
@@ -2516,7 +2521,7 @@ def test_azure_client_http_request_with_microsoft_client(mocker):
     # Setup mocks
     mock_ms_client = mocker.Mock()
     mock_ms_client.http_request.return_value = {"result": "success"}
-    mocker.patch("Azure.MicrosoftClient", return_value=mock_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", return_value=mock_ms_client)
 
     # Create client without headers
     client = AzureClient()
@@ -4025,10 +4030,10 @@ def test_handle_azure_error_forbidden_text_match(mocker, client):
     Then: The function should trigger permission error handling.
     """
     mock_get_permissions_from_api = mocker.patch(
-        "Azure.get_permissions_from_api_function_name", return_value=["Microsoft.ContainerRegistry/registries/read"]
+        "AzureApiModule.get_permissions_from_api_function_name", return_value=["Microsoft.ContainerRegistry/registries/read"]
     )
-    mock_get_permissions_from_required = mocker.patch("Azure.get_permissions_from_required_role_permissions_list")
-    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    mock_get_permissions_from_required = mocker.patch("AzureApiModule.get_permissions_from_required_role_permissions_list")
+    mock_return_multiple_permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
 
     error = Exception("Access forbidden - insufficient privileges")
     resource_name = "test"
@@ -4062,11 +4067,11 @@ def test_handle_azure_error_permission_error_no_permissions_found(mocker, client
     When: The handle_azure_error method is called.
     Then: The function should call return_multiple_permissions_error with empty list.
     """
-    mock_get_permissions_from_api = mocker.patch("Azure.get_permissions_from_api_function_name", return_value=None)
+    mock_get_permissions_from_api = mocker.patch("AzureApiModule.get_permissions_from_api_function_name", return_value=None)
     mock_get_permissions_from_required = mocker.patch(
-        "Azure.get_permissions_from_required_role_permissions_list", return_value=["N/A"]
+        "AzureApiModule.get_permissions_from_required_role_permissions_list", return_value=["N/A"]
     )
-    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
 
     error = Exception("403 Forbidden")
     resource_name = "test-resource"
@@ -4092,7 +4097,7 @@ def test_handle_azure_error_permission_error_multiple_permissions(mocker, client
     When: The handle_azure_error method is called.
     Then: The function should call return_multiple_permissions_error with all permissions.
     """
-    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
 
     error = Exception("401 Unauthorized missing Microsoft.Storage/storageAccounts/read")
     resource_name = "test-storage"
@@ -4875,21 +4880,21 @@ class TestGetCommandAndTokenScopes:
     def test_default_command(self):
         """Test that a default command returns DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
         command = "azure-nsg-security-rule-update"
-        client_scope, token_scopes = get_command_and_token_scopes(command)
+        client_scope, token_scopes = AzureIntegration.get_command_and_token_scopes(command)
         assert client_scope == DEFAULT_SCOPE
         assert token_scopes == [TokenScope.DEFAULT]
 
     def test_storage_container_command(self):
         """Test that a storage-container command returns STORAGE_SCOPE and [TokenScope.STORAGE]."""
         command = "azure-storage-container-create"
-        client_scope, token_scopes = get_command_and_token_scopes(command)
+        client_scope, token_scopes = AzureIntegration.get_command_and_token_scopes(command)
         assert client_scope == STORAGE_SCOPE
         assert token_scopes == [TokenScope.STORAGE]
 
     def test_storage_blob_command(self):
         """Test that a storage-container-blob command returns STORAGE_SCOPE and [TokenScope.STORAGE]."""
         command = "azure-storage-container-blob-get"
-        client_scope, token_scopes = get_command_and_token_scopes(command)
+        client_scope, token_scopes = AzureIntegration.get_command_and_token_scopes(command)
         assert client_scope == STORAGE_SCOPE
         assert token_scopes == [TokenScope.STORAGE]
 
@@ -4900,19 +4905,19 @@ class TestGetCommandResource:
     def test_default_command(self):
         """Test that a default command returns DEFAULT_RESOURCE."""
         command = "azure-nsg-security-rule-update"
-        resource = get_command_resource(command)
+        resource = AzureIntegration.get_command_resource(command)
         assert resource == DEFAULT_RESOURCE
 
     def test_storage_container_command(self):
         """Test that a storage-container command returns STORAGE_RESOURCE."""
         command = "azure-storage-container-create"
-        resource = get_command_resource(command)
+        resource = AzureIntegration.get_command_resource(command)
         assert resource == STORAGE_RESOURCE
 
     def test_storage_blob_command(self):
         """Test that a storage-container-blob command returns STORAGE_RESOURCE."""
         command = "azure-storage-container-blob-get"
-        resource = get_command_resource(command)
+        resource = AzureIntegration.get_command_resource(command)
         assert resource == STORAGE_RESOURCE
 
 
@@ -4941,7 +4946,7 @@ def test_get_command_and_token_scopes_storage(command):
         The returned scope equals STORAGE_SCOPE and the token scopes list
         contains only TokenScope.STORAGE.
     """
-    scope, token_scopes = get_command_and_token_scopes(command)
+    scope, token_scopes = AzureIntegration.get_command_and_token_scopes(command)
     assert scope == STORAGE_SCOPE
     assert token_scopes == [TokenScope.STORAGE]
 
@@ -4970,29 +4975,26 @@ def test_get_command_resource_storage(command):
     Then:
         The returned resource equals STORAGE_RESOURCE.
     """
-    resource = get_command_resource(command)
+    resource = AzureIntegration.get_command_resource(command)
     assert resource == STORAGE_RESOURCE
 
 
 class TestGetAzureClient:
     """Tests for the get_azure_client function."""
 
-    @patch("Azure.get_connector_id", return_value="connector-123")
-    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
-    @patch("Azure.get_from_args_or_params")
-    @patch("Azure.get_cloud_credentials")
+    @patch("COOCApiModule.get_connector_id", return_value="connector-123")
+    @patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
+    @patch("COOCApiModule.get_cloud_credentials")
     @patch("Azure.AzureClient")
     def test_with_cloud_credentials(
         self,
         mock_azure_client,
         mock_get_cloud_credentials,
-        mock_get_from_args_or_params,
         mock_get_managed,
         mock_get_connector_id,
     ):
         """Test get_azure_client with cloud credentials (Platform path)."""
         # Setup mocks
-        mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
         mock_client = MagicMock()
         mock_azure_client.return_value = mock_client
@@ -5036,22 +5038,19 @@ class TestGetAzureClient:
             managed_identities_client_id=None,
         )
 
-    @patch("Azure.get_connector_id", return_value="connector-123")
-    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
-    @patch("Azure.get_from_args_or_params")
-    @patch("Azure.get_cloud_credentials")
+    @patch("COOCApiModule.get_connector_id", return_value="connector-123")
+    @patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
+    @patch("COOCApiModule.get_cloud_credentials")
     @patch("Azure.AzureClient")
     def test_with_storage_command(
         self,
         mock_azure_client,
         mock_get_cloud_credentials,
-        mock_get_from_args_or_params,
         mock_get_managed,
         mock_get_connector_id,
     ):
         """Test get_azure_client with a storage command (Platform path)."""
         # Setup mocks
-        mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
         mock_client = MagicMock()
         mock_azure_client.return_value = mock_client
@@ -6712,7 +6711,7 @@ def test_test_module_device_code_flow(mocker):
     mock_http = mocker.patch.object(client, "http_request", return_value={})
 
     with pytest.raises(DemistoException) as excinfo:
-        Azure.test_module(client)
+        AzureIntegration._test_connectivity(client)
 
     assert "azure-auth-test" in str(excinfo.value)
     mock_http.assert_not_called()
@@ -6728,7 +6727,7 @@ def test_test_module_authorization_code_flow(mocker):
     client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
     mock_http = mocker.patch.object(client, "http_request", return_value={})
 
-    assert Azure.test_module(client) == "ok"
+    assert AzureIntegration._test_connectivity(client) == "ok"
     mock_http.assert_called_once()
 
 
@@ -6741,7 +6740,7 @@ def test_test_module_client_credentials_ok(mocker, client):
     mocker.patch.object(client, "connection_type", "Client Credentials")
     mocker.patch.object(client, "http_request", return_value={})
 
-    assert Azure.test_module(client) == "ok"
+    assert AzureIntegration._test_connectivity(client) == "ok"
 
 
 def test_test_module_managed_identities_uses_resource_groups(mocker):
@@ -6756,7 +6755,7 @@ def test_test_module_managed_identities_uses_resource_groups(mocker):
     client.subscription_id = "sub-123"
     mock_http = mocker.patch.object(client, "http_request", return_value={})
 
-    assert Azure.test_module(client) == "ok"
+    assert AzureIntegration._test_connectivity(client) == "ok"
 
     mock_http.assert_called_once()
     _, kwargs = mock_http.call_args
@@ -6767,23 +6766,27 @@ def test_test_module_managed_identities_uses_resource_groups(mocker):
 def test_test_connection_success(mocker, client):
     """
     Given: A client whose MicrosoftClient can fetch an access token.
-    When: test_connection is called.
+    When: The azure-auth-test command runs through AzureIntegration.execute_auth_command.
     Then: A success message is returned.
     """
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AzureIntegration, "get_client", return_value=client)
     mocker.patch.object(client.ms_client, "get_access_token")
 
-    assert "Success" in Azure.test_connection(client)
+    assert "Success" in AzureIntegration("azure-auth-test", {}, {}).execute_auth_command()
 
 
 def test_start_auth(mocker, client):
     """
     Given: A client.
-    When: start_auth is called.
+    When: The azure-auth-start command runs through AzureIntegration.execute_auth_command.
     Then: It returns CommandResults wrapping the MicrosoftClient start_auth output.
     """
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AzureIntegration, "get_client", return_value=client)
     mocker.patch.object(client.ms_client, "start_auth", return_value="follow these steps")
 
-    result = Azure.start_auth(client)
+    result = AzureIntegration("azure-auth-start", {}, {}).execute_auth_command()
 
     assert result.readable_output == "follow these steps"
 
@@ -6791,12 +6794,14 @@ def test_start_auth(mocker, client):
 def test_complete_auth(mocker, client):
     """
     Given: A client.
-    When: complete_auth is called.
+    When: The azure-auth-complete command runs through AzureIntegration.execute_auth_command.
     Then: It fetches the access token and returns a success message.
     """
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AzureIntegration, "get_client", return_value=client)
     mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
 
-    result = Azure.complete_auth(client)
+    result = AzureIntegration("azure-auth-complete", {}, {}).execute_auth_command()
 
     mock_get_token.assert_called_once()
     assert "completed successfully" in result
@@ -6808,8 +6813,8 @@ def test_get_azure_client_device_code_no_secret(mocker, mock_params):
     When: get_azure_client is called.
     Then: It does NOT raise the missing-secret error and builds a client with the Device Code connection type.
     """
-    mocker.patch("Azure.get_connector_id", return_value=None)
-    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
 
     params = mock_params.copy()
@@ -6832,8 +6837,8 @@ def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
     """
     from Azure import STORAGE_SCOPE, STORAGE_RESOURCE
 
-    mocker.patch("Azure.get_connector_id", return_value=None)
-    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch("AzureApiModule.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
 
     params = mock_params.copy()
@@ -6865,7 +6870,7 @@ def test_azure_client_client_credentials_does_not_send_resource_to_v2_endpoint(m
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Client Credentials",
@@ -6895,7 +6900,7 @@ def test_azure_client_device_code_default_resource_derives_management_scope(mock
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(app_id="app", connection_type="Device Code", resource=DEFAULT_RESOURCE)
 
     expected_resource = DEFAULT_RESOURCE.rstrip("/")
@@ -6920,7 +6925,7 @@ def test_azure_client_device_code_storage_resource_derives_storage_scope(mocker)
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(app_id="app", connection_type="Device Code", resource=STORAGE_RESOURCE)
 
     expected_resource = STORAGE_RESOURCE.rstrip("/")
@@ -6944,7 +6949,7 @@ def test_azure_client_client_credentials_gov_endpoint_builds_gov_token_url(mocke
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Client Credentials",
@@ -6969,7 +6974,7 @@ def test_azure_client_client_credentials_default_endpoint_builds_commercial_toke
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Client Credentials",
@@ -6997,7 +7002,7 @@ def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Azure Managed Identities",
@@ -7032,7 +7037,7 @@ def test_azure_client_client_credentials_empty_tenant_builds_token_url_without_n
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Client Credentials",
@@ -7062,7 +7067,7 @@ def test_azure_client_managed_identities_storage_resource_derives_storage_uri(mo
         captured.update(kwargs)
         return mocker.Mock()
 
-    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    mocker.patch("AzureApiModule.MicrosoftClient", side_effect=fake_ms_client)
     AzureClient(
         app_id="app",
         connection_type="Azure Managed Identities",
@@ -7083,7 +7088,7 @@ def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_par
           AzureClient. The Client Credentials missing-secret guard is NOT triggered (no Client Secret
           required for the MI flow).
     """
-    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
     mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
 
     params = mock_params.copy()
@@ -7106,7 +7111,7 @@ def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params
     """
     from MicrosoftApiModule import MANAGED_IDENTITIES_SYSTEM_ASSIGNED
 
-    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
     mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
 
     params = mock_params.copy()
@@ -7127,7 +7132,7 @@ def test_get_azure_client_credentials_none(mocker, mock_params):
     Then: It raises a missing-parameter DemistoException (listing the Client Secret) without an
           AttributeError.
     """
-    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
 
     params = mock_params.copy()
     params["credentials"] = None
@@ -7162,7 +7167,7 @@ def test_validate_auth_params_missing(auth_type, missing_key, expected_in_messag
     When: validate_auth_params is called.
     Then: It raises a DemistoException naming the missing parameter and the auth type.
     """
-    from Azure import validate_auth_params
+    validate_auth_params = AzureIntegration.validate_auth_params
 
     full_params = {
         "app_id": "app",
@@ -7212,7 +7217,7 @@ def test_validate_auth_params_valid(auth_type, params):
     When: validate_auth_params is called.
     Then: It does not raise.
     """
-    from Azure import validate_auth_params
+    validate_auth_params = AzureIntegration.validate_auth_params
 
     params = {**params, "auth_type": auth_type}
     validate_auth_params(params, auth_type)  # Should not raise
@@ -7224,7 +7229,7 @@ def test_validate_auth_params_managed_identities_system_assigned():
     When: validate_auth_params is called.
     Then: It does not raise, because the system-assigned identity resolves to a sentinel client ID.
     """
-    from Azure import validate_auth_params
+    validate_auth_params = AzureIntegration.validate_auth_params
 
     params = {
         "auth_type": "Azure Managed Identities",
@@ -7245,10 +7250,10 @@ def test_main_auth_reset(mocker):
     mocker.patch.object(demisto, "command", return_value="azure-auth-reset")
     mocker.patch.object(demisto, "params", return_value={})
     mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch("Azure.get_connector_id", return_value=None)
-    mock_reset = mocker.patch("Azure.reset_auth", return_value="reset done")
-    mock_get_client = mocker.patch("Azure.get_azure_client")
-    mocker.patch("Azure.return_results")
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mock_reset = mocker.patch("AzureApiModule.reset_auth", return_value="reset done")
+    mock_get_client = mocker.patch.object(AzureIntegration, "get_client")
+    mocker.patch("COOCApiModule.return_results")
 
     main()
 
@@ -9685,8 +9690,11 @@ def test_firewall_policy_network_rule_collection_exists_not_found(mocker):
 # clock, the OS or the execution order of other tests.
 # ---------------------------------------------------------------------------
 
-# The name of the dict inside main() that maps command name -> handler function.
-DISPATCH_DICT_NAME = "commands_with_params_and_args"
+# The name of the module-level dict in Azure.py that maps command name -> handler function.
+DISPATCH_DICT_NAME = "COMMANDS_MAPPING"
+
+# The integration class whose ``@<class>.register("<command>")`` decorator registers new commands.
+REGISTRY_CLASS_NAME = "AzureIntegration"
 
 # Commands intentionally excluded from these wiring tests.
 #
@@ -9694,9 +9702,9 @@ DISPATCH_DICT_NAME = "commands_with_params_and_args"
 # - Commands marked "deprecated: true" in the yml are excluded as well. They are
 #   kept only so existing playbooks keep working, and are no longer expected to
 #   hold their yml and their implementation in step.
-# - The auth/control commands below are routed by explicit if/elif branches in
-#   main() rather than through the dispatch dict, and expose no yml arguments
-#   or context outputs of the kind these tests inspect.
+# - The auth/control commands below are routed by AzureIntegration (test_module and
+#   execute_auth_command in AzureApiModule) rather than through the dispatch dict,
+#   and expose no yml arguments or context outputs of the kind these tests inspect.
 QUICK_ACTION_SUFFIX = "-quick-action"
 
 # Arguments that are legitimately not read by the command handler.
@@ -9826,11 +9834,11 @@ def load_py_source_and_tree() -> tuple[str, ast.Module]:
 
 
 def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
-    """Extract the command -> handler-function-name mapping from main().
+    """Extract the command -> handler-function-name mapping from Azure.py.
 
-    The dispatch dict is a local variable inside main(), which is marked
-    "# pragma: no cover" and cannot be imported or safely executed, so it is
-    lifted straight out of the AST instead.
+    The dispatch dict is lifted straight out of the AST, so Azure.py is never imported
+    or executed. Both a plain assignment and an annotated assignment
+    (``COMMANDS_MAPPING: dict[str, Callable] = {...}``) are supported, at any nesting level.
 
     Args:
         tree (ast.Module): The parsed AST of Azure.py.
@@ -9848,9 +9856,12 @@ def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
             updating.
     """
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Assign):
+        if isinstance(node, ast.Assign):
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = [node.target.id]
+        else:
             continue
-        targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
         if DISPATCH_DICT_NAME not in targets or not isinstance(node.value, ast.Dict):
             continue
 
@@ -9881,6 +9892,81 @@ def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
         return dispatch
 
     raise AssertionError(f"Could not find the '{DISPATCH_DICT_NAME}' dict inside Azure.py")
+
+
+def read_register_decorator_command(decorator: ast.expr) -> str | None:
+    """Return the command name of a ``@AzureIntegration.register(...)`` decorator, or None for any other decorator.
+
+    Args:
+        decorator (ast.expr): A decorator node of a function or method.
+
+    Returns:
+        str | None: The registered command name, or None when the decorator is not a register call.
+
+    Raises:
+        AssertionError: If the decorator is a register call whose command name is not a string literal,
+            so its command would otherwise be wrongly reported as unrouted.
+    """
+    if not (
+        isinstance(decorator, ast.Call)
+        and isinstance(decorator.func, ast.Attribute)
+        and decorator.func.attr == "register"
+        and isinstance(decorator.func.value, ast.Name)
+        and decorator.func.value.id == REGISTRY_CLASS_NAME
+    ):
+        return None
+    command_node = decorator.args[0] if decorator.args else None
+    for keyword in decorator.keywords:
+        if keyword.arg == "command_name":
+            command_node = keyword.value
+    assert isinstance(command_node, ast.Constant) and isinstance(command_node.value, str), (
+        f"Could not read the command name of '@{ast.unparse(decorator)}' in Azure.py. "
+        "The register decorator shape has changed and this test helper needs updating."
+    )
+    return command_node.value
+
+
+def extract_registered_commands(tree: ast.Module) -> dict[str, str]:
+    """Extract the commands registered with ``@AzureIntegration.register("<command>")`` in Azure.py.
+
+    Module-level functions and methods of any class (e.g. staticmethods of service classes) are read.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, str]: Mapping of registered command name to the name of the decorated function.
+
+    Raises:
+        AssertionError: If a register decorator cannot be read, or the same command is registered twice.
+    """
+    registered: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        for decorator in node.decorator_list:
+            command = read_register_decorator_command(decorator)
+            if command is None:
+                continue
+            assert (
+                command not in registered
+            ), f"Command '{command}' is registered twice in Azure.py ({registered[command]} and {node.name})."
+            registered[command] = node.name
+    return registered
+
+
+def build_dispatch_map(tree: ast.Module) -> dict[str, str]:
+    """Return every routed command of Azure.py: the ``COMMANDS_MAPPING`` entries and the registered commands.
+
+    Registered commands take precedence over ``COMMANDS_MAPPING`` entries, matching ``CloudIntegration.execute_command``.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, str]: Mapping of command name to the name of its handler function.
+    """
+    return extract_dispatch_map(tree) | extract_registered_commands(tree)
 
 
 def build_symbol_index(tree: ast.Module) -> dict[str, ast.FunctionDef]:
@@ -10133,8 +10219,8 @@ def py_tree() -> ast.Module:
 
 @pytest.fixture(scope="module")
 def dispatch_map(py_tree: ast.Module) -> dict[str, str]:
-    """Mapping of command name -> handler function name, lifted from main()."""
-    return extract_dispatch_map(py_tree)
+    """Mapping of command name -> handler function name, from COMMANDS_MAPPING and the registered commands."""
+    return build_dispatch_map(py_tree)
 
 
 @pytest.fixture(scope="module")
@@ -10552,6 +10638,146 @@ def test_extract_dispatch_map_raises_when_dict_is_empty():
     # When / Then: the empty dict is reported as a helper problem
     with pytest.raises(AssertionError, match="could not extract any"):
         extract_dispatch_map(ast.parse(source))
+
+
+def test_extract_registered_commands_reads_module_function():
+    """
+    Given:
+        - A module-level function decorated with @AzureIntegration.register("<command>").
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - The command is mapped to the decorated function name.
+    """
+    source = "@AzureIntegration.register('azure-new-command')\n" "def new_command(client, args):\n" "    return None\n"
+
+    assert extract_registered_commands(ast.parse(source)) == {"azure-new-command": "new_command"}
+
+
+def test_extract_registered_commands_reads_service_class_staticmethod():
+    """
+    Given:
+        - A staticmethod of a service class, decorated below @staticmethod and registered with polling=True.
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - The command is mapped to the method name, and the polling keyword is ignored.
+    """
+    source = (
+        "class Storage:\n"
+        "    @staticmethod\n"
+        "    @AzureIntegration.register('azure-storage-new-command', polling=True)\n"
+        "    def new_storage_command(args, client):\n"
+        "        return None\n"
+    )
+
+    assert extract_registered_commands(ast.parse(source)) == {"azure-storage-new-command": "new_storage_command"}
+
+
+def test_extract_registered_commands_reads_command_name_keyword():
+    """
+    Given:
+        - A register decorator that passes the command with the command_name keyword.
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - The keyword command name is read.
+    """
+    source = (
+        "@AzureIntegration.register(command_name='azure-keyword-command')\n"
+        "def keyword_command(client, args):\n"
+        "    return None\n"
+    )
+
+    assert extract_registered_commands(ast.parse(source)) == {"azure-keyword-command": "keyword_command"}
+
+
+def test_extract_registered_commands_ignores_other_decorators():
+    """
+    Given:
+        - Functions decorated with @polling_function and with another class's register decorator.
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - No command is returned.
+    """
+    source = (
+        "@polling_function('azure-polling-command')\n"
+        "def polling_command(args, client):\n"
+        "    return None\n"
+        "@OtherIntegration.register('other-command')\n"
+        "def other_command(client, args):\n"
+        "    return None\n"
+    )
+
+    assert extract_registered_commands(ast.parse(source)) == {}
+
+
+def test_extract_registered_commands_raises_on_unreadable_command_name():
+    """
+    Given:
+        - A register decorator whose command name is a variable rather than a string literal.
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - An AssertionError naming the decorator is raised, instead of the command being dropped.
+    """
+    source = "@AzureIntegration.register(COMMAND_NAME)\ndef unreadable_command(client, args):\n    return None\n"
+
+    with pytest.raises(AssertionError, match="AzureIntegration.register\\(COMMAND_NAME\\)"):
+        extract_registered_commands(ast.parse(source))
+
+
+def test_extract_registered_commands_raises_on_duplicate_command():
+    """
+    Given:
+        - Two functions registered for the same command.
+    When:
+        - extract_registered_commands is called on the tree.
+    Then:
+        - An AssertionError naming both functions is raised.
+    """
+    source = (
+        "@AzureIntegration.register('azure-dup-command')\n"
+        "def first(client, args):\n"
+        "    return None\n"
+        "@AzureIntegration.register('azure-dup-command')\n"
+        "def second(client, args):\n"
+        "    return None\n"
+    )
+
+    with pytest.raises(AssertionError, match="first and second"):
+        extract_registered_commands(ast.parse(source))
+
+
+def test_build_dispatch_map_merges_mapping_and_registered_commands():
+    """
+    Given:
+        - A COMMANDS_MAPPING dict and a registered command, where one command is in both.
+    When:
+        - build_dispatch_map is called on the tree.
+    Then:
+        - Both sources are merged, and the registered handler wins for the command in both,
+          matching the runtime precedence of CloudIntegration.execute_command.
+    """
+    source = (
+        f"{DISPATCH_DICT_NAME} = {{\n"
+        "    'azure-disk-update': disk_update_command,\n"
+        "    'azure-acr-update': acr_update_command,\n"
+        "}\n"
+        "@AzureIntegration.register('azure-acr-update')\n"
+        "def new_acr_update_command(client, args):\n"
+        "    return None\n"
+        "@AzureIntegration.register('azure-new-command')\n"
+        "def new_command(client, args):\n"
+        "    return None\n"
+    )
+
+    assert build_dispatch_map(ast.parse(source)) == {
+        "azure-disk-update": "disk_update_command",
+        "azure-acr-update": "new_acr_update_command",
+        "azure-new-command": "new_command",
+    }
 
 
 def test_build_symbol_index_indexes_module_functions_and_client_methods():
@@ -12494,7 +12720,7 @@ def test_waf_policy_delete_client_method_names_the_permission_quoted_in_a_403(mo
         "'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete' over scope."
     )
     mocker.patch.object(AzureClient, "http_request", side_effect=error)
-    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
 
     client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
 
@@ -12521,7 +12747,7 @@ def test_waf_policy_delete_client_method_falls_back_when_403_names_no_permission
         connection_type="Client Credentials",
     )
     mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [403] - Forbidden"))
-    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    permissions_error = mocker.patch("AzureApiModule.return_multiple_permissions_error")
 
     client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
 

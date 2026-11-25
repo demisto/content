@@ -488,3 +488,174 @@ def test_aws_session_sts_region(mocker, sts_region, region, expected_sts_region,
 
     sts_call_args = boto3_client_mock.call_args_list[0]
     assert sts_call_args[1]["region_name"] == expected_sts_region
+
+
+# ----------------------------------------------------------------------
+# AWSIntegration command registration
+# ----------------------------------------------------------------------
+
+
+def build_registration_integration(mocker, args: dict | None = None, params: dict | None = None):
+    """Build an ``AWSIntegration`` subclass instance with its own registry and a stubbed ``get_client``.
+
+    A fresh subclass per test keeps registrations from leaking into ``AWSIntegration`` or other tests.
+    """
+
+    class RegistrationTestAWSIntegration(AWSIntegration):
+        pass
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(RegistrationTestAWSIntegration, "get_client", return_value="boto-client")
+    return RegistrationTestAWSIntegration("aws-test-registered", args or {}, params or {})
+
+
+def test_aws_integration_cloud_type_class_attribute():
+    """
+    Given: The AWSIntegration class.
+    When: Reading its class attributes.
+    Then: cloud_type is AWS and account_id_arg is the base default ("account_id").
+    """
+    assert AWSIntegration.cloud_type == CloudTypes.AWS.value
+    assert AWSIntegration.account_id_arg == "account_id"
+
+
+def test_aws_integration_registered_command_single_account(mocker):
+    """
+    Given: A handler registered on the AWS integration and no multi-account configuration.
+    When: execute_command is called with an empty commands mapping.
+    Then: The handler is called once with (client, args) and its result is returned unchanged.
+    """
+    integration = build_registration_integration(mocker, args={"account_id": "111"})
+    handler = mocker.Mock(return_value="single-result")
+    type(integration).register("aws-test-registered")(handler)
+
+    result = integration.execute_command({})
+
+    assert result == "single-result"
+    handler.assert_called_once_with("boto-client", {"account_id": "111"})
+
+
+def test_aws_integration_registered_polling_command(mocker):
+    """
+    Given: A handler registered on the AWS integration with polling=True.
+    When: execute_command is called.
+    Then: The handler is called with (args, client).
+    """
+    integration = build_registration_integration(mocker, args={"account_id": "111"})
+    handler = mocker.Mock(return_value="polling-result")
+    type(integration).register("aws-test-registered", polling=True)(handler)
+
+    assert integration.execute_command({}) == "polling-result"
+    handler.assert_called_once_with({"account_id": "111"}, "boto-client")
+
+
+def test_aws_integration_registered_command_multi_account_fan_out(mocker):
+    """
+    Given: A registered handler and multi-account access configured for two accounts.
+    When: execute_command is called.
+    Then: The handler runs once per account with that account's ID, and each result is tagged with its account.
+    """
+    params = {"access_role_name": "role/CortexRole", "accounts_to_access": "111,222"}
+    integration = build_registration_integration(mocker, params=params)
+    calls: list[str] = []
+
+    def handler(client, args):
+        calls.append(args["account_id"])
+        return CommandResults(readable_output="done", outputs={"Name": args["account_id"]})
+
+    type(integration).register("aws-test-registered")(handler)
+
+    results = integration.execute_command({})
+
+    assert isinstance(results, list)
+    assert sorted(calls) == ["111", "222"]
+    assert len(results) == 2
+    assert results[0].readable_output == "#### Result for account `111`:\ndone"
+    assert results[0].outputs == {"Name": "111", "AccountId": "111"}
+    assert results[1].readable_output == "#### Result for account `222`:\ndone"
+    assert results[1].outputs == {"Name": "222", "AccountId": "222"}
+
+
+def test_aws_integration_registered_command_multi_account_uses_role_per_account(mocker):
+    """
+    Given: A registered handler and multi-account access configured.
+    When: execute_command is called.
+    Then: Each per-account integration is built with the role ARN of its account.
+    """
+    params = {"access_role_name": "CortexRole", "accounts_to_access": "111,222"}
+    integration = build_registration_integration(mocker, params=params)
+    role_arns: list[str] = []
+    integration_cls = type(integration)
+
+    def fake_get_client(self):
+        role_arns.append(self.params["role_arn"])
+        return "boto-client"
+
+    mocker.patch.object(integration_cls, "get_client", fake_get_client)
+    integration_cls.register("aws-test-registered")(lambda client, args: CommandResults(readable_output="ok"))
+
+    integration.execute_command({})
+
+    assert sorted(role_arns) == ["arn:aws:iam::111:role/CortexRole", "arn:aws:iam::222:role/CortexRole"]
+
+
+def test_aws_integration_registered_command_multi_account_error_entry(mocker):
+    """
+    Given: A registered handler that fails for one of two accounts.
+    When: execute_command is called with multi-account access configured.
+    Then: The failing account returns an error entry and the other account's result is still returned.
+    """
+    params = {"access_role_name": "CortexRole", "accounts_to_access": "111,222"}
+    integration = build_registration_integration(mocker, params=params)
+    mocker.patch.object(demisto, "error")
+
+    def handler(client, args):
+        if args["account_id"] == "222":
+            raise ValueError("account failure")
+        return CommandResults(readable_output="ok")
+
+    type(integration).register("aws-test-registered")(handler)
+
+    results = integration.execute_command({})
+
+    assert isinstance(results, list)
+    assert results[0].readable_output == "#### Result for account `111`:\nok"
+    assert results[1].entry_type == EntryType.ERROR
+    assert "account failure" in results[1].readable_output
+
+
+def test_aws_integration_run_registered_command_success(mocker):
+    """
+    Given: A registered handler.
+    When: run is called.
+    Then: The handler result is passed to return_results.
+    """
+    integration = build_registration_integration(mocker, args={"account_id": "111"})
+    type(integration).register("aws-test-registered")(lambda client, args: "run-result")
+    mocker.patch("COOCApiModule.handle_proxy")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({})
+
+    mock_return_results.assert_called_once_with("run-result")
+
+
+def test_aws_integration_run_registered_command_client_error(mocker):
+    """
+    Given: A registered handler that raises a boto3 ClientError.
+    When: run is called.
+    Then: The traceback is logged and the error is handled by AWSErrorHandler.handle_client_error.
+    """
+    integration = build_registration_integration(mocker, args={"account_id": "111"})
+    error = ClientError({"Error": {"Code": "AccessDenied", "Message": "denied"}}, "GetBucket")
+    type(integration).register("aws-test-registered")(mocker.Mock(side_effect=error))
+    mocker.patch("COOCApiModule.handle_proxy")
+    mock_log_error = mocker.patch.object(demisto, "error")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+    mock_handle_client_error = mocker.patch("AWSApiModule.AWSErrorHandler.handle_client_error")
+
+    integration.run({})
+
+    mock_log_error.assert_called_once()
+    mock_handle_client_error.assert_called_once_with(error, "111")
+    mock_return_results.assert_not_called()

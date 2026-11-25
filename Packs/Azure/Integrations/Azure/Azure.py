@@ -2,9 +2,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
-from MicrosoftApiModule import *  # noqa: E402
-from COOCApiModule import *
-from requests.exceptions import ConnectionError, Timeout
+from AzureApiModule import *  # noqa: E402
 import datetime as dt
 import itertools
 import hmac
@@ -22,7 +20,6 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-BLOB_SERVICE_PREFIX = "blob.core.windows.net"
 TABLE_SERVICE_PREFIX = "table.core.windows.net"
 TABLE_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{2,62}$"
 # The Azure Table data-plane returns entity Timestamps with up to 7 fractional-second digits and a
@@ -42,31 +39,10 @@ FILESHARE_ARM_API_VERSION = "2026-06-01"
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
-API_VERSION = "2022-09-01"
-# Azure Storage data-plane (Blob service) REST API version, used for both the x-ms-version
-# request header and the SAS token signed version (sv) so the two always stay in sync.
-STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
 RESOURCE_GRAPH_API_VERSION = "2024-04-01"
 RESOURCE_GRAPH_MAX_PAGE_SIZE = 1000
-
-GRANT_BY_CONNECTION = {
-    "Device Code": DEVICE_CODE,
-    "Authorization Code": AUTHORIZATION_CODE,
-    "Client Credentials": CLIENT_CREDENTIALS,
-}
-SCOPE_BY_CONNECTION = {
-    "Device Code": "https://management.azure.com/user_impersonation offline_access user.read",
-    "Authorization Code": "https://management.azure.com/.default",
-    "Client Credentials": "https://management.azure.com/.default",
-}
-DEFAULT_SCOPE = "https://management.azure.com/.default"
-DEFAULT_RESOURCE = "https://management.azure.com/"
-STORAGE_SCOPE = "https://storage.azure.com/.default"
-STORAGE_RESOURCE = "https://storage.azure.com/"
-DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
     "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations", "azure-rg-operations-list"],
@@ -529,339 +505,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
 }
 
-API_FUNCTION_TO_PERMISSIONS = {
-    "create_network_security_group": ["Microsoft.Network/networkSecurityGroups/write"],
-    "acr_update": ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"],
-    "cosmos_db_update": ["Microsoft.DocumentDB/databaseAccounts/read", "Microsoft.DocumentDB/databaseAccounts/write"],
-    "disk-update": ["Microsoft.Compute/disks/read", "Microsoft.Compute/disks/write"],
-    "update_key_vault_request": ["Microsoft.KeyVault/vaults/read", "Microsoft.KeyVault/vaults/write"],
-    "monitor_log_profile_update": ["Microsoft.Insights/logprofiles/read", "Microsoft.Insights/logprofiles/write"],
-    "flexible_server_param_set": [
-        "Microsoft.DBforMySQL/flexibleServers/configurations/read",
-        "Microsoft.DBforMySQL/flexibleServers/configurations/write",
-    ],
-    "list_networks_interfaces_request": ["Microsoft.Network/networkInterfaces/read"],
-    "list_public_ip_addresses_request": ["Microsoft.Network/publicIPAddresses/read"],
-    "list_resource_groups_request": ["Microsoft.Resources/subscriptions/resourceGroups/read"],
-    "list_network_security_groups": ["Microsoft.Network/networkSecurityGroups/read"],
-    "create_or_update_rule": [
-        "Microsoft.Network/networkSecurityGroups/securityRules/read",
-        "Microsoft.Network/networkSecurityGroups/securityRules/write",
-    ],
-    "delete_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/delete"],
-    "create_policy_assignment": [
-        "Microsoft.Authorization/policyAssignments/read",
-        "Microsoft.Authorization/policyAssignments/write",
-    ],
-    "set_postgres_config": [
-        "Microsoft.DBforPostgreSQL/servers/configurations/read",
-        "Microsoft.DBforPostgreSQL/servers/configurations/write",
-    ],
-    "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
-    "sql_servers_list": ["Microsoft.Sql/servers/read"],
-    "sql_db_list": ["Microsoft.Sql/servers/read", "Microsoft.Sql/servers/databases/read"],
-    "sql_db_server_auditing_settings_list": [
-        "Microsoft.Sql/servers/databases/read",
-        "Microsoft.Sql/servers/databases/auditingSettings/read",
-    ],
-    "sql_db_audit_policy_list": [
-        "Microsoft.Sql/servers/databases/read",
-        "Microsoft.Sql/servers/databases/auditingSettings/read",
-    ],
-    "sql_db_audit_policy_create_update": [
-        "Microsoft.Sql/servers/databases/auditingSettings/read",
-        "Microsoft.Sql/servers/databases/auditingSettings/write",
-    ],
-    "sql_firewall_rules_list": ["Microsoft.Sql/servers/firewallRules/read"],
-    "sql_firewall_rule_create_update": ["Microsoft.Sql/servers/firewallRules/write"],
-    "sql_firewall_rule_delete": ["Microsoft.Sql/servers/firewallRules/delete"],
-    "sql_firewall_rule_replace": ["Microsoft.Sql/servers/firewallRules/write"],
-    "postgres_flexible_server_configuration_update": ["Microsoft.DBforPostgreSQL/flexibleServers/configurations/write"],
-    "sql_db_threat_policy_update": [
-        "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
-        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
-    ],
-    "sql_db_tde_set": [
-        "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
-        "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
-    ],
-    "storage_account_list_request": ["Microsoft.Storage/storageAccounts/read"],
-    "storage_blob_container_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
-    "storage_account_update_request": ["Microsoft.Storage/storageAccounts/read", "Microsoft.Storage/storageAccounts/write"],
-    "storage_blob_service_properties_set_request": [
-        "Microsoft.Storage/storageAccounts/blobServices/read",
-        "Microsoft.Storage/storageAccounts/blobServices/write",
-    ],
-    "aks_clusters_list": ["Microsoft.ContainerService/managedClusters/read"],
-    "aks_cluster_get": ["Microsoft.ContainerService/managedClusters/read"],
-    "aks_cluster_addon_update": [
-        "Microsoft.ContainerService/managedClusters/read",
-        "Microsoft.ContainerService/managedClusters/write",
-    ],
-    "storage_container_create_blob_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
-    "get_storage_container_properties_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
-    "create_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/write"],
-    "delete_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/delete"],
-    "storage_container_blob_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
-    "storage_container_blob_tag_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read"],
-    "storage_container_blob_tags_set_request": [
-        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
-        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
-    ],
-    "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
-    "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
-    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
-    "storage_containers_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
-    "storage_container_blobs_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
-    "storage_container_blob_delete_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete"],
-    "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
-    "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
-    "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
-    "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
-    "start_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/start/action"],
-    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
-    "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
-    "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
-    "create_vm_request": ["Microsoft.Compute/virtualMachines/write"],
-    "delete_vm_request": [
-        "Microsoft.Compute/virtualMachines/deallocate/action",
-        "Microsoft.Compute/virtualMachines/delete",
-    ],
-    "create_network_interface_request": [
-        "Microsoft.Network/networkInterfaces/write",
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-        "Microsoft.Network/networkSecurityGroups/join/action",
-    ],
-    "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
-    "update_network_interface_request": [
-        "Microsoft.Network/networkInterfaces/read",
-        "Microsoft.Network/networkInterfaces/write",
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-        "Microsoft.Network/publicIPAddresses/join/action",
-        "Microsoft.Network/networkSecurityGroups/join/action",
-        "Microsoft.Network/loadBalancers/backendAddressPools/join/action",
-    ],
-    "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
-    "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
-    "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
-    "waf_policy_get": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
-    "waf_policy_list": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
-    "waf_policy_upsert": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write"],
-    "waf_policy_delete": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"],
-    "waf_front_door_policy_get": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
-    "waf_front_door_policy_list": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
-    "waf_front_door_policy_upsert": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write"],
-    "waf_front_door_policy_delete": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete"],
-    "firewall_policy_create_or_update": [
-        "Microsoft.Network/firewallPolicies/read",
-        "Microsoft.Network/firewallPolicies/write",
-    ],
-    "firewall_policy_get": ["Microsoft.Network/firewallPolicies/read"],
-    "firewall_policy_delete": ["Microsoft.Network/firewallPolicies/delete"],
-    "firewall_policy_list": ["Microsoft.Network/firewallPolicies/read"],
-    "firewall_get": ["Microsoft.Network/azureFirewalls/read"],
-    "firewall_update": [
-        "Microsoft.Network/azureFirewalls/read",
-        "Microsoft.Network/azureFirewalls/write",
-        "Microsoft.Network/firewallPolicies/join/action",
-    ],
-    "create_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/write"],
-    "delete_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/delete"],
-    "list_tables_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/read"],
-    "insert_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
-    "update_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
-    "replace_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
-    "query_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/read"],
-    "delete_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete"],
-    "ip_group_create": ["Microsoft.Network/ipGroups/write"],
-    "ip_group_update": ["Microsoft.Network/ipGroups/read", "Microsoft.Network/ipGroups/write"],
-    "ip_group_get": ["Microsoft.Network/ipGroups/read"],
-    "ip_group_list": ["Microsoft.Network/ipGroups/read"],
-    "ip_group_delete": ["Microsoft.Network/ipGroups/delete"],
-    "firewall_list_request": ["Microsoft.Network/azureFirewalls/read"],
-    "firewall_get_request": ["Microsoft.Network/azureFirewalls/read"],
-    "firewall_policy_rule_collection_list_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
-    "firewall_policy_rule_collection_get_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
-    "firewall_service_tag_list_request": ["Microsoft.Network/locations/serviceTagDetails/read"],
-    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
-    "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
-    "list_virtual_networks_request": ["Microsoft.Network/virtualNetworks/read"],
-    "list_subscriptions_request": ["Microsoft.Resources/subscriptions/read"],
-    "firewall_policy_rule_collection_group_get": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
-    "firewall_policy_rule_collection_group_create_or_update": [
-        "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
-        "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
-    ],
-    "firewall_policy_rule_collection_group_delete": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete"],
-    "log_analytics_saved_searches_list": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
-    "log_analytics_saved_search_get": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
-    "log_analytics_saved_search_create_update": [
-        "Microsoft.OperationalInsights/workspaces/savedSearches/read",
-        "Microsoft.OperationalInsights/workspaces/savedSearches/write",
-    ],
-    "log_analytics_saved_search_delete": ["Microsoft.OperationalInsights/workspaces/savedSearches/delete"],
-    "log_analytics_workspaces_list": ["Microsoft.OperationalInsights/workspaces/read"],
-    "log_analytics_table_get": ["Microsoft.OperationalInsights/workspaces/tables/read"],
-    "log_analytics_table_run": [
-        "Microsoft.OperationalInsights/workspaces/tables/read",
-        "Microsoft.OperationalInsights/workspaces/tables/write",
-        "Microsoft.OperationalInsights/workspaces/searchJobs/write",
-    ],
-    "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
-    "create_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/write"],
-    "delete_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/delete"],
-    "list_shares_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/read"],
-    "list_directories_and_files_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
-        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
-    ],
-    "create_directory_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
-        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    ],
-    "delete_directory_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
-        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    ],
-    "create_file_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
-        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    ],
-    "add_file_content_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
-        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    ],
-    "get_file_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
-        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
-    ],
-    "delete_file_request": [
-        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
-        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    ],
-}
-
-REQUIRED_ROLE_PERMISSIONS = [
-    "Microsoft.Network/networkSecurityGroups/read",
-    "Microsoft.Network/networkSecurityGroups/securityRules/read",
-    "Microsoft.Network/networkSecurityGroups/securityRules/write",
-    "Microsoft.Network/networkSecurityGroups/securityRules/delete",
-    "Microsoft.Network/networkInterfaces/read",
-    "Microsoft.Network/publicIPAddresses/read",
-    "Microsoft.Network/virtualNetworks/read",
-    "Microsoft.Storage/storageAccounts/read",
-    "Microsoft.Storage/storageAccounts/write",
-    "Microsoft.Storage/storageAccounts/blobServices/read",
-    "Microsoft.Storage/storageAccounts/blobServices/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/read",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/delete",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action",
-    "Microsoft.Authorization/policyAssignments/read",
-    "Microsoft.Authorization/policyAssignments/write",
-    "Microsoft.DBforPostgreSQL/servers/read",
-    "Microsoft.DBforPostgreSQL/servers/write",
-    "Microsoft.DBforPostgreSQL/servers/configurations/read",
-    "Microsoft.DBforPostgreSQL/servers/configurations/write",
-    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write",
-    "Microsoft.Web/sites/config/read",
-    "Microsoft.Web/sites/config/write",
-    "Microsoft.Web/sites/read",
-    "Microsoft.Web/sites/write",
-    "Microsoft.DBforMySQL/flexibleServers/configurations/read",
-    "Microsoft.DBforMySQL/flexibleServers/configurations/write",
-    "Microsoft.Insights/logprofiles/read",
-    "Microsoft.Insights/logprofiles/write",
-    "Microsoft.Compute/disks/read",
-    "Microsoft.Compute/disks/write",
-    "Microsoft.Compute/virtualMachines/read",
-    "Microsoft.Compute/virtualMachines/start/action",
-    "Microsoft.Compute/virtualMachines/poweroff/action",
-    "Microsoft.Compute/virtualMachines/write",
-    "Microsoft.Compute/virtualMachines/deallocate/action",
-    "Microsoft.Compute/virtualMachines/delete",
-    "Microsoft.Network/networkInterfaces/write",
-    "Microsoft.Network/virtualNetworks/subnets/join/action",
-    "Microsoft.Network/networkSecurityGroups/join/action",
-    "Microsoft.ContainerRegistry/registries/read",
-    "Microsoft.ContainerRegistry/registries/write",
-    "Microsoft.KeyVault/vaults/read",
-    "Microsoft.KeyVault/vaults/write",
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
-    "Microsoft.DocumentDB/databaseAccounts/read",
-    "Microsoft.DocumentDB/databaseAccounts/write",
-    "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
-    "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
-    "Microsoft.ContainerService/managedClusters/read",
-    "Microsoft.ContainerService/managedClusters/write",
-    "Microsoft.Resources/subscriptions/read",
-    "Microsoft.Resources/subscriptions/resourceGroups/read",
-    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
-    "Microsoft.Network/locations/serviceTagDetails/read",
-    "Microsoft.Consumption/usageDetails/read",
-    "Microsoft.Consumption/budgets/read",
-    "Microsoft.CostManagement/forecast/read",
-    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read",
-    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write",
-    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete",
-    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read",
-    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write",
-    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete",
-    "Microsoft.Network/firewallPolicies/read",
-    "Microsoft.Network/firewallPolicies/write",
-    "Microsoft.Network/firewallPolicies/delete",
-    "Microsoft.Network/firewallPolicies/join/action",
-    "Microsoft.Network/azureFirewalls/read",
-    "Microsoft.Network/azureFirewalls/write",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/read",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/write",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/delete",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/read",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write",
-    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete",
-    "Microsoft.Network/ipGroups/read",
-    "Microsoft.Network/ipGroups/write",
-    "Microsoft.Network/ipGroups/delete",
-    "Microsoft.ResourceGraph/operations/read",
-    "Microsoft.ResourceGraph/resources/read",
-    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
-    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
-    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete",
-    "Microsoft.OperationalInsights/workspaces/read",
-    "Microsoft.OperationalInsights/workspaces/query/read",
-    "Microsoft.OperationalInsights/workspaces/savedSearches/read",
-    "Microsoft.OperationalInsights/workspaces/savedSearches/write",
-    "Microsoft.OperationalInsights/workspaces/savedSearches/delete",
-    "Microsoft.OperationalInsights/workspaces/tables/read",
-    "Microsoft.OperationalInsights/workspaces/tables/write",
-    "Microsoft.OperationalInsights/workspaces/tables/delete",
-    "Microsoft.OperationalInsights/workspaces/searchJobs/write",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/read",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/write",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/delete",
-    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
-    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
-    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
-    "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
-    "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
-    "Microsoft.Sql/servers/read",
-    "Microsoft.Sql/servers/databases/read",
-    "Microsoft.Sql/servers/databases/auditingSettings/read",
-    "Microsoft.Sql/servers/databases/auditingSettings/write",
-    "Microsoft.Sql/servers/firewallRules/read",
-    "Microsoft.Sql/servers/firewallRules/write",
-    "Microsoft.Sql/servers/firewallRules/delete",
-]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
-PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
-PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
 POSTGRES_API_VERSION = "2017-12-01"
 POSTGRES_FLEXIBLE_API_VERSION = "2025-08-01"
@@ -873,7 +518,6 @@ ACR_API_VERSION = "2023-07-01"
 KEY_VAULT_API_VERSION = "2022-07-01"
 SQL_DB_API_VERSION = "2025-01-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
-PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NETWORK_INTERFACE_API_VERSION = "2026-01-01"
 NSG_API_VERSION = "2026-01-01"
@@ -964,56 +608,6 @@ FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX = "Azure.VirtualNetworks.Fi
 # poll the provisioning state of the resource until it reaches one of these terminal states.
 FIREWALL_FAILED_PROVISIONING_STATE = "Failed"
 FIREWALL_TERMINAL_PROVISIONING_STATES = {"Succeeded", FIREWALL_FAILED_PROVISIONING_STATE}
-# Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
-# first positional argument, so main() dispatches these commands differently from the regular ones.
-POLLING_COMMANDS = {
-    "azure-vn-ip-group-create",
-    "azure-vn-ip-group-update",
-    "azure-firewall-rule-collection-groups-create",
-    "azure-firewall-rule-collection-groups-update",
-    "azure-firewall-rule-collection-groups-delete",
-    "azure-firewall-network-rule-create",
-    "azure-firewall-network-rule-update",
-    "azure-firewall-network-rule-delete",
-    "azure-vn-firewall-policy-rule-collection-groups-create",
-    "azure-vn-firewall-policy-rule-collection-groups-update",
-    "azure-vn-firewall-policy-rule-collection-groups-delete",
-    "azure-vn-firewall-policy-network-rule-create",
-    "azure-vn-firewall-policy-network-rule-update",
-    "azure-vn-firewall-policy-network-rule-delete",
-    "azure-log-analytics-table-run",
-}
-
-# The following commands required a scope, token and resource update as part of the functions get_command_resource and
-# get_command_and_token_scopes.
-STORAGE_SPECIAL_COMMANDS = [
-    "azure-storage-blob-property-get",
-    "azure-storage-blob-property-set",
-    "azure-storage-blob-tag-get",
-    "azure-storage-blob-create",
-    "azure-storage-blob-get",
-    "azure-storage-blob-tag-set",
-    "azure-storage-table-create",
-    "azure-storage-table-delete",
-    "azure-storage-tables-list",
-    "azure-storage-table-entity-insert",
-    "azure-storage-table-entity-update",
-    "azure-storage-table-entity-replace",
-    "azure-storage-table-entity-query",
-    "azure-storage-table-entity-delete",
-    "azure-storage-blobs-list",
-    "azure-storage-blob-update",
-    "azure-storage-blob-delete",
-    # File share DATA-PLANE commands (file.core.windows.net) require the storage scope/resource.
-    # The share-level commands (create/delete/list) use the Microsoft.Storage ARM control plane
-    # and therefore stay on the default management scope, so they are intentionally excluded here.
-    "azure-storage-fileshare-content-list",
-    "azure-storage-fileshare-directory-create",
-    "azure-storage-fileshare-directory-delete",
-    "azure-storage-fileshare-file-create",
-    "azure-storage-fileshare-file-get",
-    "azure-storage-fileshare-file-delete",
-]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-storage-container-blob-property-get": "Azure.StorageContainer",
@@ -1087,232 +681,15 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
 }
 
 
-class TokenScope:
-    STORAGE = "STORAGE"
-    GRAPH = "GRAPH"
-    NETWORK = "NETWORK"
-    COMPUTE = "COMPUTE"
-    VAULT = "VAULT"
-    CONTAINER_REGISTRY = "CONTAINER_REGISTRY"
-    DATABASE = "DATABASE"
-    COSMOS = "COSMOS"
-    DATA_LAKE_1 = "DATA_LAKE_1"
-    DATA_LAKE_2 = "DATA_LAKE_2"
-    SIGNALR = "SIGNALR"
-    EVENT_HUBS = "EVENT_HUBS"
-    SERVICE_BUS = "SERVICE_BUS"
-    MONITOR = "MONITOR"
-    DIGITAL_TWINS = "DIGITAL_TWINS"
-    COGNITIVE_SERVICES = "COGNITIVE_SERVICES"
-    SYNAPSE_ANALYTICS = "SYNAPSE_ANALYTICS"
-    ML = "ML"
-    NONE = "NONE"
-    DEFAULT = "DEFAULT"
-    SEARCH = "SEARCH"
-    WORKSPACE_MEMBERSHIP = "WORKSPACE_MEMBERSHIP"
-    WORKSPACE_GROUP = "WORKSPACE_GROUP"
-    WORKSPACE_USER = "WORKSPACE_USER"
-    WORKSPACE_DOMAIN = "WORKSPACE_DOMAIN"
-    WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
-
-
 """ CLIENT CLASS """
 
 
-class AzureClient:
-    def __init__(
-        self,
-        app_id: str = "",
-        subscription_id: str = "",
-        resource_group_name: str = "",
-        verify: bool = False,
-        proxy: bool = False,
-        tenant_id: str | None = None,
-        enc_key: str | None = None,
-        resource: str | None = None,
-        scope: str | None = None,
-        headers: dict | None = {},
-        connection_type: str = "Client Credentials",
-        azure_ad_endpoint: str = "https://login.microsoftonline.com",
-        auth_code: str | None = None,
-        redirect_uri: str | None = None,
-        managed_identities_client_id: str | None = None,
-    ):
-        self.connection_type = connection_type
-        if not headers:
-            is_device_code = "Device Code" in connection_type
-            # Managed Identities authenticate against the IMDS endpoint, not an AAD token endpoint,
-            # so they must not receive a token_retrieval_url.
-            is_managed_identities = "Managed Identities" in connection_type
-            token_retrieval_url: str | None
-            ms_scope: str | None
-            ms_resource: str | None
-            if is_device_code:
-                # Use the configured tenant when available so single-tenant apps get a tenant-scoped
-                # authority. Fall back to the "organizations" endpoint only for multi-tenant apps with
-                # no configured tenant; otherwise Microsoft returns "No tenant-identifying information
-                # found in either the request or implied by any provided credentials".
-                tenant_segment = tenant_id or "organizations"
-                token_retrieval_url = urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_segment}/oauth2/v2.0/token")
-                # Use the per-command resource (management or storage) as the single source of truth,
-                # then derive the matching Device Code delegated scope from it (space-delimited form,
-                # unlike the `.default` form used by the other flows). This keeps storage-container
-                # commands storage-scoped under Device Code auth instead of always management-scoped.
-                ms_resource = (resource or DEFAULT_RESOURCE).rstrip("/")
-                ms_scope = f"{ms_resource}/user_impersonation offline_access user.read"
-            else:
-                # Build the token authority from the configured Azure AD endpoint so that Client Credentials
-                # and Authorization Code flows target the correct cloud (e.g. US Gov login.microsoftonline.us).
-                # Without this, MicrosoftClient falls back to the commercial login.microsoftonline.com authority
-                # while the scope/resource point to a national cloud, which Microsoft rejects with
-                # "Confidential Client is not supported in Cross Cloud request".
-                token_retrieval_url = (
-                    None
-                    if is_managed_identities
-                    else urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_id or ''}/oauth2/v2.0/token")
-                )
-                ms_scope = scope
-                # The Client Credentials and Authorization Code flows use the v2.0 token endpoint, which
-                # authorizes via the `.default` scope and rejects the v1.0 `resource` parameter. Sending both
-                # results in "invalid_target: The resource parameter provided in the request doesn't match with
-                # the requested scopes". Only Device Code (v1.0-style) uses `resource`.
-                ms_resource = None
-            ms_client_args = assign_params(
-                self_deployed=True,
-                auth_id=app_id,
-                token_retrieval_url=token_retrieval_url,
-                grant_type=GRANT_BY_CONNECTION.get(connection_type),
-                base_url=f"{PREFIX_URL_AZURE}",
-                verify=verify,
-                proxy=proxy,
-                resource=ms_resource,
-                scope=ms_scope,
-                azure_ad_endpoint=azure_ad_endpoint,
-                tenant_id=tenant_id,
-                enc_key=enc_key,
-                auth_code=auth_code,
-                redirect_uri=redirect_uri,
-                managed_identities_client_id=managed_identities_client_id,
-                managed_identities_resource_uri=(resource or DEFAULT_RESOURCE).rstrip("/")
-                if is_managed_identities
-                else (ms_resource or Resources.management_azure),
-                command_prefix="azure",
-                ok_codes=(200, 201, 202, 204),
-            )
-            self.ms_client = MicrosoftClient(**ms_client_args)
-        else:
-            base_client_args = assign_params(
-                base_url=f"{PREFIX_URL_AZURE}", verify=os.environ.get("EGRESSPROXY_CA_PATH"), proxy=proxy, headers=headers
-            )
-            self.base_client = BaseClient(**base_client_args)
+class AzureClient(AzureBaseClient):
+    """Azure resource client.
 
-        self.subscription_id = subscription_id
-        self.resource_group_name = resource_group_name
-        self.headers = headers
-
-    def http_request(
-        self,
-        method: str,
-        url_suffix: str | None = None,
-        full_url: str | None = None,
-        params: dict[str, Any] = {},
-        resp_type: str = "json",
-        json_data: dict | None = None,
-        data: dict | bytes | None = None,
-    ) -> requests.Response | dict[str, Any]:
-        if not params:
-            params = {}
-        if not self.headers:
-            self.headers = {}
-        # A paginated `full_url` (an Azure `nextLink`) already carries its own `api-version` in its query
-        # string. Injecting the default here would send the parameter twice, and ARM joins the two values
-        # into one invalid version (e.g. "2025-09-01,2022-09-01"), failing the request with InvalidResourceType.
-        url_has_api_version = bool(full_url) and "api-version" in parse_qs(urlparse(full_url or "").query)
-        if not params.get("api-version") and not url_has_api_version and "x-ms-version" not in self.headers:
-            params["api-version"] = API_VERSION
-
-        proxies = {"http": os.environ.get("CRTX_HTTP_PROXY"), "https": os.environ.get("CRTX_HTTP_PROXY")}
-
-        if self.headers:
-            self.headers |= {"x-caller-id": get_proxydome_token()}
-            return self.base_client._http_request(  # type: ignore[misc]
-                method=method,
-                url_suffix=url_suffix,
-                full_url=full_url,
-                json_data=json_data,
-                params=params,
-                resp_type=resp_type,
-                headers=self.headers,
-                ok_codes=(200, 201, 202, 204, 206),
-                proxies=proxies,
-                data=data,
-            )
-
-        return self.ms_client.http_request(
-            method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
-        )
-
-    def handle_azure_error(
-        self,
-        e: Exception,
-        resource_name: str,
-        resource_type: str,
-        api_function_name: str,
-        subscription_id: str = None,
-        resource_group_name: str = None,
-    ) -> None:
-        """
-        Standardized error handling for Azure API calls
-
-        Args:
-            e: The exception that was raised
-            resource_name: Name of the resource that caused the error
-            resource_type: Type of the resource (e.g., 'Security Rule', 'Storage Account')
-            api_function_name: The api function name, used when need to know the permissions.
-            subscription_id: Azure subscription ID (optional, for better error messages)
-            resource_group_name: Resource group name (optional, for better error messages)
-
-        Raises:
-            ValueError: For 404 (not found) errors
-            DemistoException: For permission errors and other API errors
-        """
-        error_msg = str(e).lower()
-        demisto.debug(
-            f"Azure API error for {subscription_id=} {error_msg=} {resource_type} '{resource_name}': {type(e).__name__}"
-        )
-
-        if "404" in error_msg or "not found" in error_msg:
-            error_details = f'{resource_type} "{resource_name}"'
-            if subscription_id and resource_group_name:
-                error_details += f' under subscription ID "{subscription_id}" and resource group "{resource_group_name}"'
-            elif subscription_id:
-                error_details += f' under subscription ID "{subscription_id}"'
-            raise ValueError(f"{error_details} was not found. {str(e)}")
-
-        elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
-            demisto.debug(f"Permission error, trying to find the missing permission. {e=}")
-            found_permission = []
-            # If we have api_function_name, use the reverse mapping for O(1) lookup
-            if api_function_name in API_FUNCTION_TO_PERMISSIONS:
-                found_permission = get_permissions_from_api_function_name(api_function_name, error_msg)
-
-            if not found_permission:
-                found_permission = get_permissions_from_required_role_permissions_list(error_msg)
-
-            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": perm} for perm in found_permission]
-
-            demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
-            return_multiple_permissions_error(error_entries)
-
-        elif "400" in error_msg or "bad request" in error_msg:
-            if "intercepted by proxydome" in error_msg:
-                raise DemistoException(f'Request for {resource_type} "{resource_name}" was intercepted by proxydome.')
-
-            raise DemistoException(f'Invalid request for {resource_type} "{resource_name}". {str(e)}')
-
-        else:
-            # Re-raise the original exception for any other errors
-            raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
+    The infrastructure (authentication, http_request, handle_azure_error, storage headers) is inherited from
+    AzureBaseClient in AzureApiModule. This class holds the per-resource API request methods.
+    """
 
     def create_or_update_rule(
         self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str
@@ -1913,28 +1290,6 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
-
-    def storage_container_set_headers(self, custom_headers: dict = {}, api_version: str = STORAGE_API_VERSION):
-        """
-        Set the headers for the storage container request.
-        Args:
-            custom_headers (dict, optional): Custom headers to be added to the request.
-            api_version (str, optional): The storage data-plane REST API version sent in the x-ms-version header.
-                Defaults to STORAGE_API_VERSION.
-        """
-        request_headers = {
-            "x-ms-version": api_version,
-            "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
-
-        if custom_headers:
-            self.headers |= custom_headers
-
-        demisto.debug(f"Request headers: {self.headers}")
 
     def get_storage_container_properties_request(self, account_name: str, container_name: str) -> requests.Response:
         """
@@ -6168,52 +5523,6 @@ class AzureClient:
 
 
 """ HELPER FUNCTIONS """
-
-
-def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> list:
-    """
-    Extract the relevant missing permission by checking command-to-permissions mapping against an error message.
-    Iterates over the permissions mapped to a specific API function and returns the relevant permissions
-    that appear in the given error message.
-
-    Args:
-        api_function_name (str): The name of the API function used for permission lookup.
-        error_msg (str): The error message string to check for missing permissions.
-
-    Returns:
-        list: The matching permission names if found, otherwise an empty list.
-    """
-    permission_names = []
-    for permission in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
-        if permission.lower() in error_msg.lower():
-            demisto.debug(f"Found missing permission via command mapping: {permission}")
-            permission_names.append(permission)
-    return permission_names
-
-
-def get_permissions_from_required_role_permissions_list(error_msg: str) -> list:
-    """
-    Extract the relevant missing permission by searching the required role permissions list against an error message.
-    Iterates over the predefined required role permissions and returns the relevant permissions
-    that appear in the given error message.
-
-    Args:
-        error_msg (str): The error message string to check for missing permissions.
-
-    Returns:
-        list: The matching permission names if found, otherwise an empty list.
-    """
-    permission_names = []
-    permissions_to_check = set(REQUIRED_ROLE_PERMISSIONS)
-    for permission in permissions_to_check:
-        if permission.lower() in error_msg.lower():
-            demisto.debug(f"Found missing permission via fallback search: {permission}")
-            permission_names.append(permission)
-
-    if not permission_names:
-        permission_names.append("N/A")
-
-    return permission_names
 
 
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -14255,591 +13564,238 @@ def storage_fileshare_file_delete_command(client: AzureClient, params: dict, arg
     return CommandResults(readable_output=f"File {file_name} successfully deleted from {share_name}.")
 
 
-def test_module(client: AzureClient) -> str:
-    """Tests API connectivity and authentication.
+""" COMMANDS MAPPING """
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Raises exceptions if something goes wrong.
-
-    :type AzureClient: ``Client``
-    :param Client: client to use
-    :return: 'ok' if test passed.
-    :rtype: ``str``
-    """
-    if "Device Code" in client.connection_type:
-        raise DemistoException(
-            "When using the Device Code authentication type, the Test button cannot validate the "
-            "connection. Save the instance, run the `!azure-auth-start` and `!azure-auth-complete` "
-            "commands to log in, and then run the `!azure-auth-test` command to validate the connection. "
-            "For more details, see the Detailed Instructions (?) Help section in the integration configuration."
-        )
-    try:
-        if "Azure Managed Identities" in client.connection_type:
-            # The roleAssignments call requires the Microsoft.Authorization/roleAssignments/read
-            # permission, which a Managed Identity often lacks even when it can run other commands.
-            # Validate the connection with a lightweight resource-groups list call, which only requires
-            # the baseline Microsoft.Resources/subscriptions/resourceGroups/read permission.
-            client.http_request(
-                method="GET",
-                full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/resourcegroups",
-                params={"$top": "1"},
-            )
-        else:
-            client.http_request(
-                method="GET",
-                full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/providers/Microsoft.Authorization/roleAssignments",
-                params={"api-version": PERMISSIONS_VERSION},
-            )
-    except (ConnectionError, Timeout) as conn_err:
-        raise Exception("Connectivity Error: Cannot reach Azure endpoint") from conn_err
-    return "ok"
-
-
-def _get_ms_client(client: AzureClient) -> "MicrosoftClient":
-    """Return the MicrosoftClient used for the marketplace auth flows.
-
-    The MicrosoftClient only exists on the Cortex XSOAR / Cortex XSIAM (marketplace) path. On the
-    Cortex Platform (COOC) path authentication is handled automatically via the cloud connector, so
-    the auth helper commands are not applicable there.
-
-    Raises:
-        DemistoException: If called on the Cortex Platform path (no MicrosoftClient available).
-    """
-    ms_client = getattr(client, "ms_client", None)
-    if ms_client is None:
-        raise DemistoException(
-            "This command is supported only on Cortex XSOAR and Cortex XSIAM. On the Cortex Platform, "
-            "authentication is handled automatically and does not require these auth commands."
-        )
-    return ms_client
-
-
-def test_connection(client: AzureClient) -> str:
-    """Validate the Azure connection by requesting an access token (marketplace flows).
-
-    Args:
-        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
-
-    Returns:
-        str: "Success!" if an access token was retrieved successfully.
-
-    Raises:
-        Exception: Propagated from MicrosoftApiModule if authentication fails.
-    """
-    _get_ms_client(client).get_access_token()  # If fails, MicrosoftApiModule raises an error
-    return "Success!"
-
-
-def start_auth(client: AzureClient) -> CommandResults:
-    """Start the interactive (Device Code) authorization process (marketplace flows).
-
-    Args:
-        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
-
-    Returns:
-        CommandResults: A result containing the device-code authorization instructions for the user,
-            who must then run the `!azure-auth-complete` command to finish the flow.
-    """
-    result = _get_ms_client(client).start_auth("!azure-auth-complete")
-    return CommandResults(readable_output=result)
-
-
-def complete_auth(client: AzureClient) -> str:
-    """Complete the interactive (Device Code) authorization process (marketplace flows).
-
-    Args:
-        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
-
-    Returns:
-        str: A confirmation message indicating the authorization completed successfully.
-
-    Raises:
-        Exception: Propagated from MicrosoftApiModule if the access token cannot be retrieved.
-    """
-    _get_ms_client(client).get_access_token()
-    return "Authorization completed successfully."
-
-
-def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:  # pragma: no cover
-    """
-    Tests connectivity to Azure and checks for required permissions.
-    This function is specifically used for COOC (Connect on our Cloud) health checks
-    to verify connectivity and permissions.
-    Args:
-        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
-        subscription_id (str): The Azure subscription ID to check against.
-        connector_id (str): The connector ID for the Cloud integration.
-    Returns:
-        HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
-    """
-    if not subscription_id:
-        return HealthCheckError(
-            account_id=subscription_id,
-            connector_id=connector_id,
-            message="Missing Subscription ID for Azure integration",
-            error_type=ErrorType.INTERNAL_ERROR,
-        )
-    try:
-        token = shared_creds.get("access_token")
-        if not token:
-            return HealthCheckError(
-                account_id=subscription_id,
-                connector_id=connector_id,
-                message="Failed to authenticate with Azure",
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-
-        demisto.debug("Using token-based credentials for health check")
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
-        client = AzureClient(subscription_id=subscription_id, headers=headers)
-        test_module(client)
-
-    except Exception as e:
-        return HealthCheckError(
-            account_id=subscription_id,
-            connector_id=connector_id,
-            message=f"Failed to connect to Azure: {str(e)}",
-            error_type=ErrorType.CONNECTIVITY_ERROR,
-        )
-
-    return None
-
-
-# Auth-helper commands establish or reset authentication and therefore must not require the
-# Authorization code, which is only obtained by first running azure-generate-login-url. Requiring
-# it here would create a chicken-and-egg block on the command whose purpose is to produce the code.
-AUTH_HELPER_COMMANDS = {
-    "azure-generate-login-url",
-    "azure-auth-start",
-    "azure-auth-complete",
-    "azure-auth-reset",
-    "azure-auth-test",
+# Existing commands. New commands register themselves with @AzureIntegration.register(...).
+COMMANDS_MAPPING: dict[str, Callable] = {
+    "azure-rg-list-operations": resource_graph_operations_list_command,
+    "azure-rg-operations-list": resource_graph_operations_list_command,
+    "azure-rg-query": resource_graph_query_resources_command,
+    "azure-nsg-security-rule-update": update_security_rule_command,
+    "azure-vn-security-rule-update": update_security_rule_command,
+    "azure-billing-usage-list": azure_billing_usage_list_command,
+    "azure-billing-forecast-list": azure_billing_forecast_list_command,
+    "azure-billing-budgets-list": azure_billing_budgets_list_command,
+    "azure-storage-accounts-list": storage_account_list_command,
+    "azure-storage-blob-containers-list": storage_blob_container_list_command,
+    "azure-storage-account-update": storage_account_update_command,
+    "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+    "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
+    "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
+    "azure-storage-blob-service-property-get": storage_blob_service_properties_get_command,
+    "azure-storage-blob-containers-update": storage_blob_containers_update_command,
+    "azure-storage-blob-container-update": storage_blob_containers_update_command,
+    "azure-storage-container-property-get": storage_container_property_get_command,
+    "azure-storage-container-create": storage_container_create_command,
+    "azure-storage-container-delete": storage_container_delete_command,
+    "azure-storage-container-blob-create": storage_container_blob_create_command,
+    "azure-storage-blob-create": storage_container_blob_create_command,
+    "azure-storage-container-blob-get": storage_container_blob_get_command,
+    "azure-storage-blob-get": storage_container_blob_get_command,
+    "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
+    "azure-storage-blob-tag-get": storage_container_blob_tag_get_command,
+    "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,
+    "azure-storage-blob-tag-set": storage_container_blob_tag_set_command,
+    "azure-storage-container-blob-property-get": storage_container_blob_property_get_command,
+    "azure-storage-blob-property-get": storage_container_blob_property_get_command,
+    "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
+    "azure-storage-blob-property-set": storage_container_blob_property_set_command,
+    "azure-storage-container-public-access-block": storage_container_block_public_access_command,
+    "azure-storage-table-create": create_table_command,
+    "azure-storage-table-delete": delete_table_command,
+    "azure-storage-tables-list": list_tables_command,
+    "azure-storage-table-entity-insert": insert_entity_command,
+    "azure-storage-table-entity-update": update_entity_command,
+    "azure-storage-table-entity-replace": replace_entity_command,
+    "azure-storage-table-entity-query": query_entity_command,
+    "azure-storage-table-entity-delete": delete_entity_command,
+    "azure-storage-containers-list": storage_container_list_command,
+    "azure-storage-blobs-list": storage_container_blob_list_command,
+    "azure-storage-blob-update": storage_container_blob_update_command,
+    "azure-storage-blob-delete": storage_container_blob_delete_command,
+    "azure-storage-container-sas-create": generate_sas_token_command,
+    "azure-policy-assignment-create": create_policy_assignment_command,
+    "azure-postgres-config-set": set_postgres_config_command,
+    "azure-postgres-server-update": postgres_server_update_command,
+    "azure-webapp-config-set": set_webapp_config_command,
+    "azure-appservice-webapp-config-update": set_webapp_config_command,
+    "azure-webapp-auth-update": update_webapp_auth_command,
+    "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
+    "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
+    "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
+    "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+    "azure-monitor-log-profile-update": monitor_log_profile_update_command,
+    "azure-disk-update": disk_update_command,
+    "azure-compute-disk-update": disk_update_command,
+    "azure-webapp-update": webapp_update_command,
+    "azure-webapp-set-webapp-to-https-only-quick-action": webapp_update_command,
+    "azure-webapp-enable-client-cert-quick-action": webapp_update_command,
+    "azure-appservice-webapp-update": webapp_update_command,
+    "azure-acr-update": acr_update_command,
+    "azure-cr-registry-update": acr_update_command,
+    "azure-key-vault-update": update_key_vault_command,
+    "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
+    "azure-sqldb-servers-list": sql_servers_list_command,
+    "azure-sqldb-databases-list": sql_db_list_command,
+    "azure-sqldb-server-auditing-settings-list": sql_db_server_auditing_settings_list_command,
+    "azure-sqldb-audit-policy-create-update": sql_db_audit_policy_create_update_command,
+    "azure-sqldb-security-alert-policy-create": sql_db_threat_policy_create_update_command,
+    "azure-sqldb-firewall-rules-list": sql_firewall_rules_list_command,
+    "azure-sqldb-firewall-rule-create-update": sql_firewall_rule_create_update_command,
+    "azure-sqldb-firewall-rule-delete": sql_firewall_rule_delete_command,
+    "azure-sqldb-firewall-rule-replace": sql_firewall_rule_replace_command,
+    "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
+    "azure-sql-db-threat-policy-update-quick-action": sql_db_threat_policy_update_command,
+    "azure-keyvault-vault-update": update_key_vault_command,
+    "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
+    "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
+    "azure-sql-db-transparent-data-encryption-enable-tde-quick-action": sql_db_tde_set_command,
+    "azure-aks-managed-clusters-list": aks_clusters_list_command,
+    "azure-aks-managed-cluster-addon-update": aks_cluster_addon_update_command,
+    "azure-cosmos-db-update": cosmosdb_update_command,
+    "azure-cosmos-db-disable-key-quick-action": cosmosdb_update_command,
+    "azure-cosmosdb-db-account-update": cosmosdb_update_command,
+    "azure-nsg-security-groups-list": nsg_security_groups_list_command,
+    "azure-vn-security-groups-list": nsg_security_groups_list_command,
+    "azure-nsg-security-rule-get": nsg_security_rule_get_command,
+    "azure-vn-security-group-create": nsg_security_group_create_command,
+    "azure-vn-security-rule-get": nsg_security_rule_get_command,
+    "azure-nsg-security-rules-list": nsg_security_rules_list_command,
+    "azure-vn-security-rules-list": nsg_security_rules_list_command,
+    "azure-nsg-security-rule-create": nsg_security_rule_create_command,
+    "azure-vn-security-rule-create": nsg_security_rule_create_command,
+    "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
+    "azure-vn-security-rule-delete": nsg_security_rule_delete_command,
+    "azure-vn-ip-group-get": ip_group_get_command,
+    "azure-vn-ip-groups-list": ip_group_list_command,
+    "azure-vn-ip-group-delete": ip_group_delete_command,
+    "azure-nsg-resource-group-list": nsg_resource_group_list_command,
+    "azure-rm-resource-groups-list": nsg_resource_group_list_command,
+    "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
+    "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
+    "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+    "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+    "azure-vn-virtual-networks-list": virtual_networks_list_command,
+    "azure-rm-subscriptions-list": subscriptions_list_command,
+    "azure-vm-instance-start": start_vm_command,
+    "azure-compute-vm-start": start_vm_command,
+    "azure-vm-instance-power-off": poweroff_vm_command,
+    "azure-compute-vm-power-off": poweroff_vm_command,
+    "azure-vm-instance-details-get": get_vm_command,
+    "azure-compute-vm-list": list_vm_command,
+    "azure-compute-vm-create": create_vm_command,
+    "azure-compute-vm-delete": delete_vm_command,
+    "azure-vm-network-interface-details-get": get_network_interface_command,
+    "azure-vn-network-interface-update": network_interface_update_command,
+    "azure-vn-network-interface-create": create_network_interface_command,
+    "azure-compute-vm-get": get_vm_command,
+    "azure-vn-network-interface-get": get_network_interface_command,
+    "azure-vm-public-ip-details-get": get_public_ip_details_command,
+    "azure-vn-public-ip-address-get": get_public_ip_details_command,
+    "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
+    "azure-appservice-webapp-update-quick-action": webapp_update_command,
+    "azure-storage-allow-access-quick-action": storage_account_update_command,
+    "azure-webapp-set-http2-quick-action": set_webapp_config_command,
+    "azure-appservice-webapp-config-update-http2-quick-action": set_webapp_config_command,
+    "azure-webapp-auth-update-quick-action": update_webapp_auth_command,
+    "azure-appservice-webapp-auth-settings-update-quick-action": update_webapp_auth_command,
+    "azure-storage-disable-cross-tenant-replication-quick-action": storage_account_update_command,
+    "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
+    "azure-storage-disable-storage-account-public-access-quick-action": storage_account_update_command,
+    "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
+    "azure-appservice-webapp-config-disable-remote-debugging-quick-action": set_webapp_config_command,
+    "azure-nsg-security-rule-delete-quick-action": nsg_security_rule_delete_command,
+    "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
+    "azure-appservice-webapp-config-update-min-tls-version-quick-action": set_webapp_config_command,
+    "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
+    "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
+    "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
+    "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
+    "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
+    "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
+    "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+    "azure-storage-blob-soft-deletion-enable-quick-action": storage_blob_service_properties_set_command,
+    "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
+    "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
+    "azure-disk-set-data-access-ad-quick-action": disk_update_command,
+    "azure-compute-disk-update-data-access-ad-quick-action": disk_update_command,
+    "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+    "azure-cr-disable-public-private-access-quick-action": acr_update_command,
+    "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+    "azure-cr-disable-anonymous-pull-quick-action": acr_update_command,
+    "azure-cr-disable-authentication-as-arm-quick-action": acr_update_command,
+    "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
+    "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
+    "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
+    "azure-postgres-config-set-checkpoint-logging-quick-action": set_postgres_config_command,
+    "azure-postgres-config-set-connection-throttling-quick-action": set_postgres_config_command,
+    "azure-postgres-config-set-session-connection-logging-quick-action": set_postgres_config_command,
+    "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
+    "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
+    "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
+    "azure-application-gateway-waf-policy-get": waf_policy_get_command,
+    "azure-application-gateway-waf-policies-list": waf_policy_list_command,
+    "azure-application-gateway-waf-policy-create-or-update": waf_policy_create_or_update_command,
+    "azure-application-gateway-waf-policy-delete": waf_policy_delete_command,
+    "azure-front-door-policy-get": waf_front_door_policy_get_command,
+    "azure-front-door-policies-list": waf_front_door_policy_list_command,
+    "azure-front-door-policy-create-or-update": waf_front_door_policy_create_or_update_command,
+    "azure-front-door-policy-delete": waf_front_door_policy_delete_command,
+    "azure-vn-firewall-policy-create": firewall_policy_create_command,
+    "azure-vn-firewall-policy-update": firewall_policy_update_command,
+    "azure-vn-firewall-policy-get": firewall_policy_get_command,
+    "azure-vn-firewall-policy-delete": firewall_policy_delete_command,
+    "azure-vn-firewall-policy-list": firewall_policy_list_command,
+    "azure-firewall-policy-attach": firewall_policy_attach_command,
+    "azure-firewall-policy-detach": firewall_policy_detach_command,
+    "azure-vn-ip-group-create": ip_group_create_command,
+    "azure-vn-ip-group-update": ip_group_update_command,
+    "azure-firewall-list": firewall_list_command,
+    "azure-firewall-get": firewall_get_command,
+    "azure-vn-firewall-policy-rule-collection-groups-list": firewall_policy_rule_collection_groups_list_command,
+    "azure-firewall-rules-list": firewall_rule_list_command,
+    "azure-firewall-rule-get": firewall_rule_get_command,
+    "azure-firewall-service-tags-information-list": firewall_service_tag_list_command,
+    "azure-firewall-rule-collection-groups-create": firewall_rule_collection_groups_create_command,
+    "azure-firewall-rule-collection-groups-update": firewall_rule_collection_groups_update_command,
+    "azure-firewall-rule-collection-groups-delete": firewall_rule_collection_groups_delete_command,
+    "azure-vn-firewall-policy-rule-collection-groups-create": firewall_policy_rule_collection_groups_create_command,
+    "azure-vn-firewall-policy-rule-collection-groups-update": firewall_policy_rule_collection_groups_update_command,
+    "azure-vn-firewall-policy-rule-collection-groups-delete": firewall_policy_rule_collection_groups_delete_command,
+    "azure-firewall-network-rule-create": firewall_network_rule_create_command,
+    "azure-firewall-network-rule-update": firewall_network_rule_update_command,
+    "azure-firewall-network-rule-delete": firewall_network_rule_delete_command,
+    "azure-vn-firewall-policy-network-rule-create": firewall_policy_network_rule_create_command,
+    "azure-vn-firewall-policy-network-rule-update": firewall_policy_network_rule_update_command,
+    "azure-vn-firewall-policy-network-rule-delete": firewall_policy_network_rule_delete_command,
+    "azure-log-analytics-saved-searches-list": log_analytics_saved_searches_list_command,
+    "azure-log-analytics-saved-search-get": log_analytics_saved_search_get_command,
+    "azure-log-analytics-saved-search-create-update": log_analytics_saved_search_create_update_command,
+    "azure-log-analytics-saved-search-delete": log_analytics_saved_search_delete_command,
+    "azure-log-analytics-workspaces-list": log_analytics_workspaces_list_command,
+    "azure-log-analytics-table-get": log_analytics_table_get_command,
+    "azure-log-analytics-table-delete": log_analytics_table_delete_command,
+    "azure-log-analytics-table-run": log_analytics_table_run_command,
+    "azure-storage-fileshare-create": storage_fileshare_create_command,
+    "azure-storage-fileshare-delete": storage_fileshare_delete_command,
+    "azure-storage-fileshares-list": storage_fileshare_list_command,
+    "azure-storage-fileshare-content-list": storage_fileshare_content_list_command,
+    "azure-storage-fileshare-directory-create": storage_fileshare_directory_create_command,
+    "azure-storage-fileshare-directory-delete": storage_fileshare_directory_delete_command,
+    "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
+    "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
+    "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
 }
 
 
-def validate_auth_params(params: dict, connection_type: str, command: str = "") -> None:
-    """Validate that all mandatory parameters for the selected authentication type are configured.
-
-    This runs only on the Cortex XSOAR / Cortex XSIAM (marketplace) path.
-
-    The mandatory parameters per authentication type are:
-        - Client Credentials:     Application ID, Tenant ID, Client Secret, Default Subscription ID
-        - Device Code:            Application ID, Default Subscription ID
-        - Authorization Code:     Application ID, Application redirect URI, Authorization code,
-                                  Default Subscription ID
-        - Azure Managed Identities: Azure Managed Identities Client ID, Default Subscription ID
-
-    The Authorization code is not required for auth-helper commands (e.g. azure-generate-login-url),
-    since those commands are used to obtain/establish authentication before a code exists.
-
-    Raises:
-        DemistoException: If one or more mandatory parameters for the selected auth type are missing.
-    """
-    app_id = params.get("app_id")
-    subscription_id = params.get("subscription_id")
-    tenant_id = params.get("tenant_id")
-    client_secret = (params.get("credentials") or {}).get("password")
-    auth_code = (params.get("auth_code") or {}).get("password")
-    redirect_uri = params.get("redirect_uri")
-    managed_identities_client_id = get_azure_managed_identities_client_id(params)
-
-    authorization_code_required: dict[str, Any] = {
-        "Application ID": app_id,
-        "Application redirect URI": redirect_uri,
-        "Default Subscription ID": subscription_id,
-    }
-    # Only demand the Authorization code itself when the caller is an actual data command, not an
-    # auth-helper command such as azure-generate-login-url that is run to obtain the code.
-    if command not in AUTH_HELPER_COMMANDS:
-        authorization_code_required["Authorization code"] = auth_code
-
-    required_by_auth_type: dict[str, dict[str, Any]] = {
-        "Client Credentials": {
-            "Application ID": app_id,
-            "Tenant ID": tenant_id,
-            "Client Secret": client_secret,
-            "Default Subscription ID": subscription_id,
-        },
-        "Device Code": {
-            "Application ID": app_id,
-            "Default Subscription ID": subscription_id,
-        },
-        "Authorization Code": authorization_code_required,
-        "Azure Managed Identities": {
-            "Azure Managed Identities Client ID": managed_identities_client_id,
-            "Default Subscription ID": subscription_id,
-        },
-    }
-
-    required_params = required_by_auth_type.get(connection_type, {})
-    missing = [display_name for display_name, value in required_params.items() if not value]
-    if missing:
-        raise DemistoException(
-            f"Missing required parameter(s) for the '{connection_type}' authentication type: "
-            f"{', '.join(missing)}. Configure these in the integration instance and try again."
-        )
-
-
-def get_azure_client(params: dict, args: dict, command: str, azure_ad_endpoint: str = DEFAULT_AZURE_AD_ENDPOINT):
-    headers = {}
-    client_scope, token_scopes = get_command_and_token_scopes(command)
-    resource = get_command_resource(command)
-    connection_type = params.get("auth_type") or "Client Credentials"
-    # The Cortex Platform (COOC) path is selected when a connector ID is present. There, the CTS
-    # token flow (get_cloud_credentials -> demisto._platformAPICall) handles authentication.
-    # On Cortex XSOAR / Cortex XSIAM (version < 3.0) there is no connector, so authentication is done
-    # by MicrosoftClient using the configured auth_type.
-    if get_connector_id():
-        credentials = get_cloud_credentials(
-            CloudTypes.AZURE.value,
-            get_from_args_or_params(params=params, args=args, key="subscription_id"),
-            scopes=token_scopes,
-        )
-        token = credentials.get("access_token")
-        if not token:
-            raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
-        demisto.debug("Using CTS.")
-    else:
-        # Marketplace path: ensure all mandatory parameters for the selected auth type are configured
-        # before attempting any API call.
-        validate_auth_params(params, connection_type, command)
-    client = AzureClient(
-        app_id=params.get("app_id", ""),
-        subscription_id=params.get("subscription_id", ""),
-        resource_group_name=params.get("resource_group_name", ""),
-        verify=not params.get("insecure", False),
-        proxy=params.get("proxy", False),
-        tenant_id=params.get("tenant_id"),
-        enc_key=(params.get("credentials") or {}).get("password"),
-        resource=resource,
-        scope=client_scope,
-        headers=headers,
-        connection_type=connection_type,
-        azure_ad_endpoint=azure_ad_endpoint,
-        auth_code=(params.get("auth_code", {}) or {}).get("password"),
-        redirect_uri=params.get("redirect_uri"),
-        managed_identities_client_id=get_azure_managed_identities_client_id(params),
-    )
-    return client
-
-
-def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
-    """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
-    # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
-        return STORAGE_SCOPE, [TokenScope.STORAGE]
-    return DEFAULT_SCOPE, [TokenScope.DEFAULT]
-
-
-def get_command_resource(command: str) -> str:
-    """Get the resource for the command. Default is management_azure."""
-    # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
-        return STORAGE_RESOURCE
-    return DEFAULT_RESOURCE
-
-
-def switch_to_gov_account() -> None:
-    global BLOB_SERVICE_PREFIX
-    global SCOPE_BY_CONNECTION
-    global DEFAULT_SCOPE
-    global DEFAULT_RESOURCE
-    global PREFIX_URL_AZURE
-    global PREFIX_URL_MS_GRAPH
-
-    BLOB_SERVICE_PREFIX = "blob.core.usgovcloudapi.net"
-    SCOPE_BY_CONNECTION = {
-        "Device Code": "https://management.usgovcloudapi.net/user_impersonation offline_access user.read",
-        "Authorization Code": "https://management.usgovcloudapi.net/.default",
-        "Client Credentials": "https://management.usgovcloudapi.net/.default",
-    }
-    DEFAULT_SCOPE = "https://management.usgovcloudapi.net/.default"
-    DEFAULT_RESOURCE = "https://management.usgovcloudapi.net/"
-    PREFIX_URL_AZURE = "https://management.usgovcloudapi.net/subscriptions/"
-    PREFIX_URL_MS_GRAPH = "https://graph.microsoft.us/v1.0"
-
-
 def main():  # pragma: no cover
-    params = demisto.params()
-    command = demisto.command()
-    args = demisto.args()
-
-    demisto.debug(f"Command being called is {command}")
-    connector_id = get_connector_id()
-    demisto.debug(f"{connector_id=}")
-    handle_proxy()
-    try:
-        commands_with_params_and_args = {
-            "azure-rg-list-operations": resource_graph_operations_list_command,
-            "azure-rg-operations-list": resource_graph_operations_list_command,
-            "azure-rg-query": resource_graph_query_resources_command,
-            "azure-nsg-security-rule-update": update_security_rule_command,
-            "azure-vn-security-rule-update": update_security_rule_command,
-            "azure-billing-usage-list": azure_billing_usage_list_command,
-            "azure-billing-forecast-list": azure_billing_forecast_list_command,
-            "azure-billing-budgets-list": azure_billing_budgets_list_command,
-            "azure-storage-accounts-list": storage_account_list_command,
-            "azure-storage-blob-containers-list": storage_blob_container_list_command,
-            "azure-storage-account-update": storage_account_update_command,
-            "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
-            "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
-            "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
-            "azure-storage-blob-service-property-get": storage_blob_service_properties_get_command,
-            "azure-storage-blob-containers-update": storage_blob_containers_update_command,
-            "azure-storage-blob-container-update": storage_blob_containers_update_command,
-            "azure-storage-container-property-get": storage_container_property_get_command,
-            "azure-storage-container-create": storage_container_create_command,
-            "azure-storage-container-delete": storage_container_delete_command,
-            "azure-storage-container-blob-create": storage_container_blob_create_command,
-            "azure-storage-blob-create": storage_container_blob_create_command,
-            "azure-storage-container-blob-get": storage_container_blob_get_command,
-            "azure-storage-blob-get": storage_container_blob_get_command,
-            "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
-            "azure-storage-blob-tag-get": storage_container_blob_tag_get_command,
-            "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,
-            "azure-storage-blob-tag-set": storage_container_blob_tag_set_command,
-            "azure-storage-container-blob-property-get": storage_container_blob_property_get_command,
-            "azure-storage-blob-property-get": storage_container_blob_property_get_command,
-            "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
-            "azure-storage-blob-property-set": storage_container_blob_property_set_command,
-            "azure-storage-container-public-access-block": storage_container_block_public_access_command,
-            "azure-storage-table-create": create_table_command,
-            "azure-storage-table-delete": delete_table_command,
-            "azure-storage-tables-list": list_tables_command,
-            "azure-storage-table-entity-insert": insert_entity_command,
-            "azure-storage-table-entity-update": update_entity_command,
-            "azure-storage-table-entity-replace": replace_entity_command,
-            "azure-storage-table-entity-query": query_entity_command,
-            "azure-storage-table-entity-delete": delete_entity_command,
-            "azure-storage-containers-list": storage_container_list_command,
-            "azure-storage-blobs-list": storage_container_blob_list_command,
-            "azure-storage-blob-update": storage_container_blob_update_command,
-            "azure-storage-blob-delete": storage_container_blob_delete_command,
-            "azure-storage-container-sas-create": generate_sas_token_command,
-            "azure-policy-assignment-create": create_policy_assignment_command,
-            "azure-postgres-config-set": set_postgres_config_command,
-            "azure-postgres-server-update": postgres_server_update_command,
-            "azure-webapp-config-set": set_webapp_config_command,
-            "azure-appservice-webapp-config-update": set_webapp_config_command,
-            "azure-webapp-auth-update": update_webapp_auth_command,
-            "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
-            "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
-            "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
-            "azure-monitor-log-profile-update": monitor_log_profile_update_command,
-            "azure-disk-update": disk_update_command,
-            "azure-compute-disk-update": disk_update_command,
-            "azure-webapp-update": webapp_update_command,
-            "azure-webapp-set-webapp-to-https-only-quick-action": webapp_update_command,
-            "azure-webapp-enable-client-cert-quick-action": webapp_update_command,
-            "azure-appservice-webapp-update": webapp_update_command,
-            "azure-acr-update": acr_update_command,
-            "azure-cr-registry-update": acr_update_command,
-            "azure-key-vault-update": update_key_vault_command,
-            "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
-            "azure-sqldb-servers-list": sql_servers_list_command,
-            "azure-sqldb-databases-list": sql_db_list_command,
-            "azure-sqldb-server-auditing-settings-list": sql_db_server_auditing_settings_list_command,
-            "azure-sqldb-audit-policy-create-update": sql_db_audit_policy_create_update_command,
-            "azure-sqldb-security-alert-policy-create": sql_db_threat_policy_create_update_command,
-            "azure-sqldb-firewall-rules-list": sql_firewall_rules_list_command,
-            "azure-sqldb-firewall-rule-create-update": sql_firewall_rule_create_update_command,
-            "azure-sqldb-firewall-rule-delete": sql_firewall_rule_delete_command,
-            "azure-sqldb-firewall-rule-replace": sql_firewall_rule_replace_command,
-            "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
-            "azure-sql-db-threat-policy-update-quick-action": sql_db_threat_policy_update_command,
-            "azure-keyvault-vault-update": update_key_vault_command,
-            "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
-            "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
-            "azure-sql-db-transparent-data-encryption-enable-tde-quick-action": sql_db_tde_set_command,
-            "azure-aks-managed-clusters-list": aks_clusters_list_command,
-            "azure-aks-managed-cluster-addon-update": aks_cluster_addon_update_command,
-            "azure-cosmos-db-update": cosmosdb_update_command,
-            "azure-cosmos-db-disable-key-quick-action": cosmosdb_update_command,
-            "azure-cosmosdb-db-account-update": cosmosdb_update_command,
-            "azure-nsg-security-groups-list": nsg_security_groups_list_command,
-            "azure-vn-security-groups-list": nsg_security_groups_list_command,
-            "azure-nsg-security-rule-get": nsg_security_rule_get_command,
-            "azure-vn-security-group-create": nsg_security_group_create_command,
-            "azure-vn-security-rule-get": nsg_security_rule_get_command,
-            "azure-nsg-security-rules-list": nsg_security_rules_list_command,
-            "azure-vn-security-rules-list": nsg_security_rules_list_command,
-            "azure-nsg-security-rule-create": nsg_security_rule_create_command,
-            "azure-vn-security-rule-create": nsg_security_rule_create_command,
-            "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
-            "azure-vn-security-rule-delete": nsg_security_rule_delete_command,
-            "azure-vn-ip-group-get": ip_group_get_command,
-            "azure-vn-ip-groups-list": ip_group_list_command,
-            "azure-vn-ip-group-delete": ip_group_delete_command,
-            "azure-nsg-resource-group-list": nsg_resource_group_list_command,
-            "azure-rm-resource-groups-list": nsg_resource_group_list_command,
-            "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
-            "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
-            "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-vn-virtual-networks-list": virtual_networks_list_command,
-            "azure-rm-subscriptions-list": subscriptions_list_command,
-            "azure-vm-instance-start": start_vm_command,
-            "azure-compute-vm-start": start_vm_command,
-            "azure-vm-instance-power-off": poweroff_vm_command,
-            "azure-compute-vm-power-off": poweroff_vm_command,
-            "azure-vm-instance-details-get": get_vm_command,
-            "azure-compute-vm-list": list_vm_command,
-            "azure-compute-vm-create": create_vm_command,
-            "azure-compute-vm-delete": delete_vm_command,
-            "azure-vm-network-interface-details-get": get_network_interface_command,
-            "azure-vn-network-interface-update": network_interface_update_command,
-            "azure-vn-network-interface-create": create_network_interface_command,
-            "azure-compute-vm-get": get_vm_command,
-            "azure-vn-network-interface-get": get_network_interface_command,
-            "azure-vm-public-ip-details-get": get_public_ip_details_command,
-            "azure-vn-public-ip-address-get": get_public_ip_details_command,
-            "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
-            "azure-appservice-webapp-update-quick-action": webapp_update_command,
-            "azure-storage-allow-access-quick-action": storage_account_update_command,
-            "azure-webapp-set-http2-quick-action": set_webapp_config_command,
-            "azure-appservice-webapp-config-update-http2-quick-action": set_webapp_config_command,
-            "azure-webapp-auth-update-quick-action": update_webapp_auth_command,
-            "azure-appservice-webapp-auth-settings-update-quick-action": update_webapp_auth_command,
-            "azure-storage-disable-cross-tenant-replication-quick-action": storage_account_update_command,
-            "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
-            "azure-storage-disable-storage-account-public-access-quick-action": storage_account_update_command,
-            "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
-            "azure-appservice-webapp-config-disable-remote-debugging-quick-action": set_webapp_config_command,
-            "azure-nsg-security-rule-delete-quick-action": nsg_security_rule_delete_command,
-            "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
-            "azure-appservice-webapp-config-update-min-tls-version-quick-action": set_webapp_config_command,
-            "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
-            "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
-            "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
-            "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
-            "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
-            "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
-            "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
-            "azure-storage-blob-soft-deletion-enable-quick-action": storage_blob_service_properties_set_command,
-            "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
-            "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
-            "azure-disk-set-data-access-ad-quick-action": disk_update_command,
-            "azure-compute-disk-update-data-access-ad-quick-action": disk_update_command,
-            "azure-acr-disable-public-private-access-quick-action": acr_update_command,
-            "azure-cr-disable-public-private-access-quick-action": acr_update_command,
-            "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
-            "azure-cr-disable-anonymous-pull-quick-action": acr_update_command,
-            "azure-cr-disable-authentication-as-arm-quick-action": acr_update_command,
-            "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
-            "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
-            "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
-            "azure-postgres-config-set-checkpoint-logging-quick-action": set_postgres_config_command,
-            "azure-postgres-config-set-connection-throttling-quick-action": set_postgres_config_command,
-            "azure-postgres-config-set-session-connection-logging-quick-action": set_postgres_config_command,
-            "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
-            "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
-            "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
-            "azure-application-gateway-waf-policy-get": waf_policy_get_command,
-            "azure-application-gateway-waf-policies-list": waf_policy_list_command,
-            "azure-application-gateway-waf-policy-create-or-update": waf_policy_create_or_update_command,
-            "azure-application-gateway-waf-policy-delete": waf_policy_delete_command,
-            "azure-front-door-policy-get": waf_front_door_policy_get_command,
-            "azure-front-door-policies-list": waf_front_door_policy_list_command,
-            "azure-front-door-policy-create-or-update": waf_front_door_policy_create_or_update_command,
-            "azure-front-door-policy-delete": waf_front_door_policy_delete_command,
-            "azure-vn-firewall-policy-create": firewall_policy_create_command,
-            "azure-vn-firewall-policy-update": firewall_policy_update_command,
-            "azure-vn-firewall-policy-get": firewall_policy_get_command,
-            "azure-vn-firewall-policy-delete": firewall_policy_delete_command,
-            "azure-vn-firewall-policy-list": firewall_policy_list_command,
-            "azure-firewall-policy-attach": firewall_policy_attach_command,
-            "azure-firewall-policy-detach": firewall_policy_detach_command,
-            "azure-vn-ip-group-create": ip_group_create_command,
-            "azure-vn-ip-group-update": ip_group_update_command,
-            "azure-firewall-list": firewall_list_command,
-            "azure-firewall-get": firewall_get_command,
-            "azure-vn-firewall-policy-rule-collection-groups-list": firewall_policy_rule_collection_groups_list_command,
-            "azure-firewall-rules-list": firewall_rule_list_command,
-            "azure-firewall-rule-get": firewall_rule_get_command,
-            "azure-firewall-service-tags-information-list": firewall_service_tag_list_command,
-            "azure-firewall-rule-collection-groups-create": firewall_rule_collection_groups_create_command,
-            "azure-firewall-rule-collection-groups-update": firewall_rule_collection_groups_update_command,
-            "azure-firewall-rule-collection-groups-delete": firewall_rule_collection_groups_delete_command,
-            "azure-vn-firewall-policy-rule-collection-groups-create": firewall_policy_rule_collection_groups_create_command,
-            "azure-vn-firewall-policy-rule-collection-groups-update": firewall_policy_rule_collection_groups_update_command,
-            "azure-vn-firewall-policy-rule-collection-groups-delete": firewall_policy_rule_collection_groups_delete_command,
-            "azure-firewall-network-rule-create": firewall_network_rule_create_command,
-            "azure-firewall-network-rule-update": firewall_network_rule_update_command,
-            "azure-firewall-network-rule-delete": firewall_network_rule_delete_command,
-            "azure-vn-firewall-policy-network-rule-create": firewall_policy_network_rule_create_command,
-            "azure-vn-firewall-policy-network-rule-update": firewall_policy_network_rule_update_command,
-            "azure-vn-firewall-policy-network-rule-delete": firewall_policy_network_rule_delete_command,
-            "azure-log-analytics-saved-searches-list": log_analytics_saved_searches_list_command,
-            "azure-log-analytics-saved-search-get": log_analytics_saved_search_get_command,
-            "azure-log-analytics-saved-search-create-update": log_analytics_saved_search_create_update_command,
-            "azure-log-analytics-saved-search-delete": log_analytics_saved_search_delete_command,
-            "azure-log-analytics-workspaces-list": log_analytics_workspaces_list_command,
-            "azure-log-analytics-table-get": log_analytics_table_get_command,
-            "azure-log-analytics-table-delete": log_analytics_table_delete_command,
-            "azure-log-analytics-table-run": log_analytics_table_run_command,
-            "azure-storage-fileshare-create": storage_fileshare_create_command,
-            "azure-storage-fileshare-delete": storage_fileshare_delete_command,
-            "azure-storage-fileshares-list": storage_fileshare_list_command,
-            "azure-storage-fileshare-content-list": storage_fileshare_content_list_command,
-            "azure-storage-fileshare-directory-create": storage_fileshare_directory_create_command,
-            "azure-storage-fileshare-directory-delete": storage_fileshare_directory_delete_command,
-            "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
-            "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
-            "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
-        }
-
-        azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
-
-        if connector_id:
-            if command == "test-module":
-                if is_gov_account(connector_id):  # type: ignore
-                    switch_to_gov_account()
-                demisto.debug(f"Running health check for connector ID: {connector_id}")
-                return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
-
-            account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-            if is_gov_account(connector_id, account_id):  # type: ignore
-                switch_to_gov_account()
-        else:
-            if azure_ad_endpoint.rstrip("/") != DEFAULT_AZURE_AD_ENDPOINT:
-                demisto.debug(f"Non-commercial Azure AD endpoint configured ({azure_ad_endpoint}); switching to Gov account.")
-                switch_to_gov_account()
-
-        if command == "azure-auth-reset":
-            return return_results(reset_auth())
-
-        client = get_azure_client(params, args, command, azure_ad_endpoint)
-
-        if command == "test-module":
-            return_results(test_module(client))
-        elif command == "azure-auth-start":
-            return_results(start_auth(client))
-        elif command == "azure-auth-complete":
-            return_results(complete_auth(client))
-        elif command == "azure-auth-test":
-            return_results(test_connection(client))
-        elif command == "azure-generate-login-url":
-            return_results(generate_login_url(_get_ms_client(client), azure_ad_endpoint))
-        elif command in POLLING_COMMANDS:
-            # Polling commands are decorated with @polling_function and therefore take args as their first
-            # positional argument instead of receiving it as a keyword argument.
-            return_results(commands_with_params_and_args[command](args, client=client, params=params))
-        elif command in commands_with_params_and_args:
-            return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
-        else:
-            raise NotImplementedError(f"Command {command} is not implemented")
-
-    except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+    AzureIntegration(demisto.command(), demisto.args(), demisto.params(), client_class=AzureClient).run(COMMANDS_MAPPING)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
