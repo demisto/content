@@ -1,0 +1,21 @@
+commonfields:
+  id: job-neg-ba118-toversionlowerthanfromversion
+  version: -1
+name: Negative BA118_ToVersionLowerThanFromVersion
+description: Intentionally invalid Job Center job (BA118_ToVersionLowerThanFromVersion) for negative testing.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Negative BA118_ToVersionLowerThanFromVersion
+metadata:
+  agent_id: negative-test-agent
+  prompt_id: negative-test-prompt
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 30
+  count: 6
+queuePolicy: skip
+toversion: 8.9.0

@@ -1,0 +1,20 @@
+commonfields:
+  id: job-neg-ba106-fromversiontoolow
+  version: -1
+name: Negative BA106_FromVersionTooLow
+description: Intentionally invalid Job Center job (BA106_FromVersionTooLow) for negative testing.
+fromversion: 8.9.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Negative BA106_FromVersionTooLow
+metadata:
+  agent_id: negative-test-agent
+  prompt_id: negative-test-prompt
+triggerType: interval
+triggerSpec:
+  intervalMinutes: 30
+  count: 6
+queuePolicy: skip

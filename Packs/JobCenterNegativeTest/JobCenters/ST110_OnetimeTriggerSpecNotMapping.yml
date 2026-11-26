@@ -1,0 +1,17 @@
+commonfields:
+  id: job-neg-st110-onetimetriggerspecnotmapping
+  version: -1
+name: Negative ST110_OnetimeTriggerSpecNotMapping
+description: Intentionally invalid Job Center job (ST110_OnetimeTriggerSpecNotMapping) for negative testing.
+fromversion: 8.10.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
+jobType: agent_to_entity
+jobName: Negative ST110_OnetimeTriggerSpecNotMapping
+metadata:
+  agent_id: negative-test-agent
+  prompt_id: negative-test-prompt
+triggerType: onetime
+triggerSpec: soon
