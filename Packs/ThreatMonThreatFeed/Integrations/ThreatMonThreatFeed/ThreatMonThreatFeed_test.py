@@ -450,7 +450,9 @@ def test_seen_cache_is_bounded(context, created, mocker):
     server = FakeTaxiiServer(page_size=50)
     server.add(ALL, *[stix(f"domain-name:value = 'old{i}.com'", NOW - timedelta(days=10)) for i in range(20)])
     server.add(ALL, stix("domain-name:value = 'recent.com'", NOW))
-    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "first_fetch": "30 days"}, mocker)
+    # Anchored to NOW (not the wall clock), so the old objects stay inside the first fetch window.
+    first_fetch = feed.to_taxii_time(NOW - timedelta(days=30))
+    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "first_fetch": first_fetch}, mocker)
 
     assert len(created) == 21
     assert len(feed.SeenCache(context["ctx"]["seen"])) == 1  # old objects can never be re-read, so they are not cached
