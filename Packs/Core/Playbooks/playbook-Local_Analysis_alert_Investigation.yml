@@ -2456,6 +2456,7 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+toversion: 8.15.0
 marketplaces:
 - platform
 - marketplacev2
