@@ -1,3 +1,5 @@
+name: EndOfLifeAI
+display: endoflife.ai
 category: Data Enrichment & Threat Intelligence
 sectionorder:
 - Connect
@@ -25,15 +27,15 @@ configuration:
   required: false
   section: Connect
   advanced: true
+  additionalinfo: Do not verify the server's TLS certificate. Use only for testing; the endoflife.ai API presents a valid public certificate.
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   section: Connect
   advanced: true
-description: Look up end-of-life and end-of-support dates, EOL risk scores and CISA KEV exposure for software and hardware products. endoflife.ai is an independent service, and each date is labelled with its source.
-display: endoflife.ai
-name: EndOfLifeAI
+  additionalinfo: Send requests to the endoflife.ai API through the proxy configured for the Cortex XSOAR server or engine.
+description: Look up end-of-life and end-of-support dates, EOL risk scores and CISA KEV exposure for software and hardware products. endoflife.ai is an independent service, and each date is labeled with its source.
 script:
   commands:
   - name: endoflife-ai-product-get
@@ -46,7 +48,7 @@ script:
     - name: limit
       description: The maximum number of versions to return, in the order the API returns them.
       required: false
-      defaultValue: '50'
+      defaultvalue: '50'
     outputs:
     - contextPath: EndOfLifeAI.Product.product
       description: The slug of the tracked product.
@@ -341,7 +343,7 @@ script:
     - name: chunk_size
       description: The number of pairs to send in one API request. A free API key accepts 5 pairs per request. Each request counts against the daily request allowance of the API key.
       required: false
-      defaultValue: '5'
+      defaultvalue: '5'
     outputs:
     - contextPath: EndOfLifeAI.Version.product
       description: The slug of the tracked product the answer is for.

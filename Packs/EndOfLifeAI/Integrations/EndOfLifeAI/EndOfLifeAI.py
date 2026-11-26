@@ -340,9 +340,7 @@ def resolution_notes(version: dict[str, Any]) -> list[str]:
         notes.append(f"The slug {version['alias_of']} is an alias of the tracked product {version.get('product')}.")
     if version.get("requested_version"):
         matched_by = version.get("version_matched_by") or "release-line"
-        notes.append(
-            f"The version {version['requested_version']} was resolved to {version.get('version')} ({matched_by} match)."
-        )
+        notes.append(f"The version {version['requested_version']} was resolved to {version.get('version')} ({matched_by} match).")
     if version.get("date_precision_note"):
         notes.append(str(version["date_precision_note"]))
     return notes
@@ -505,7 +503,7 @@ def version_batch_get_command(client: Client, args: dict[str, Any]) -> list[Comm
     unresolved: list[dict[str, Any]] = []
     raw_responses: list[dict[str, Any]] = []
     for start in range(0, len(items), chunk_size):
-        chunk = items[start: start + chunk_size]
+        chunk = items[start : start + chunk_size]
         raw = client.batch(chunk)
         raw_responses.append(raw)
         answers = raw.get("results") or []
@@ -605,7 +603,8 @@ def main() -> None:
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{e}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

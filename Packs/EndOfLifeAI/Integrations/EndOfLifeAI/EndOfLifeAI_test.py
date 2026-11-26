@@ -412,9 +412,7 @@ def test_version_batch_get(client, requests_mock):
     raw = util_load_json("batch.json")
     mocked = requests_mock.post(f"{BASE_URL}/v1/batch", json=raw)
 
-    results = version_batch_get_command(
-        client, {"products": "nodejs:18, python:3.8,ubuntu:20.04,not-a-product,nodejs:999"}
-    )
+    results = version_batch_get_command(client, {"products": "nodejs:18, python:3.8,ubuntu:20.04,not-a-product,nodejs:999"})
 
     assert mocked.call_count == 1
     assert mocked.last_request.headers["X-API-Key"] == API_KEY

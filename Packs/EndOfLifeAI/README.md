@@ -1,6 +1,6 @@
 During an investigation or a vulnerability review, it helps to know whether the version running on an asset is still supported by its vendor, when that support ends, and where the date comes from.
 
-endoflife.ai is an independent service that publishes end-of-life and end-of-support dates, an EOL risk score and CISA Known Exploited Vulnerabilities (KEV) exposure for software and hardware products. Each date is labelled with its source.
+endoflife.ai is an independent service that publishes end-of-life and end-of-support dates, an EOL risk score and CISA Known Exploited Vulnerabilities (KEV) exposure for software and hardware products. Each date is labeled with its source.
 
 ## What does this pack do?
 

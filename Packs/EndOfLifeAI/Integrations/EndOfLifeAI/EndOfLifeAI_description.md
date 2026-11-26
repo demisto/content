@@ -1,10 +1,12 @@
 ## endoflife.ai
 
-endoflife.ai is an independent service that publishes end-of-life and end-of-support dates, an EOL risk score and CISA Known Exploited Vulnerabilities (KEV) exposure for software and hardware products. Each date is labelled with its source.
-
 ### Get an API key
 
-Every data request to the endoflife.ai API needs an API key. A free API key is available at [https://endoflife.ai/api#free-key](https://endoflife.ai/api#free-key). The key is sent to you by email.
+Every data request to the endoflife.ai API needs an API key.
+
+1. Navigate to [https://endoflife.ai/api#free-key](https://endoflife.ai/api#free-key).
+2. Enter your email address to request a free API key.
+3. Check your email for the message containing the API key.
 
 ### Configure the instance
 

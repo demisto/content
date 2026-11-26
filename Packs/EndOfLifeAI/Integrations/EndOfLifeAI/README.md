@@ -1,4 +1,4 @@
-Look up end-of-life and end-of-support dates, EOL risk scores and CISA KEV exposure for software and hardware products. endoflife.ai is an independent service, and each date is labelled with its source.
+Look up end-of-life and end-of-support dates, EOL risk scores and CISA KEV exposure for software and hardware products. endoflife.ai is an independent service, and each date is labeled with its source.
 
 ## Configure endoflife.ai in Cortex
 
@@ -6,8 +6,8 @@ Look up end-of-life and end-of-support dates, EOL risk scores and CISA KEV expos
 | --- | --- | --- |
 | Server URL | The base URL of the endoflife.ai API. | True |
 | API Key | The endoflife.ai API key. It is sent in the X-API-Key header of every request. A free API key is available at https://endoflife.ai/api#free-key. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Trust any certificate (not secure) | Do not verify the server's TLS certificate. Use only for testing; the endoflife.ai API presents a valid public certificate. | False |
+| Use system proxy settings | Send requests to the endoflife.ai API through the proxy configured for the Cortex XSOAR server or engine. | False |
 
 ## Commands
 

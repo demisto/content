@@ -1,7 +1,10 @@
 {
     "name": "endoflife.ai",
-    "description": "Check end-of-life dates, EOL risk scores and CISA KEV exposure for your software and hardware. Each date is labelled with its source.",
+    "description": "Check end-of-life dates, EOL risk scores and CISA KEV exposure for your software and hardware. Each date is labeled with its source.",
     "support": "community",
+    "githubUser": [
+        "endoflife-ai"
+    ],
     "currentVersion": "1.0.0",
     "author": "endoflife.ai",
     "url": "https://endoflife.ai",
@@ -21,6 +24,7 @@
         "Compliance"
     ],
     "keywords": [
+        "endoflife.ai",
         "end of life",
         "EOL",
         "end of support",
