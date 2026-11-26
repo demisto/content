@@ -1339,7 +1339,9 @@ def main():
     try:
         server = params.get("server_url", "").rstrip("/") + "/"
         tenant = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id")
-        auth_and_token_url = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id", "")
+        auth_and_token_url = (
+            params.get("_auth_id") or params.get("credentials_auth_id", {}).get("password") or params.get("auth_id", "")
+        )
         if not auth_and_token_url:
             raise DemistoException("ID must be provided.")
         enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")

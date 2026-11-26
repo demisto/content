@@ -113,3 +113,40 @@ def test_list_alerts_command(mocker):
     args = {"asc_location": "loc"}
     _, ec, _ = list_alerts_command(client, args)
     assert ec == COMMAND_OUTPUTS["EXPECTED_LIST_ALERTS_CONTEXT"]
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_auth_id",
+    [
+        ({"_auth_id": "new-id"}, "new-id"),
+        ({"_auth_id": "new-id", "credentials_auth_id": {"password": "masked-id"}}, "new-id"),
+        ({"credentials_auth_id": {"password": "masked-id"}}, "masked-id"),
+        ({"auth_id": "legacy-id"}, "legacy-id"),
+    ],
+)
+def test_main_auth_id_precedence(mocker, id_params, expected_auth_id):
+    """
+    Given:
+        - Different combinations of the plain-text '_auth_id' param, the masked 'credentials_auth_id' param
+          and the legacy 'auth_id' param.
+    When:
+        - main() is called with the test-module command.
+    Then:
+        - MsClient is instantiated with auth_id by precedence:
+          '_auth_id' > 'credentials_auth_id.password' > 'auth_id'.
+    """
+    import demistomock as demisto
+    from AzureSecurityCenter_v2 import main
+
+    params = {"tenant_id": "tenant-id", "enc_key": "enc-key", **id_params}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureSecurityCenter_v2.MsClient")
+    mocker.patch("AzureSecurityCenter_v2.test_module")
+    mock_return_error = mocker.patch("AzureSecurityCenter_v2.return_error")
+
+    main()
+
+    mock_return_error.assert_not_called()
+    assert mock_client_cls.call_args[1]["auth_id"] == expected_auth_id
