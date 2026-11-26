@@ -785,7 +785,9 @@ def wait_for_task(client: Client, task_id: int | None) -> dict:
         task_data = client.fortimanager_api_call("get", f"/task/task/{task_id}") or {}
         if is_task_finished(task_data):
             return task_data
-        time.sleep(INSTALL_TASK_POLL_INTERVAL_SECONDS)
+        # The ADOM lock belongs to this session and must be held while the task runs,
+        # so the wait can't be moved to a ScheduledCommand.
+        time.sleep(INSTALL_TASK_POLL_INTERVAL_SECONDS)  # pylint: disable=E9003
 
     demisto.debug(f"Workspace Mode: task {task_id} didn't finish within {INSTALL_TASK_TIMEOUT_SECONDS} seconds")
     return task_data
