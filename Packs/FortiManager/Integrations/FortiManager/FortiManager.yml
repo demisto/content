@@ -1,4 +1,6 @@
 category: Network Security
+sectionorder:
+- Connect
 provider: Fortinet
 commonfields:
   id: FortiManager
@@ -6,25 +8,45 @@ commonfields:
 configuration:
 - display: Server URL
   name: url
+  additionalinfo: The FortiManager server URL, for example https://fortimanager.example.com.
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
+  additionalinfo: The FortiManager administrator username and password. The administrator needs JSON API access.
   required: true
   type: 9
+  section: Connect
 - defaultvalue: global
   display: The instance ADOM
   name: adom
+  additionalinfo: The default ADOM for the commands. Use 'global' for the global ADOM. Commands can override it with the adom argument.
   required: true
   type: 0
+  section: Connect
+- display: Workspace Mode - lock the ADOM before changes
+  name: workspace_mode
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Enable when FortiManager Workspace Mode is set to Normal. Each write command locks the ADOM, applies the change, commits it, and unlocks the ADOM. Workflow mode (changes that require approval) is not supported.
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
+  additionalinfo: Skip TLS certificate verification of the FortiManager server.
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
+  additionalinfo: Use the system proxy settings to connect to the FortiManager server.
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: FortiManager is a single console central management system that manages Fortinet devices.
 display: FortiManager
 name: FortiManager
@@ -631,11 +653,11 @@ script:
     - description: Address group name.
       name: name
       required: true
-    - description: A comma-separated list of the address or address group objects contained within the group.
+    - description: A comma-separated list of the address or address group objects contained within the group. The list replaces the group's existing members, so include the existing members to keep them.
       name: member
     - description: A comment about the address group.
       name: comment
-    description: Create a new address group.
+    description: Update an existing address group.
     name: fortimanager-address-group-update
   - arguments:
     - description: The ADOM from which to delete the address group. Leave empty to use the default integration ADOM.
@@ -1986,7 +2008,7 @@ script:
     - contextPath: FortiManager.Installation.user
       description: The installation task user.
       type: String
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.16.14990175
   runonce: false
   script: '-'
   subtype: python3

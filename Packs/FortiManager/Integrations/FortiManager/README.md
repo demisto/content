@@ -19,11 +19,12 @@ For more information about administrator permissions see the [FortiManager docum
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
-| credentials | Username | True |
-| adom | The instance ADOM | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| Server URL | The FortiManager server URL, for example https://fortimanager.example.com. | True |
+| Username | The FortiManager administrator username and password. The administrator needs JSON API access. | True |
+| The instance ADOM | The default ADOM for the commands. Use 'global' for the global ADOM. Commands can override it with the adom argument. | True |
+| Workspace Mode - lock the ADOM before changes | Enable when FortiManager Workspace Mode is set to Normal. Each write command locks the ADOM, applies the change, commits it, and unlocks the ADOM. Workflow mode (changes that require approval) is not supported. | False |
+| Trust any certificate \(not secure\) | Skip TLS certificate verification of the FortiManager server. | False |
+| Use system proxy settings | Use the system proxy settings to connect to the FortiManager server. | False |
 
 ## Commands
 
@@ -705,7 +706,7 @@ There is no context output for this command.
 ### fortimanager-address-group-update
 
 ***
-Create a new address group.
+Update an existing address group.
 
 #### Base Command
 
@@ -717,7 +718,7 @@ Create a new address group.
 | --- | --- | --- |
 | adom | The ADOM on which to update the address group. Leave empty to use the instance ADOM. | Optional |
 | name | Address group name. | Required |
-| member | A comma-separated list of the address or address group objects contained within the group. | Optional |
+| member | A comma-separated list of the address or address group objects contained within the group. The list replaces the group's existing members, so include the existing members to keep them. | Optional |
 | comment | A comment about the address group. | Optional |
 
 #### Context Output
@@ -2074,3 +2075,13 @@ Get installation status.
 #### Command Example
 
 ```!fortimanager-policy-package-install-status task_id=175```
+
+## Troubleshooting
+
+### Write commands fail with `no write permission`
+
+When Workspace Mode is enabled on FortiManager, configuration changes are accepted only from a session that has locked the ADOM first. Enable the **Workspace Mode - lock the ADOM before changes** instance parameter. Each write command (create, update, delete, move) then locks the ADOM, applies the change, commits it, and unlocks the ADOM. The fortimanager-firewall-policy-package-install command keeps the ADOM locked until the install task finishes, for up to 4 minutes. If another administrator holds the ADOM lock, the command fails and can be retried later.
+
+## Known Limitations
+
+- FortiManager Workflow mode, where changes require approval, is not supported.

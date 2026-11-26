@@ -1,3 +1,7 @@
+import re
+import time
+import traceback
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -10,18 +14,26 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 GLOBAL_VAR = "global"
+# JSON-RPC methods that change configuration and require an ADOM lock when Workspace Mode is enabled
+WRITE_METHODS = ("add", "set", "update", "delete", "move", "clone")
+INSTALL_PACKAGE_URL = "/securityconsole/install/package"
+# In Workspace Mode the ADOM lock is held until the install task finishes, up to this timeout
+INSTALL_TASK_TIMEOUT_SECONDS = 240
+INSTALL_TASK_POLL_INTERVAL_SECONDS = 5
+TASK_FINISHED_STATES = ("done", "error", "cancelled", "aborted", "warning")
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool, adom: str):
+    def __init__(self, url: str, credentials: dict, verify: bool, proxy: bool, adom: str, workspace_mode: bool = False):
         super().__init__(base_url=url.rstrip("/"), verify=verify, proxy=proxy, ok_codes=(200, 204))
         handle_proxy()
         self.username = credentials["identifier"]
         self.password = credentials["password"]
         self.session_token = self.get_session_token()
         self.adom = adom
+        self.workspace_mode = workspace_mode
 
     def get_session_token(self, get_new_token: bool = False):
         if get_new_token:
@@ -77,15 +89,18 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix="jsonrpc", json_data=body)
         return response
 
-    def fortimanager_api_call(
+    def fortimanager_request_with_retry(
         self,
         method: str,
         url: str,
-        data_in_list: dict = None,
-        json_data: dict = None,
-        range_info: List = None,
-        other_params: dict = None,
-    ):
+        data_in_list: dict | None = None,
+        json_data: dict | None = None,
+        range_info: List | None = None,
+        other_params: dict | None = None,
+    ) -> dict:
+        """Sends a JSON-RPC request and raises if FortiManager returns a non-zero status code.
+        A session expiration (code -11) is handled by fetching a new token and retrying once.
+        """
         response = self.fortimanager_http_request(
             method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
         )
@@ -100,7 +115,76 @@ class Client(BaseClient):
         if response.get("result")[0].get("status", {}).get("code") != 0:
             raise DemistoException(response.get("result")[0].get("status").get("message"))
 
-        return response.get("result")[0].get("data")
+        return response
+
+    def fortimanager_api_call(
+        self,
+        method: str,
+        url: str,
+        data_in_list: dict | None = None,
+        json_data: dict | None = None,
+        range_info: List | None = None,
+        other_params: dict | None = None,
+    ):
+        workspace_scope = get_workspace_scope(url) if self.workspace_mode and method in WRITE_METHODS else None
+        if not workspace_scope:
+            response = self.fortimanager_request_with_retry(
+                method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
+            )
+            return response["result"][0].get("data")
+
+        self.lock_workspace(workspace_scope)
+        try:
+            response = self.fortimanager_request_with_retry(
+                method, url, data_in_list=data_in_list, range_info=range_info, other_params=other_params, json_data=json_data
+            )
+            self.commit_workspace(workspace_scope)
+        finally:
+            self.unlock_workspace(workspace_scope)
+
+        return response["result"][0].get("data")
+
+    def lock_workspace(self, workspace_scope: str) -> None:
+        """Locks the ADOM so that config changes are accepted when FortiManager Workspace Mode is enabled."""
+        demisto.debug(f"Workspace Mode: locking {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/lock")
+        except DemistoException as e:
+            raise DemistoException(
+                f"Failed to lock {workspace_scope} (FortiManager Workspace Mode). The ADOM may be locked by another "
+                f"administrator - try again later. FortiManager error: {str(e)}"
+            )
+
+    def commit_workspace(self, workspace_scope: str) -> None:
+        """Saves the changes made in the locked ADOM."""
+        demisto.debug(f"Workspace Mode: committing {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/commit")
+        except DemistoException as e:
+            raise DemistoException(
+                f"The change was sent, but committing {workspace_scope} failed (FortiManager Workspace Mode). "
+                f"FortiManager error: {str(e)}"
+            )
+
+    def unlock_workspace(self, workspace_scope: str) -> None:
+        """Releases the ADOM lock. Never raises, so it doesn't hide the original error of the command."""
+        demisto.debug(f"Workspace Mode: unlocking {workspace_scope}")
+        try:
+            self.fortimanager_request_with_retry("exec", f"/dvmdb/{workspace_scope}/workspace/unlock")
+        except Exception as e:
+            demisto.error(f"Workspace Mode: failed to unlock {workspace_scope}: {e}")
+            demisto.debug(traceback.format_exc())
+
+
+def get_workspace_scope(url: str) -> str | None:
+    """Extracts the workspace scope ("adom/<name>" or "global") from a JSON-RPC URL.
+
+    Examples:
+        /pm/config/adom/MyADOM/obj/firewall/address -> adom/MyADOM
+        pm/pkg/global/my_package -> global
+    """
+    match = re.search(r"(?:^|/)pm/(?:config|pkg)/(adom/[^/]+|global)(?:/|$)", url)
+    return match.group(1) if match else None
 
 
 def get_global_or_adom(client: Client, args: dict):
@@ -681,29 +765,88 @@ def list_dynamic_interface_command(client, args):
     )
 
 
-def install_policy_package_command(client, args):
-    response = client.fortimanager_api_call(
-        "exec",
-        "/securityconsole/install/package",
-        json_data={
-            "adom_rev_comment": args.get("adom_rev_comment"),
-            "adom_rev_name": args.get("adom_rev_name"),
-            "dev_rev_comment": args.get("dev_rev_comment"),
-            "adom": get_global_or_adom(client, args).replace("adom/", ""),
-            "pkg": args.get("package"),
-            "scope": [{"name": args.get("name"), "vdom": args.get("vdom")}],
-        },
+def is_task_finished(task_data: dict) -> bool:
+    """Whether a FortiManager task stopped running (successfully or not)."""
+    state = str(task_data.get("state", "")).lower()
+    return arg_to_number(task_data.get("percent")) == 100 or state in TASK_FINISHED_STATES
+
+
+def wait_for_task(client: Client, task_id: int | None) -> dict:
+    """Polls a FortiManager task until it finishes or INSTALL_TASK_TIMEOUT_SECONDS passes.
+
+    Returns the last task data that was read.
+    """
+    task_data: dict = {}
+    if task_id is None:
+        return task_data
+
+    deadline = time.time() + INSTALL_TASK_TIMEOUT_SECONDS
+    while time.time() < deadline:
+        task_data = client.fortimanager_api_call("get", f"/task/task/{task_id}") or {}
+        if is_task_finished(task_data):
+            return task_data
+        # The ADOM lock belongs to this session and must be held while the task runs,
+        # so the wait can't be moved to a ScheduledCommand.
+        time.sleep(INSTALL_TASK_POLL_INTERVAL_SECONDS)  # pylint: disable=E9003
+
+    demisto.debug(f"Workspace Mode: task {task_id} didn't finish within {INSTALL_TASK_TIMEOUT_SECONDS} seconds")
+    return task_data
+
+
+def install_package_with_workspace_lock(client: Client, workspace_scope: str, install_data: dict) -> tuple[dict, dict]:
+    """Installs a policy package while holding the ADOM lock, as FortiManager Workspace Mode requires.
+
+    The lock is held until the install task finishes, so the task can write to the ADOM.
+    Returns the install response and the last task data.
+    """
+    client.lock_workspace(workspace_scope)
+    try:
+        response = client.fortimanager_api_call("exec", INSTALL_PACKAGE_URL, json_data=install_data)
+        task_data = wait_for_task(client, response.get("task"))
+    finally:
+        client.unlock_workspace(workspace_scope)
+    return response, task_data
+
+
+def install_policy_package_command(client: Client, args: dict) -> CommandResults:
+    workspace_scope = get_global_or_adom(client, args)
+    install_data = {
+        "adom_rev_comment": args.get("adom_rev_comment"),
+        "adom_rev_name": args.get("adom_rev_name"),
+        "dev_rev_comment": args.get("dev_rev_comment"),
+        "adom": workspace_scope.replace("adom/", ""),
+        "pkg": args.get("package"),
+        "scope": [{"name": args.get("name"), "vdom": args.get("vdom")}],
+    }
+
+    task_data: dict = {}
+    if client.workspace_mode:
+        response, task_data = install_package_with_workspace_lock(client, workspace_scope, install_data)
+    else:
+        response = client.fortimanager_api_call("exec", INSTALL_PACKAGE_URL, json_data=install_data)
+
+    task_id = response.get("task")
+    readable_output = (
+        f"Initiated installation of the policy package: {args.get('package')} "
+        f"in ADOM: {workspace_scope}\n"
+        f"On Device {args.get('name')} and VDOM {args.get('vdom')}.\nTask ID: {task_id}."
     )
-    formatted_response = {"id": response.get("task")}
+    if client.workspace_mode:
+        task_status = "finished" if is_task_finished(task_data) else "was still running"
+        readable_output += (
+            f"\n\nWorkspace Mode: the ADOM was locked during the installation and then unlocked. "
+            f"The task {task_status} (state: {task_data.get('state')}, percent: {task_data.get('percent')})."
+        )
+    readable_output += (
+        f"\n\nYou can check the installation status by running:\n"
+        f"!fortimanager-firewall-policy-package-install-status task_id={task_id}"
+    )
+
     return CommandResults(
         outputs_prefix="FortiManager.Installation",
         outputs_key_field="id",
-        outputs=formatted_response,
-        readable_output=f"Initiated installation of the policy package: {args.get('package')} "
-        f"in ADOM: {get_global_or_adom(client, args)}\n"
-        f"On Device {args.get('name')} and VDOM {args.get('vdom')}.\nTask ID: {response.get('task')}."
-        f"\n\nYou can check the installation status by running:\n"
-        f"!fortimanager-firewall-policy-package-install-status task_id={response.get('task')}",
+        outputs={"id": task_id},
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -743,10 +886,13 @@ def main() -> None:
     adom = demisto.params().get("adom")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
+    workspace_mode = argToBoolean(demisto.params().get("workspace_mode") or False)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(url=base_url, credentials=creds, verify=verify_certificate, proxy=proxy, adom=adom)
+        client = Client(
+            url=base_url, credentials=creds, verify=verify_certificate, proxy=proxy, adom=adom, workspace_mode=workspace_mode
+        )
 
         if demisto.command() == "test-module":
             try:
@@ -861,8 +1007,9 @@ def main() -> None:
             return_results(install_policy_package_status_command(client, demisto.args()))
 
     # Log exceptions and return errors
-    except Exception:
-        return_error(f"Failed to execute {demisto.command()} command.")
+    except Exception as e:
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e}", error=e)
 
 
 """ ENTRY POINT """
