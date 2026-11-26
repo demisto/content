@@ -2,9 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
+import base64
 import codecs
 import copy
 import json
+import os
+import urllib.parse
 from datetime import datetime
 from typing import Any
 
@@ -57,6 +60,17 @@ PROJECTS_PREVIEW = "application/vnd.github.inertia-preview+json"
 
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_PAGE_NUMBER = 1
+
+# Generic get-file-content (BYOK) settings. Aligned with the Google Drive implementation.
+# Approved extension (lower case) -> (MIME type, whether the content is binary). Binary content is returned base64 encoded.
+APPROVED_EXTENSIONS = {
+    ".md": ("text/markdown", False),
+    ".json": ("application/json", False),
+    ".jsonl": ("application/jsonl", False),
+    ".csv": ("text/csv", False),
+    ".docx": ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", True),
+}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 """ HELPER FUNCTIONS """
 
 
@@ -1586,6 +1600,179 @@ def get_file_content_from_repo():
     return_results(results)
 
 
+def get_url_hosts(base_url: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Returns the (web hosts, raw hosts) that file URLs may use for the configured server.
+
+    Derived from the Server URL: github.com (api.github.com) uses github.com, www.github.com and
+    raw.githubusercontent.com. Any other host is treated as GitHub Enterprise: <host> for web and raw.<host> for raw.
+    The Enterprise layouts are assumptions and have not been verified against a real Enterprise instance.
+    """
+    api_host = (urllib.parse.urlparse(base_url).hostname or "").lower()
+    if api_host == "api.github.com":
+        return ("github.com", "www.github.com"), ("raw.githubusercontent.com",)
+
+    web_host = api_host.removeprefix("api.")
+    return (web_host,), (f"raw.{web_host}",)
+
+
+def parse_github_file_url(url: str, base_url: str) -> tuple[str, str, str, str]:
+    """Parses a GitHub file URL into (owner, repo, ref, path).
+
+    Only the host and the layout are checked. Accepted layouts are https://<web host>/<owner>/<repo>/blob/<ref>/<path>
+    and https://<raw host>/<owner>/<repo>/<ref>/<path>, with hosts from `get_url_hosts`. The query string and fragment
+    are ignored. The ref is a single path segment, so refs containing "/" are not supported.
+
+    Raises:
+        ValueError: If the host is not one of the configured server's hosts or the layout is not supported.
+    """
+    web_hosts, raw_hosts = get_url_hosts(base_url)
+    parsed_url = urllib.parse.urlparse(url.strip())
+    host = (parsed_url.hostname or "").lower()
+    segments = [urllib.parse.unquote(segment) for segment in parsed_url.path.split("/") if segment]
+
+    if host in web_hosts and len(segments) >= 4 and segments[2] in ("blob", "tree"):
+        owner, repo, _, ref, *path_segments = segments
+    elif host in raw_hosts and len(segments) >= 4:
+        owner, repo, ref, *path_segments = segments
+    else:
+        supported_formats = (
+            f"https://{web_hosts[0]}/<owner>/<repo>/blob/<ref>/<path>, " f"https://{raw_hosts[0]}/<owner>/<repo>/<ref>/<path>"
+        )
+        raise ValueError(f"Unsupported or invalid GitHub URL: {url}. Supported URL formats: {supported_formats}.")
+
+    return owner, repo, ref, "/".join(path_segments)
+
+
+def build_contents_url_suffix(owner: str, repo: str, path: str) -> str:
+    """Builds the /repos/{owner}/{repo}/contents/{path} URL suffix with every component percent-encoded."""
+    return f"/repos/{urllib.parse.quote(owner, safe='')}/{urllib.parse.quote(repo, safe='')}/contents/{urllib.parse.quote(path)}"
+
+
+def get_repo_contents(owner: str, repo: str, path: str, ref: str) -> Any:
+    """Calls GET /repos/{owner}/{repo}/contents/{path}. Returns a dict for a file and a list for a folder."""
+    return http_request(
+        method="GET", url_suffix=build_contents_url_suffix(owner, repo, path), params={"ref": ref} if ref else None
+    )
+
+
+def get_file_bytes(owner: str, repo: str, file_metadata: dict, ref: str) -> bytes:
+    """Returns the file bytes.
+
+    GitHub inlines base64 content only for files up to 1 MB. Larger files are downloaded raw with a second request,
+    because http_request decodes responses as UTF-8 and cannot return binary data.
+    https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content
+    """
+    inline_content = file_metadata.get("content")
+    if inline_content and file_metadata.get("encoding") == "base64":
+        return base64.b64decode(inline_content)
+
+    response = requests.get(
+        BASE_URL + build_contents_url_suffix(owner, repo, file_metadata["path"]),
+        params={"ref": ref} if ref else None,
+        headers={**HEADERS, "Accept": "application/vnd.github.raw+json"},
+        verify=USE_SSL,
+    )
+    if response.status_code >= 400:
+        raise DemistoException(
+            f"Failed to download file '{file_metadata['path']}' from GitHub [{response.status_code}] {response.reason}. "
+            f"{response.text}"
+        )
+    return response.content
+
+
+def validate_file_size(file_name: str, size_bytes: int | None) -> None:
+    """Raises a ValueError if the file is over the size limit, or if GitHub did not report its size."""
+    limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+    if size_bytes is None:
+        raise ValueError(
+            f"The size of the file '{file_name}' is unknown, so it is treated as exceeding the maximum allowed size "
+            f"of {limit_mb:.0f} MB."
+        )
+    if size_bytes > MAX_FILE_SIZE:
+        size_mb = size_bytes / (1024 * 1024)
+        raise ValueError(
+            f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+        )
+
+
+def build_file_content(owner: str, repo: str, file_metadata: dict, ref: str, url: str) -> dict:
+    """Returns the file in the FileContent format. Raises a ValueError if the file cannot be returned.
+
+    Text files are decoded as utf-8 (errors replaced). Binary files are base64-encoded and their Type gets a
+    ';base64' suffix.
+    """
+    file_name = file_metadata.get("name", "")
+    extension = os.path.splitext(file_name.lower())[1]
+    if extension not in APPROVED_EXTENSIONS:
+        supported = ", ".join(sorted(APPROVED_EXTENSIONS))
+        raise ValueError(f"File format not approved: {file_name}. Supported formats: {supported}.")
+    validate_file_size(file_name, file_metadata.get("size"))
+
+    raw_bytes = get_file_bytes(owner, repo, file_metadata, ref)
+    mime_type, is_binary = APPROVED_EXTENSIONS[extension]
+    if is_binary:
+        content = base64.b64encode(raw_bytes).decode("ascii")
+        mime_type = f"{mime_type};base64"
+    else:
+        content = raw_bytes.decode("utf-8", errors="replace")
+
+    return assign_params(
+        Id=file_metadata.get("sha"),
+        Title=file_name,
+        Type=mime_type,
+        Name=file_name,
+        Content=content,
+        Url=url,
+        FileUrl=file_metadata.get("html_url"),
+    )
+
+
+def build_folder_entry_file_content(owner: str, repo: str, folder_entry: dict, ref: str, url: str) -> dict | None:
+    """Builds the FileContent of a folder entry, or returns None if the entry is skipped.
+
+    Sub-folders and files that cannot be returned are skipped instead of failing the whole folder.
+    """
+    file_name = folder_entry.get("name", "")
+    if folder_entry.get("type") != "file":
+        demisto.debug(f"get-file-content: skipping '{file_name}' of type {folder_entry.get('type')}")
+        return None
+    try:
+        return build_file_content(owner, repo, folder_entry, ref, url)
+    except (ValueError, DemistoException) as error:
+        demisto.debug(f"get-file-content: skipping file '{file_name}': {error}")
+        return None
+
+
+def get_file_content_command() -> None:
+    """get-file-content: returns the file at a GitHub URL in the FileContent format.
+
+    A folder URL is not supported and raises a ValueError. The URL must point to a single approved file.
+    """
+    url = demisto.args().get("url", "")
+    owner, repo, ref, path = parse_github_file_url(url, BASE_URL)
+    contents = get_repo_contents(owner, repo, path, ref)
+
+    if isinstance(contents, list):
+        items = [item for entry in contents if (item := build_folder_entry_file_content(owner, repo, entry, ref, url))]
+        outputs: dict | list[dict] = items
+        empty_message = "No supported files were found in the folder."
+    else:
+        if contents.get("type") != "file":
+            raise ValueError(f"The URL does not point to a file or a folder (type: {contents.get('type')}): {url}")
+        items = [build_file_content(owner, repo, contents, ref, url)]
+        outputs = items[0]
+        empty_message = ""
+
+    readable_output = (
+        tableToMarkdown("GitHub File Content", items, headers=["Id", "Title", "Type", "Url", "FileUrl"], removeNull=True)
+        if items
+        else empty_message
+    )
+    return_results(
+        CommandResults(outputs_prefix="FileContent", outputs=outputs, readable_output=readable_output, raw_response=contents)
+    )
+
+
 def list_files_command():
     args = demisto.args()
     path = args.get("path", "")
@@ -2429,6 +2616,7 @@ COMMANDS = {
     "github-get-github-actions-usage": get_github_actions_usage,
     "github-list-files": list_files_command,
     "github-get-file-content": get_file_content_from_repo,
+    "get-file-content": get_file_content_command,
     "github-search-code": search_code_command,
     "github-list-team-members": list_team_members_command,
     "github-list-branch-pull-requests": list_branch_pull_requests_command,
