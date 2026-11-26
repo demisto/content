@@ -27,6 +27,23 @@ def create_rank_strings_args(args: dict) -> list:
     return args_rank_strings
 
 
+def is_below_min_score(rating: str, min_score: Optional[str]) -> bool:
+    """
+    Args:
+        rating (str): The score of a word, as printed by rank_strings.
+        min_score (str): The min_score argument, if given.
+    Returns:
+        (bool): True when min_score is set and the rating is lower. Compared as numbers:
+        as strings "6.34" > "10.5", which stopped the results at the first score of 10 or more.
+    """
+    if not min_score:
+        return False
+    try:
+        return float(rating) < float(min_score)
+    except ValueError:
+        return False
+
+
 def handle_words_as_string(string_input: str):
     seperated_words = re.split("\n| ", string_input)
     words_set = set()
@@ -79,7 +96,7 @@ def stringsifter(args: dict):
     for line in output_data.splitlines():
         matches = re.search(regex, line)
         # --min-score flag and --limit can't be used together added this implementation in the code
-        if matches and min_score and min_score > matches.group("rating"):
+        if matches and is_below_min_score(matches.group("rating"), min_score):
             break
         words_rating_list.append(
             {"Rating": matches.group("rating") if matches else "", "Word": matches.group("word") if matches else ""}

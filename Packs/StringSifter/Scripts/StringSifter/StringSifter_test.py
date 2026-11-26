@@ -51,6 +51,30 @@ def test_text_as_string(mocker):
         assert cr.outputs == open_json("test_data/string_text_outputs.json")
 
 
+@pytest.mark.parametrize(
+    "rating, min_score, expected",
+    [
+        ("10.5", "6.34", False),  # as strings "6.34" > "10.5": the old check stopped here
+        ("5.1", "6.34", True),
+        ("6.34", "6.34", False),
+        ("-1.2", "0", True),
+        ("7.0", None, False),
+        ("7.0", "", False),
+        ("not-a-number", "6.34", False),
+    ],
+)
+def test_is_below_min_score(rating, min_score, expected):
+    """
+    Given:
+        - A word rating from rank_strings and the min_score argument
+    When:
+        - Deciding whether to stop listing words
+    Then:
+        - Compare the scores as numbers, not as strings
+    """
+    assert is_below_min_score(rating, min_score) == expected
+
+
 @pytest.mark.xfail(raiseExceptions=ValueError)
 def test_entered_entry_id_and_string_text(mocker):
     stringsifter({"string_text": "123", "entryID": "123"})
