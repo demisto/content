@@ -1631,3 +1631,81 @@ class TestClientBaseUrl:
             base_url="https://api.example.com/zia/api/v1",
         )
         assert client._base_url == "https://api.example.com/zia/api/v1"
+
+
+def _listed(readable_output: str) -> list[str]:
+    """Returns the entries of a denylist readable output (lines formatted as '- <entry>')."""
+    return [line[2:] for line in readable_output.splitlines() if line.startswith("- ")]
+
+
+class TestDenylistResponseShapes:
+    def test_list_new_shape(self, mock_client, mocker):
+        """
+        Given: ZIA returns the denylist only under blacklistUrlsDetailsList as {type, url} objects.
+        When: zia_denylist_list_command is called, with and without filters.
+        Then: The entries are listed, filter/query work, and the old key is not required.
+        """
+        data = {
+            "blacklistUrlsDetailsList": [
+                {"type": "MALWARE", "url": "1.2.3.4"},
+                {"type": "MALWARE", "url": ".evil.com"},
+            ]
+        }
+        _patch_api(mocker, mock_client, data)
+        assert _listed(zia_denylist_list_command(mock_client, {}).readable_output) == ["1.2.3.4", ".evil.com"]
+        ip_only = zia_denylist_list_command(mock_client, {"filter": "ip"}).readable_output
+        assert _listed(ip_only) == ["1.2.3.4"]
+        assert "No items found" not in zia_denylist_list_command(mock_client, {"query": "evil"}).readable_output
+
+    def test_list_new_shape_wins_over_old(self, mock_client, mocker):
+        """
+        Given: A response with both keys.
+        When: zia_denylist_list_command is called.
+        Then: The new key is used.
+        """
+        data = {"blacklistUrls": ["old.com"], "blacklistUrlsDetailsList": [{"type": "MALWARE", "url": "new.com"}]}
+        _patch_api(mocker, mock_client, data)
+        out = zia_denylist_list_command(mock_client, {}).readable_output
+        assert _listed(out) == ["new.com"]
+
+    def test_list_empty_or_missing(self, mock_client, mocker):
+        """
+        Given: A response with neither key, or an empty new-key list.
+        When: zia_denylist_list_command is called.
+        Then: 'No items found.' is returned and nothing raises.
+        """
+        for data in ({}, {"blacklistUrlsDetailsList": []}, {"blacklistUrls": None}):
+            _patch_api(mocker, mock_client, data)
+            assert "No items found." in zia_denylist_list_command(mock_client, {}).readable_output
+
+    def test_list_old_shape_with_entries(self, mock_client, mocker):
+        """
+        Given: A response in the previous shape, with entries under blacklistUrls only.
+        When: zia_denylist_list_command is called.
+        Then: The entries are listed (old behavior is preserved).
+        """
+        _patch_api(mocker, mock_client, {"blacklistUrls": ["old.com", "5.6.7.8"]})
+        out = zia_denylist_list_command(mock_client, {}).readable_output
+        assert _listed(out) == ["old.com", "5.6.7.8"]
+
+    @pytest.mark.parametrize("args", [{}, {"filter": "ip"}, {"query": "a"}])
+    def test_list_skips_malformed_items(self, mock_client, mocker, args):
+        """
+        Given: A new-shape response with items missing url, with a null/empty url, or that are not objects.
+        When: zia_denylist_list_command is called with and without filter/query.
+        Then: Malformed items are dropped and the command does not raise.
+        """
+        data = {"blacklistUrlsDetailsList": [{"type": "MALWARE"}, {"url": None}, {"url": ""}, 5, {"url": "a.com"}, "1.2.3.4"]}
+        _patch_api(mocker, mock_client, data)
+        out = zia_denylist_list_command(mock_client, args).readable_output
+        assert "None" not in out
+
+    def test_list_non_list_new_key_falls_back(self, mock_client, mocker):
+        """
+        Given: blacklistUrlsDetailsList is not a list while blacklistUrls holds entries.
+        When: zia_denylist_list_command is called.
+        Then: The old key is used and the string is not iterated per character.
+        """
+        _patch_api(mocker, mock_client, {"blacklistUrlsDetailsList": "abc", "blacklistUrls": ["fallback.com"]})
+        out = zia_denylist_list_command(mock_client, {}).readable_output
+        assert _listed(out) == ["fallback.com"]

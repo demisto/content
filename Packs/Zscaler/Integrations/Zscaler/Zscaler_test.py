@@ -1245,3 +1245,71 @@ def test_return_error_is_called_on_error(mocker, requests_mock):
     Zscaler.main()
     error_results = demisto.results.call_args_list[0][0]
     assert "Exceeded the rate limit or quota" in error_results[0].get("Contents")
+
+
+@pytest.mark.parametrize(
+    "response, expected",
+    [
+        ({"blacklistUrls": ["demisto.com", "8.8.8.8"]}, ["demisto.com", "8.8.8.8"]),
+        (
+            {"blacklistUrlsDetailsList": [{"type": "MALWARE", "url": "demisto.com"}, {"type": "MALWARE", "url": "8.8.8.8"}]},
+            ["demisto.com", "8.8.8.8"],
+        ),
+        ({"blacklistUrlsDetailsList": [{"type": "MALWARE"}, "dbot.com", None]}, ["dbot.com"]),
+        ({}, []),
+    ],
+)
+def test_extract_blacklist_items(response, expected):
+    """
+    Given:
+        - A GET /security/advanced response in the old (blacklistUrls) or new (blacklistUrlsDetailsList) shape
+    When:
+        - Extracting the blacklist entries
+    Then:
+        - Ensure the entries are returned as plain strings and invalid items are dropped
+    """
+    import Zscaler
+
+    assert Zscaler.extract_blacklist_items(response) == expected
+
+
+def test_get_blacklist_details_list(requests_mock):
+    """
+    Given:
+        - API response that returns the blacklist only under blacklistUrlsDetailsList
+        - The `filter` arg set to `url`
+    When:
+        - Running the get-blacklist command
+    Then:
+        - Ensure the URL entry is returned instead of "No results found"
+    """
+    import Zscaler
+
+    requests_mock.get(
+        "http://cloud/api/v1/security/advanced",
+        json={"blacklistUrlsDetailsList": [{"type": "MALWARE", "url": "demisto.com"}, {"type": "MALWARE", "url": "8.8.8.8"}]},
+    )
+    cmd_res = Zscaler.get_blacklist_command({"filter": "url"})
+    assert cmd_res["Contents"] == ["demisto.com"]
+    assert cmd_res["EntryContext"] == {"Zscaler.Blacklist": ["demisto.com"]}
+
+
+def test_unblacklist_url_details_list(requests_mock):
+    """
+    Given:
+        - API response that returns the blacklist only under blacklistUrlsDetailsList
+    When:
+        - Running the unblacklist-url command on a blacklisted URL
+    Then:
+        - Ensure the URL is found and the REMOVE_FROM_LIST request is sent (no KeyError)
+    """
+    import Zscaler
+
+    requests_mock.get(
+        "http://cloud/api/v1/security/advanced",
+        json={"blacklistUrlsDetailsList": [{"type": "MALWARE", "url": "demisto.com"}]},
+    )
+    remove_mock = requests_mock.post("http://cloud/api/v1/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST", json={})
+    res = Zscaler.unblacklist_url("demisto.com")
+    assert res == "Removed the following URLs from the blacklist successfully:\n- demisto.com\n"
+    assert remove_mock.last_request.json() == {"blacklistUrls": ["demisto.com"]}

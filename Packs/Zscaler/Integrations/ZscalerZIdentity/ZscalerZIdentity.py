@@ -854,6 +854,27 @@ def test_module_command(client: Client) -> str:
     return "ok"
 
 
+def _extract_denylist_items(response: dict) -> list[str]:
+    """Returns the denylist entries as plain strings, supporting both ZIA response shapes.
+
+    ZIA now returns the denylist under 'blacklistUrlsDetailsList' as a list of
+    {"type": ..., "url": ...} objects. Older responses return 'blacklistUrls' as a list of strings.
+    The new key is preferred when present; otherwise the old key is used.
+
+    Args:
+        response: The GET /security/advanced response.
+
+    Returns:
+        A list of URL/IP strings.
+    """
+    details = response.get("blacklistUrlsDetailsList")
+    if isinstance(details, list):
+        items = [item.get("url") if isinstance(item, dict) else item for item in details]
+    else:
+        items = response.get("blacklistUrls") or []
+    return [item for item in items if isinstance(item, str) and item]
+
+
 def zia_denylist_list_command(client: Client, args: dict) -> CommandResults:
     """Retrieves the ZIA denylist with optional filtering and limiting.
 
@@ -874,7 +895,7 @@ def zia_denylist_list_command(client: Client, args: dict) -> CommandResults:
     all_results = argToBoolean(args.get("all_results", False))
 
     response = client.get_denylist()
-    denylist = response.get("blacklistUrls", [])
+    denylist = _extract_denylist_items(response)
     denylist = _filter_and_limit(denylist, filter_, query, limit, all_results)
 
     hr_lines = "\n".join(f"- {item}" for item in denylist) if denylist else "No items found."
