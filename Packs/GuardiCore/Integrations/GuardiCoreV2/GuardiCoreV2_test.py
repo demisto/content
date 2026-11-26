@@ -460,3 +460,104 @@ def test_fetch_incidents_no_duplicates(mocker, requests_mock):
     assert "aa02280b" not in incidents[0]["name"].lower()
     assert last_fetch < second_run_last_fetch
     assert last_ids == ["79bb091f-0b87-43cf-a383-03badd9ff546"]
+
+
+BASE_URL = "https://api.guardicoreexample.com/api/v3.0"
+# JWT-like tokens whose "exp" is far in the future (2286-11-20), so they are considered locally valid.
+OLD_REVOKED_TOKEN = "old.eyJleHAiOiA5OTk5OTk5OTk5fQ=="
+NEW_TOKEN = "new.eyJleHAiOiA5OTk5OTk5OTk4fQ=="
+REVOKED_RESPONSE = {"description": "User Token expired", "error": "JWT Token Revoked", "message": "Authentication failed"}
+
+
+def test_revoked_cached_token_is_regenerated_and_request_retried(mocker, requests_mock):
+    """
+    Given
+    - A cached JWT in the integration context whose exp is still in the future,
+      but which the GuardiCore server already revoked (e.g. after a password rotation).
+    When
+    - Running fetch-incidents (the API returns 401 "JWT Token Revoked" for the cached token).
+    Then
+    - A new token is generated with the configured credentials, saved to the integration context,
+      and the original request is retried once and succeeds.
+    """
+    from GuardiCoreV2 import Client, fetch_incidents
+
+    integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
+    mocker.patch("GuardiCoreV2.get_integration_context", side_effect=lambda: integration_context)
+    mocker.patch("GuardiCoreV2.set_integration_context", side_effect=integration_context.update)
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": 1611322250000, "last_ids": []})
+
+    auth_mock = requests_mock.post(f"{BASE_URL}/authenticate", json={"access_token": NEW_TOKEN})
+    incidents_mock = requests_mock.get(
+        f"{BASE_URL}/incidents",
+        [
+            {"status_code": 401, "json": REVOKED_RESPONSE},
+            {"status_code": 200, "json": {"objects": [], "total_count": 0}},
+        ],
+    )
+
+    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="new-password")
+    assert client.access_token == OLD_REVOKED_TOKEN  # cached token reused at init
+
+    incidents, last_fetch, last_ids = fetch_incidents(client, {"limit": 50})
+
+    assert incidents == []
+    assert last_fetch == 1611322250000  # checkpoint preserved
+    assert auth_mock.call_count == 1
+    assert "Authorization" not in auth_mock.request_history[0].headers
+    assert incidents_mock.call_count == 2
+    assert incidents_mock.request_history[0].headers["Authorization"] == f"Bearer {OLD_REVOKED_TOKEN}"
+    assert incidents_mock.request_history[1].headers["Authorization"] == f"Bearer {NEW_TOKEN}"
+    assert integration_context["access_token"] == NEW_TOKEN
+
+
+def test_revoked_token_and_failed_reauthentication_raises(mocker, requests_mock):
+    """
+    Given
+    - A cached, locally-valid JWT that was revoked by the server, and invalid configured credentials.
+    When
+    - Calling an API command (401 on the API call, 401 on re-authentication).
+    Then
+    - An authentication error is raised, with no retry loop (one auth call, one API call).
+    """
+    from GuardiCoreV2 import Client
+
+    integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
+    mocker.patch("GuardiCoreV2.get_integration_context", return_value=integration_context)
+    mocker.patch("GuardiCoreV2.set_integration_context")
+
+    auth_mock = requests_mock.post(f"{BASE_URL}/authenticate", status_code=401, json={"message": "Authentication failed"})
+    assets_mock = requests_mock.get(f"{BASE_URL}/assets", status_code=401, json=REVOKED_RESPONSE)
+
+    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="bad-password")
+    with raises(DemistoException, match="401"):
+        client.get_assets({})
+
+    assert auth_mock.call_count == 1
+    assert assets_mock.call_count == 1
+
+
+def test_non_401_error_is_not_retried(mocker, requests_mock):
+    """
+    Given
+    - A cached, locally-valid JWT.
+    When
+    - The API returns a non-401 error (500).
+    Then
+    - The error is raised without re-authenticating or retrying.
+    """
+    from GuardiCoreV2 import Client
+
+    integration_context = {"access_token": OLD_REVOKED_TOKEN, "expires_in": "2286-11-20T17:46:39Z"}
+    mocker.patch("GuardiCoreV2.get_integration_context", return_value=integration_context)
+    mocker.patch("GuardiCoreV2.set_integration_context")
+
+    auth_mock = requests_mock.post(f"{BASE_URL}/authenticate", json={"access_token": NEW_TOKEN})
+    incident_mock = requests_mock.get(f"{BASE_URL}/incidents/1", status_code=500, json={"message": "boom"})
+
+    client = Client(base_url=BASE_URL, verify=False, proxy=False, username="test", password="test")
+    with raises(DemistoException, match="500"):
+        client.get_incident("1")
+
+    assert auth_mock.call_count == 0
+    assert incident_mock.call_count == 1
