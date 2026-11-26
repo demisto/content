@@ -67,6 +67,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
+    "software": FeedIndicatorType.Software,
     "report": "Feedly Report",
     "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
@@ -94,6 +95,12 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
     "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
+}
+
+# Cortex rejects "located-at" as it has no reverse relationship name
+STIX_2_TO_CORTEX_RELATIONSHIP_NAMES = {
+    "originates-from": "originated-from",
+    "located-at": "related-to",
 }
 
 STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
@@ -189,6 +196,9 @@ class STIX2Parser:
         "relationship",
         "extension-definition",
         "vulnerability",
+        "identity",
+        "location",
+        "software",
     ]
 
     def __init__(self):
@@ -731,6 +741,68 @@ class STIX2Parser:
             if reference.get("source_name") == "cwe" and reference.get("external_id")
         ]
 
+    @staticmethod
+    def parse_identity(identity_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses identity indicator type to cortex format.
+
+        Args:
+            identity_obj (dict): identity object, e.g. a targeted organization.
+        """
+        identity = {
+            "value": identity_obj.get("name"),
+            "indicator_type": FeedIndicatorType.Identity,
+            "rawJSON": identity_obj,
+        }
+        identity["customFields"] = {
+            "stixid": identity_obj.get("id"),
+            "firstseenbysource": identity_obj.get("created"),
+            "modified": identity_obj.get("modified"),
+            "description": identity_obj.get("description", ""),
+            "identityclass": identity_obj.get("identity_class", ""),
+            "industrysectors": identity_obj.get("sectors", []),
+            "tags": list(set(identity_obj.get("labels", []))),
+        }
+        return [identity]
+
+    @staticmethod
+    def parse_location(location_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses location indicator type to cortex format.
+
+        Args:
+            location_obj (dict): location object, e.g. a country.
+        """
+        country_code = str(location_obj.get("country", "")).upper()
+        location = {
+            "value": location_obj.get("name") or country_code,
+            "indicator_type": FeedIndicatorType.Location,
+            "rawJSON": location_obj,
+        }
+        location["customFields"] = {
+            "stixid": location_obj.get("id"),
+            "firstseenbysource": location_obj.get("created"),
+            "modified": location_obj.get("modified"),
+            "description": location_obj.get("description", ""),
+            "countrycode": country_code,
+            "tags": list(set(location_obj.get("labels", []))),
+        }
+        return [location]
+
+    @staticmethod
+    def parse_sco_software_indicator(software_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses software indicator type to cortex format.
+
+        Args:
+            software_obj (dict): indicator as an observable object of software type.
+        """
+        software_indicator = STIX2Parser.parse_general_sco_indicator(software_obj, value_mapping="name")
+        software_indicator[0]["customFields"].update(
+            {"cpe": software_obj.get("cpe"), "vendor": software_obj.get("vendor"), "version": software_obj.get("version")}
+        )
+        return software_indicator
+
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
 
@@ -740,6 +812,7 @@ class STIX2Parser:
         a_value_to_relationship: dict[str, Any] = {}
         for relationships_object in relationships_lst:
             relationship_type: str = relationships_object.get("relationship_type", "")
+            relationship_type = STIX_2_TO_CORTEX_RELATIONSHIP_NAMES.get(relationship_type, relationship_type)
             if not EntityRelationship.Relationships.is_valid(relationship_type):
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
@@ -762,7 +835,7 @@ class STIX2Parser:
             if not (a_value and a_type and b_value and b_type):
                 continue
 
-            if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE}:
+            if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE, ThreatIntel.ObjectsNames.TOOL}:
                 a_object["customFields"].setdefault("tags", []).append(b_value)
             elif b_type in {ThreatIntel.ObjectsNames.ATTACK_PATTERN}:
                 with suppress(StopIteration):
@@ -847,6 +920,9 @@ class STIX2Parser:
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "vulnerability": self.parse_vulnerability,
+            "identity": self.parse_identity,
+            "location": self.parse_location,
+            "software": self.parse_sco_software_indicator,
         }
         indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         return indicators

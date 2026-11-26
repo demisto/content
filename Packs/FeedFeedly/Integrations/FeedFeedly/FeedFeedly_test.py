@@ -1,5 +1,6 @@
 import json
 
+from CommonServerPython import FeedIndicatorType
 from FeedFeedly import Client, STIX2Parser
 
 URL = (
@@ -144,13 +145,140 @@ def test_parse_vulnerability_lists_the_cpes_of_its_related_softwares():
         make_related_to("software--2", VULNERABILITY_ID),
     ]
 
-    [cve] = STIX2Parser().parse_stix2_objects(objects)
+    indicators = STIX2Parser().parse_stix2_objects(objects)
 
+    [cve] = [indicator for indicator in indicators if indicator["indicator_type"] == FeedIndicatorType.CVE]
     assert cve["customFields"]["vulnerableproducts"] == [{"CPE": "cpe:2.3:a:adobe:campaign_classic:*:*:*:*:*:*:*:*"}]
+
+
+def test_parse_identity_keeps_its_sectors():
+    """
+    Given:
+        - A targeted organization exported as an identity
+    When:
+        - Parsing the STIX objects
+    Then:
+        - An Identity indicator is created with its class and industry sectors
+    """
+    [identity] = STIX2Parser().parse_stix2_objects([make_identity()])
+
+    assert identity["value"] == "Adobe"
+    assert identity["indicator_type"] == FeedIndicatorType.Identity
+    assert identity["customFields"]["identityclass"] == "organization"
+    assert identity["customFields"]["industrysectors"] == ["technology"]
+
+
+def test_parse_location_falls_back_to_the_country_code():
+    """
+    Given:
+        - A country exported as a location without a name
+    When:
+        - Parsing the STIX objects
+    Then:
+        - A Location indicator is created, named after its country code
+    """
+    [location] = STIX2Parser().parse_stix2_objects([{"type": "location", "id": "location--1", "country": "fr"}])
+
+    assert location["value"] == "FR"
+    assert location["indicator_type"] == FeedIndicatorType.Location
+    assert location["customFields"]["countrycode"] == "FR"
+
+
+def test_parse_software_creates_a_software_indicator_with_its_cpe():
+    """
+    Given:
+        - An affected product exported as a software object
+    When:
+        - Parsing the STIX objects
+    Then:
+        - A Software indicator is created with its vendor and CPE
+    """
+    [software] = STIX2Parser().parse_stix2_objects([make_software("software--1", CPE)])
+
+    assert software["value"] == "Adobe Campaign Classic"
+    assert software["indicator_type"] == FeedIndicatorType.Software
+    assert software["customFields"]["cpe"] == CPE
+    assert software["customFields"]["vendor"] == "Adobe"
+
+
+def test_parse_relationships_keeps_the_links_to_organizations_countries_and_softwares():
+    """
+    Given:
+        - A threat actor targeting an organization located in a country, and a software related to a CVE
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The relationships are kept, located-at as Cortex's related-to
+    """
+    objects = [
+        make_threat_actor(),
+        make_identity(),
+        {"type": "location", "id": "location--1", "country": "US"},
+        make_vulnerability(),
+        make_software("software--1", CPE),
+        make_relationship("targets", "threat-actor--1", "identity--1"),
+        make_relationship("located-at", "identity--1", "location--1"),
+        make_relationship("related-to", "software--1", VULNERABILITY_ID),
+    ]
+
+    indicators = STIX2Parser().parse_stix2_objects(objects)
+
+    assert get_relationship_names(indicators) == {
+        ("APT28", "targets", "Adobe"),
+        ("Adobe", "related-to", "US"),
+        ("Adobe Campaign Classic", "related-to", "CVE-2026-125717"),
+    }
+
+
+def test_parse_relationships_maps_originates_from_to_cortex_originated_from():
+    """
+    Given:
+        - A threat actor originating from a country, with STIX's originates-from relationship
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The relationship is kept under Cortex's originated-from name
+    """
+    objects = [
+        make_threat_actor(),
+        {"type": "location", "id": "location--1", "country": "RU"},
+        make_relationship("originates-from", "threat-actor--1", "location--1"),
+    ]
+
+    indicators = STIX2Parser().parse_stix2_objects(objects)
+
+    assert get_relationship_names(indicators) == {("APT28", "originated-from", "RU")}
+
+
+def test_parse_relationships_tags_indicators_with_the_tools_they_indicate():
+    """
+    Given:
+        - An IP indicator indicating a tool
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The IP indicator is tagged with the tool's name, as for malwares and threat actors
+    """
+    objects = [
+        {
+            "type": "indicator",
+            "id": "indicator--1",
+            "pattern": "[ipv4-addr:value = '1.2.3.4']",
+            "pattern_type": "stix",
+        },
+        {"type": "tool", "id": "tool--1", "name": "Cobalt Strike"},
+        make_relationship("indicates", "indicator--1", "tool--1"),
+    ]
+
+    indicators = STIX2Parser().parse_stix2_objects(objects)
+
+    [ip] = [indicator for indicator in indicators if indicator["value"] == "1.2.3.4"]
+    assert "Cobalt Strike" in ip["customFields"]["tags"]
 
 
 CVSS_VECTOR = "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:N"
 VULNERABILITY_ID = "vulnerability--1"
+CPE = "cpe:2.3:a:adobe:campaign_classic:*:*:*:*:*:*:*:*"
 
 
 def make_vulnerability() -> dict:
@@ -181,10 +309,36 @@ def make_software(software_id: str, cpe: str | None) -> dict:
 
 
 def make_related_to(source_ref: str, target_ref: str) -> dict:
+    return make_relationship("related-to", source_ref, target_ref)
+
+
+def make_relationship(relationship_type: str, source_ref: str, target_ref: str) -> dict:
     return {
         "type": "relationship",
-        "id": f"relationship--{source_ref}",
-        "relationship_type": "related-to",
+        "id": f"relationship--{source_ref}-{target_ref}",
+        "relationship_type": relationship_type,
         "source_ref": source_ref,
         "target_ref": target_ref,
+    }
+
+
+def make_identity() -> dict:
+    return {
+        "type": "identity",
+        "id": "identity--1",
+        "name": "Adobe",
+        "identity_class": "organization",
+        "sectors": ["technology"],
+    }
+
+
+def make_threat_actor() -> dict:
+    return {"type": "threat-actor", "id": "threat-actor--1", "name": "APT28"}
+
+
+def get_relationship_names(indicators: list[dict]) -> set[tuple[str, str, str]]:
+    return {
+        (relationship["entityA"], relationship["name"], relationship["entityB"])
+        for indicator in indicators
+        for relationship in indicator.get("relationships", [])
     }
