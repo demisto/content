@@ -1,0 +1,36 @@
+{
+    "o365_messagetrace_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "messageId": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipientAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "senderAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "size": {
+            "type": "int",
+            "is_array": false
+        },
+        "fromIP": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
