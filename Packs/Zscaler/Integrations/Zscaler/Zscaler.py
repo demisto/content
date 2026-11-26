@@ -198,7 +198,7 @@ def unblacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST"
 
     # Check if given URLs is blacklisted
-    blacklisted_urls = get_blacklist()["blacklistUrls"]
+    blacklisted_urls = get_blacklist_items()
     if len(urls_to_unblacklist) == 1:  # Given only one URL to unblacklist
         if urls_to_unblacklist[0] not in blacklisted_urls:
             raise Exception("Given URL is not blacklisted.")
@@ -230,7 +230,7 @@ def unblacklist_ip(ip):
     ips_to_unblacklist = argToList(ip)
     cmd_url = "/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST"
     # Check if given IPs is blacklisted
-    blacklisted_ips = get_blacklist()["blacklistUrls"]
+    blacklisted_ips = get_blacklist_items()
     if len(ips_to_unblacklist) == 1:  # Given only one IP address to blacklist
         if ips_to_unblacklist[0] not in blacklisted_ips:
             raise Exception("Given IP address is not blacklisted.")
@@ -328,7 +328,7 @@ def unwhitelist_ip(ip):
 
 
 def get_blacklist_command(args):
-    blacklist = get_blacklist().get("blacklistUrls")
+    blacklist = get_blacklist_items()
     if blacklist:
         filter_ = args.get("filter", "")
         query = args.get("query", "")
@@ -374,6 +374,25 @@ def get_blacklist():
     cmd_url = "/security/advanced"
     result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type="content")
     return json.loads(result)
+
+
+def extract_blacklist_items(response):
+    """Returns the blacklist entries as plain strings, supporting both ZIA response shapes.
+
+    ZIA now returns the blacklist under 'blacklistUrlsDetailsList' as a list of
+    {"type": ..., "url": ...} objects. Older responses return 'blacklistUrls' as a list of strings.
+    The new key is preferred when present; otherwise the old key is used.
+    """
+    details = response.get("blacklistUrlsDetailsList")
+    if isinstance(details, list):
+        items = [item.get("url") if isinstance(item, dict) else item for item in details]
+    else:
+        items = response.get("blacklistUrls") or []
+    return [item for item in items if isinstance(item, str) and item]
+
+
+def get_blacklist_items():
+    return extract_blacklist_items(get_blacklist())
 
 
 def get_whitelist_command():
