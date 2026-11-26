@@ -139,11 +139,11 @@ class Client(ContentClient):
             return response.json()
         return {}
 
-    def call_post_request(self, end_point: str, body: dict | None = None, headers: dict | None = None) -> dict:
+    def call_post_request(self, end_point: str, params: dict | None = None, headers: dict | None = None) -> dict:
         """POST request; see ``_request``."""
         if not headers:
             headers = {"X-Request-ID": str(uuid.uuid4())}
-        return self.post(end_point, json_data=body, headers=headers)
+        return self.post(end_point, params=params, headers=headers)
 
     def call_put_request(self, end_point: str, body: dict | None = None, headers: dict | None = None) -> dict:
         """PUT request; see ``_request``."""
@@ -349,7 +349,7 @@ class Client(ContentClient):
         if comment:
             params["assetComment"] = comment
         headers = {"X-Request-ID": str(uuid.uuid4())}
-        return self.call_post_request(end_point=TAKE_DOWN_INITIATE_API_PATH, body=params, headers=headers)
+        return self.call_post_request(end_point=TAKE_DOWN_INITIATE_API_PATH, params=params, headers=headers)
 
     def take_down_list_data(self, domain: str, page: str, size: str) -> list:
         """Retrieve a page of existing take-down tickets.

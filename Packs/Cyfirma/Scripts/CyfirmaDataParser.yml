@@ -62,6 +62,9 @@ outputs:
 - contextPath: Cyfirma.Alert.Description
   description: Description.
   type: string
+- contextPath: Cyfirma.Alert.Title
+  description: Title.
+  type: string
 - contextPath: Cyfirma.Alert.Ip
   description: IP address.
   type: string

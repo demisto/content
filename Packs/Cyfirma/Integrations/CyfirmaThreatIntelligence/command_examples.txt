@@ -1,5 +1,5 @@
-cyfirma-get-ip,
-cyfirma-get-domain
+!cyfirma-get-ip
+!cyfirma-get-domain
 !cyfirma-get-url
 !cyfirma-get-file
 !cyfirma-get-ioc-search value=8.8.8.8

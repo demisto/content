@@ -393,7 +393,7 @@ def test_initiate_take_down_with_comment(client, mocker):
     client.initiate_take_down("A1", "please remove")
     post.assert_called_once_with(
         end_point="/td/initiate",
-        body={"objectId": "A1", "assetComment": "please remove"},
+        params={"objectId": "A1", "assetComment": "please remove"},
         headers={"X-Request-ID": post.call_args.kwargs["headers"]["X-Request-ID"]},
     )
 
@@ -403,7 +403,7 @@ def test_initiate_take_down_without_comment(client, mocker):
     client.initiate_take_down("A1")
     post.assert_called_once_with(
         end_point="/td/initiate",
-        body={"objectId": "A1"},
+        params={"objectId": "A1"},
         headers={"X-Request-ID": post.call_args.kwargs["headers"]["X-Request-ID"]},
     )
 
