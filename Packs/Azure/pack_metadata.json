@@ -2,7 +2,7 @@
     "name": "Azure",
     "description": "Microsoft Azure",
     "support": "xsoar",
-    "currentVersion": "1.26.1",
+    "currentVersion": "1.27.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -22,7 +22,8 @@
         "cloud",
         "cloud_runtime_security",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "data_security"
     ],
     "derivedSource": "cooc"
 }
