@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1001,
+        "date": "2024-01-01T10:30:00.123456Z",
+        "member_email": "eric@example.com",
+        "member_name": "Eric Smith",
+        "member_id": 42,
+        "api_token_id": null,
+        "ip_address": "198.51.100.7",
+        "target_ids": [
+            3759
+        ],
+        "action_type": "UPDATE",
+        "event_name": "incident.assigned",
+        "data": {
+            "assignee_email": "eric@example.com"
+        }
+    },
+    {
+        "id": 1002,
+        "date": "2024-01-01T10:45:00Z",
+        "member_email": null,
+        "member_name": null,
+        "member_id": null,
+        "api_token_id": "a1b2c3d4-0000-1111-2222-333344445555",
+        "ip_address": "2001:db8::1",
+        "target_ids": [],
+        "action_type": "READ",
+        "event_name": "api_token.used",
+        "data": {}
+    }
+]
