@@ -533,7 +533,7 @@ def test_initiate_take_down_request_success(client, mocker):
         "initiate_take_down",
         return_value={"status": "success", "data": {"takeDownId": "TD-1"}},
     )
-    result = initiate_take_down_request(client, {"alert_id": "A1", "comment": "c"})
+    result = initiate_take_down_request(client, {"object_id": "A1", "comment": "c"})
     init.assert_called_once_with("A1", "c")
     assert result.outputs == {
         "take_down_id": "TD-1",
@@ -543,15 +543,15 @@ def test_initiate_take_down_request_success(client, mocker):
     assert "TD-1" in result.readable_output
 
 
-def test_initiate_take_down_request_missing_alert_id(client):
-    with pytest.raises(DemistoException, match="alert_id is required"):
+def test_initiate_take_down_request_missing_object_id(client):
+    with pytest.raises(DemistoException, match="object_id is required"):
         initiate_take_down_request(client, {})
 
 
 def test_initiate_take_down_request_no_data(client, mocker):
     mocker.patch.object(Client, "initiate_take_down", return_value={})
     with pytest.raises(DemistoException, match="No data returned"):
-        initiate_take_down_request(client, {"alert_id": "A1"})
+        initiate_take_down_request(client, {"object_id": "A1"})
 
 
 @pytest.mark.parametrize(
@@ -566,14 +566,14 @@ def test_initiate_take_down_request_no_data(client, mocker):
 def test_initiate_take_down_request_failure_status(client, mocker, response, reason):
     mocker.patch.object(Client, "initiate_take_down", return_value=response)
     with pytest.raises(DemistoException, match=reason):
-        initiate_take_down_request(client, {"alert_id": "A1"})
+        initiate_take_down_request(client, {"object_id": "A1"})
 
 
 @pytest.mark.parametrize("data", [None, "string", {}, {"takeDownId": ""}])
 def test_initiate_take_down_request_missing_ticket_id(client, mocker, data):
     mocker.patch.object(Client, "initiate_take_down", return_value={"status": "SUCCESS", "data": data})
     with pytest.raises(DemistoException, match="no ticket ID"):
-        initiate_take_down_request(client, {"alert_id": "A1"})
+        initiate_take_down_request(client, {"object_id": "A1"})
 
 
 def test_get_take_down_list_defaults(client, mocker):

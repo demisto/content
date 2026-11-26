@@ -133,7 +133,7 @@ script:
   - name: cyfirma-takedown-initiate
     description: Create a take-down request for a CYFIRMA alert.
     arguments:
-    - name: alert_id
+    - name: object_id
       required: true
       description: The ID of the alert to take down.
     - name: comment

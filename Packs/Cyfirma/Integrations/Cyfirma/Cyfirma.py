@@ -341,17 +341,17 @@ class Client(ContentClient):
 
         return incidents
 
-    def initiate_take_down(self, alert_id: str, comment: str = "") -> dict:
+    def initiate_take_down(self, object_id: str, comment: str = "") -> dict:
         """Create a take-down request for an alert.
 
         Args:
-            alert_id: ID of the alert to take down.
+            object_id: ID of the object to take down.
             comment: Optional comment sent along with the request.
 
         Returns:
             The raw API response (expected to contain a ``response`` or ``error`` key).
         """
-        params = {"objectId": alert_id}
+        params = {"objectId": object_id}
         if comment:
             params["assetComment"] = comment
         headers = {"X-Request-ID": str(uuid.uuid4())}
@@ -462,7 +462,7 @@ def initiate_take_down_request(client: Client, args: dict) -> CommandResults:
     """Command ``cyfirma-takedown-initiate``: create a take-down request for an alert.
 
     Command args:
-        alert_id (required): ID of the alert.
+        object_id (required): ID of the object to take down.
         comment (optional): Comment for the request.
 
     Args:
@@ -472,14 +472,14 @@ def initiate_take_down_request(client: Client, args: dict) -> CommandResults:
         CommandResults with ``Cyfirma.InitiateTakeDown`` context containing the ticket ID and message.
 
     Raises:
-        DemistoException: If ``alert_id`` is not provided.
+        DemistoException: If ``object_id`` is not provided.
     """
 
-    alert_id = args.get("alert_id")
-    if not alert_id:
-        raise DemistoException("alert_id is required.")
+    object_id = args.get("object_id")
+    if not object_id:
+        raise DemistoException("object_id is required.")
 
-    data = client.initiate_take_down(alert_id, args.get("comment", ""))
+    data = client.initiate_take_down(object_id, args.get("comment", ""))
 
     if not data:
         raise DemistoException("No data returned for the take down request.")
