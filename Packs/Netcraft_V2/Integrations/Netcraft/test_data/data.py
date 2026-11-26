@@ -1052,6 +1052,7 @@ class attack_report:
         "region": "region",
         "suspected_fraud_domain": "true",
         "tags": "tags,tags2",
+        "impersonation_target_id": "5880",
     }
     api_response = "TD_OK\n30480489"
     http_func_args = {
@@ -1073,6 +1074,7 @@ class attack_report:
                 "phishkit_phish_url": "phishkit_phish_url.com",
                 "region": "region",
                 "tags": "tags,tags2",
+                "impersonation_target_id": "5880",
                 "type": "attack_type",
                 "suspected_fraudulent_domain": True,
             },

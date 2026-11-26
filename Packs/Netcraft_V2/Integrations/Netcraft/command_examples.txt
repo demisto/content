@@ -1,4 +1,7 @@
 !netcraft-attack-type-list all_results="false" automated=true
+!netcraft-impersonation-target-list limit=2
+!netcraft-impersonation-target-profile-list impersonation_target_id=1234
+!netcraft-attack-report attack="https://www.facebook.com/example-impersonator" attack_type="facebook_impersonation" comment="Fake executive profile" impersonation_target_id=1234
 !netcraft-attack-report attack="https://www.example.com/random" attack_type="dropsite" comment="Test report" customer_label="Test Playbook run" inactive="true" tags="coronavirus"
 !netcraft-takedown-list attack_types="coronavirus" date_from="last week" date_to="yesterday" statuses=unverified escalated="No" limit="3"
 !netcraft-takedown-escalate takedown_id=45470682

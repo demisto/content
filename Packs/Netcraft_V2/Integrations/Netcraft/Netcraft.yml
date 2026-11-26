@@ -178,6 +178,11 @@ script:
         The name of the region to create a takedown under.
         If not provided, the region specified in the instance configuration will be used.
       name: region
+    - description: |
+        The ID of the impersonation target to attach to the takedown.
+        The API requires this argument for social media impersonation attacks.
+        Run the netcraft-impersonation-target-list command to get the list of valid IDs.
+      name: impersonation_target_id
     outputs:
     - contextPath: Netcraft.Takedown.id
       description: The ID of the takedown. (This key will only appear if the takedown has been created and verified).
@@ -735,6 +740,62 @@ script:
     - contextPath: Netcraft.AttackType.auto_authorize
       description: Indicates whether or not you have chosen to automatically authorize takedowns under this type.
       type: Boolean
+  - name: netcraft-impersonation-target-list
+    arguments:
+    - description: |
+        The region to filter the impersonation targets by. The command returns only the targets that this region can access.
+        If you do not provide a region, the command uses the region specified in the instance configuration.
+      name: region
+    - defaultValue: '50'
+      description: The maximum number of impersonation targets to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all impersonation targets. If you set this argument to true, the command ignores the limit argument.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
+    description: Gets the impersonation targets (for example, executives or brand entities) available to a region. Use the target ID with the impersonation_target_id argument of the netcraft-attack-report command.
+    outputs:
+    - contextPath: Netcraft.ImpersonationTarget.id
+      description: The unique identifier of the impersonation target.
+      type: String
+    - contextPath: Netcraft.ImpersonationTarget.name
+      description: The name of the impersonation target.
+      type: String
+    - contextPath: Netcraft.ImpersonationTarget.role
+      description: The role of the impersonation target.
+      type: String
+    - contextPath: Netcraft.ImpersonationTarget.has_detection
+      description: Whether detection is enabled for the impersonation target.
+      type: Boolean
+    - contextPath: Netcraft.ImpersonationTarget.regions
+      description: The regions that can access the impersonation target.
+      type: String
+  - name: netcraft-impersonation-target-profile-list
+    arguments:
+    - description: The ID of the impersonation target. Run the netcraft-impersonation-target-list command to get the list of valid IDs.
+      name: impersonation_target_id
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of profiles to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all profiles. If you set this argument to true, the command ignores the limit argument.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
+    description: Gets the known social media profiles of an impersonation target.
+    outputs:
+    - contextPath: Netcraft.ImpersonationTargetProfile.platform
+      description: The platform of the profile (for example, Facebook).
+      type: String
+    - contextPath: Netcraft.ImpersonationTargetProfile.profile
+      description: The profile identifier or URL on the platform.
+      type: String
   - name: netcraft-submission-list
     polling: true
     description: Get basic information about a submissions.
@@ -1556,7 +1617,7 @@ script:
       type: String
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.16.14740428
   subtype: python3
   isfetch: true
   runonce: false
