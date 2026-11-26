@@ -10,9 +10,11 @@ alter
     xdm.email.sender = senderAddress,
     xdm.email.recipients = arraycreate(recipientAddress),
     // source
-    xdm.source.user.email = senderAddress,
+    xdm.source.user.upn = senderAddress,
+    xdm.source.identity.upn = senderAddress,
     xdm.source.ipv4 = if(is_ipv4(fromIP), fromIP, null),
     xdm.source.ipv6 = if(is_ipv6(fromIP), fromIP, null),
     xdm.source.sent_bytes = to_integer(size),
     // target
-    xdm.target.user.email = recipientAddress;
+    xdm.target.user.upn = recipientAddress,
+    xdm.target.identity.upn = recipientAddress;

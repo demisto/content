@@ -1,15 +1,18 @@
 <~XSIAM>
 
 ## Overview
+
 Microsoft Office 365 Message Trace tracks email messages as they pass through Exchange Online. Each record shows the sender, recipient, subject, message ID, size, source IP and delivery status (delivered, quarantined, failed). Administrators use it to investigate mail flow and email security events.
 
-## This pack includes:
+## This pack includes
 
 Data normalization capabilities:
-  * Rules for parsing and modeling O365 MessageTrace logs that are ingested via the HTTP Collector into Cortex XSIAM.
-    * The ingested O365 MessageTrace logs can be queried in XQL Search using the *`o365_messagetrace_raw`* dataset.
+
+* Rules for parsing and modeling O365 MessageTrace logs that are ingested via the HTTP Collector into Cortex XSIAM.
+  * The ingested O365 MessageTrace logs can be queried in XQL Search using the *`o365_messagetrace_raw`* dataset.
 
 ## Supported log categories
+
 | Category                    | Category Display Name                 |
 |:----------------------------|:--------------------------------------|
 | email_trace                 | Email Message Trace                   |
@@ -19,6 +22,7 @@ Data normalization capabilities:
 ## Data Collection
 
 ### O365 MessageTrace side
+
 1. In the Microsoft Entra admin center, register an application.
 2. Grant the application the Microsoft Graph / Exchange Online message trace read permissions, and grant admin consent.
 3. Create a client secret for the application.
