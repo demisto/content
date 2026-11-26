@@ -1887,14 +1887,15 @@ def test_iter_host_list_detections_matches_handle_host_list_detection_result(moc
         - The yielded hosts and the captured next_url match handle_host_list_detection_result's output.
     """
     hosts = [{"HOST": _make_host("h1", 1)}, {"HOST": _make_host("h2", 1)}]
-    stream_elements = [("HOST", f"elem{i}") for i in range(len(hosts))] + [("WARNING", "warn")]
+    host_elements = [ElementTree.fromstring(f"<HOST><ID>{host['HOST']['ID']}</ID></HOST>") for host in hosts]
+    stream_elements = [("HOST", element) for element in host_elements] + [("WARNING", "warn")]
 
     mocker.patch("Qualysv2.stream_xml_elements", return_value=iter(stream_elements))
 
     def fake_elem_to_internal(element):
         if element == "warn":
             return {"WARNING": {"URL": "https://qualys/next?id_min=42"}}
-        return hosts[int(str(element).replace("elem", ""))]
+        return hosts[host_elements.index(element)]
 
     mocker.patch("Qualysv2.elem_to_internal", side_effect=fake_elem_to_internal)
 
@@ -3618,6 +3619,95 @@ class TestConcurrencyLimitRetry:
         type(resp_no_text).text = PropertyMock(side_effect=AttributeError("no text attribute"))
         assert Client._is_concurrency_limit_error(resp_no_text) is False
 
+    @pytest.mark.parametrize("entry_point", ["test-module", "qualys-get-assets"], ids=["test_module", "qualys_get_assets"])
+    def test_interactive_host_list_fails_fast_on_concurrency_limit(self, mocker: MockerFixture, client: Client, entry_point: str):
+        """
+        Given: every host list request is answered with 409 / Error Code 1960 (both Qualys slots busy,
+               e.g. while the assets fetch is running) (XSUP-80841).
+        When:  the instance test (test-module) or qualys-get-assets requests host list detections.
+        Then:  a single request is made with no back-off, so the call finishes well within the 60s test timeout,
+               and the raised error explains the concurrency limit while keeping the original Qualys error.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=_make_concurrency_limit_exception())
+
+        with pytest.raises(DemistoException) as exc_info:
+            if entry_point == "test-module":
+                Qualysv2.test_module(client, {"isFetchAssets": True}, first_fetch_time="3 days")
+            else:
+                Qualysv2.get_host_list_detections_events(client=client, since_datetime="2026-11-03", limit=1)
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+        assert f"Error Code {Qualysv2.CONCURRENCY_LIMIT_ERROR_CODE}" in str(exc_info.value)
+        assert "concurrency limited" in str(exc_info.value)
+        assert Client._is_concurrency_limit_error(exc_info.value.res) is True
+
+    def test_host_list_skips_concurrency_retry_when_disabled(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a 409 / Error Code 1960 response.
+        When:  get_host_list_detection is called with retry_on_concurrency_limit=False.
+        Then:  the 1960 error is raised after a single request, without sleeping.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=_make_concurrency_limit_exception())
+
+        with pytest.raises(DemistoException, match="concurrency limited"):
+            client.get_host_list_detection(since_datetime="2024-12-12", limit=1, retry_on_concurrency_limit=False)
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    def test_host_list_without_retry_returns_first_success(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a successful host list response.
+        When:  get_host_list_detection is called with retry_on_concurrency_limit=False.
+        Then:  the response is returned from the single request, with set_new_limit=False and no sleep.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", return_value="host-list-data")
+
+        response, set_new_limit = client.get_host_list_detection(
+            since_datetime="2024-12-12", limit=1, retry_on_concurrency_limit=False
+        )
+
+        assert response == "host-list-data"
+        assert set_new_limit is False
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "status_code, body",
+        [
+            (401, "<SIMPLE_RETURN><RESPONSE><CODE>2000</CODE><TEXT>Bad Login/Password</TEXT></RESPONSE></SIMPLE_RETURN>"),
+            (500, "Internal Server Error"),
+            (409, "<SIMPLE_RETURN><RESPONSE><CODE>1965</CODE><TEXT>Try again later.</TEXT></RESPONSE></SIMPLE_RETURN>"),
+        ],
+        ids=["401_bad_login", "500_server_error", "409_rate_limit_1965"],
+    )
+    def test_interactive_host_list_keeps_other_errors_unchanged(
+        self, mocker: MockerFixture, client: Client, status_code: int, body: str
+    ):
+        """
+        Given: a host list error that is not the 1960 concurrency limit (bad login, server error, 1965 rate limit).
+        When:  qualys-get-assets requests host list detections.
+        Then:  the original error is raised as is after a single request, without the concurrency-limit message.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        response = Mock()
+        response.status_code = status_code
+        response.headers = {}
+        response.text = body
+        original_error = DemistoException(f"original error {status_code}", res=response)
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=original_error)
+
+        with pytest.raises(DemistoException) as exc_info:
+            Qualysv2.get_host_list_detections_events(client=client, since_datetime="2026-11-03", limit=1)
+
+        assert exc_info.value is original_error
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
 
 """ XSIAM SEND RETRY TESTS """
 
@@ -4301,6 +4391,99 @@ def test_iter_committable_host_batches_next_page_follows_last_host_with_no_detec
 
     assert next_page == "201"
     assert is_full_batch is True
+
+
+@pytest.mark.parametrize(
+    "detections_per_host, expected_batches",
+    [
+        pytest.param([1, 1, 1, 1], [(["0", "1", "2"], True), (["3"], False)], id="closed_by_host_count"),
+        pytest.param([2, 2, 2], [(["0", "1"], True), (["2"], False)], id="closed_before_going_over_rows"),
+        pytest.param([2, 3, 1], [(["0", "1"], True), (["2"], False)], id="closed_on_reaching_rows"),
+        pytest.param([1, 10, 1], [(["0"], True), (["1"], True), (["2"], False)], id="host_over_rows_alone"),
+        pytest.param([0, 0, 0, 0, 0, 0], [(["0", "1", "2"], True), (["3", "4", "5"], True)], id="no_detections_one_row"),
+        pytest.param([], [], id="no_hosts"),
+    ],
+)
+def test_iter_host_batches(detections_per_host: list[int], expected_batches: list[tuple]):
+    """
+    Given:
+        - Hosts with the given detection counts, with at most 3 hosts and 5 rows per batch.
+    When:
+        - Grouping them with iter_host_batches.
+    Then:
+        - A batch closes at 3 hosts, on reaching 5 rows, or before a host that would take it over 5 rows.
+        - A host is never split: a host with more than 5 detections is a batch of its own.
+        - A host without detections counts as one row.
+        - Only the last batch, closed by the end of the hosts, has closed_by_limit=False.
+    """
+    hosts = [_make_host(str(host_id), count) for host_id, count in enumerate(detections_per_host)]
+
+    batches = list(Qualysv2.iter_host_batches(iter(hosts), max_hosts=3, max_rows=5))
+
+    assert [([host["ID"] for host in batch], closed_by_limit) for batch, closed_by_limit in batches] == expected_batches
+
+
+@pytest.mark.parametrize(
+    "host, expected_detections",
+    [
+        pytest.param({"DETECTION_LIST": {"DETECTION": [{"QID": "1"}, {"QID": "2"}]}}, [{"QID": "1"}, {"QID": "2"}], id="list"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {"QID": "1"}}}, [{"QID": "1"}], id="single_detection_as_dict"),
+        pytest.param({"DETECTION_LIST": {"DETECTION": {}}}, [{}], id="empty_detection"),
+        pytest.param({"DETECTION_LIST": None}, [{}], id="empty_detection_list"),
+        pytest.param({}, [{}], id="no_detection_list"),
+    ],
+)
+def test_get_host_detections(host: dict, expected_detections: list[dict]):
+    """
+    Given:
+        - A host with detections parsed as a list, a single dict, or with no detections.
+    When:
+        - Calling get_host_detections.
+    Then:
+        - The detections are returned as a list, and a host without detections yields a single empty detection.
+    """
+    assert Qualysv2.get_host_detections(host) == expected_detections
+
+
+def test_iter_host_batches_single_detection_as_dict():
+    """
+    Given:
+        - A host whose single detection is parsed as a dict rather than a list, with at most 1 row per batch.
+    When:
+        - Grouping it with iter_host_batches.
+    Then:
+        - The host counts as one row, so the next host starts a new batch.
+    """
+    host_with_dict_detection = {"ID": "1", "DETECTION_LIST": {"DETECTION": {"QID": "1"}}}
+
+    batches = list(Qualysv2.iter_host_batches(iter([host_with_dict_detection, _make_host("2", 1)]), max_hosts=3, max_rows=1))
+
+    assert [[host["ID"] for host in batch] for batch, _ in batches] == [["1"], ["2"]]
+
+
+def test_iter_committable_host_batches_closed_by_detections(mocker: MockerFixture):
+    """
+    Given:
+        - Hosts with 2, 2, 1 and 1 detections, with a commit batch of up to 10 hosts and 3 detections.
+    When:
+        - Iterating iter_committable_host_batches.
+    Then:
+        - Batches close on the detections limit, before the hosts limit, without splitting a host.
+        - Each batch closed by the limit is committable, with next_page set to its last host ID + 1.
+        - The last batch, closed by the end of the page, is the remainder (next_page=None, is_full_batch=False).
+    """
+    hosts = [_make_host("100", 2), _make_host("200", 2), _make_host("300", 1), _make_host("400", 1)]
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 10)
+    mocker.patch("Qualysv2.ASSETS_COMMIT_DETECTIONS_BATCH_SIZE", 3)
+
+    batches = list(Qualysv2.iter_committable_host_batches(Mock(), {}))
+
+    assert [([row["ID"] for row in rows], next_page, is_full) for rows, next_page, is_full in batches] == [
+        (["100", "100"], "101", True),
+        (["200", "200", "300"], "301", True),
+        (["400"], None, False),
+    ]
 
 
 def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: MockerFixture, client: Client):

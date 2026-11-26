@@ -1342,7 +1342,7 @@ class CoreClient(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="/get_risk_score/",
-            json_data={"request_data": {"id": user_or_host_id}},
+            json_data={"request_data": {"id": str(user_or_host_id)}},
         )
 
     def list_risky_users(self) -> dict[str, list[dict[str, Any]]]:

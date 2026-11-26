@@ -39,6 +39,10 @@ QIDS_BATCH_SIZE = 500
 VULNERABILITIES_SEND_BATCH_SIZE = 5000
 # Hosts per commit: their detections are sent together, then the last run is saved with the next host ID as cursor.
 ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
+# Detections (asset rows) per commit: a batch also closes once its hosts reach this many detections, so a few hosts
+# with many detections cannot hold too many rows in memory at once. Hosts are never split: a single host with more
+# detections than this is sent as a batch of its own.
+ASSETS_COMMIT_DETECTIONS_BATCH_SIZE = 5000
 # Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
 # before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
 ASSETS_MAX_CONSECUTIVE_FAILURES = 5
@@ -68,6 +72,12 @@ RATE_LIMIT_DEFAULT_WAIT_SEC = 30
 CONCURRENCY_LIMIT_ERROR_CODE = "1960"
 CONCURRENCY_LIMIT_WAIT_SEC = 60
 CONCURRENCY_LIMIT_MAX_RETRIES = 2
+# Interactive calls (test-module, qualys-get-assets) do not back off on 1960: two 60s waits exceed the 60s test timeout.
+CONCURRENCY_LIMIT_INTERACTIVE_ERROR = (
+    f"Qualys concurrency limit reached (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}): the Qualys account is already running "
+    "the maximum number of host list detection requests, usually because the assets and vulnerabilities fetch is running. "
+    "Try again after it finishes."
+)
 
 # Retry configuration for sending assets and vulnerabilities into XSIAM.
 # The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx, connection resets,
@@ -1790,7 +1800,12 @@ class Client(BaseClient):
         return response.text
 
     def get_host_list_detection(
-        self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
+        self,
+        since_datetime: str,
+        next_page: str | None = None,
+        limit: int = HOST_LIMIT,
+        qid: Optional[str] = None,
+        retry_on_concurrency_limit: bool = True,
     ) -> tuple[Optional[requests.Response], bool]:
         """
         Make a http request to Qualys API to get assets.
@@ -1804,12 +1819,14 @@ class Client(BaseClient):
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
             qid: The Qualys ID (QID).
+            retry_on_concurrency_limit (bool): Whether to back off and retry on a concurrency-limit error
+                (HTTP 409, Error Code 1960). True for the assets fetch; False for interactive calls, which must fail fast.
         Returns:
             A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
             ``set_new_limit`` is True only when the request timed out, so the caller can retry with a smaller limit.
         Raises:
             DemistoException: can be raised by the _http_request function, including a concurrency-limit error
-                (HTTP 409, Error Code 1960) that is still active after the in-run retries.
+                (HTTP 409, Error Code 1960) that is still active after the in-run retries (if any).
         """
         set_new_limit = False
         self._headers.update({"Content-Type": "application/json"})
@@ -1834,10 +1851,16 @@ class Client(BaseClient):
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
         response: Optional[requests.Response] = None
+        max_retries = CONCURRENCY_LIMIT_MAX_RETRIES if retry_on_concurrency_limit else 0
+        request_start = time.monotonic()
         try:
-            demisto.debug(f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}.")
+            demisto.debug(
+                f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}. "
+                f"Concurrency-limit retries: {max_retries}."
+            )
             url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
-            response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout)
+            response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout, max_retries=max_retries)
+            demisto.debug(f"[HTTP Call] Host list detections request returned after {time.monotonic() - request_start:.1f}s.")
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
@@ -1853,7 +1876,12 @@ class Client(BaseClient):
         return response, set_new_limit
 
     def _request_with_concurrency_retry(
-        self, method: str, url_suffix: str, params: dict[str, Any], timeout: tuple[int, int]
+        self,
+        method: str,
+        url_suffix: str,
+        params: dict[str, Any],
+        timeout: tuple[int, int],
+        max_retries: Optional[int] = None,
     ) -> Optional[requests.Response]:
         """Perform a streamed Qualys request, retrying on Qualys concurrency-limit (Error Code 1960).
 
@@ -1870,6 +1898,8 @@ class Client(BaseClient):
             url_suffix (str): The URL suffix for the request.
             params (dict[str, Any]): Query params for the request.
             timeout (tuple[int, int]): (connection, read) timeout for the request.
+            max_retries (Optional[int]): Retries on a 1960 error. Defaults to ``CONCURRENCY_LIMIT_MAX_RETRIES``;
+                0 raises the first 1960 error without waiting.
 
         Returns:
             Optional[requests.Response]: The streamed response.
@@ -1877,7 +1907,8 @@ class Client(BaseClient):
         Raises:
             DemistoException: For non-1960 errors, or a 1960 error after retries are exhausted.
         """
-        for attempt in range(CONCURRENCY_LIMIT_MAX_RETRIES + 1):
+        retries = CONCURRENCY_LIMIT_MAX_RETRIES if max_retries is None else max_retries
+        for attempt in range(retries + 1):
             try:
                 return self._http_request(
                     method=method,
@@ -1889,11 +1920,20 @@ class Client(BaseClient):
                     stream=True,
                 )
             except DemistoException as e:
-                if not self._is_concurrency_limit_error(getattr(e, "res", None)) or attempt == CONCURRENCY_LIMIT_MAX_RETRIES:
+                res = getattr(e, "res", None)
+                if not self._is_concurrency_limit_error(res):
+                    raise
+                headers = getattr(res, "headers", None) or {}
+                demisto.debug(
+                    f"[HTTP Error] Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) on attempt "
+                    f"{attempt + 1}/{retries + 1}: running={headers.get('x-concurrency-limit-running')}, "
+                    f"limit={headers.get('x-concurrency-limit-limit')}."
+                )
+                if attempt == retries:
                     raise
                 demisto.debug(
                     f"[HTTP Error] Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
-                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
+                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{retries}. "
                     f"Error: {str(e)}\n{traceback.format_exc()}"
                 )
                 time.sleep(CONCURRENCY_LIMIT_WAIT_SEC)  # pylint: disable=E9003
@@ -3046,11 +3086,18 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
 
     simple_response: dict = {}
     raw_response.raw.decode_content = True
+    hosts_parsed = 0
 
     # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
     # because `stream_xml_elements` clears each element once the generator advances past it.
     for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
         if local_tag == "HOST":
+            hosts_parsed += 1
+            # Logged before the dict conversion, so a run killed while converting a large host still names the host.
+            demisto.debug(
+                f"[Fetch] Parsing host #{hosts_parsed}: ID={element.findtext('ID')}, "
+                f"detections={len(element.findall('DETECTION_LIST/DETECTION'))}."
+            )
             # Convert this HOST subtree to a dict.
             host_dict = elem_to_internal(element)
             yield host_dict.get("HOST", host_dict)
@@ -3063,6 +3110,10 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
             simple_return = elem_to_internal(element)
             simple_response = get_simple_response_from_raw(simple_return) or {}
 
+    demisto.debug(
+        f"[Fetch] Finished streaming the host list: {hosts_parsed} hosts, has next page: {bool(stream_state['next_url'])}, "
+        f"API error code: {simple_response.get('CODE')}."
+    )
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
@@ -3204,6 +3255,18 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def get_host_detections(host: dict) -> list[dict]:
+    """Returns the host's detections as a list, one per asset row. A host without detections yields one empty detection.
+
+    Args:
+        host (dict): A host dict from the host list detection response.
+    Returns:
+        list[dict]: The host's detections (a single detection parsed as a dict is wrapped in a list).
+    """
+    detections = (host.get("DETECTION_LIST") or {}).get("DETECTION") or [{}]
+    return detections if isinstance(detections, list) else [detections]
+
+
 def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
     """Yields detection (asset) rows one at a time from a stream of hosts, without accumulating the full list.
 
@@ -3219,10 +3282,7 @@ def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
         One detection (asset) row dict per detection.
     """
     for host in hosts:
-        detections_list = host.get("DETECTION_LIST", {}).get("DETECTION") or [{}]
-
-        if not isinstance(detections_list, list):  # In case detections_list = {}
-            detections_list = [detections_list]
+        detections_list = get_host_detections(host)
 
         # Build the host-without-detections once per host so the (potentially large) detections list is not
         # deep-copied per detection (keeps it O(N) rather than O(N^2) for a host with N detections).
@@ -3450,7 +3510,11 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
 def get_host_list_detections_events(
     client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False, qid: Optional[str] = None
 ) -> tuple:
-    """Get host list detections from qualys
+    """Get host list detections from qualys for the interactive callers (test-module and qualys-get-assets).
+
+    A Qualys concurrency-limit error (HTTP 409, Error Code 1960) is raised right away, without the fetch back-off,
+    so the call fits in the 60s test timeout and does not hold the caller while the assets fetch runs.
+
     Args:
         client: Qualys client
         next_page: pagination marking
@@ -3460,12 +3524,25 @@ def get_host_list_detections_events(
         qid: The Qualys ID (QID).
     Returns:
         Host list detections assets
+    Raises:
+        DemistoException: On a concurrency-limit error, with ``CONCURRENCY_LIMIT_INTERACTIVE_ERROR`` and the original error.
     """
     demisto.debug("Pulling host list detections")
     assets: list = []
 
     demisto.debug("Starting to get client host list detections.")
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit, qid)
+    try:
+        host_list_detections, set_new_limit = client.get_host_list_detection(
+            since_datetime, next_page, limit, qid, retry_on_concurrency_limit=False
+        )
+    except DemistoException as e:
+        if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
+            raise
+        demisto.debug(
+            "[HTTP Error] Host list request hit the concurrency limit; failing fast for the interactive call.\n"
+            f"{traceback.format_exc()}"
+        )
+        raise DemistoException(f"{CONCURRENCY_LIMIT_INTERACTIVE_ERROR}\n{e}", res=e.res) from e
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
@@ -3810,10 +3887,50 @@ def read_assets_page_state(last_run: dict[str, Any]) -> tuple[str, str, str, int
     return since_datetime, next_page, snapshot_id, limit
 
 
+def iter_host_batches(hosts: Iterable[dict], max_hosts: int, max_rows: int) -> Iterator[tuple[list[dict], bool]]:
+    """Groups hosts into batches of whole hosts, closing a batch at ``max_hosts`` hosts or ``max_rows`` asset rows.
+
+    A host is never split between batches. If adding a host would take a non-empty batch over ``max_rows``, the batch
+    is closed first. A single host with more than ``max_rows`` rows is therefore yielded as a batch of its own.
+
+    Args:
+        hosts (Iterable[dict]): The hosts, in the order they are streamed.
+        max_hosts (int): The maximum number of hosts in a batch.
+        max_rows (int): The number of asset rows at which a batch is closed.
+    Yields:
+        tuple: (hosts batch, closed_by_limit). closed_by_limit is False only for the last batch, which was closed by
+        the end of the hosts rather than by a limit.
+    """
+    batch: list[dict] = []
+    batch_rows = 0
+    for host in hosts:
+        host_rows = len(get_host_detections(host))
+        if host_rows > max_rows:
+            demisto.debug(
+                f"[Fetch] Host ID={host.get('ID')} has {host_rows} detections, more than {max_rows} per batch; "
+                "it is sent as a batch of its own."
+            )
+        if batch and batch_rows + host_rows > max_rows:
+            yield batch, True
+            batch, batch_rows = [], 0
+
+        batch.append(host)
+        batch_rows += host_rows
+        if len(batch) >= max_hosts or batch_rows >= max_rows:
+            yield batch, True
+            batch, batch_rows = [], 0
+
+    if batch:
+        yield batch, False
+
+
 def iter_committable_host_batches(
     raw_response: Optional[requests.Response], stream_state: dict
 ) -> Iterator[tuple[list[dict], Optional[str], bool]]:
-    """Streams the page's hosts in batches of ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` and yields the asset rows of each batch.
+    """Streams the page's hosts in batches of whole hosts and yields the asset rows of each batch.
+
+    A batch closes at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` asset rows,
+    whichever comes first (see ``iter_host_batches``), so peak memory is bounded by rows rather than by hosts.
 
     Args:
         raw_response (Optional[requests.Response]): The streamed host list detection response.
@@ -3824,9 +3941,14 @@ def iter_committable_host_batches(
             - is_full_batch: False only for the last batch, which the caller sends as the end-of-page remainder.
     """
     hosts = iter_host_list_detections(raw_response, stream_state)
-    for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
+    host_batches = iter_host_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE, ASSETS_COMMIT_DETECTIONS_BATCH_SIZE)
+    for host_batch, closed_by_limit in host_batches:
         rows = list(iter_detections_from_hosts(host_batch))
-        if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
+        demisto.debug(
+            f"[Fetch] Built asset rows batch: {len(host_batch)} hosts (IDs {host_batch[0].get('ID')}-"
+            f"{host_batch[-1].get('ID')}), {len(rows)} rows, closed by {'limit' if closed_by_limit else 'end of page'}."
+        )
+        if not closed_by_limit:
             yield rows, None, False
             return
         # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
@@ -3837,9 +3959,9 @@ def iter_committable_host_batches(
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
 
-    Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their detections are sent into the same snapshot (``items_count=1``,
-    unsealed) and the last run is saved with ``next_page`` set to the next host ID. Only the final send of the final
-    page declares the cumulative ``total_assets`` to seal the snapshot.
+    For every batch of whole hosts (see ``iter_committable_host_batches``), their detections are sent into the same
+    snapshot (``items_count=1``, unsealed) and the last run is saved with ``next_page`` set to the next host ID.
+    Only the final send of the final page declares the cumulative ``total_assets`` to seal the snapshot.
 
     On any error mid-page (closed socket, parse error, failed send, etc.) the last commit is kept and the run ends
     normally, so the next fetch resumes from the first uncommitted host. If nothing was committed, the run is handled
@@ -3920,10 +4042,10 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
 def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page and sends it with the vulnerabilities of its QIDs, committing every few hosts.
 
-    For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts: build their asset rows, fetch the vulnerabilities of the QIDs
-    not fetched yet in this run, send both into the same snapshot (unsealed), then save the last run with ``next_page``
-    set to the next host ID. On the last page, the final send seals both snapshots with the cumulative totals and the
-    last run is reset.
+    For every batch of whole hosts (see ``iter_committable_host_batches``): build their asset rows, fetch the
+    vulnerabilities of the QIDs not fetched yet in this run, send both into the same snapshot (unsealed), then save the
+    last run with ``next_page`` set to the next host ID. On the last page, the final send seals both snapshots with the
+    cumulative totals and the last run is reset.
 
     Errors are handled as in ``fetch_and_send_assets_streamed``, for both the host list and the knowledge-base
     requests: the last commit is kept; if nothing was committed, ``handle_assets_page_error`` decides (concurrency-limit
@@ -4224,8 +4346,9 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     then back to assets.
 
     Assets stage (``fetch_and_send_assets_streamed``), one page of up to ``limit`` hosts per run:
-        - The page is streamed. Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their rows are sent into the cycle's
-          assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
+        - The page is streamed in batches of whole hosts, closed at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or
+          ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` detections (a host is never split). Each batch's rows are sent into
+          the cycle's assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
           ``id_min`` is inclusive, so this cursor is the first unsent host. This relies on Qualys returning hosts in
           ascending ID order, which matches observed behavior but is not stated in the Qualys API documentation.
         - On any error mid-page (dropped connection, cut-off XML, failed send), the last commit is kept and the run ends
@@ -4298,7 +4421,8 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     cycle is all assets pages; assets and vulnerabilities share one ``snapshot_id`` per cycle.
 
     Per page:
-        - The page is streamed. For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts:
+        - The page is streamed in batches of whole hosts, closed at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or
+          ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` detections (a host is never split). For every batch:
             1. Their asset rows are built (one row per detection).
             2. Their QIDs that were not fetched yet in this run are fetched from the knowledge base (in chunks of
                ``QIDS_BATCH_SIZE``). This happens before any send, so a failed fetch sends nothing for the batch.
