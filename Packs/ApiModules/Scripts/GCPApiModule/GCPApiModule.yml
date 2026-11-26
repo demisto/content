@@ -1,0 +1,18 @@
+commonfields:
+  id: GCPApiModule
+  version: -1
+name: GCPApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: GCP COOC infrastructure (GCPIntegration, GCPServices, permission handling), shared by GCP integrations.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/googleapi-python3:1.0.0.14304551
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

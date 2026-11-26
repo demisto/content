@@ -14,11 +14,17 @@ QUICK_ACTION_SUFFIX = "-quick-action"
 _INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
 _YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
 _PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
+# The AWSIntegration infrastructure lives in AWSApiModule. It is copied next to AWS.py when tests
+# run in Docker, and otherwise read from Packs/ApiModules.
+_API_MODULE_CANDIDATES = (
+    os.path.join(_INTEGRATION_DIR, "AWSApiModule.py"),
+    os.path.join(_INTEGRATION_DIR, "..", "..", "..", "ApiModules", "Scripts", "AWSApiModule", "AWSApiModule.py"),
+)
 
 # Platform-standard arguments that are resolved centrally rather than read with
 # args.get(...) inside each command handler:
-#   - region / account_id -> consumed by get_service_client() when building the
-#     boto3 client and by the multi-account fan-out in execute_aws_command().
+#   - region / account_id -> consumed by AWSIntegration.get_service_client() when building the
+#     boto3 client and by the multi-account fan-out in AWSIntegration.execute_command().
 #   - limit / next_token  -> consumed by the shared build_pagination_kwargs().
 #   - polling_timeout / interval_in_seconds / hide_polling_output -> consumed by
 #     the @polling_function decorator, not by the handler body.
@@ -1560,18 +1566,18 @@ def test_ecs_update_cluster_settings_command_failure(mocker):
 def test_register_proxydome_header(mocker):
     """
     Given: A mocked boto3 client and ProxyDome token.
-    When: register_proxydome_header is called to configure ProxyDome authentication.
+    When: AWSIntegration._register_proxydome_header is called to configure ProxyDome authentication.
     Then: It should register an event handler to inject the ProxyDome header.
     """
-    from AWS import register_proxydome_header
+    from AWS import AWSIntegration
 
     mock_client = mocker.Mock()
     mock_event_system = mocker.Mock()
     mock_client.meta.events = mock_event_system
 
-    mocker.patch("AWS.get_proxydome_token", return_value="test-token")
+    mocker.patch("AWSApiModule.get_proxydome_token", return_value="test-token")
 
-    register_proxydome_header(mock_client)
+    AWSIntegration._register_proxydome_header(mock_client)
 
     mock_event_system.register_last.assert_called_once()
     assert mock_event_system.register_last.call_args[0][0] == "before-send.*.*"
@@ -1580,18 +1586,18 @@ def test_register_proxydome_header(mocker):
 def test_register_proxydome_header_adds_correct_header(mocker):
     """
     Given: A mocked boto3 client and the ProxyDome header injection function.
-    When: register_proxydome_header sets up the header injection and a request is made.
+    When: AWSIntegration._register_proxydome_header sets up the header injection and a request is made.
     Then: It should add the correct x-caller-id header to the request.
     """
-    from AWS import register_proxydome_header
+    from AWS import AWSIntegration
 
     mock_client = mocker.Mock()
     mock_event_system = mocker.Mock()
     mock_client.meta.events = mock_event_system
 
-    mocker.patch("AWS.get_proxydome_token", return_value="test-token-123")
+    mocker.patch("AWSApiModule.get_proxydome_token", return_value="test-token-123")
 
-    register_proxydome_header(mock_client)
+    AWSIntegration._register_proxydome_header(mock_client)
 
     # Get the registered function
     header_function = mock_event_system.register_last.call_args[0][1]
@@ -1669,7 +1675,7 @@ def test_aws_error_handler_handle_client_error_access_denied(mocker):
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
 
-    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AWSApiModule.return_multiple_permissions_error")
     mocker.patch("AWS.demisto.args", return_value={"account_id": "accountID"})
     mocker.patch("AWS.demisto.info")
     mocker.patch("AWS.demisto.debug")
@@ -1697,7 +1703,7 @@ def test_aws_error_handler_handle_client_error_unauthorized_operation(mocker):
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
 
-    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AWSApiModule.return_multiple_permissions_error")
     mocker.patch("AWS.demisto.args", return_value={"account_id": "accountID"})
     mocker.patch("AWS.demisto.info")
     mocker.patch("AWS.demisto.debug")
@@ -1722,7 +1728,7 @@ def test_aws_error_handler_handle_client_error_http_401(mocker):
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
 
-    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AWSApiModule.return_multiple_permissions_error")
     mocker.patch("AWS.demisto.args", return_value={})
     mocker.patch("AWS.demisto.info")
     mocker.patch("AWS.demisto.debug")
@@ -1784,7 +1790,7 @@ def test_aws_error_handler_handle_permission_error_no_account_id(mocker):
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
 
-    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mock_return_multiple_permissions_error = mocker.patch("AWSApiModule.return_multiple_permissions_error")
     mocker.patch("AWS.demisto.args", return_value={})
     mocker.patch("AWS.demisto.info")
     mocker.patch("AWS.demisto.debug")
@@ -1883,7 +1889,7 @@ def test_aws_error_handler_extract_action_from_message_valid_action(mocker):
     """
     from AWS import AWSErrorHandler
 
-    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_1", "action_2"])
+    mocker.patch("AWSApiModule.REQUIRED_ACTIONS", ["action_1", "action_2"])
 
     message = "User is not authorized to perform action_1 on resource"
     result = AWSErrorHandler._extract_action_from_message(message)
@@ -1899,7 +1905,7 @@ def test_aws_error_handler_extract_action_from_message_case_insensitive(mocker):
     """
     from AWS import AWSErrorHandler
 
-    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_2"])
+    mocker.patch("AWSApiModule.REQUIRED_ACTIONS", ["action_2"])
 
     message = "Permission denied for action_2"
     result = AWSErrorHandler._extract_action_from_message(message)
@@ -1915,7 +1921,7 @@ def test_aws_error_handler_extract_action_from_message_no_match(mocker):
     """
     from AWS import AWSErrorHandler
 
-    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_1"])
+    mocker.patch("AWSApiModule.REQUIRED_ACTIONS", ["action_1"])
 
     message = "Generic access denied error"
     result = AWSErrorHandler._extract_action_from_message(message)
@@ -9147,6 +9153,18 @@ def test_network_interface_attribute_modify_command_validation_error(mocker):
 
     with pytest.raises(DemistoException, match="If one of the arguments 'attachment_id' or 'delete_on_termination' is given"):
         EC2.network_interface_attribute_modify_command(mock_client, args)
+
+
+def test_regions_describe_command_is_registered():
+    """
+    Given: The aws-ec2-regions-describe command.
+    When: Looking it up in the AWSIntegration registry and in COMMANDS_MAPPING.
+    Then: It is registered on AWSIntegration as a non-polling handler and is no longer in COMMANDS_MAPPING.
+    """
+    from AWS import COMMANDS_MAPPING, EC2, AWSIntegration
+
+    assert AWSIntegration._registry["aws-ec2-regions-describe"] == (EC2.regions_describe_command, False)
+    assert "aws-ec2-regions-describe" not in COMMANDS_MAPPING
 
 
 def test_regions_describe_command_success(mocker):
@@ -17754,10 +17772,10 @@ def test_inventory_list_command_pagination(mocker):
 def test_assume_role_credentials_returns_temp_creds(mocker):
     """
     Given: Integration params with role_arn, role_session_name, and valid AK/SK.
-    When: _assume_role_credentials is called.
+    When: AWSIntegration._assume_role_credentials is called.
     Then: It calls sts.assume_role and returns the Credentials dict.
     """
-    from AWS import _assume_role_credentials
+    from AWS import AWSIntegration
 
     mock_sts = mocker.Mock()
     mock_sts.assume_role.return_value = {
@@ -17779,7 +17797,7 @@ def test_assume_role_credentials_returns_temp_creds(mocker):
         "sts_regional_endpoint": None,
         "insecure": False,
     }
-    result = _assume_role_credentials(
+    result = AWSIntegration._assume_role_credentials(
         params=params,
         access_key_id="dummy_access_key",
         secret_access_key="dummy_secret_key",
@@ -17797,10 +17815,10 @@ def test_assume_role_credentials_returns_temp_creds(mocker):
 def test_assume_role_credentials_with_session_duration(mocker):
     """
     Given: Integration params with session_duration set.
-    When: _assume_role_credentials is called.
+    When: AWSIntegration._assume_role_credentials is called.
     Then: DurationSeconds is included in the assume_role call.
     """
-    from AWS import _assume_role_credentials
+    from AWS import AWSIntegration
 
     mock_sts = mocker.Mock()
     mock_sts.assume_role.return_value = {"Credentials": {"AccessKeyId": "A", "SecretAccessKey": "B", "SessionToken": "C"}}
@@ -17816,7 +17834,7 @@ def test_assume_role_credentials_with_session_duration(mocker):
         "sts_regional_endpoint": None,
         "insecure": False,
     }
-    _assume_role_credentials(
+    AWSIntegration._assume_role_credentials(
         params=params,
         access_key_id="AK",
         secret_access_key="SK",
@@ -17830,18 +17848,18 @@ def test_assume_role_credentials_with_session_duration(mocker):
 def test_get_service_client_marketplace_no_role(mocker):
     """
     Given: Marketplace params with AK/SK but no role_arn.
-    When: get_service_client is called.
-    Then: A boto3 Session is created with the AK/SK directly (no STS call).
+    When: AWSIntegration.get_service_client is called.
+    Then: A boto3 Session is created with the AK/SK directly (no STS call) and its client is returned.
     """
-    from AWS import get_service_client
+    from AWS import AWSIntegration, AWSServices
 
-    mock_session_cls = mocker.patch("AWS.Session")
+    mock_session_cls = mocker.patch("AWSApiModule.Session")
     mock_session = mocker.Mock()
     mock_session_cls.return_value = mock_session
     mock_client = mocker.Mock()
     mock_session.client.return_value = mock_client
 
-    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
     mocker.patch.object(demisto, "debug")
 
     params = {
@@ -17853,7 +17871,7 @@ def test_get_service_client_marketplace_no_role(mocker):
         "endpoint_url": None,
         "insecure": True,
     }
-    client, session = get_service_client(params=params, service_name="sts")
+    client = AWSIntegration("aws-sts-test", {}, params).get_service_client(credentials={}, service=AWSServices.STS)
 
     mock_session_cls.assert_called_once_with(
         aws_access_key_id="dummy_access_key",
@@ -17861,16 +17879,17 @@ def test_get_service_client_marketplace_no_role(mocker):
         region_name="us-east-1",
     )
     assert client == mock_client
+    assert mock_session.client.call_args[0][0] == "sts"
 
 
 def test_get_service_client_marketplace_with_role(mocker):
     """
     Given: Marketplace params with AK/SK and role_arn.
-    When: get_service_client is called.
+    When: AWSIntegration.get_service_client is called.
     Then: sts_client.assume_role is called with the configured role ARN, and the resulting
         boto3 Session is built from the returned temporary credentials.
     """
-    from AWS import get_service_client
+    from AWS import AWSIntegration, AWSServices
 
     # Mock the STS client created inside _assume_role_credentials via boto3.client.
     mock_sts_client = mocker.Mock()
@@ -17883,12 +17902,12 @@ def test_get_service_client_marketplace_with_role(mocker):
     }
     mocker.patch("boto3.client", return_value=mock_sts_client)
 
-    mock_session_cls = mocker.patch("AWS.Session")
+    mock_session_cls = mocker.patch("AWSApiModule.Session")
     mock_session = mocker.Mock()
     mock_session_cls.return_value = mock_session
     mock_session.client.return_value = mocker.Mock()
 
-    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
     mocker.patch.object(demisto, "debug")
 
     params = {
@@ -17901,7 +17920,7 @@ def test_get_service_client_marketplace_with_role(mocker):
         "endpoint_url": None,
         "insecure": True,
     }
-    get_service_client(params=params, service_name="sts")
+    AWSIntegration("aws-sts-test", {}, params).get_service_client(credentials={}, service=AWSServices.STS)
 
     # Verify sts_client.assume_role was called with the configured role ARN.
     mock_sts_client.assume_role.assert_called_once_with(
@@ -17921,12 +17940,12 @@ def test_get_service_client_marketplace_with_role(mocker):
 def test_get_service_client_missing_credentials_raises(mocker):
     """
     Given: Marketplace params with empty credentials.
-    When: get_service_client is called.
+    When: AWSIntegration.get_service_client is called.
     Then: DemistoException is raised with a helpful message.
     """
-    from AWS import get_service_client
+    from AWS import AWSIntegration, AWSServices
 
-    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
 
     params = {
         "credentials": {"identifier": "", "password": ""},
@@ -17938,43 +17957,49 @@ def test_get_service_client_missing_credentials_raises(mocker):
         "insecure": True,
     }
     with pytest.raises(DemistoException, match="AWS credentials are not configured"):
-        get_service_client(params=params, service_name="sts")
+        AWSIntegration("aws-sts-test", {}, params).get_service_client(credentials={}, service=AWSServices.STS)
 
 
 def test_execute_aws_command_single_account(mocker):
     """
     Given: No access_role_name or accounts_to_access in params.
-    When: execute_aws_command is called.
-    Then: The command is executed once via get_service_client (single-account path).
+    When: AWSIntegration.execute_command is called.
+    Then: The mapped command is executed once with the client from get_client (single-account path).
     """
-    from AWS import execute_aws_command
+    from AWS import AWSIntegration
 
     mock_client = mocker.Mock()
-    mocker.patch("AWS.get_connector_id", return_value=None)
-    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AWSIntegration, "get_client", return_value=mock_client)
     mock_result = CommandResults(readable_output="ok")
-    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": lambda client, args: mock_result})
+    received: dict = {}
+
+    def fake_command(client, args):
+        received["client"] = client
+        return mock_result
+
     mocker.patch.object(demisto, "debug")
 
     params = {"access_role_name": "", "accounts_to_access": ""}
     args = {"account_id": "123456789012", "region": "us-east-1"}
 
-    result = execute_aws_command("aws-iam-roles-list", args, params)
+    result = AWSIntegration("aws-iam-roles-list", args, params).execute_command({"aws-iam-roles-list": fake_command})
 
     assert result == mock_result
+    assert received["client"] == mock_client
 
 
 def test_execute_aws_command_multi_account_fan_out(mocker):
     """
     Given: access_role_name and accounts_to_access are both set.
-    When: execute_aws_command is called.
+    When: AWSIntegration.execute_command is called.
     Then: The command is executed once per account and results are tagged with AccountId.
     """
-    from AWS import execute_aws_command
+    from AWS import AWSIntegration
 
     mock_client = mocker.Mock()
-    mocker.patch("AWS.get_connector_id", return_value=None)
-    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AWSIntegration, "get_client", return_value=mock_client)
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
 
@@ -17985,8 +18010,6 @@ def test_execute_aws_command_multi_account_fan_out(mocker):
             outputs_prefix="AWS.IAM",
         )
 
-    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": fake_command})
-
     params = {
         "access_role_name": "my-cross-account-role",
         "accounts_to_access": "111111111111,222222222222",
@@ -17994,7 +18017,7 @@ def test_execute_aws_command_multi_account_fan_out(mocker):
     }
     args = {"region": "us-east-1"}
 
-    results = execute_aws_command("aws-iam-roles-list", args, params)
+    results = AWSIntegration("aws-iam-roles-list", args, params).execute_command({"aws-iam-roles-list": fake_command})
 
     assert isinstance(results, list)
     assert len(results) == 2
@@ -18005,10 +18028,10 @@ def test_execute_aws_command_multi_account_fan_out(mocker):
 def test_execute_aws_command_multi_account_error_isolation(mocker):
     """
     Given: Multi-account fan-out where one account raises an exception.
-    When: execute_aws_command is called.
+    When: AWSIntegration.execute_command is called.
     Then: The failing account returns an error entry; the batch is not aborted.
     """
-    from AWS import execute_aws_command
+    from AWS import AWSIntegration
     from CommonServerPython import EntryType
 
     call_count = {"n": 0}
@@ -18020,9 +18043,8 @@ def test_execute_aws_command_multi_account_error_isolation(mocker):
         return CommandResults(readable_output="ok", outputs={"RoleName": "R"}, outputs_prefix="AWS.IAM")
 
     mock_client = mocker.Mock()
-    mocker.patch("AWS.get_connector_id", return_value=None)
-    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
-    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": fake_command})
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(AWSIntegration, "get_client", return_value=mock_client)
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
 
@@ -18031,7 +18053,8 @@ def test_execute_aws_command_multi_account_error_isolation(mocker):
         "accounts_to_access": "111111111111,222222222222",
         "max_workers": "2",
     }
-    results = execute_aws_command("aws-iam-roles-list", {"region": "us-east-1"}, params)
+    integration = AWSIntegration("aws-iam-roles-list", {"region": "us-east-1"}, params)
+    results = integration.execute_command({"aws-iam-roles-list": fake_command})
 
     assert len(results) == 2
     error_results = [r for r in results if r.entry_type == EntryType.ERROR]
@@ -18044,10 +18067,10 @@ def test_execute_aws_command_multi_account_error_isolation(mocker):
 def test_test_module_marketplace_calls_get_caller_identity(mocker):
     """
     Given: Marketplace params with valid AK/SK.
-    When: test_module is called.
-    Then: get_service_client is called with service_name='sts' and get_caller_identity is invoked.
+    When: AWSIntegration.test_module is called.
+    Then: get_service_client is called for the STS service and get_caller_identity is invoked.
     """
-    from AWS import test_module
+    from AWS import AWSIntegration, AWSServices
 
     mock_sts_client = mocker.Mock()
     mock_sts_client.get_caller_identity.return_value = {
@@ -18055,7 +18078,8 @@ def test_test_module_marketplace_calls_get_caller_identity(mocker):
         "Arn": "arn:aws:iam::123456789012:user/test",
         "UserId": "dummy_id",
     }
-    mocker.patch("AWS.get_service_client", return_value=(mock_sts_client, None))
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mock_get_service_client = mocker.patch.object(AWSIntegration, "get_service_client", return_value=mock_sts_client)
     mocker.patch.object(demisto, "info")
 
     params = {
@@ -18066,10 +18090,138 @@ def test_test_module_marketplace_calls_get_caller_identity(mocker):
         "retries": "3",
         "insecure": True,
     }
-    result = test_module(params)
+    result = AWSIntegration("test-module", {}, params).test_module()
 
     assert result == "ok"
     mock_sts_client.get_caller_identity.assert_called_once()
+    assert mock_get_service_client.call_args.kwargs["service"] == AWSServices.STS
+
+
+def test_aws_integration_for_account_sets_account_and_role(mocker):
+    """
+    Given: An AWSIntegration with a region argument.
+    When: for_account is called with an account ID and a role name.
+    Then: A new AWSIntegration is returned with the account ID argument and the role ARN of that account,
+          and the original instance is not changed.
+    """
+    from AWS import AWSIntegration
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    integration = AWSIntegration("aws-iam-roles-list", {"region": "us-east-1"}, {"access_role_name": "my-role"})
+
+    account_integration = integration.for_account("111111111111", "my-role")
+
+    assert account_integration is not integration
+    assert isinstance(account_integration, AWSIntegration)
+    assert account_integration.command == "aws-iam-roles-list"
+    assert account_integration.account_id == "111111111111"
+    assert account_integration.args == {"region": "us-east-1", "account_id": "111111111111"}
+    assert account_integration.params["role_arn"] == "arn:aws:iam::111111111111:role/my-role"
+    assert integration.args == {"region": "us-east-1"}
+    assert "role_arn" not in integration.params
+
+
+def test_aws_integration_execute_mapped_command_regular(mocker):
+    """
+    Given: An existing command without the polling_timeout argument.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (client, args).
+    """
+    from AWS import AWSIntegration
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mock_client = mocker.Mock()
+    mocker.patch.object(AWSIntegration, "get_client", return_value=mock_client)
+    handler = mocker.Mock(return_value="result")
+    args = {"region": "us-east-1"}
+
+    result = AWSIntegration("aws-iam-roles-list", args, {}).execute_mapped_command(handler)
+
+    assert result == "result"
+    handler.assert_called_once_with(mock_client, args)
+
+
+def test_aws_integration_execute_mapped_command_polling(mocker):
+    """
+    Given: An existing command with the polling_timeout argument.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (args, client).
+    """
+    from AWS import AWSIntegration
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mocker.patch.object(AWSIntegration, "get_client", return_value=mock_client)
+    handler = mocker.Mock(return_value="result")
+    args = {"region": "us-east-1", "polling_timeout": "600"}
+
+    result = AWSIntegration("aws-ssm-command-run", args, {}).execute_mapped_command(handler)
+
+    assert result == "result"
+    handler.assert_called_once_with(args, mock_client)
+
+
+def test_aws_integration_handle_error_client_error(mocker):
+    """
+    Given: A boto3 ClientError raised by a command.
+    When: AWSIntegration.handle_error is called.
+    Then: The error is passed to AWSErrorHandler.handle_client_error with the account ID,
+          and the base class error handling is not used.
+    """
+    from AWS import AWSIntegration, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mock_handle_client_error = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+    mock_return_error = mocker.patch("COOCApiModule.return_error")
+    error = ClientError({"Error": {"Code": "AccessDenied", "Message": "denied"}}, "test-operation")
+
+    AWSIntegration("aws-iam-roles-list", {"account_id": "123456789012"}, {}).handle_error(error)
+
+    mock_handle_client_error.assert_called_once_with(error, "123456789012")
+    mock_return_error.assert_not_called()
+
+
+def test_aws_integration_handle_error_other_error(mocker):
+    """
+    Given: An error that is not a boto3 ClientError.
+    When: AWSIntegration.handle_error is called.
+    Then: The base class returns the error to the War Room and AWSErrorHandler is not used.
+    """
+    from AWS import AWSIntegration, AWSErrorHandler
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mocker.patch.object(demisto, "error")
+    mock_handle_client_error = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+    mock_return_error = mocker.patch("COOCApiModule.return_error")
+
+    AWSIntegration("aws-iam-roles-list", {}, {}).handle_error(ValueError("boom"))
+
+    mock_handle_client_error.assert_not_called()
+    mock_return_error.assert_called_once_with("Failed to execute aws-iam-roles-list command.\nError:\nboom")
+
+
+def test_aws_integration_resolve_service_from_command_name():
+    """
+    Given: A command name of the form aws-<service>-<action>.
+    When: _resolve_service is called.
+    Then: The AWS service is taken from the second part of the command name.
+    """
+    from AWS import AWSIntegration, AWSServices
+
+    assert AWSIntegration._resolve_service("aws-s3-bucket-policy-get") == AWSServices.S3
+
+
+def test_aws_integration_resolve_service_network_firewall():
+    """
+    Given: A network-firewall command name, whose service name contains a dash.
+    When: _resolve_service is called.
+    Then: The network-firewall service is returned.
+    """
+    from AWS import AWSIntegration, AWSServices
+
+    assert AWSIntegration._resolve_service("aws-network-firewall-firewall-describe") == AWSServices("network-firewall")
 
 
 def test_describe_firewall_command(mocker):
@@ -22618,13 +22770,21 @@ def _load_yml_spec() -> dict:
 
 
 def _load_py_tree() -> ast.Module:
-    """Parse the integration .py file into an AST.
+    """Parse AWS.py, plus AWSApiModule.py when it is available, into a single AST.
+
+    The AWSApiModule body is appended after the AWS.py one, so handlers that call into the module
+    are still resolved. AWS.py definitions win on a short-name clash because they are indexed first.
 
     Returns:
-        The parsed AWS.py module as an ``ast.Module``.
+        The parsed AWS.py module as an ``ast.Module``, extended with the AWSApiModule body.
     """
     with open(_PY_PATH, encoding="utf-8") as f:
-        return ast.parse(f.read())
+        tree = ast.parse(f.read())
+    api_module_path = next((path for path in _API_MODULE_CANDIDATES if os.path.isfile(path)), None)
+    if api_module_path:
+        with open(api_module_path, encoding="utf-8") as f:
+            tree.body.extend(ast.parse(f.read()).body)
+    return tree
 
 
 @pytest.fixture(scope="module")
@@ -22674,6 +22834,73 @@ def _parse_commands_mapping(tree: ast.Module) -> dict[str, str]:
             if isinstance(key, ast.Constant) and isinstance(key.value, str) and _is_included_command(key.value):
                 mapping[key.value] = ast.unparse(value)
     return mapping
+
+
+def _read_register_decorator_command(decorator: ast.expr) -> str | None:
+    """Return the command name of an ``@AWSIntegration.register("<command>")`` decorator, or None.
+
+    Args:
+        decorator: A decorator expression of a function definition.
+
+    Returns:
+        The registered command name when the decorator is an ``AWSIntegration.register`` call
+        with a string literal command name (positional or ``command_name=``), None otherwise.
+    """
+    if not (
+        isinstance(decorator, ast.Call)
+        and isinstance(decorator.func, ast.Attribute)
+        and decorator.func.attr == "register"
+        and isinstance(decorator.func.value, ast.Name)
+        and decorator.func.value.id == "AWSIntegration"
+    ):
+        return None
+    command_node = decorator.args[0] if decorator.args else None
+    for keyword in decorator.keywords:
+        if keyword.arg == "command_name":
+            command_node = keyword.value
+    if isinstance(command_node, ast.Constant) and isinstance(command_node.value, str):
+        return command_node.value
+    return None
+
+
+def _parse_registered_commands(tree: ast.Module) -> dict[str, str]:
+    """Parse the commands registered with ``@AWSIntegration.register("<command>")``.
+
+    Both module-level functions and static methods of service classes are scanned.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A dict mapping command_name -> qualified handler name (e.g. "EC2.regions_describe_command"),
+        excluding test-module and quick-action commands.
+    """
+    registered: dict[str, str] = {}
+
+    def walk(node: ast.AST, prefix: str = "") -> None:
+        for child in getattr(node, "body", []):
+            if isinstance(child, ast.ClassDef):
+                walk(child, f"{prefix}{child.name}.")
+            elif isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
+                for decorator in child.decorator_list:
+                    command_name = _read_register_decorator_command(decorator)
+                    if command_name and _is_included_command(command_name):
+                        registered[command_name] = f"{prefix}{child.name}"
+
+    walk(tree)
+    return registered
+
+
+def _parse_command_handlers(tree: ast.Module) -> dict[str, str]:
+    """Map every wired command to its handler: ``COMMANDS_MAPPING`` entries plus registered commands.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A dict mapping command_name -> dotted handler name.
+    """
+    return _parse_commands_mapping(tree) | _parse_registered_commands(tree)
 
 
 def _index_functions(tree: ast.Module) -> tuple:
@@ -22876,10 +23103,37 @@ def test_camel_to_snake(value: str, expected: str) -> None:
     assert _camel_to_snake(value) == expected
 
 
+def test_parse_registered_commands_reads_static_and_module_level_handlers() -> None:
+    """
+    Given: A source with a registered static method, a registered module-level function
+           (keyword command name) and an unrelated decorated function.
+    When: Parsing it with _parse_registered_commands.
+    Then: Only the two registered commands are returned, mapped to their qualified handler names.
+    """
+    source = (
+        "class EC2:\n"
+        "    @staticmethod\n"
+        "    @AWSIntegration.register('aws-ec2-sample-list')\n"
+        "    def sample_list_command(client, args):\n"
+        "        return None\n"
+        "@AWSIntegration.register(command_name='aws-s3-sample-get')\n"
+        "def sample_get_command(client, args):\n"
+        "    return None\n"
+        "@other.register('aws-not-registered')\n"
+        "def not_registered(client, args):\n"
+        "    return None\n"
+    )
+
+    registered = _parse_registered_commands(ast.parse(source))
+
+    assert registered == {"aws-ec2-sample-list": "EC2.sample_list_command", "aws-s3-sample-get": "sample_get_command"}
+
+
 def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> None:
     """
     Given: The integration YML declaring command names.
-    When: Comparing against the COMMANDS_MAPPING wired in AWS.py.
+    When: Comparing against the COMMANDS_MAPPING entries and the @AWSIntegration.register
+          commands wired in AWS.py.
     Then: Every non-quick-action YML command must be wired in the .py, and every
           wired handler must resolve to a real function.
 
@@ -22888,21 +23142,20 @@ def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> No
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # When
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     # Then
     missing = sorted(name for name in yml_spec if name not in command_map)
     assert not missing, (
-        "The following commands are declared in AWS.yml but are NOT wired in " f"COMMANDS_MAPPING in AWS.py: {missing}"
+        "The following commands are declared in AWS.yml but are NOT wired in AWS.py "
+        f"(neither in COMMANDS_MAPPING nor via @AWSIntegration.register): {missing}"
     )
 
     unresolved = sorted(
         f"{command} -> {handler}" for command, handler in command_map.items() if _resolve(handler, qualified, short) is None
     )
-    assert not unresolved, (
-        "The following COMMANDS_MAPPING handlers do not resolve to a function " f"defined in AWS.py: {unresolved}"
-    )
+    assert not unresolved, f"The following command handlers do not resolve to a function defined in AWS.py: {unresolved}"
 
 
 def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module) -> None:
@@ -22919,7 +23172,7 @@ def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module)
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     # When
@@ -22959,7 +23212,7 @@ def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     def _is_covered(context_path: str, prefixes: set) -> bool:

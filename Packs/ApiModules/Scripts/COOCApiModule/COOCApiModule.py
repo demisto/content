@@ -1,8 +1,10 @@
+from abc import ABC, abstractmethod
 from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Callable, Iterator
+from itertools import islice
+from typing import Any, ClassVar
 import requests
 
 
@@ -117,7 +119,7 @@ def get_connector_id() -> str | None:
     return connector_id
 
 
-def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
+def get_cloud_credentials(cloud_type: str, account_id: str, scopes: Optional[list] = None) -> dict:
     """Retrieves valid credentials for the specified cloud provider from CTS.
 
     Args:
@@ -191,115 +193,6 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
     except Exception as e:
         demisto.debug(f"[COOC API] {account_id}: Error while retrieving credentials: {str(e)}. Response: {response}")
         raise DemistoException(f"Failed to get credentials from CTS: {str(e)}. Response: {response}")
-
-
-def get_accounts_by_connector_id(connector_id: str, max_results: int | None = 1) -> list:
-    """
-    Retrieves the accounts associated with a specific connector with pagination support.
-    Args:
-        connector_id (str): The ID of the connector to fetch accounts for.
-        max_results (int, optional): Maximum number of results to return. Defaults to None (all results).
-    Returns:
-        list: List of accounts (only of type ACCOUNT) associated with the specified connector.
-    """
-    all_accounts = []
-    next_token = ""
-    try:
-        while True:
-            params = {"entity_type": "connector", "entity_id": connector_id}
-            if next_token:
-                params["next_token"] = next_token
-
-            result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
-            res_json = json.loads(result["data"])
-            accounts = res_json.get("values", [])
-            all_accounts.extend([a for a in accounts if a.get("account_type") == "ACCOUNT" and a.get("account_id")])
-            next_token = res_json.get("next_token", "")
-            if not next_token or (max_results and len(all_accounts) >= max_results):
-                break
-    except Exception as e:
-        raise DemistoException(f"Failed to fetch accounts for connector: {str(e)}")
-
-    if max_results:
-        return all_accounts[:max_results]
-    return all_accounts
-
-
-def _check_account(
-    account_id: str, connector_id: str, shared_creds: dict, health_check_func: Callable[[dict, str, str], HealthCheckError]
-) -> HealthCheckError | None:
-    """Helper function to check a single account.
-
-    Args:
-        account_id (str): The Account ID.
-        connector_id (str): The connector ID.
-        shared_creds (dict): Pre-fetched credentials to reuse across all accounts.
-        health_check_func (callable): Function that implements the health check.
-
-    Returns:
-        HealthCheckError | None: Result of the health check, or None if account has no ID.
-    """
-
-    try:
-        return health_check_func(shared_creds, account_id, connector_id)
-    except Exception as e:
-        demisto.error(f"[COOC API] Error checking account {account_id}: {str(e)}")
-        return HealthCheckError(
-            account_id=account_id,
-            connector_id=connector_id,
-            message=f"Failed to check account: {str(e)}",
-            error_type=ErrorType.INTERNAL_ERROR,
-        )
-
-
-def run_health_check_for_accounts(
-    connector_id: str, cloud_type: str, health_check_func: Callable[[dict, str, str], Any]
-) -> str | CommandResults:
-    """Runs a health check function for each account associated with a connector sequentially.
-
-    Args:
-        connector_id (str): The ID of the connector to fetch accounts for.
-        cloud_type (str): The cloud provider type (AWS, GCP, AZURE, OCI).
-        health_check_func (callable): Function that implements the health check.
-                                        Should accept shared_creds, account_id and connector_id parameters
-                                        and return a HealthCheckError or None.
-
-    Returns:
-        str | CommandResults: Either "ok" string or CommandResults with appropriate EntryType
-
-    Raises:
-        DemistoException: If the account retrieval fails.
-    """
-    health_check_result = HealthCheck(connector_id)
-    try:
-        accounts = get_accounts_by_connector_id(connector_id)
-        if not accounts:
-            demisto.debug(f"[COOC API] No accounts found for connector ID: {connector_id}")
-            return HealthStatus.OK
-
-        account_id = accounts[0]["account_id"]
-        shared_creds = get_cloud_credentials(cloud_type, account_id)
-        demisto.debug(f"[COOC API] Retrieved shared {cloud_type} credentials for all accounts")
-
-    except Exception as e:
-        error_msg = f"Failed to retrieve {cloud_type} credentials for connector {connector_id}: {str(e)}"
-        demisto.error(error_msg)
-        health_check_result.error(
-            HealthCheckError(
-                account_id="",  # No specific account since this is a connector-level error
-                connector_id=connector_id,
-                message=error_msg,
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-        )
-        return health_check_result.summarize()
-
-    result = _check_account(account_id, connector_id, shared_creds, health_check_func)
-    if result is not None:
-        health_check_result.error(result)
-
-    demisto.debug(f"[COOC API] Completed processing {account_id}")
-    return health_check_result.summarize()
 
 
 def get_proxydome_token() -> str:
@@ -399,45 +292,6 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
     return error_entry
 
 
-def is_gov_account(connector_id: str, account_id: str = "") -> bool:
-    """
-    Return whether the account connected to the connector_id is a gov account or not.
-
-    Args:
-        connector_id (str): The connector id of the cloud provider.
-        account_id (str): The relevant account id
-
-    Returns:
-        A boolean representing whether the account is a gov account or not.
-    """
-    accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
-
-    relevant_account = {}
-    if account_id:
-        demisto.debug(f"[COOC API]The found {account_id=}")
-        for account in accounts_info:
-            if account.get("account_id") == account_id:
-                relevant_account = account
-                demisto.debug("[COOC API] found the account")
-                break
-    elif accounts_info:
-        demisto.debug(f"[COOC API] {account_id=}. Getting the first account for the health check from the existing accounts.")
-        relevant_account = accounts_info[0]
-    else:
-        demisto.debug(f"[COOC API] There are no {account_id=} or {accounts_info=} for the {connector_id=}.")
-        return False
-
-    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
-        demisto.debug(f"[COOC API] The found {account_cloud_partition=}")
-        return account_cloud_partition.upper() == "GOV"
-    else:
-        demisto.debug(f"[COOC API] The information found for account_id: {account_id}, {relevant_account=}.")
-        demisto.debug(
-            f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
-        )
-        return False
-
-
 def get_timeout(timeout: int | str | None) -> tuple[int, int]:
     """
     Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
@@ -482,3 +336,440 @@ def get_timeout(timeout: int | str | None) -> tuple[int, int]:
             "timeout followed after a comma (for example 60,10). If a connect timeout is "
             "not specified, a default of 10 seconds will be used."
         )
+
+
+class CloudIntegration(ABC):
+    """Abstract base class that every CSP ApiModule must implement.
+
+    Initialised once per command execution in ``main()``. Stores the
+    command context (command name, args, params) and resolves the
+    connector ID and account ID at construction time so that all
+    subsequent method calls can use ``self.*`` without re-reading
+    ``demisto.args()`` / ``demisto.params()`` repeatedly.
+
+    Credentials are **not** fetched at construction time. They are fetched
+    lazily via ``get_credentials()``, which CSP implementations call from
+    ``get_client()``. This lets CSPs that need command-specific token scopes
+    (e.g. Azure storage commands) request the correct scope.
+
+    Args:
+        command: The command name from ``demisto.command()``.
+        args: Command arguments from ``demisto.args()``.
+        params: Integration configuration parameters from ``demisto.params()``.
+
+    Command flow:
+        ``main()`` builds the integration and calls ``run(COMMANDS_MAPPING)``. ``run`` sends
+        ``test-module`` to ``run_health_check`` (Cortex Platform) or ``test_module`` (marketplace),
+        every other command to ``execute_command``. ``run`` logs the traceback of any error and
+        passes the error to ``handle_error``.
+
+    Command registration:
+        New commands register themselves with ``@<CSP>Integration.register("<command-name>")``
+        in the module where they are implemented, so adding a command does not require editing
+        the integration's main file. ``execute_command`` checks the registry first and falls back
+        to the ``commands_mapping`` passed by ``main()`` (kept for existing commands), which is
+        executed by ``execute_mapped_command``.
+
+    Attributes:
+        cloud_type (str): Class attribute. The CSP identifier, set by each CSP subclass to
+            ``CloudTypes.<CSP>.value`` (e.g. ``CloudTypes.AWS.value``).
+        account_id_arg (str): Class attribute. Name of the argument holding the
+            cloud account identifier. Override per CSP
+            (AWS: ``account_id``, GCP: ``project_id``, Azure: ``subscription_id``).
+        uses_proxy_env (bool): Class attribute. When ``True``, ``run`` calls ``handle_proxy()`` so the
+            proxy settings are taken from the environment (AWS, Azure). GCP configures its proxy on
+            the HTTP client instead.
+        polling_commands (frozenset[str]): Class attribute. Existing (``commands_mapping``) commands that are
+            decorated with ``@polling_function`` and therefore take ``args`` first (see ``is_polling_command``).
+        command (str): The command name being executed.
+        args (dict): Command arguments.
+        params (dict): Integration configuration parameters.
+        account_id (str): Cloud account identifier, resolved from ``args`` and
+            falling back to ``params``.
+        connector_id (str | None): Cortex connector ID, or ``None`` on the
+            marketplace path.
+        credentials (dict): CTS credentials cached by ``get_credentials()``.
+            Empty until first fetched, and always empty on the marketplace path.
+    """
+
+    cloud_type: ClassVar[str]
+    account_id_arg: ClassVar[str] = "account_id"
+    uses_proxy_env: ClassVar[bool] = False
+    polling_commands: ClassVar[frozenset[str]] = frozenset()
+    # command name -> (handler, is_polling). Each subclass gets its own dict (see __init_subclass__).
+    _registry: ClassVar[dict[str, tuple[Callable, bool]]] = {}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._registry = {}
+
+    @classmethod
+    def register(cls, command_name: str, polling: bool = False) -> Callable:
+        """Decorator that registers a command handler on this integration class.
+
+        Registered handlers always receive a ready client from ``get_client()``: ``(client, args)``,
+        or ``(args, client)`` when ``polling=True``. On polling handlers place ``@register`` above
+        ``@polling_function``; on service class methods place it below ``@staticmethod``
+        (either order is accepted).
+
+        Example:
+            class S3:
+                @staticmethod
+                @AWSIntegration.register("aws-s3-bucket-get")
+                def bucket_get_command(client, args): ...
+
+        Args:
+            command_name: The integration command name, as defined in the integration YAML.
+            polling: Whether the handler is a polling command that takes ``args`` first.
+
+        Raises:
+            TypeError: If called on ``CloudIntegration`` itself, which would expose the command to every CSP.
+            ValueError: If ``command_name`` is already registered on this class.
+        """
+        if cls is CloudIntegration:
+            raise TypeError(
+                f"Register '{command_name}' on a CSP integration class (for example AWSIntegration), not on CloudIntegration."
+            )
+
+        def decorator(func: Callable) -> Callable:
+            handler = func.__func__ if isinstance(func, staticmethod) else func
+            if command_name in cls._registry:
+                raise ValueError(f"Command '{command_name}' is already registered on {cls.__name__}.")
+            cls._registry[command_name] = (handler, polling)
+            return func
+
+        return decorator
+
+    def get_registered_handler(self) -> tuple[Callable, bool] | None:
+        """Return ``(handler, is_polling)`` for ``self.command`` if it was registered, else ``None``.
+
+        Registrations made on a parent integration class are visible to its subclasses.
+        """
+        for klass in type(self).__mro__:
+            registered = vars(klass).get("_registry", {}).get(self.command)
+            if registered:
+                return registered
+        return None
+
+    def __init__(self, command: str, args: dict, params: dict) -> None:
+        self.command: str = command
+        self.args: dict = args
+        self.params: dict = params
+        self.account_id: str = args.get(self.account_id_arg) or params.get(self.account_id_arg) or ""
+        self.connector_id: Optional[str] = get_connector_id()
+        self.credentials: dict = {}
+
+    # ------------------------------------------------------------------
+    # Concrete helpers — shared implementation for all CSPs
+    # ------------------------------------------------------------------
+
+    def get_credentials(self, scopes: Optional[list] = None) -> dict:
+        """Fetch CTS credentials for ``self.account_id`` and cache them on ``self.credentials``.
+
+        On the marketplace path (no connector ID) this returns ``{}`` without
+        calling CTS — CSP implementations then authenticate with their
+        configured integration parameters instead.
+
+        When ``scopes`` is given, credentials are always re-fetched, because a
+        cached token may have been issued for a different scope.
+
+        Args:
+            scopes: Optional authorization scopes to request from CTS
+                    (used by Azure for scope-per-command tokens).
+
+        Returns:
+            The CTS credentials dict, or ``{}`` on the marketplace path.
+        """
+        if not self.connector_id:
+            return {}
+        if not self.credentials or scopes:
+            self.credentials = get_cloud_credentials(self.cloud_type, self.account_id, scopes=scopes)
+        return self.credentials
+
+    def get_accounts(self, max_results: Optional[int] = 1) -> list:
+        """Retrieve accounts associated with this connector.
+
+        Args:
+            max_results: Maximum number of accounts to return. ``None`` returns all accounts, and ``0`` returns none.
+                         Pages are fetched only until ``max_results`` is reached.
+
+        Returns:
+            List of account dicts with at least ``account_id`` and
+            optionally ``cloud_partition``.
+
+        Raises:
+            DemistoException: If the connector ID is not set or the API call fails.
+        """
+        accounts = self.iter_accounts()
+        return list(accounts) if max_results is None else list(islice(accounts, max_results))
+
+    def iter_accounts(self) -> Iterator[dict]:
+        """Yield the accounts of ``self.connector_id`` from the onboarding API, one page at a time.
+
+        The next page is requested only when the caller asks for more accounts, so a caller that
+        stops iterating (for example after finding a specific account) does not fetch the rest.
+
+        Yields:
+            Account dicts of type ``ACCOUNT`` with at least ``account_id`` and optionally ``cloud_partition``.
+
+        Raises:
+            DemistoException: If the connector ID is not set or the API call fails.
+        """
+        if not self.connector_id:
+            raise DemistoException(
+                "Fetching the connector accounts requires a connector ID. "
+                "This is only available on the Cortex Platform path."
+            )
+        next_token = ""
+        while True:
+            params: dict = {"entity_type": "connector", "entity_id": self.connector_id}
+            if next_token:
+                params["next_token"] = next_token
+            try:
+                result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
+                res_json = json.loads(result["data"])
+            except Exception as e:
+                raise DemistoException(f"Failed to fetch accounts for connector: {str(e)}")
+            for account in res_json.get("values", []):
+                if account.get("account_type") == "ACCOUNT" and account.get("account_id"):
+                    yield account
+            next_token = res_json.get("next_token", "")
+            if not next_token:
+                return
+
+    def check_account(self, account_id: str, shared_creds: dict) -> "HealthCheckError | list[HealthCheckError] | None":
+        """Run the health check for a single account and handle exceptions.
+
+        Wraps ``self.health_check`` with exception handling so that a failure
+        on one account does not abort the full health check loop.
+
+        Args:
+            account_id: The cloud account identifier to check.
+            shared_creds: Pre-fetched CTS credentials to reuse.
+
+        Returns:
+            ``None`` if the account is healthy, a ``HealthCheckError`` or
+            ``list[HealthCheckError]`` if the check fails or raises an exception.
+        """
+        try:
+            return self.health_check(shared_creds, account_id, self.connector_id or "")
+        except Exception as e:
+            demisto.error(f"[COOC] Error checking account {account_id}: {str(e)}")
+            return HealthCheckError(
+                account_id=account_id,
+                connector_id=self.connector_id or "",
+                message=f"Failed to check account: {str(e)}",
+                error_type=ErrorType.INTERNAL_ERROR,
+            )
+
+    def run_health_check(self) -> "str | CommandResults":
+        """Run the health check for all accounts on this connector.
+
+        Orchestrates the full health check flow:
+        1. Fetch accounts via ``self.get_accounts()``.
+        2. Fetch shared CTS credentials for the first account.
+        3. Run ``self.check_account()`` for the first account.
+        4. Summarise results via ``HealthCheck.summarize()``.
+
+        Should only be called when ``self.connector_id`` is not ``None``
+        (i.e. on the Cortex Platform path).
+
+        Returns:
+            ``"ok"`` if all accounts are healthy, or a ``CommandResults``
+            object with error details if any account has connectivity issues.
+
+        Raises:
+            DemistoException: If called without a connector ID (marketplace path).
+        """
+        if not self.connector_id:
+            raise DemistoException(
+                "run_health_check() requires a connector ID. "
+                "This method should only be called on the Cortex Platform path."
+            )
+        health_check_result = HealthCheck(self.connector_id)
+        try:
+            accounts = self.get_accounts()
+            if not accounts:
+                demisto.debug(f"[COOC] No accounts found for connector ID: {self.connector_id}")
+                return HealthStatus.OK
+            account_id = accounts[0]["account_id"]
+            shared_creds = get_cloud_credentials(self.cloud_type, account_id)
+            demisto.debug(f"[COOC] Retrieved shared {self.cloud_type} credentials for all accounts")
+        except Exception as e:
+            error_msg = f"Failed to retrieve {self.cloud_type} credentials for connector {self.connector_id}: {str(e)}"
+            demisto.error(error_msg)
+            health_check_result.error(
+                HealthCheckError(
+                    account_id="",
+                    connector_id=self.connector_id,
+                    message=error_msg,
+                    error_type=ErrorType.CONNECTIVITY_ERROR,
+                )
+            )
+            return health_check_result.summarize()
+
+        result = self.check_account(account_id, shared_creds)
+        if result is not None:
+            health_check_result.error(result)
+
+        demisto.debug(f"[COOC] Completed processing {account_id}")
+        return health_check_result.summarize()
+
+    # ------------------------------------------------------------------
+    # Command flow — shared by all CSPs
+    # ------------------------------------------------------------------
+
+    def run(self, commands_mapping: dict) -> None:
+        """Run the current command and return its results to the War Room. Called once from ``main()``.
+
+        ``test-module`` runs the health check on the Cortex Platform path (connector ID present) and
+        ``test_module`` on the marketplace path. Every other command runs through ``execute_command``.
+        The traceback of any exception (including a proxy setup failure) is logged here, once for all CSPs,
+        and the exception is then passed to ``handle_error``.
+
+        Args:
+            commands_mapping: Dict mapping existing command names to their handlers.
+        """
+        demisto.debug(f"[COOC] Command being called is {self.command}, {self.connector_id=}")
+        try:
+            if self.uses_proxy_env:
+                handle_proxy()
+            if self.command == "test-module":
+                return_results(self.run_health_check() if self.connector_id else self.test_module())
+            else:
+                return_results(self.execute_command(commands_mapping))
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            self.handle_error(e)
+
+    def execute_command(self, commands_mapping: dict) -> Any:
+        """Execute the current command against one account.
+
+        1. **Registered commands** (see ``register``) get a ready client from ``get_client()``:
+           ``(client, args)``, or ``(args, client)`` when registered with ``polling=True``.
+        2. **Existing commands** from ``commands_mapping`` run through ``execute_mapped_command``,
+           which each CSP overrides to match the signatures of its existing handlers.
+
+        CSPs override this method only to add steps around this flow (e.g. the AWS multi-account
+        fan-out, the Azure Gov endpoints and auth commands), and then call ``super().execute_command``.
+
+        Args:
+            commands_mapping: Dict mapping existing command names to their handlers.
+
+        Returns:
+            The result of the handler.
+
+        Raises:
+            NotImplementedError: If the command is neither registered nor in ``commands_mapping``.
+        """
+        if registered := self.get_registered_handler():
+            handler, polling = registered
+            client = self.get_client()
+            return handler(self.args, client) if polling else handler(client, self.args)
+        return self.execute_mapped_command(self.get_mapped_handler(commands_mapping))
+
+    def execute_mapped_command(self, handler: Callable) -> Any:
+        """Call an existing (``commands_mapping``) handler: ``(args, client)`` for polling commands
+        (see ``is_polling_command``), ``(client, args)`` otherwise.
+
+        CSPs override this method when their existing handlers use a different signature.
+
+        Args:
+            handler: The ``commands_mapping`` handler of ``self.command``.
+
+        Returns:
+            The result of the handler.
+        """
+        client = self.get_client()
+        if self.is_polling_command():
+            demisto.debug(f"[COOC] {self.command=} is a polling command, calling it with args as the first argument.")
+            return handler(self.args, client)
+        return handler(client, self.args)
+
+    def is_polling_command(self) -> bool:
+        """Return whether ``self.command`` is an existing polling command, which takes ``args`` first.
+
+        Defaults to membership in ``polling_commands``. CSPs that detect polling differently override this method.
+        """
+        return self.command in self.polling_commands
+
+    def get_mapped_handler(self, commands_mapping: dict) -> Callable:
+        """Return the ``commands_mapping`` handler for ``self.command``.
+
+        Raises:
+            NotImplementedError: If ``self.command`` is not in ``commands_mapping``.
+        """
+        if self.command not in commands_mapping:
+            raise NotImplementedError(f"Command '{self.command}' is not implemented.")
+        return commands_mapping[self.command]
+
+    def handle_error(self, error: Exception) -> None:
+        """Return the error of the current command to the War Room.
+
+        ``run`` has already logged the traceback. CSPs override this method to translate their native
+        errors first (for example permission errors via ``return_multiple_permissions_error``), and call
+        ``super().handle_error`` for the rest.
+
+        Args:
+            error: The exception raised while running the command.
+        """
+        return_error(f"Failed to execute {self.command} command.\nError:\n{error!s}")
+
+    # ------------------------------------------------------------------
+    # Abstract methods — each CSP ApiModule must implement these
+    # ------------------------------------------------------------------
+
+    @abstractmethod
+    def get_client(self) -> Any:
+        """Build and return a CSP-native client object.
+
+        Implementations should call ``self.get_credentials()`` (optionally with
+        command-specific scopes) and use ``self.params``, ``self.args``, and
+        ``self.command`` to construct the client.
+
+        Returns:
+            A CSP-native client:
+
+            - **AWS**: ``BotoClient`` (boto3 service client)
+            - **GCP**: ``googleapiclient.discovery.Resource`` for the command's service
+            - **Azure**: an ``AzureBaseClient`` (the ``client_class`` passed by the integration)
+        """
+
+    @abstractmethod
+    def health_check(
+        self,
+        credentials: dict,
+        account_id: str,
+        connector_id: str,
+    ) -> "HealthCheckError | list[HealthCheckError] | None":
+        """Perform a CSP-specific connectivity check for one account.
+
+        Called by ``check_account()`` (from ``run_health_check()``) with
+        explicit credentials and account ID, because the health check account
+        is resolved from the connector and may differ from ``self.account_id``.
+
+        Args:
+            credentials: Pre-fetched CTS credentials for this account.
+            account_id: The cloud account identifier
+                        (AWS account ID / GCP project ID / Azure subscription ID).
+            connector_id: The Cortex connector ID.
+
+        Returns:
+            ``None`` if connectivity is healthy.
+            ``HealthCheckError`` or ``list[HealthCheckError]`` if issues are found.
+        """
+
+    @abstractmethod
+    def test_module(self) -> str:
+        """Validate credentials on the marketplace (non-platform) path.
+
+        Called when ``test-module`` is triggered without a connector ID.
+        Uses ``self.params`` to authenticate.
+
+        Returns:
+            ``"ok"`` if credentials are valid.
+
+        Raises:
+            DemistoException: If credentials are invalid or the API call fails.
+        """
+

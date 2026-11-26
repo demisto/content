@@ -172,41 +172,6 @@ def test_get_cloud_credentials_parse_error(mocker):
     assert "Failed to get credentials from CTS" in str(excinfo.value)
 
 
-def test_get_accounts_by_connector_id_with_max_results(mocker):
-    """
-    Given: A connector_id parameter and max_results parameter.
-    When: The get_accounts_by_connector_id function is called with max_results.
-    Then: The function returns only the specified number of accounts.
-    """
-
-    from COOCApiModule import get_accounts_by_connector_id
-
-    # Mock platform API response with multiple accounts
-    api_response = {
-        "status": 200,
-        "data": json.dumps(
-            {
-                "values": [
-                    {"account_id": "account-1", "account_type": "ACCOUNT"},
-                    {"account_id": "account-2", "account_type": "ACCOUNT"},
-                    {"account_id": "account-3", "account_type": "ORGANIZATION"},
-                ],
-                "next_token": "",
-            }
-        ),
-    }
-    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
-    mocker.patch.object(demisto, "debug")
-
-    # Call the function with max_results=2
-    result = get_accounts_by_connector_id(connector_id="test-connector-id", max_results=2)
-
-    # Verify result has only max_results entries
-    assert len(result) == 2
-    assert result[0]["account_id"] == "account-1"
-    assert result[1]["account_id"] == "account-2"
-
-
 def test_health_check_error_to_dict():
     """
     Given: Parameters for a HealthCheckError.
@@ -285,106 +250,6 @@ def test_health_check_summarize_with_errors():
     # Verify result is CommandResults
     assert isinstance(result, CommandResults)
     assert result.entry_type == EntryType.WARNING
-
-
-def test_check_account(mocker):
-    """
-    Given: An account, connector_id, shared_creds, and permission check function.
-    When: _check_account is called.
-    Then: It calls the permission check function with the correct parameters and returns its result.
-    """
-    from COOCApiModule import _check_account
-
-    # Mock permission check function
-    mock_permission_check = mocker.Mock(return_value="permission_check_result")
-
-    # Test with valid account
-    account_id = "test-account-id"
-    shared_creds = {"access_token": "test-token"}
-    result = _check_account(account_id, "test-connector-id", shared_creds, mock_permission_check)
-
-    # Verify permission check was called with correct parameters
-    mock_permission_check.assert_called_once_with(shared_creds, "test-account-id", "test-connector-id")
-    assert result == "permission_check_result"
-
-
-def test_check_account_exception(mocker):
-    """
-    Given: An account, connector_id, shared_creds, and permission check function that raises an exception.
-    When: _check_account is called.
-    Then: It handles the exception and returns a HealthCheckError.
-    """
-    from COOCApiModule import _check_account
-
-    # Mock permission check function to raise exception
-    mock_permission_check = mocker.Mock(side_effect=Exception("Test error"))
-    mocker.patch.object(demisto, "error")
-
-    # Test with exception in permission check
-    account_id = "test-account-id"
-    shared_creds = {"access_token": "test-token"}
-    result = _check_account(account_id, "test-connector-id", shared_creds, mock_permission_check)
-
-    # Verify error was logged and HealthCheckError returned
-    assert demisto.error.called
-    assert isinstance(result, HealthCheckError)
-    assert result.account_id == "test-account-id"
-    assert result.connector_id == "test-connector-id"
-    assert "Test error" in result.message
-    assert result.error_type == ErrorType.INTERNAL_ERROR
-
-
-def test_run_health_check_no_accounts(mocker):
-    """
-    Given: A connector_id with no associated accounts.
-    When: run_health_check_for_accounts is called.
-    Then: It returns "ok" without running any permission checks.
-    """
-    from COOCApiModule import run_health_check_for_accounts
-
-    # Mock get_accounts_by_connector_id to return empty list
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[])
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
-
-    # Verify results
-    assert result == HealthStatus.OK
-    assert demisto.debug.called
-
-
-def test_run_health_check_credentials_failure(mocker):
-    """
-    Given: A connector_id with accounts but credential retrieval fails.
-    When: run_health_check_for_accounts is called.
-    Then: It returns CommandResults with connectivity error.
-    """
-    from COOCApiModule import run_health_check_for_accounts
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-
-    # Mock get_cloud_credentials to raise exception
-    mocker.patch("COOCApiModule.get_cloud_credentials", side_effect=Exception("Credential error"))
-
-    mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "error")
-
-    # Mock HealthCheck
-    mock_health_check = mocker.MagicMock()
-    mock_health_check.summarize.return_value = CommandResults(entry_type=EntryType.ERROR)
-    mocker.patch("COOCApiModule.HealthCheck", return_value=mock_health_check)
-
-    # Call function
-    run_health_check_for_accounts(connector_id="test-connector-id", cloud_type="AWS", health_check_func=mocker.Mock())
-
-    # Verify error was handled
-    assert mock_health_check.error.called
-    error_call_args = mock_health_check.error.call_args[0][0]
-    assert isinstance(error_call_args, HealthCheckError)
-    assert error_call_args.error_type == ErrorType.CONNECTIVITY_ERROR
 
 
 def test_get_connector_id_success(mocker):
@@ -960,195 +825,6 @@ def test_create_permissions_error_entry_integer_zero_as_string(mocker):
     demisto.info.assert_not_called()
 
 
-def test_is_gov_account_gov_partition_true(mocker):
-    """
-    Given: A connector_id, account_id, and accounts with GOV partition.
-    When: is_gov_account is called.
-    Then: It returns True for the account with GOV partition.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [
-        {"account_id": "account-1", "cloud_partition": "GOV"},
-        {"account_id": "account-2", "cloud_partition": "COMMERCIAL"},
-    ]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is True
-
-
-def test_is_gov_account_standard_partition_false(mocker):
-    """
-    Given: A connector_id, account_id, and accounts with COMMERCIAL partition.
-    When: is_gov_account is called.
-    Then: It returns False for the account with COMMERCIAL partition.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [
-        {"account_id": "account-1", "cloud_partition": "COMMERCIAL"},
-        {"account_id": "account-2", "cloud_partition": "GOV"},
-    ]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is False
-
-
-def test_is_gov_account_not_found_false(mocker):
-    """
-    Given: A connector_id, account_id, and accounts list without the requested account.
-    When: is_gov_account is called.
-    Then: It returns False for non-existent account.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1", "cloud_partition": "STANDARD"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-3")
-
-    # Verify result
-    assert result is False
-
-
-def test_is_gov_account_empty_accounts_list(mocker):
-    """
-    Given: A connector_id, account_id, and empty accounts list.
-    When: is_gov_account is called.
-    Then: It returns False for empty accounts list.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = []
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is False
-
-
-def test_is_gov_account_missing_cloud_partition(mocker):
-    """
-    Given: A connector_id, account_id, and account without cloud_partition field.
-    When: is_gov_account is called.
-    Then: It returns False for account missing cloud_partition.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is False
-
-
-def test_is_gov_account_null_cloud_partition(mocker):
-    """
-    Given: A connector_id, account_id, and account with None cloud_partition.
-    When: is_gov_account is called.
-    Then: It returns False for account with None cloud_partition.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1", "cloud_partition": None}, {"account_id": "account-2", "cloud_partition": "GOV"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is False
-
-
-def test_is_gov_account_case_sensitive_partition(mocker):
-    """
-    Given: A connector_id, account_id, and account with lowercase 'gov' partition.
-    When: is_gov_account is called.
-    Then: It returns True for non case-sensitive partition check.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1", "cloud_partition": "gov"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "account-1")
-
-    # Verify result
-    assert result is True
-
-
-def test_is_gov_account_get_accounts_call_parameters(mocker):
-    """
-    Given: A connector_id and account_id.
-    When: is_gov_account is called.
-    Then: It calls get_accounts_by_connector_id with correct parameters.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = [{"account_id": "account-1", "cloud_partition": "GOV"}]
-    mock_get_accounts = mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    is_gov_account("test-connector-id", "account-1")
-
-    # Verify get_accounts_by_connector_id was called with correct parameters
-    mock_get_accounts.assert_called_once_with("test-connector-id", None)
-
-
-def test_is_gov_account_empty_accounts_list_no_account(mocker):
-    """
-    Given: A connector_id, no account_id, and empty accounts list.
-    When: is_gov_account is called.
-    Then: It returns False for empty accounts list.
-    """
-    from COOCApiModule import is_gov_account
-
-    # Mock get_accounts_by_connector_id
-    accounts = []
-    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
-    mocker.patch.object(demisto, "debug")
-
-    # Call function
-    result = is_gov_account("test-connector-id", "")
-
-    # Verify result
-    assert result is False
-    debug_call_args = demisto.debug.call_args[0][0]
-    expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
-    assert expected_debug_log == debug_call_args
-
-
 @pytest.mark.parametrize(
     "timeout,expected",
     [
@@ -1214,3 +890,806 @@ def test_get_timeout_negative_raises(bad_timeout):
 
     with pytest.raises(DemistoException, match="Timeout values must not be negative."):
         get_timeout(bad_timeout)
+
+
+# ----------------------------------------------------------------------
+# CloudIntegration
+# ----------------------------------------------------------------------
+
+
+def _make_integration(
+    mocker,
+    connector_id: str | None = "test-connector-id",
+    args: dict | None = None,
+    params: dict | None = None,
+    account_id_arg: str = "account_id",
+):
+    """Builds a minimal concrete CloudIntegration subclass for testing the shared logic."""
+    from COOCApiModule import CloudIntegration
+
+    class DummyIntegration(CloudIntegration):
+        cloud_type = CloudTypes.AWS.value
+
+        def get_client(self):
+            return {"creds": self.get_credentials()}
+
+        def health_check(self, credentials, account_id, connector_id):
+            return None
+
+        def test_module(self):
+            return "ok"
+
+        def handle_error(self, error):
+            raise error
+
+    DummyIntegration.account_id_arg = account_id_arg
+    mocker.patch("COOCApiModule.get_connector_id", return_value=connector_id)
+    return DummyIntegration("test-command", args or {}, params or {})
+
+
+def test_cloud_integration_init_does_not_fetch_credentials(mocker):
+    """
+    Given: A CloudIntegration subclass on the platform path.
+    When: The integration is constructed.
+    Then: Context is stored and CTS is not called (credentials are fetched lazily).
+    """
+    mock_get_creds = mocker.patch("COOCApiModule.get_cloud_credentials")
+
+    integration = _make_integration(mocker, args={"account_id": "123"})
+
+    assert integration.account_id == "123"
+    assert integration.connector_id == "test-connector-id"
+    assert integration.credentials == {}
+    mock_get_creds.assert_not_called()
+
+
+def test_cloud_integration_account_id_falls_back_to_params(mocker):
+    """
+    Given: A subclass with a custom account_id_arg that is only present in params.
+    When: The integration is constructed.
+    Then: account_id is resolved from params.
+    """
+    integration = _make_integration(mocker, params={"subscription_id": "sub-1"}, account_id_arg="subscription_id")
+
+    assert integration.account_id == "sub-1"
+
+
+def test_cloud_integration_get_credentials_marketplace_path(mocker):
+    """
+    Given: No connector ID (marketplace path).
+    When: get_credentials is called.
+    Then: Returns {} without calling CTS.
+    """
+    mock_get_creds = mocker.patch("COOCApiModule.get_cloud_credentials")
+    integration = _make_integration(mocker, connector_id=None)
+
+    assert integration.get_credentials() == {}
+    mock_get_creds.assert_not_called()
+
+
+def test_cloud_integration_get_credentials_caches(mocker):
+    """
+    Given: A platform-path integration.
+    When: get_credentials is called twice without scopes.
+    Then: CTS is called once and the result is cached.
+    """
+    mock_get_creds = mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "t"})
+    integration = _make_integration(mocker, args={"account_id": "123"})
+
+    assert integration.get_credentials() == {"access_token": "t"}
+    assert integration.get_credentials() == {"access_token": "t"}
+    mock_get_creds.assert_called_once_with(CloudTypes.AWS.value, "123", scopes=None)
+
+
+def test_cloud_integration_get_credentials_with_scopes_refetches(mocker):
+    """
+    Given: A platform-path integration with cached credentials.
+    When: get_credentials is called with scopes.
+    Then: CTS is called again with the requested scopes.
+    """
+    mock_get_creds = mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "t"})
+    integration = _make_integration(mocker, args={"account_id": "123"})
+    integration.credentials = {"access_token": "old"}
+
+    integration.get_credentials(scopes=["STORAGE"])
+
+    mock_get_creds.assert_called_once_with(CloudTypes.AWS.value, "123", scopes=["STORAGE"])
+
+
+def test_cloud_integration_execute_command(mocker):
+    """
+    Given: A platform-path integration and a commands mapping.
+    When: execute_command is called.
+    Then: The handler is called with (client, args) and its result is returned.
+    """
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "t"})
+    integration = _make_integration(mocker, args={"account_id": "123"})
+    handler = mocker.Mock(return_value="result")
+
+    result = integration.execute_command({"test-command": handler})
+
+    assert result == "result"
+    handler.assert_called_once_with({"creds": {"access_token": "t"}}, {"account_id": "123"})
+
+
+def test_cloud_integration_execute_command_not_implemented(mocker):
+    """
+    Given: A command that is neither registered nor in the commands mapping.
+    When: execute_command is called.
+    Then: NotImplementedError is raised and no client is built.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mock_get_client = mocker.patch.object(integration, "get_client")
+
+    with pytest.raises(NotImplementedError, match="Command 'test-command' is not implemented."):
+        integration.execute_command({"other-command": mocker.Mock()})
+    mock_get_client.assert_not_called()
+
+
+def test_cloud_integration_register_executes_registered_command(mocker):
+    """
+    Given: A handler registered with @register for the current command.
+    When: execute_command is called with an empty commands mapping.
+    Then: The registered handler is called with (client, args) and its result is returned.
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"a": 1})
+    handler = mocker.Mock(return_value="registered")
+    type(integration).register("test-command")(handler)
+
+    assert integration.execute_command({}) == "registered"
+    handler.assert_called_once_with({"creds": {}}, {"a": 1})
+
+
+def test_cloud_integration_register_polling_command(mocker):
+    """
+    Given: A handler registered with polling=True.
+    When: execute_command is called.
+    Then: The handler is called with (args, client).
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"a": 1})
+    handler = mocker.Mock(return_value="polled")
+    type(integration).register("test-command", polling=True)(handler)
+
+    assert integration.execute_command({}) == "polled"
+    handler.assert_called_once_with({"a": 1}, {"creds": {}})
+
+
+def test_cloud_integration_register_takes_precedence_over_mapping(mocker):
+    """
+    Given: The current command is both registered and in the commands mapping.
+    When: execute_command is called.
+    Then: The registered handler is used and the mapped one is not called.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    registered = mocker.Mock(return_value="registered")
+    mapped = mocker.Mock(return_value="mapped")
+    type(integration).register("test-command")(registered)
+
+    assert integration.execute_command({"test-command": mapped}) == "registered"
+    mapped.assert_not_called()
+
+
+def test_cloud_integration_register_returns_function_unchanged(mocker):
+    """
+    Given: A function decorated with @register.
+    When: The decorator is applied.
+    Then: The same function object is returned, so it can still be called directly (e.g. in tests).
+    """
+    integration = _make_integration(mocker, connector_id=None)
+
+    def handler(client, args):
+        return "direct"
+
+    decorated = type(integration).register("test-command")(handler)
+
+    assert decorated is handler
+    assert decorated("client", {}) == "direct"
+
+
+def test_cloud_integration_register_staticmethod_in_service_class(mocker):
+    """
+    Given: Service class methods registered with @register, stacked in both orders with @staticmethod.
+    When: execute_command is called for each command.
+    Then: Both handlers are executed, and they remain callable as static methods of the service class.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    integration_cls = type(integration)
+
+    class Service:
+        @staticmethod
+        @integration_cls.register("test-command")
+        def below_staticmethod(client, args):
+            return "below"
+
+        @integration_cls.register("other-command")
+        @staticmethod
+        def above_staticmethod(client, args):
+            return "above"
+
+    assert integration.execute_command({}) == "below"
+    integration.command = "other-command"
+    assert integration.execute_command({}) == "above"
+    assert Service.below_staticmethod("client", {}) == "below"
+    assert Service.above_staticmethod("client", {}) == "above"
+
+
+def test_cloud_integration_register_duplicate_raises(mocker):
+    """
+    Given: A command name that is already registered on the integration class.
+    When: Another handler is registered with the same name.
+    Then: ValueError is raised and the original handler is kept.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    integration_cls = type(integration)
+    original = mocker.Mock(return_value="original")
+    integration_cls.register("test-command")(original)
+
+    with pytest.raises(ValueError, match="Command 'test-command' is already registered on DummyIntegration."):
+        integration_cls.register("test-command")(mocker.Mock())
+    assert integration.execute_command({}) == "original"
+
+
+def test_cloud_integration_register_isolated_per_subclass(mocker):
+    """
+    Given: Two CloudIntegration subclasses.
+    When: A command is registered on one of them.
+    Then: It is not visible to the other subclass or to the CloudIntegration base class.
+    """
+    from COOCApiModule import CloudIntegration
+
+    first = _make_integration(mocker, connector_id=None)
+    second = _make_integration(mocker, connector_id=None)
+    type(first).register("test-command")(mocker.Mock())
+
+    assert first.get_registered_handler() is not None
+    assert second.get_registered_handler() is None
+    assert "test-command" not in CloudIntegration._registry
+
+
+def test_cloud_integration_register_inherited_by_subclass(mocker):
+    """
+    Given: A command registered on a parent integration class.
+    When: The command is executed through a subclass of that integration.
+    Then: The parent's registered handler is used.
+    """
+    parent = _make_integration(mocker, connector_id=None)
+    handler = mocker.Mock(return_value="inherited")
+    type(parent).register("test-command")(handler)
+
+    class ChildIntegration(type(parent)):  # type: ignore[misc, valid-type]
+        pass
+
+    child = ChildIntegration("test-command", {}, {})
+
+    assert child.execute_command({}) == "inherited"
+
+
+def test_cloud_integration_cloud_type_is_class_attribute(mocker):
+    """
+    Given: A CloudIntegration subclass that sets cloud_type as a class attribute.
+    When: The integration is constructed with (command, args, params) and credentials are fetched.
+    Then: The class cloud_type is used for CTS.
+    """
+    mock_get_creds = mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "t"})
+    integration = _make_integration(mocker, args={"account_id": "123"})
+
+    integration.get_credentials()
+
+    assert type(integration).cloud_type == CloudTypes.AWS.value
+    assert integration.cloud_type == CloudTypes.AWS.value
+    mock_get_creds.assert_called_once_with(CloudTypes.AWS.value, "123", scopes=None)
+
+
+def test_cloud_integration_get_accounts_with_max_results(mocker):
+    """
+    Given: The onboarding API returns accounts of mixed types.
+    When: get_accounts is called with max_results=2.
+    Then: Only ACCOUNT-type entries are returned, capped at max_results.
+    """
+    api_response = {
+        "status": 200,
+        "data": json.dumps(
+            {
+                "values": [
+                    {"account_id": "account-1", "account_type": "ACCOUNT"},
+                    {"account_id": "account-2", "account_type": "ACCOUNT"},
+                    {"account_id": "account-3", "account_type": "ORGANIZATION"},
+                ],
+                "next_token": "",
+            }
+        ),
+    }
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+    integration = _make_integration(mocker)
+
+    result = integration.get_accounts(max_results=2)
+
+    assert [a["account_id"] for a in result] == ["account-1", "account-2"]
+
+
+def test_cloud_integration_get_accounts_max_results_zero_returns_empty(mocker):
+    """
+    Given: The onboarding API returns accounts.
+    When: get_accounts is called with max_results=0.
+    Then: No accounts are returned and the onboarding API is not called.
+    """
+    mock_api = mocker.patch.object(demisto, "_platformAPICall")
+    integration = _make_integration(mocker)
+
+    assert integration.get_accounts(max_results=0) == []
+    mock_api.assert_not_called()
+
+
+def test_cloud_integration_register_on_base_class_raises():
+    """
+    Given: The CloudIntegration base class.
+    When: register is called on it directly.
+    Then: A TypeError is raised and nothing is added to the base registry.
+    """
+    from COOCApiModule import CloudIntegration
+
+    with pytest.raises(TypeError, match="not on CloudIntegration"):
+        CloudIntegration.register("base-command")
+    assert "base-command" not in CloudIntegration._registry
+
+
+def test_cloud_integration_run_handle_proxy_failure_goes_to_handle_error(mocker):
+    """
+    Given: An integration class with uses_proxy_env set to True, and handle_proxy raises.
+    When: run is called.
+    Then: The exception is passed to handle_error and the command does not run.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mocker.patch.object(type(integration), "uses_proxy_env", True)
+    error = ValueError("bad proxy")
+    mocker.patch("COOCApiModule.handle_proxy", side_effect=error)
+    mocker.patch.object(demisto, "error")
+    mock_handle_error = mocker.patch.object(integration, "handle_error")
+    handler = mocker.Mock()
+
+    integration.run({"test-command": handler})
+
+    mock_handle_error.assert_called_once_with(error)
+    handler.assert_not_called()
+
+
+def test_cloud_integration_is_polling_command_from_polling_commands(mocker):
+    """
+    Given: An integration class whose polling_commands contains the current command.
+    When: is_polling_command is called.
+    Then: It returns True, and False when polling_commands is empty (the default).
+    """
+    integration = _make_integration(mocker)
+    assert integration.is_polling_command() is False
+
+    mocker.patch.object(type(integration), "polling_commands", frozenset({"test-command"}))
+    assert integration.is_polling_command() is True
+
+
+def test_cloud_integration_execute_mapped_command_polling_signature(mocker):
+    """
+    Given: A mapped handler for a command listed in polling_commands.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (args, client).
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"key": "value"})
+    mocker.patch.object(type(integration), "polling_commands", frozenset({"test-command"}))
+    handler = mocker.Mock(return_value="result")
+
+    assert integration.execute_mapped_command(handler) == "result"
+    handler.assert_called_once_with({"key": "value"}, {"creds": {}})
+
+
+def test_cloud_integration_get_accounts_stops_paging_at_max_results(mocker):
+    """
+    Given: The onboarding API returns two pages, and the first page has enough accounts.
+    When: get_accounts is called with max_results=1.
+    Then: Only the first page is requested.
+    """
+    first_page = {
+        "data": json.dumps({"values": [{"account_id": "account-1", "account_type": "ACCOUNT"}], "next_token": "page-2"})
+    }
+    api_call = mocker.patch.object(demisto, "_platformAPICall", return_value=first_page)
+    integration = _make_integration(mocker)
+
+    assert integration.get_accounts(max_results=1) == [{"account_id": "account-1", "account_type": "ACCOUNT"}]
+    api_call.assert_called_once()
+
+
+def test_cloud_integration_get_accounts_all_pages(mocker):
+    """
+    Given: The onboarding API returns two pages.
+    When: get_accounts is called with max_results=None.
+    Then: Both pages are requested, the second with the next_token, and all accounts are returned.
+    """
+    pages = [
+        {"data": json.dumps({"values": [{"account_id": "account-1", "account_type": "ACCOUNT"}], "next_token": "page-2"})},
+        {"data": json.dumps({"values": [{"account_id": "account-2", "account_type": "ACCOUNT"}], "next_token": ""})},
+    ]
+    api_call = mocker.patch.object(demisto, "_platformAPICall", side_effect=pages)
+    integration = _make_integration(mocker)
+
+    result = integration.get_accounts(max_results=None)
+
+    assert [a["account_id"] for a in result] == ["account-1", "account-2"]
+    assert api_call.call_args_list[1].args[2]["next_token"] == "page-2"
+
+
+def test_cloud_integration_iter_accounts_is_lazy(mocker):
+    """
+    Given: The onboarding API returns two pages.
+    When: Only the first account of iter_accounts is consumed.
+    Then: Only the first page is requested.
+    """
+    first_page = {
+        "data": json.dumps({"values": [{"account_id": "account-1", "account_type": "ACCOUNT"}], "next_token": "page-2"})
+    }
+    api_call = mocker.patch.object(demisto, "_platformAPICall", return_value=first_page)
+    integration = _make_integration(mocker)
+
+    assert next(integration.iter_accounts())["account_id"] == "account-1"
+    api_call.assert_called_once()
+
+
+def test_cloud_integration_get_accounts_api_failure_raises(mocker):
+    """
+    Given: The onboarding API call fails.
+    When: get_accounts is called.
+    Then: A DemistoException with the failure is raised.
+    """
+    mocker.patch.object(demisto, "_platformAPICall", side_effect=Exception("api down"))
+    integration = _make_integration(mocker)
+
+    with pytest.raises(DemistoException, match="Failed to fetch accounts for connector: api down"):
+        integration.get_accounts()
+
+
+def test_cloud_integration_get_accounts_requires_connector(mocker):
+    """
+    Given: No connector ID.
+    When: get_accounts is called.
+    Then: A DemistoException is raised.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+
+    with pytest.raises(DemistoException, match="requires a connector ID"):
+        integration.get_accounts()
+
+
+def test_cloud_integration_check_account(mocker):
+    """
+    Given: A health_check implementation.
+    When: check_account is called.
+    Then: health_check is called with (creds, account_id, connector_id) and its result is returned.
+    """
+    integration = _make_integration(mocker)
+    mock_health_check = mocker.patch.object(integration, "health_check", return_value="health_result")
+
+    result = integration.check_account("account-1", {"access_token": "t"})
+
+    mock_health_check.assert_called_once_with({"access_token": "t"}, "account-1", "test-connector-id")
+    assert result == "health_result"
+
+
+def test_cloud_integration_check_account_exception(mocker):
+    """
+    Given: A health_check implementation that raises.
+    When: check_account is called.
+    Then: The exception is converted into an INTERNAL_ERROR HealthCheckError.
+    """
+    mocker.patch.object(demisto, "error")
+    integration = _make_integration(mocker)
+    mocker.patch.object(integration, "health_check", side_effect=Exception("Test error"))
+
+    result = integration.check_account("account-1", {})
+
+    assert isinstance(result, HealthCheckError)
+    assert result.account_id == "account-1"
+    assert result.connector_id == "test-connector-id"
+    assert "Test error" in result.message
+    assert result.error_type == ErrorType.INTERNAL_ERROR
+
+
+def test_cloud_integration_run_health_check_no_accounts(mocker):
+    """
+    Given: A connector with no accounts.
+    When: run_health_check is called.
+    Then: Returns "ok".
+    """
+    integration = _make_integration(mocker)
+    mocker.patch.object(integration, "get_accounts", return_value=[])
+
+    assert integration.run_health_check() == HealthStatus.OK
+
+
+def test_cloud_integration_run_health_check_credentials_failure(mocker):
+    """
+    Given: A connector with accounts but CTS credential retrieval fails.
+    When: run_health_check is called.
+    Then: Returns CommandResults with a CONNECTIVITY_ERROR.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch("COOCApiModule.get_cloud_credentials", side_effect=Exception("Credential error"))
+    integration = _make_integration(mocker)
+    mocker.patch.object(integration, "get_accounts", return_value=[{"account_id": "account-1"}])
+
+    result = integration.run_health_check()
+
+    assert isinstance(result, CommandResults)
+    raw_response: list = result.raw_response  # type: ignore[assignment]
+    assert raw_response[0]["error"] == ErrorType.CONNECTIVITY_ERROR
+
+
+def test_cloud_integration_run_health_check_healthy(mocker):
+    """
+    Given: A connector with one healthy account.
+    When: run_health_check is called.
+    Then: health_check runs with the first account's credentials and "ok" is returned.
+    """
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "t"})
+    integration = _make_integration(mocker)
+    mocker.patch.object(integration, "get_accounts", return_value=[{"account_id": "account-1"}])
+    mock_health_check = mocker.patch.object(integration, "health_check", return_value=None)
+
+    assert integration.run_health_check() == HealthStatus.OK
+    mock_health_check.assert_called_once_with({"access_token": "t"}, "account-1", "test-connector-id")
+
+
+# ----------------------------------------------------------------------
+# CloudIntegration command flow: run / execute_mapped_command / handle_error
+# ----------------------------------------------------------------------
+
+
+def test_cloud_integration_run_test_module_platform_path(mocker):
+    """
+    Given: The test-module command on the Cortex Platform path (connector ID present).
+    When: run is called.
+    Then: The health check runs and its result is returned; test_module and execute_command are not called.
+    """
+    integration = _make_integration(mocker, connector_id="test-connector-id")
+    integration.command = "test-module"
+    mock_health_check = mocker.patch.object(integration, "run_health_check", return_value="ok")
+    mock_test_module = mocker.patch.object(integration, "test_module")
+    mock_execute = mocker.patch.object(integration, "execute_command")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({})
+
+    mock_health_check.assert_called_once_with()
+    mock_test_module.assert_not_called()
+    mock_execute.assert_not_called()
+    mock_return_results.assert_called_once_with("ok")
+
+
+def test_cloud_integration_run_test_module_marketplace_path(mocker):
+    """
+    Given: The test-module command on the marketplace path (no connector ID).
+    When: run is called.
+    Then: test_module runs and its result is returned; the health check and execute_command are not called.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    integration.command = "test-module"
+    mock_test_module = mocker.patch.object(integration, "test_module", return_value="ok")
+    mock_health_check = mocker.patch.object(integration, "run_health_check")
+    mock_execute = mocker.patch.object(integration, "execute_command")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({})
+
+    mock_test_module.assert_called_once_with()
+    mock_health_check.assert_not_called()
+    mock_execute.assert_not_called()
+    mock_return_results.assert_called_once_with("ok")
+
+
+def test_cloud_integration_run_command(mocker):
+    """
+    Given: A regular command.
+    When: run is called.
+    Then: execute_command runs with the commands mapping and its result is returned to the War Room.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    commands_mapping = {"test-command": lambda client, args: "result"}
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run(commands_mapping)
+
+    mock_return_results.assert_called_once_with("result")
+
+
+def test_cloud_integration_run_passes_errors_to_handle_error(mocker):
+    """
+    Given: A command whose handler raises.
+    When: run is called.
+    Then: The exception is passed to handle_error and nothing is returned.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    error = ValueError("boom")
+    mocker.patch.object(demisto, "error")
+    mock_handle_error = mocker.patch.object(integration, "handle_error")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({"test-command": mocker.Mock(side_effect=error)})
+
+    mock_handle_error.assert_called_once_with(error)
+    mock_return_results.assert_not_called()
+
+
+def test_cloud_integration_run_logs_traceback_once_on_error(mocker):
+    """
+    Given: A command whose handler raises.
+    When: run is called.
+    Then: run logs the traceback once with demisto.error before calling handle_error.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mock_error = mocker.patch.object(demisto, "error")
+    mocker.patch.object(integration, "handle_error")
+
+    integration.run({"test-command": mocker.Mock(side_effect=ValueError("boom"))})
+
+    mock_error.assert_called_once()
+    assert "ValueError: boom" in mock_error.call_args[0][0]
+
+
+def test_cloud_integration_run_registered_command_success(mocker):
+    """
+    Given: A handler registered with @register for the current command and an empty commands mapping.
+    When: run is called.
+    Then: The registered handler gets (client, args) and its result is passed to return_results.
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"key": "value"})
+    handler = mocker.Mock(return_value="registered-result")
+    type(integration).register("test-command")(handler)
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+    mock_handle_error = mocker.patch.object(integration, "handle_error")
+
+    integration.run({})
+
+    handler.assert_called_once_with({"creds": {}}, {"key": "value"})
+    mock_return_results.assert_called_once_with("registered-result")
+    mock_handle_error.assert_not_called()
+
+
+def test_cloud_integration_run_registered_polling_command_success(mocker):
+    """
+    Given: A handler registered with polling=True for the current command.
+    When: run is called.
+    Then: The registered handler gets (args, client) and its result is passed to return_results.
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"key": "value"})
+    handler = mocker.Mock(return_value="polling-result")
+    type(integration).register("test-command", polling=True)(handler)
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({})
+
+    handler.assert_called_once_with({"key": "value"}, {"creds": {}})
+    mock_return_results.assert_called_once_with("polling-result")
+
+
+def test_cloud_integration_run_registered_command_error(mocker):
+    """
+    Given: A registered handler that raises.
+    When: run is called.
+    Then: The exception is passed to handle_error and return_results is not called.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    error = RuntimeError("registered failure")
+    type(integration).register("test-command")(mocker.Mock(side_effect=error))
+    mocker.patch.object(demisto, "error")
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+    mock_handle_error = mocker.patch.object(integration, "handle_error")
+
+    integration.run({})
+
+    mock_handle_error.assert_called_once_with(error)
+    mock_return_results.assert_not_called()
+
+
+def test_cloud_integration_run_registered_command_preferred_over_mapping(mocker):
+    """
+    Given: A command that is both registered and present in the commands mapping.
+    When: run is called.
+    Then: Only the registered handler runs.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    registered = mocker.Mock(return_value="registered")
+    mapped = mocker.Mock(return_value="mapped")
+    type(integration).register("test-command")(registered)
+    mock_return_results = mocker.patch("COOCApiModule.return_results")
+
+    integration.run({"test-command": mapped})
+
+    registered.assert_called_once()
+    mapped.assert_not_called()
+    mock_return_results.assert_called_once_with("registered")
+
+
+def test_cloud_integration_run_calls_handle_proxy_when_enabled(mocker):
+    """
+    Given: An integration class with uses_proxy_env set to True.
+    When: run is called.
+    Then: handle_proxy is called.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mocker.patch.object(type(integration), "uses_proxy_env", True)
+    mock_handle_proxy = mocker.patch("COOCApiModule.handle_proxy")
+    mocker.patch("COOCApiModule.return_results")
+
+    integration.run({"test-command": lambda client, args: "result"})
+
+    mock_handle_proxy.assert_called_once_with()
+
+
+def test_cloud_integration_run_skips_handle_proxy_by_default(mocker):
+    """
+    Given: An integration class with the default uses_proxy_env (False).
+    When: run is called.
+    Then: handle_proxy is not called.
+    """
+    integration = _make_integration(mocker, connector_id=None)
+    mock_handle_proxy = mocker.patch("COOCApiModule.handle_proxy")
+    mocker.patch("COOCApiModule.return_results")
+
+    integration.run({"test-command": lambda client, args: "result"})
+
+    mock_handle_proxy.assert_not_called()
+
+
+def test_cloud_integration_execute_command_uses_execute_mapped_command(mocker):
+    """
+    Given: A subclass that overrides execute_mapped_command with a different handler signature.
+    When: execute_command is called for a mapped (not registered) command.
+    Then: The override calls the handler, so each CSP controls how its existing handlers are called.
+    """
+    integration = _make_integration(mocker, args={"key": "value"})
+    handler = mocker.Mock(return_value="result")
+    mocker.patch.object(integration, "execute_mapped_command", side_effect=lambda h: h(integration.args))
+
+    assert integration.execute_command({"test-command": handler}) == "result"
+    handler.assert_called_once_with({"key": "value"})
+
+
+def test_cloud_integration_execute_mapped_command_default_signature(mocker):
+    """
+    Given: A mapped handler.
+    When: execute_mapped_command is called.
+    Then: The handler is called with (client, args) by default.
+    """
+    integration = _make_integration(mocker, connector_id=None, args={"key": "value"})
+    handler = mocker.Mock(return_value="result")
+
+    assert integration.execute_mapped_command(handler) == "result"
+    handler.assert_called_once_with({"creds": {}}, {"key": "value"})
+
+
+def test_cloud_integration_handle_error_default(mocker):
+    """
+    Given: A subclass that does not override handle_error.
+    When: handle_error is called.
+    Then: return_error is called with the command name and the error, and no traceback is logged
+          (run logs it before calling handle_error).
+    """
+    from COOCApiModule import CloudIntegration
+
+    class MinimalIntegration(CloudIntegration):
+        cloud_type = CloudTypes.AWS.value
+
+        def get_client(self):
+            return None
+
+        def health_check(self, credentials, account_id, connector_id):
+            return None
+
+        def test_module(self):
+            return "ok"
+
+    mocker.patch("COOCApiModule.get_connector_id", return_value=None)
+    mock_error = mocker.patch.object(demisto, "error")
+    mock_return_error = mocker.patch("COOCApiModule.return_error")
+    integration = MinimalIntegration("my-command", {}, {})
+
+    integration.handle_error(ValueError("boom"))
+
+    mock_error.assert_not_called()
+    mock_return_error.assert_called_once_with("Failed to execute my-command command.\nError:\nboom")

@@ -1,15 +1,10 @@
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from google.oauth2 import service_account as google_service_account
-from google_auth_httplib2 import AuthorizedHttp
 import base64
-import httplib2
 import io
-import urllib.parse
 import urllib3
-from COOCApiModule import *
+from GCPApiModule import *
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from cryptography.hazmat.primitives import hashes, serialization
@@ -17,12 +12,6 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 urllib3.disable_warnings()
 
-# Placeholder resource used by the Cloud Functions connectivity probe. That API exposes
-# testIamPermissions only at function scope, and returns an empty permission set (rather than
-# NOT_FOUND) for a resource that does not exist, so no real function has to be present.
-# A concrete location is used rather than the "-" wildcard, which is only accepted by list methods.
-CLOUD_FUNCTIONS_PROBE_LOCATION = "us-central1"
-CLOUD_FUNCTIONS_PROBE_FUNCTION = "connectivity-probe"
 # The context of a CryptoKey unifies the raw API response with the identifiers the integration adds,
 # so the table mixes the API's camelCase fields with those PascalCase identifiers.
 KMS_KEY_TABLE = [
@@ -114,580 +103,6 @@ KMS_ALL_LOCATIONS = [
     "me-west1",
 ]
 
-
-def build_http_client(use_proxy: bool, verify_ssl: bool) -> httplib2.Http:
-    """Builds an httplib2.Http honoring the given proxy and SSL settings.
-
-    Args:
-        use_proxy (bool): When True, the system proxy (from ``handle_proxy``) is applied.
-        verify_ssl (bool): When False, SSL certificate validation is disabled.
-
-    Returns:
-        httplib2.Http: A configured HTTP client.
-    """
-    proxy_info = None
-    proxies = handle_proxy()
-    if use_proxy:
-        https_proxy = proxies.get("https")
-        if not https_proxy:
-            raise DemistoException("https proxy value is empty. Check the Cortex server configuration.")
-        if not https_proxy.startswith(("http://", "https://")):
-            https_proxy = "https://" + https_proxy
-        parsed_proxy = urllib.parse.urlparse(https_proxy)
-        proxy_info = httplib2.ProxyInfo(
-            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
-            proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port or (443 if https_proxy.startswith("https://") else 80),
-            proxy_user=parsed_proxy.username,
-            proxy_pass=parsed_proxy.password,
-        )
-
-    ca_bundle = os.getenv("REQUESTS_CA_BUNDLE") or os.getenv("SSL_CERT_FILE")
-    if verify_ssl and not ca_bundle:
-        # No environment-provided bundle: httplib2 falls back to its own bundled CA certs.
-        demisto.debug("[GCP] No system CA bundle env var set; httplib2 will use its bundled CA certs.")
-
-    return httplib2.Http(
-        proxy_info=proxy_info,
-        disable_ssl_certificate_validation=not verify_ssl,
-        ca_certs=ca_bundle,
-    )
-
-
-class GCPServices(Enum):
-    """
-    Enumeration of Google Cloud Platform services with API details.
-
-    Each service contains:
-    - API name: The service name used in Google API client
-    - Version: The API version to use
-    - API endpoint: The full endpoint URL for service enablement checks
-
-    Example:
-        compute_service = GCPServices.COMPUTE
-        client = compute_service.build(credentials)
-        api_endpoint = compute_service.api_endpoint
-    """
-
-    COMPUTE = ("compute", "v1", "compute.googleapis.com")
-    STORAGE = ("storage", "v1", "storage.googleapis.com")
-    CONTAINER = ("container", "v1", "container.googleapis.com")
-    RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
-    BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
-    CLOUD_FUNCTIONS = ("cloudfunctions", "v2", "cloudfunctions.googleapis.com")
-    # The synchronous invocation method (functions().call) is only exposed by the v1 Cloud Functions
-    # API, so a dedicated v1 service is used for the execute command.
-    CLOUD_FUNCTIONS_V1 = ("cloudfunctions", "v1", "cloudfunctions.googleapis.com")
-    KMS = ("cloudkms", "v1", "cloudkms.googleapis.com")
-    LOGGING = ("logging", "v2", "logging.googleapis.com")
-
-    # The following services are currently unsupported:
-    # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
-    # IAM_V2 = ("iam", "v2", "iam.googleapis.com")
-    # CLOUD_IDENTITY = ("cloudidentity", "v1", "cloudidentity.googleapis.com")
-
-    def __init__(self, api_name: str, version: str, api_endpoint: str):
-        """
-        Initialize GCP service configuration.
-
-        Args:
-            api_name (str): The Google API service name (e.g., 'compute').
-            version (str): The API version (e.g., 'v1').
-            api_endpoint (str): The full API endpoint for enablement checks (e.g., 'compute.googleapis.com').
-        """
-        self._api_name = api_name
-        self._version = version
-        self._api_endpoint = api_endpoint
-
-    @property
-    def api_name(self) -> str:
-        """Get the Google API service name."""
-        return self._api_name
-
-    @property
-    def version(self) -> str:
-        """Get the API version."""
-        return self._version
-
-    @property
-    def api_endpoint(self) -> str:
-        """Get the full API endpoint for service enablement checks."""
-        return self._api_endpoint
-
-    def build(self, credentials, **kwargs):
-        """
-        Build a Google API client for this service.
-
-        On the marketplace path (Cortex XSOAR / Cortex XSIAM < 3.0) the credentials are
-        always wrapped in an ``AuthorizedHttp`` over a custom ``httplib2.Http`` transport
-        so the user's *Use system proxy settings* and *Trust any certificate (not secure)*
-        options are actually enforced (e.g. SSL verification fails when no CA is configured
-        and the box is left unchecked). On the Cortex Platform path connectivity is handled
-        by the platform, so the Google client's standard transport is used.
-
-        Args:
-            credentials: Google Cloud credentials object.
-            **kwargs: Additional arguments passed to the Google API client builder.
-
-        Returns:
-            Google API client instance for this service.
-        """
-        # Marketplace path (no connector ID): manage our own transport so the proxy/SSL
-        # params are honored. Platform path: use the Google client's standard transport.
-        if not get_connector_id() and "http" not in kwargs:
-            params = demisto.params()
-            use_proxy = params.get("proxy", False)
-            verify_ssl = not argToBoolean(params.get("insecure", False))
-            http = build_http_client(use_proxy=use_proxy, verify_ssl=verify_ssl)
-            kwargs["http"] = AuthorizedHttp(credentials, http=http)
-            return build(self.api_name, self.version, **kwargs)
-        return build(self.api_name, self.version, credentials=credentials, **kwargs)
-
-    def test_connectivity(self, credentials, project_id: str) -> None:
-        """Issues a lightweight, project-scoped API call to verify connectivity to this service.
-
-        Resource Manager and Cloud Functions use ``testIamPermissions``, which succeeds for any
-        authenticated caller regardless of the roles granted (it returns the subset of granted
-        permissions), making it a permission-agnostic probe. The remaining services do not expose
-        ``testIamPermissions`` at all, so a minimal ``list`` call is used instead. Each service
-        exposes the call on a different resource, so the correct shape is selected per service.
-
-        The call is allowed to raise so callers can inspect the error (e.g. distinguish a
-        disabled-API 403 from a real failure). Use ``test_all_services`` for a non-raising,
-        tuple-based summary.
-
-        Args:
-            credentials: Google Cloud credentials object.
-            project_id: The GCP project ID to test against.
-
-        Raises:
-            HttpError: If the API call fails (e.g. the service's API is disabled).
-            NotImplementedError: If the service does not have a connectivity probe defined here.
-        """
-        client = self.build(credentials)
-        if self == GCPServices.RESOURCE_MANAGER:
-            client.projects().testIamPermissions(  # pylint: disable=E1101
-                resource=f"projects/{project_id}", body={"permissions": ["resourcemanager.projects.get"]}
-            ).execute()
-        elif self == GCPServices.COMPUTE:
-            # Compute has no project-level testIamPermissions; a minimal firewalls list verifies connectivity.
-            client.firewalls().list(project=project_id, maxResults=1).execute()  # pylint: disable=E1101
-        elif self == GCPServices.STORAGE:
-            # Storage has no project-level testIamPermissions; a minimal bucket list verifies connectivity.
-            client.buckets().list(project=project_id, maxResults=1).execute()  # pylint: disable=E1101
-        elif self == GCPServices.CONTAINER:
-            # Container has no testIamPermissions; a lightweight cluster list verifies connectivity.
-            client.projects().locations().clusters().list(  # pylint: disable=E1101
-                parent=f"projects/{project_id}/locations/-"
-            ).execute()
-        elif self == GCPServices.BIGQUERY:
-            # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
-            client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
-        elif self == GCPServices.CLOUD_FUNCTIONS or self == GCPServices.CLOUD_FUNCTIONS_V1:
-            # Cloud Functions exposes testIamPermissions only at function scope (the API requires a
-            # resource matching projects/*/locations/*/functions/*), so a placeholder function is used.
-            # Per the API contract a non-existent resource returns an empty permission set rather than
-            # NOT_FOUND, which keeps this probe permission-agnostic like the Resource Manager one.
-            client.projects().locations().functions().testIamPermissions(  # pylint: disable=E1101
-                resource=(
-                    f"projects/{project_id}/locations/{CLOUD_FUNCTIONS_PROBE_LOCATION}"
-                    f"/functions/{CLOUD_FUNCTIONS_PROBE_FUNCTION}"
-                ),
-                body={"permissions": ["cloudfunctions.functions.get"]},
-            ).execute()
-        elif self == GCPServices.KMS:
-            # KMS has no project-level testIamPermissions; a lightweight locations list verifies connectivity.
-            client.projects().locations().list(  # pylint: disable=E1101
-                name=f"projects/{project_id}", pageSize=1
-            ).execute()
-        elif self == GCPServices.LOGGING:
-            # Logging has no project-level testIamPermissions; a minimal log-entries list verifies connectivity.
-            client.entries().list(  # pylint: disable=E1101
-                body={"resourceNames": [f"projects/{project_id}"], "pageSize": 1}
-            ).execute()
-        else:
-            raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
-
-    @classmethod
-    def test_all_services(cls, credentials, project_id: str) -> list[tuple[str, bool, str]]:
-        """
-        Test connectivity for all GCP services with real API calls.
-
-        Wraps the raising ``test_connectivity`` per service into a non-raising summary so the
-        health check can report per-service results.
-
-        Args:
-            credentials: Google Cloud credentials object.
-            project_id: The GCP project ID to test against.
-
-        Returns:
-            list[tuple[str, bool, str]]: List of (service_name, success, error_message) for each service.
-        """
-        results = []
-        for service in cls:
-            try:
-                service.test_connectivity(credentials, project_id)
-                results.append((service.api_name, True, ""))
-            except Exception as e:
-                results.append((service.api_name, False, str(e)))
-        return results
-
-
-# Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
-COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
-    "gcp-compute-firewall-patch": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.update",
-            "compute.firewalls.get",
-            "compute.firewalls.list",
-            "compute.networks.updatePolicy",
-            "compute.networks.list",
-        ],
-    ),
-    "gcp-compute-firewall-insert": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.create",
-        ],
-    ),
-    "gcp-compute-firewall-list": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.list",
-        ],
-    ),
-    "gcp-compute-firewalls-list": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.list",
-        ],
-    ),
-    "gcp-compute-firewall-get": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.get",
-        ],
-    ),
-    "gcp-compute-firewall-delete": (
-        GCPServices.COMPUTE,
-        [
-            "compute.firewalls.delete",
-        ],
-    ),
-    "gcp-compute-address-get": (GCPServices.COMPUTE, ["compute.addresses.get"]),
-    "gcp-compute-address-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
-    "gcp-compute-address-aggregated-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
-    "gcp-compute-address-insert": (GCPServices.COMPUTE, ["compute.addresses.create"]),
-    "gcp-compute-address-delete": (GCPServices.COMPUTE, ["compute.addresses.delete"]),
-    "gcp-compute-global-address-get": (GCPServices.COMPUTE, ["compute.globalAddresses.get"]),
-    "gcp-compute-global-address-list": (GCPServices.COMPUTE, ["compute.globalAddresses.list"]),
-    "gcp-compute-global-address-insert": (GCPServices.COMPUTE, ["compute.globalAddresses.create"]),
-    "gcp-compute-global-address-delete": (GCPServices.COMPUTE, ["compute.globalAddresses.delete"]),
-    "gcp-compute-snapshots-list": (
-        GCPServices.COMPUTE,
-        [
-            "compute.snapshots.list",
-        ],
-    ),
-    "gcp-compute-snapshot-get": (
-        GCPServices.COMPUTE,
-        [
-            "compute.snapshots.get",
-        ],
-    ),
-    "gcp-compute-snapshot-delete": (
-        GCPServices.COMPUTE,
-        [
-            "compute.snapshots.delete",
-        ],
-    ),
-    "gcp-compute-snapshot-labels-set": (
-        GCPServices.COMPUTE,
-        [
-            "compute.snapshots.setLabels",
-            "compute.snapshots.get",
-        ],
-    ),
-    "gcp-compute-instances-aggregated-list-by-ip": (
-        GCPServices.COMPUTE,
-        [
-            "cloudasset.assets.searchAllResources",
-        ],
-    ),
-    "gcp-compute-network-tag-set": (
-        GCPServices.COMPUTE,
-        [
-            "compute.instances.setTags",
-        ],
-    ),
-    "gcp-compute-subnet-update": (
-        GCPServices.COMPUTE,
-        [
-            "compute.subnetworks.setPrivateIpGoogleAccess",
-            "compute.subnetworks.update",
-            "compute.subnetworks.get",
-            "compute.subnetworks.list",
-        ],
-    ),
-    "gcp-compute-instance-service-account-set": (
-        GCPServices.COMPUTE,
-        ["compute.instances.setServiceAccount", "compute.instances.get"],
-    ),
-    "gcp-compute-instance-service-account-remove": (
-        GCPServices.COMPUTE,
-        ["compute.instances.setServiceAccount", "compute.instances.get"],
-    ),
-    "gcp-compute-disks-list": (GCPServices.COMPUTE, ["compute.disks.list"]),
-    "gcp-compute-disks-aggregated-list": (GCPServices.COMPUTE, ["compute.disks.list"]),
-    "gcp-compute-disk-get": (GCPServices.COMPUTE, ["compute.disks.get"]),
-    "gcp-compute-disk-insert": (GCPServices.COMPUTE, ["compute.disks.create"]),
-    "gcp-compute-disk-delete": (GCPServices.COMPUTE, ["compute.disks.delete"]),
-    "gcp-compute-disk-resize": (GCPServices.COMPUTE, ["compute.disks.resize"]),
-    "gcp-compute-disk-labels-set": (GCPServices.COMPUTE, ["compute.disks.setLabels"]),
-    "gcp-compute-disk-snapshot-create": (GCPServices.COMPUTE, ["compute.disks.createSnapshot", "compute.snapshots.create"]),
-    "gcp-compute-disk-types-list": (GCPServices.COMPUTE, ["compute.diskTypes.list"]),
-    "gcp-compute-disk-types-aggregated-list": (GCPServices.COMPUTE, ["compute.diskTypes.list"]),
-    "gcp-compute-disk-type-get": (GCPServices.COMPUTE, ["compute.diskTypes.get"]),
-    "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
-    "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
-    "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
-    "gcp-compute-instance-delete": (GCPServices.COMPUTE, ["compute.instances.delete"]),
-    "gcp-compute-instance-reset": (GCPServices.COMPUTE, ["compute.instances.reset"]),
-    "gcp-compute-instance-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
-    "gcp-compute-instance-machine-type-set": (GCPServices.COMPUTE, ["compute.instances.setMachineType"]),
-    "gcp-compute-instances-aggregated-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
-    "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
-    "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
-    "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
-    "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
-    "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
-    "gcp-storage-bucket-list": (
-        GCPServices.STORAGE,
-        ["storage.buckets.list"],
-    ),
-    "gcp-storage-buckets-list": (
-        GCPServices.STORAGE,
-        ["storage.buckets.list"],
-    ),
-    "gcp-storage-bucket-get": (
-        GCPServices.STORAGE,
-        ["storage.buckets.get"],
-    ),
-    "gcp-storage-bucket-objects-list": (
-        GCPServices.STORAGE,
-        ["storage.objects.list"],
-    ),
-    "gcp-storage-bucket-policy-list": (
-        GCPServices.STORAGE,
-        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
-    ),
-    "gcp-storage-bucket-policies-list": (
-        GCPServices.STORAGE,
-        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
-    ),
-    "gcp-storage-bucket-policy-set": (
-        GCPServices.STORAGE,
-        ["storage.buckets.setIamPolicy"],
-    ),
-    "gcp-storage-bucket-object-policy-list": (
-        GCPServices.STORAGE,
-        ["storage.objects.getIamPolicy"],
-    ),
-    "gcp-storage-bucket-object-policies-list": (
-        GCPServices.STORAGE,
-        ["storage.objects.getIamPolicy"],
-    ),
-    "gcp-storage-bucket-object-policy-set": (
-        GCPServices.STORAGE,
-        ["storage.objects.setIamPolicy"],
-    ),
-    "gcp-storage-bucket-create": (
-        GCPServices.STORAGE,
-        ["storage.buckets.create"],
-    ),
-    "gcp-storage-bucket-delete": (
-        GCPServices.STORAGE,
-        ["storage.buckets.delete", "storage.objects.list", "storage.objects.delete"],
-    ),
-    "gcp-storage-bucket-public-access-block": (
-        GCPServices.STORAGE,
-        ["storage.buckets.update", "storage.buckets.setIamPolicy"],
-    ),
-    "gcp-storage-bucket-object-upload": (
-        GCPServices.STORAGE,
-        ["storage.objects.create"],
-    ),
-    "gcp-storage-bucket-object-download": (
-        GCPServices.STORAGE,
-        ["storage.objects.get"],
-    ),
-    "gcp-storage-bucket-object-copy": (
-        GCPServices.STORAGE,
-        ["storage.objects.get", "storage.objects.create"],
-    ),
-    "gcp-storage-bucket-object-delete": (
-        GCPServices.STORAGE,
-        ["storage.objects.delete"],
-    ),
-    "gcp-storage-bucket-object-policy-delete": (
-        GCPServices.STORAGE,
-        ["storage.objects.get", "storage.objects.update"],
-    ),
-    "gcp-compute-zone-operation-wait": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
-    "gcp-compute-region-operation-wait": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
-    "gcp-compute-global-operation-wait": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
-    "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
-    "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
-    "gcp-compute-image-get-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
-    "gcp-compute-images-list": (GCPServices.COMPUTE, ["compute.images.list"]),
-    "gcp-compute-image-delete": (GCPServices.COMPUTE, ["compute.images.delete"]),
-    "gcp-compute-image-labels-set": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
-    "gcp-compute-image-insert": (GCPServices.COMPUTE, ["compute.images.create"]),
-    "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
-    "gcp-compute-instance-groups-list": (GCPServices.COMPUTE, ["compute.instanceGroups.list"]),
-    "gcp-compute-instance-groups-aggregated-list": (GCPServices.COMPUTE, ["compute.instanceGroups.list"]),
-    "gcp-compute-instance-group-instances-list": (GCPServices.COMPUTE, ["compute.instanceGroups.list"]),
-    "gcp-compute-instance-group-insert": (GCPServices.COMPUTE, ["compute.instanceGroups.create"]),
-    "gcp-compute-instance-group-delete": (GCPServices.COMPUTE, ["compute.instanceGroups.delete"]),
-    "gcp-compute-instance-group-instances-add": (GCPServices.COMPUTE, ["compute.instanceGroups.update"]),
-    "gcp-compute-instance-group-instances-remove": (GCPServices.COMPUTE, ["compute.instanceGroups.update"]),
-    "gcp-compute-instance-group-named-ports-set": (GCPServices.COMPUTE, ["compute.instanceGroups.update"]),
-    "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
-    "gcp-compute-regions-list": (GCPServices.COMPUTE, ["compute.regions.list"]),
-    "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
-    "gcp-compute-zones-list": (GCPServices.COMPUTE, ["compute.zones.list"]),
-    "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
-    "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
-    "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
-    "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
-    "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
-    "gcp-compute-machine-type-get": (GCPServices.COMPUTE, ["compute.machineTypes.get"]),
-    "gcp-compute-machine-types-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
-    "gcp-compute-machine-types-aggregated-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
-    "gcp-compute-global-operation-get": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
-    "gcp-compute-zone-operation-get": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
-    "gcp-compute-region-operation-get": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
-    "gcp-compute-global-operation-list": (GCPServices.COMPUTE, ["compute.globalOperations.list"]),
-    "gcp-compute-zone-operation-list": (GCPServices.COMPUTE, ["compute.zoneOperations.list"]),
-    "gcp-compute-region-operation-list": (GCPServices.COMPUTE, ["compute.regionOperations.list"]),
-    "gcp-compute-global-operation-delete": (GCPServices.COMPUTE, ["compute.globalOperations.delete"]),
-    "gcp-compute-zone-operation-delete": (GCPServices.COMPUTE, ["compute.zoneOperations.delete"]),
-    "gcp-compute-region-operation-delete": (GCPServices.COMPUTE, ["compute.regionOperations.delete"]),
-    "gcp-container-cluster-security-update": (
-        GCPServices.CONTAINER,
-        [
-            "container.clusters.update",
-            "container.clusters.get",
-            "container.clusters.list",
-        ],
-    ),
-    "gcp-gke-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
-    "gcp-gke-clusters-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
-    "gcp-gke-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-gke-node-pools-list": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-gke-node-pool-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-gke-node-pool-management-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
-    "gcp-gke-operations-list": (GCPServices.CONTAINER, ["container.operations.list"]),
-    "gcp-gke-operation-get": (GCPServices.CONTAINER, ["container.operations.get"]),
-    "gcp-gke-operation-cancel": (GCPServices.CONTAINER, ["container.operations.update"]),
-    "gcp-gke-cluster-security-update": (
-        GCPServices.CONTAINER,
-        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
-    ),
-    "gcp-bq-dataset-policy-remove": (
-        GCPServices.BIGQUERY,
-        ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
-    ),
-    "gcp-iam-project-policy-binding-remove": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
-    ),
-    "gcp-resource-manager-project-create": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.create"],
-    ),
-    "gcp-resource-manager-project-get": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.get"],
-    ),
-    "gcp-resource-manager-project-search": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.get"],
-    ),
-    "gcp-resource-manager-project-update": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.update"],
-    ),
-    "gcp-resource-manager-project-delete": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.delete"],
-    ),
-    "gcp-resource-manager-project-undelete": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.projects.undelete"],
-    ),
-    "gcp-resource-manager-organization-search": (
-        GCPServices.RESOURCE_MANAGER,
-        ["resourcemanager.organizations.get"],
-    ),
-    "gcp-resource-manager-organization-get": (GCPServices.RESOURCE_MANAGER, ["resourcemanager.organizations.get"]),
-    # Cloud Run functions commands
-    "gcp-cloudrun-functions-list": (
-        GCPServices.CLOUD_FUNCTIONS,
-        ["cloudfunctions.functions.list"],
-    ),
-    "gcp-cloudrun-locations-list": (
-        GCPServices.CLOUD_FUNCTIONS,
-        ["cloudfunctions.locations.list"],
-    ),
-    "gcp-cloudrun-function-get": (
-        GCPServices.CLOUD_FUNCTIONS,
-        ["cloudfunctions.functions.get"],
-    ),
-    "gcp-cloudfunctions-function-execute": (
-        GCPServices.CLOUD_FUNCTIONS_V1,
-        ["cloudfunctions.functions.call"],
-    ),
-    # KMS commands
-    "gcp-kms-key-rings-list": (GCPServices.KMS, ["cloudkms.keyRings.list"]),
-    "gcp-kms-keys-list": (GCPServices.KMS, ["cloudkms.cryptoKeys.list"]),
-    "gcp-kms-keys-list-all": (GCPServices.KMS, ["cloudkms.keyRings.list", "cloudkms.cryptoKeys.list"]),
-    "gcp-kms-key-get": (GCPServices.KMS, ["cloudkms.cryptoKeys.get"]),
-    "gcp-kms-key-create": (GCPServices.KMS, ["cloudkms.cryptoKeys.create"]),
-    "gcp-kms-key-update": (GCPServices.KMS, ["cloudkms.cryptoKeys.update"]),
-    "gcp-kms-key-version-enable": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.update", "cloudkms.cryptoKeys.get"]),
-    "gcp-kms-key-version-disable": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.update", "cloudkms.cryptoKeys.get"]),
-    "gcp-kms-key-version-destroy": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.destroy", "cloudkms.cryptoKeys.get"]),
-    "gcp-kms-key-version-restore": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.restore", "cloudkms.cryptoKeys.get"]),
-    "gcp-kms-public-key-get": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.viewPublicKey"]),
-    "gcp-kms-symmetric-encrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToEncrypt"]),
-    "gcp-kms-symmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
-    "gcp-kms-asymmetric-encrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.viewPublicKey"]),
-    "gcp-kms-asymmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
-    "gcp-logging-log-entries-list": (
-        GCPServices.LOGGING,
-        ["logging.logEntries.list"],
-    ),
-    # The following commands are currently unsupported:
-    # "gcp-compute-instance-metadata-add": (
-    #     GCPServices.COMPUTE,
-    #     ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list", "iam.serviceAccounts.actAs"],
-    # ),
-    # "gcp-iam-project-deny-policy-create": (
-    #     GCPServices.IAM_V2,
-    #     ["iam.denypolicies.create"]
-    # ),
-    # "gcp-iam-service-account-delete": (
-    #     GCPServices.IAM_V1,
-    #     ["iam.serviceAccounts.delete"]
-    # ),
-    # "gcp-iam-group-membership-delete": (
-    #     GCPServices.CLOUD_IDENTITY,
-    #     ["cloudidentity.groups.memberships.delete"]
-    # ),
-}
-
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 DISK_TABLE = ["id", "name", "sizeGb", "zone", "status", "type"]
 DISK_TYPE_TABLE = ["id", "name", "validDiskSize", "defaultDiskSizeGb", "zone"]
@@ -700,12 +115,6 @@ OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone
 OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
-# Polling commands are decorated with @polling_function and therefore take (args, creds) instead of (creds, args).
-POLLING_COMMANDS = {
-    "gcp-compute-zone-operation-wait",
-    "gcp-compute-region-operation-wait",
-    "gcp-compute-global-operation-wait",
-}
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -846,39 +255,6 @@ def parse_labels(labels_str: str) -> dict:
     return labels
 
 
-def handle_permission_error(e: HttpError, project_id: str, command_name: str):
-    """
-    Given an error, extract the relevant information (account_id & message & permission name) to report to the backend.
-    Args:
-        e (HttpError): The error object.
-        project_id (str): The project identifier.
-        command_name (str): The name of the command that was executed.
-
-    Returns:
-        Returns the labels dictionary with the extracted key & value pairs.
-    """
-    status_code = e.resp.status
-    if int(status_code) in [403, 401] and e.resp.get("content-type", "").startswith("application/json"):
-        message_content = json.loads(e.content)
-        error_message = message_content.get("error", {}).get("message", "")
-
-        # get the relevant permissions for the relevant command
-        command_permissions: list[str]
-        command_permissions = COMMAND_REQUIREMENTS[command_name][1]
-
-        # find out which permissions are relevant for the current execution failure from the list of command permissions.
-        found_permissions = [perm for perm in command_permissions if perm.lower() in error_message.lower()] or ["N/A"]
-
-        demisto.debug(f"The info {error_message=} {found_permissions=} {message_content=}")
-
-        # create an error entry for each missing permission.
-        error_entries = [{"account_id": project_id, "message": error_message, "name": perm} for perm in found_permissions]
-
-        return_multiple_permissions_error(error_entries)
-    else:  # Return the original error if it's not a 403, 401 or doesn't have a JSON body
-        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
-
-
 def _format_gcp_datetime(ts: str | None) -> str | None:
     if not ts:
         return None
@@ -961,22 +337,6 @@ def _is_ubla_error(e: HttpError) -> bool:
     except Exception:
         content_lower = ""
     return e.resp.status == 400 and "uniform bucket-level access" in content_lower
-
-
-def _is_service_disabled_error(e: HttpError) -> bool:
-    """Detects a 403 SERVICE_DISABLED error from Google API.
-
-    This is raised when the service's API has not been enabled on the project, so the
-    connectivity probe should move on to another service rather than fail the test.
-    """
-    try:
-        if isinstance(e.content, bytes | bytearray):
-            content_lower = e.content.decode("utf-8", errors="ignore").lower()
-        else:
-            content_lower = str(e.content).lower()
-    except Exception:
-        content_lower = ""
-    return e.resp.status == 403 and ("service_disabled" in content_lower or "has not been used in project" in content_lower)
 
 
 def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> None:
@@ -6287,221 +5647,6 @@ def validate_limit(limit):
         )
 
 
-def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
-    """Tests connectivity to GCP.
-    This function is specifically used for COOC health checks
-    to verify connectivity.
-
-    Args:
-        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
-        project_id (str): The GCP project ID to check against.
-        connector_id (str): The connector ID for the Cloud integration.
-
-    Returns:
-        A list of HealthCheckError or None: A list of HealthCheckError if there's at least one issue,
-        None if successful.
-    """
-    try:
-        token = shared_creds.get("access_token")
-        if not token:
-            raise DemistoException("Failed to authenticate with GCP - token is missing from credentials")
-        creds = Credentials(token=token)
-    except Exception as e:
-        return HealthCheckError(
-            account_id=project_id,
-            connector_id=connector_id,
-            message=str(e),
-            error_type=ErrorType.CONNECTIVITY_ERROR,
-        )
-    # Perform sample check on GCP services
-    service_results = GCPServices.test_all_services(creds, project_id)
-    errors_list = []
-    for _, success, error_message in service_results:
-        if not success and "Permission" not in error_message:
-            errors_list.append(
-                HealthCheckError(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message=f"Sample check failed for account {project_id}. Error: {error_message}",
-                    error_type=ErrorType.CONNECTIVITY_ERROR,
-                )
-            )
-    if errors_list:
-        return errors_list
-    return None
-
-
-def _resolve_project_id_for_test(params: dict[str, Any]) -> str:
-    """Resolves the project ID for the connectivity test.
-
-    Uses the 'GCP Project ID' parameter when set; otherwise falls back to the
-    'project_id' field of the Service Account private key JSON (mirroring the
-    resolution done in ``get_credentials``).
-
-    Args:
-        params (dict[str, Any]): Integration configuration parameters.
-
-    Returns:
-        str: The resolved project ID.
-
-    Raises:
-        DemistoException: If a project ID cannot be resolved from either source.
-    """
-    project_id = (params.get("project_id") or "").strip()
-    if project_id:
-        return project_id
-
-    password = ((params.get("credentials") or {}).get("password") or "").strip()
-    if password:
-        try:
-            service_account_info = json.loads(password)
-        except json.JSONDecodeError:
-            service_account_info = {}
-        project_id = (service_account_info.get("project_id") or "").strip()
-
-    if not project_id:
-        raise DemistoException(
-            "Missing required parameter 'project_id'. Set the 'GCP Project ID' field in the integration "
-            "configuration, or include 'project_id' in the Service Account private key JSON."
-        )
-    return project_id
-
-
-def test_module(creds: Credentials, params: dict[str, Any]) -> str:
-    """Tests connectivity to GCP by issuing a lightweight, project-scoped probe per service.
-
-    The Resource Manager API is tried first (using its permission-free ``testIamPermissions``
-    endpoint). If its API is not enabled on the project (403 SERVICE_DISABLED), the probe falls
-    back to the other GCP services in turn, so a single disabled API does not fail the whole
-    connectivity test. The test passes as soon as any service responds successfully.
-
-    Args:
-        creds (Credentials): GCP credentials to test.
-        params (dict[str, Any]): Integration parameters. The project ID is read from
-            'project_id' or, if empty, from the Service Account private key JSON.
-
-    Returns:
-        str: "ok" if the test is successful.
-
-    Raises:
-        DemistoException: If credentials are invalid, the API call fails, or every probed
-            service has its API disabled.
-    """
-    project_id = _resolve_project_id_for_test(params)
-
-    services_to_try = [
-        GCPServices.RESOURCE_MANAGER,
-        GCPServices.COMPUTE,
-        GCPServices.STORAGE,
-        GCPServices.CONTAINER,
-        GCPServices.BIGQUERY,
-        GCPServices.CLOUD_FUNCTIONS,
-        GCPServices.KMS,
-        GCPServices.LOGGING,
-    ]
-
-    for service in services_to_try:
-        try:
-            service.test_connectivity(creds, project_id)
-            demisto.debug(f"[GCP test_module] Successfully authenticated against project {project_id} via {service.api_name}")
-            return "ok"
-        except Exception as e:
-            # A disabled-API 403 is not a real failure - skip this service and try the next one.
-            if isinstance(e, HttpError) and _is_service_disabled_error(e):
-                demisto.debug(
-                    f"[GCP test_module] {service.api_name} API is disabled on project {project_id}; trying next service."
-                )
-                continue
-            demisto.debug(f"[GCP test_module] Test failed on {service.api_name}: {str(e)}")
-            raise DemistoException(f"Failed to connect to GCP project '{project_id}': {str(e)}")
-
-    # Every probed service had its API disabled - none could be reached.
-    raise DemistoException(
-        f"Failed to connect to GCP project '{project_id}': all probed GCP service APIs are disabled. "
-        "Enable at least one of the required GCP APIs on the project and try again."
-    )
-
-
-def get_credentials(args: dict, params: dict) -> Credentials:
-    """Returns GCP credentials based on the deployment type.
-
-    - Marketplace (Cortex XSOAR/Cortex XSIAM): builds credentials from the service account JSON key
-      in ``credentials.password``. If ``project_id`` is not already in ``args``, it is resolved using
-      the priority: ``args`` > ``params`` > the ``project_id`` field of the service account JSON.
-    - Cortex Platform: fetches a short-lived token from CTS via ``get_cloud_credentials``.
-
-    Args:
-        args (dict): Command arguments (may contain ``project_id``).
-        params (dict): Integration configuration parameters.
-
-    Returns:
-        Credentials: Authenticated GCP credentials object.
-
-    Raises:
-        DemistoException: If credentials cannot be retrieved or are invalid.
-    """
-    creds_param = params.get("credentials") or {}
-    password = (creds_param.get("password") or "").strip()
-
-    if password:
-        # --- Cortex XSOAR/Cortex XSIAM path: service account JSON key ---
-        try:
-            service_account_info = json.loads(password)
-        except json.JSONDecodeError:
-            raise DemistoException(
-                "Invalid Service Account JSON format in the 'credentials' parameter. "
-                "Please paste the raw contents of the downloaded JSON key file."
-            )
-        try:
-            creds = google_service_account.Credentials.from_service_account_info(
-                service_account_info,
-                scopes=["https://www.googleapis.com/auth/cloud-platform"],
-            )
-        except Exception as e:
-            raise DemistoException(f"Failed to build GCP credentials from service account JSON: {str(e)}")
-
-        # Propagate project_id to args using priority: args > params > service account JSON
-        if not args.get("project_id"):
-            if params.get("project_id"):
-                args["project_id"] = params["project_id"]
-            elif service_account_info.get("project_id"):
-                args["project_id"] = service_account_info["project_id"]
-            else:
-                raise DemistoException(
-                    "Missing required parameter 'project_id'. Provide it as a command argument, set the "
-                    "'GCP Project ID' field in the integration configuration, or include 'project_id' in the "
-                    "Service Account JSON key."
-                )
-
-        demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
-        return creds
-
-    # --- Cortex Platform path: CTS token-based authentication ---
-    # Resource commands provide ``project_id``; global commands provide ``identifier`` (project,
-    # folder, or organization ID). Either is used solely to create the CTS token.
-    # Since there are commands that have both, for example gcp-resource-manager-project-create,
-    # the identifier should be prioritized.
-    identifier = args.get("identifier") or args.get("project_id")
-    if not identifier:
-        raise DemistoException(
-            "Missing required parameter. Provide 'project_id' (resource commands) or 'identifier' "
-            "(a project, folder, or organization ID for global commands) to create the CTS token."
-        )
-
-    try:
-        credential_data = get_cloud_credentials(CloudTypes.GCP.value, identifier)
-    except Exception as e:
-        raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
-
-    token = credential_data.get("access_token")
-    if not token:
-        raise DemistoException("Failed to retrieve GCP access token - token is missing from CTS credentials")
-
-    creds = Credentials(token=token)
-    demisto.debug(f"[GCP get_credentials] {identifier}: Using CTS token-based credentials (Cortex Platform path)")
-    return creds
-
-
 def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Returns the specified network.
@@ -6853,12 +5998,13 @@ def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
-def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+@GCPIntegration.register("gcp-compute-regions-list")
+def gcp_compute_regions_list(client: Resource, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of region resources available to the specified project.
 
     Args:
-        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        client (Resource): Compute Engine API client, built by ``GCPIntegration.get_client``.
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
@@ -6884,8 +6030,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
     remove_nulls_from_dictionary(params)
     demisto.debug(f"[GCP: gcp_compute_regions_list] Request params: {params}")
 
-    compute = GCPServices.COMPUTE.build(creds)
-    response = compute.regions().list(**params).execute()  # pylint: disable=E1101
+    response = client.regions().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
@@ -9070,232 +8215,194 @@ def cloud_function_execute(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
+# Existing handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
+# New commands should register with @GCPIntegration.register instead of being added here.
+COMMANDS_MAPPING: dict[str, Callable] = {
+    # Compute Engine commands
+    "gcp-compute-firewall-patch": compute_firewall_patch,
+    "gcp-compute-firewall-insert": compute_firewall_insert,
+    "gcp-compute-firewall-list": compute_firewall_list,
+    "gcp-compute-firewalls-list": compute_firewall_list,
+    "gcp-compute-firewall-get": compute_firewall_get,
+    "gcp-compute-firewall-delete": compute_firewall_delete,
+    "gcp-compute-address-get": compute_address_get,
+    "gcp-compute-address-list": compute_address_list,
+    "gcp-compute-address-aggregated-list": compute_address_aggregated_list,
+    "gcp-compute-address-insert": compute_address_insert,
+    "gcp-compute-address-delete": compute_address_delete,
+    "gcp-compute-global-address-get": compute_global_address_get,
+    "gcp-compute-global-address-list": compute_global_address_list,
+    "gcp-compute-global-address-insert": compute_global_address_insert,
+    "gcp-compute-global-address-delete": compute_global_address_delete,
+    "gcp-compute-snapshots-list": compute_snapshots_list,
+    "gcp-compute-snapshot-get": compute_snapshot_get,
+    "gcp-compute-snapshot-delete": compute_snapshot_delete,
+    "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
+    "gcp-compute-disks-list": compute_disks_list,
+    "gcp-compute-disks-aggregated-list": compute_disks_aggregated_list,
+    "gcp-compute-disk-get": compute_disk_get,
+    "gcp-compute-disk-insert": compute_disk_insert,
+    "gcp-compute-disk-delete": compute_disk_delete,
+    "gcp-compute-disk-resize": compute_disk_resize,
+    "gcp-compute-disk-labels-set": compute_disk_labels_set,
+    "gcp-compute-disk-snapshot-create": compute_disk_snapshot_create,
+    "gcp-compute-disk-types-list": compute_disk_types_list,
+    "gcp-compute-disk-types-aggregated-list": compute_disk_types_aggregated_list,
+    "gcp-compute-disk-type-get": compute_disk_type_get,
+    "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
+    "gcp-compute-network-tag-set": compute_network_tag_set,
+    "gcp-compute-subnet-update": compute_subnet_update,
+    "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
+    "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
+    "gcp-compute-instance-start": compute_instance_start,
+    "gcp-compute-instance-stop": compute_instance_stop,
+    "gcp-compute-instance-insert": compute_instance_insert,
+    "gcp-compute-instance-delete": compute_instance_delete,
+    "gcp-compute-instance-reset": compute_instance_reset,
+    "gcp-compute-instance-metadata-set": compute_instance_metadata_set,
+    "gcp-compute-instance-machine-type-set": compute_instance_machine_type_set,
+    "gcp-compute-instances-aggregated-list": compute_instances_aggregated_list,
+    "gcp-compute-instances-list": gcp_compute_instances_list_command,
+    "gcp-compute-instance-get": gcp_compute_instance_get_command,
+    "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
+    "gcp-compute-network-get": gcp_compute_network_get_command,
+    "gcp-compute-image-get": gcp_compute_image_get,
+    "gcp-compute-image-get-from-family": gcp_compute_image_get_from_family,
+    "gcp-compute-images-list": gcp_compute_images_list,
+    "gcp-compute-image-delete": gcp_compute_image_delete,
+    "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
+    "gcp-compute-image-insert": gcp_compute_image_insert,
+    "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
+    "gcp-compute-instance-groups-list": gcp_compute_instance_groups_list,
+    "gcp-compute-instance-groups-aggregated-list": gcp_compute_instance_groups_aggregated_list,
+    "gcp-compute-instance-group-instances-list": gcp_compute_instance_group_instances_list,
+    "gcp-compute-instance-group-insert": gcp_compute_instance_group_insert,
+    "gcp-compute-instance-group-delete": gcp_compute_instance_group_delete,
+    "gcp-compute-instance-group-instances-add": gcp_compute_instance_group_instances_add,
+    "gcp-compute-instance-group-instances-remove": gcp_compute_instance_group_instances_remove,
+    "gcp-compute-instance-group-named-ports-set": gcp_compute_instance_group_named_ports_set,
+    "gcp-compute-region-get": gcp_compute_region_get,
+    "gcp-compute-zone-get": gcp_compute_zone_get,
+    "gcp-compute-zones-list": gcp_compute_zones_list,
+    "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
+    "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
+    "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
+    "gcp-compute-networks-list": gcp_compute_networks_list,
+    "gcp-compute-network-insert": gcp_compute_network_insert,
+    "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
+    "gcp-compute-network-delete": gcp_compute_network_delete,
+    "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
+    "gcp-compute-machine-type-get": gcp_compute_machine_type_get,
+    "gcp-compute-machine-types-list": gcp_compute_machine_types_list,
+    "gcp-compute-machine-types-aggregated-list": gcp_compute_machine_types_aggregated_list,
+    "gcp-compute-global-operation-get": compute_global_operation_get,
+    "gcp-compute-zone-operation-get": compute_zone_operation_get,
+    "gcp-compute-region-operation-get": compute_region_operation_get,
+    "gcp-compute-global-operation-list": compute_global_operation_list,
+    "gcp-compute-zone-operation-list": compute_zone_operation_list,
+    "gcp-compute-region-operation-list": compute_region_operation_list,
+    "gcp-compute-global-operation-delete": compute_global_operation_delete,
+    "gcp-compute-zone-operation-delete": compute_zone_operation_delete,
+    "gcp-compute-region-operation-delete": compute_region_operation_delete,
+    # Storage commands
+    "gcp-storage-bucket-list": storage_bucket_list,
+    "gcp-storage-buckets-list": storage_bucket_list,
+    "gcp-storage-bucket-get": storage_bucket_get,
+    "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
+    "gcp-storage-bucket-policy-list": storage_bucket_policy_list,
+    "gcp-storage-bucket-policies-list": storage_bucket_policy_list,
+    "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
+    "gcp-storage-bucket-object-policy-list": storage_bucket_object_policy_list,
+    "gcp-storage-bucket-object-policies-list": storage_bucket_object_policy_list,
+    "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
+    "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
+    "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
+    "gcp-storage-bucket-create": storage_bucket_create,
+    "gcp-storage-bucket-delete": storage_bucket_delete,
+    "gcp-storage-bucket-public-access-block": storage_bucket_public_access_block,
+    "gcp-storage-bucket-object-upload": storage_bucket_object_upload,
+    "gcp-storage-bucket-object-download": storage_bucket_object_download,
+    "gcp-storage-bucket-object-copy": storage_bucket_object_copy,
+    "gcp-storage-bucket-object-delete": storage_bucket_object_delete,
+    "gcp-storage-bucket-object-policy-delete": storage_bucket_object_policy_delete,
+    # Container (GKE) commands
+    "gcp-container-cluster-security-update": container_cluster_security_update,
+    "gcp-gke-cluster-legacy-abac-auth-set": gke_cluster_legacy_abac_auth_set,
+    "gcp-gke-clusters-list": gke_clusters_list,
+    "gcp-gke-cluster-get": gke_cluster_get,
+    "gcp-gke-node-pools-list": gke_node_pools_list,
+    "gcp-gke-node-pool-get": gke_node_pool_get,
+    "gcp-gke-node-pool-management-set": gke_node_pool_management_set,
+    "gcp-gke-operations-list": gke_operations_list,
+    "gcp-gke-operation-get": gke_operation_get,
+    "gcp-gke-operation-cancel": gke_operation_cancel,
+    "gcp-gke-cluster-security-update": container_cluster_security_update,
+    # IAM commands
+    "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+    # Resource Manager commands
+    "gcp-resource-manager-project-create": resource_manager_project_create,
+    "gcp-resource-manager-project-get": resource_manager_project_get,
+    "gcp-resource-manager-project-search": resource_manager_project_search,
+    "gcp-resource-manager-project-update": resource_manager_project_update,
+    "gcp-resource-manager-project-delete": resource_manager_project_delete,
+    "gcp-resource-manager-project-undelete": resource_manager_project_undelete,
+    "gcp-resource-manager-organization-search": resource_manager_organization_search,
+    "gcp-resource-manager-organization-get": resource_manager_organization_get,
+    # BigQuery commands
+    "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
+    # Cloud Run functions commands
+    "gcp-cloudrun-functions-list": cloud_run_function_list,
+    "gcp-cloudrun-locations-list": cloud_run_location_list,
+    "gcp-cloudrun-function-get": cloud_run_function_get,
+    "gcp-cloudfunctions-function-execute": cloud_function_execute,
+    # KMS commands
+    "gcp-kms-key-rings-list": kms_key_rings_list,
+    "gcp-kms-keys-list": kms_keys_list,
+    "gcp-kms-keys-list-all": kms_keys_list_all,
+    "gcp-kms-key-get": kms_key_get,
+    "gcp-kms-key-create": kms_key_create,
+    "gcp-kms-key-update": kms_key_update,
+    "gcp-kms-key-version-enable": kms_key_version_enable,
+    "gcp-kms-key-version-disable": kms_key_version_disable,
+    "gcp-kms-key-version-destroy": kms_key_version_destroy,
+    "gcp-kms-key-version-restore": kms_key_version_restore,
+    "gcp-kms-public-key-get": kms_public_key_get,
+    "gcp-kms-symmetric-encrypt": kms_symmetric_encrypt,
+    "gcp-kms-symmetric-decrypt": kms_symmetric_decrypt,
+    "gcp-kms-asymmetric-encrypt": kms_asymmetric_encrypt,
+    "gcp-kms-asymmetric-decrypt": kms_asymmetric_decrypt,
+    # Logging commands
+    "gcp-logging-log-entries-list": logging_log_entries_list,
+    # Quick Actions - Firewall
+    "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
+    # Quick Actions - Storage Bucket Policy
+    "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": storage_bucket_policy_delete,
+    "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action": storage_bucket_policy_delete,
+    "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": storage_bucket_policy_delete,
+    # Quick Actions - Subnet Update
+    "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
+    "gcp-compute-enable-private-ip-access-on-subnet-quick-action": compute_subnet_update,
+    # Quick Actions - Container Cluster Security
+    "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
+    "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501
+    # Quick Actions - Storage Bucket Metadata
+    "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": storage_bucket_metadata_update,
+    "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": storage_bucket_metadata_update,
+    # The following commands are currently unsupported:
+    # # Compute Engine commands
+    # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
+    # "gcp-iam-project-deny-policy-create": iam_project_deny_policy_create,
+    # "gcp-iam-service-account-delete": iam_service_account_delete,
+    # "gcp-iam-group-membership-delete": iam_group_membership_delete,
+    # # Admin Directory commands
+    # "gcp-admin-user-update": admin_user_update,
+    # "gcp-admin-user-password-reset": admin_user_password_reset,
+    # "gcp-admin-user-signout": admin_user_signout,
+}
+
+
 def main():  # pragma: no cover
-    """
-    Main function to route commands and execute logic.
-
-    Routing logic for ``test-module``:
-
-    - **Cortex Platform**: ``get_connector_id()`` returns a connector ID
-      → delegates to ``run_health_check_for_accounts`` (COOC health check).
-    - **Cortex XSOAR / Cortex XSIAM (marketplace)**: no connector ID
-      → calls ``test_module`` directly with the integration ``params`` so it
-      can read ``project_id`` from the instance configuration.
-
-    All other commands retrieve credentials via ``get_credentials`` and dispatch
-    to the appropriate handler.
-    """
-    command = demisto.command()
-    args = demisto.args()
-    params = demisto.params()
-
-    try:
-        # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
-        command_map: dict[str, Callable[[Any, Any], Any]] = {
-            "test-module": lambda creds, _args: test_module(creds, params),
-            # Compute Engine commands
-            "gcp-compute-firewall-patch": compute_firewall_patch,
-            "gcp-compute-firewall-insert": compute_firewall_insert,
-            "gcp-compute-firewall-list": compute_firewall_list,
-            "gcp-compute-firewalls-list": compute_firewall_list,
-            "gcp-compute-firewall-get": compute_firewall_get,
-            "gcp-compute-firewall-delete": compute_firewall_delete,
-            "gcp-compute-address-get": compute_address_get,
-            "gcp-compute-address-list": compute_address_list,
-            "gcp-compute-address-aggregated-list": compute_address_aggregated_list,
-            "gcp-compute-address-insert": compute_address_insert,
-            "gcp-compute-address-delete": compute_address_delete,
-            "gcp-compute-global-address-get": compute_global_address_get,
-            "gcp-compute-global-address-list": compute_global_address_list,
-            "gcp-compute-global-address-insert": compute_global_address_insert,
-            "gcp-compute-global-address-delete": compute_global_address_delete,
-            "gcp-compute-snapshots-list": compute_snapshots_list,
-            "gcp-compute-snapshot-get": compute_snapshot_get,
-            "gcp-compute-snapshot-delete": compute_snapshot_delete,
-            "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
-            "gcp-compute-disks-list": compute_disks_list,
-            "gcp-compute-disks-aggregated-list": compute_disks_aggregated_list,
-            "gcp-compute-disk-get": compute_disk_get,
-            "gcp-compute-disk-insert": compute_disk_insert,
-            "gcp-compute-disk-delete": compute_disk_delete,
-            "gcp-compute-disk-resize": compute_disk_resize,
-            "gcp-compute-disk-labels-set": compute_disk_labels_set,
-            "gcp-compute-disk-snapshot-create": compute_disk_snapshot_create,
-            "gcp-compute-disk-types-list": compute_disk_types_list,
-            "gcp-compute-disk-types-aggregated-list": compute_disk_types_aggregated_list,
-            "gcp-compute-disk-type-get": compute_disk_type_get,
-            "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
-            "gcp-compute-network-tag-set": compute_network_tag_set,
-            "gcp-compute-subnet-update": compute_subnet_update,
-            "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
-            "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
-            "gcp-compute-instance-start": compute_instance_start,
-            "gcp-compute-instance-stop": compute_instance_stop,
-            "gcp-compute-instance-insert": compute_instance_insert,
-            "gcp-compute-instance-delete": compute_instance_delete,
-            "gcp-compute-instance-reset": compute_instance_reset,
-            "gcp-compute-instance-metadata-set": compute_instance_metadata_set,
-            "gcp-compute-instance-machine-type-set": compute_instance_machine_type_set,
-            "gcp-compute-instances-aggregated-list": compute_instances_aggregated_list,
-            "gcp-compute-instances-list": gcp_compute_instances_list_command,
-            "gcp-compute-instance-get": gcp_compute_instance_get_command,
-            "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
-            "gcp-compute-network-get": gcp_compute_network_get_command,
-            "gcp-compute-image-get": gcp_compute_image_get,
-            "gcp-compute-image-get-from-family": gcp_compute_image_get_from_family,
-            "gcp-compute-images-list": gcp_compute_images_list,
-            "gcp-compute-image-delete": gcp_compute_image_delete,
-            "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
-            "gcp-compute-image-insert": gcp_compute_image_insert,
-            "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
-            "gcp-compute-instance-groups-list": gcp_compute_instance_groups_list,
-            "gcp-compute-instance-groups-aggregated-list": gcp_compute_instance_groups_aggregated_list,
-            "gcp-compute-instance-group-instances-list": gcp_compute_instance_group_instances_list,
-            "gcp-compute-instance-group-insert": gcp_compute_instance_group_insert,
-            "gcp-compute-instance-group-delete": gcp_compute_instance_group_delete,
-            "gcp-compute-instance-group-instances-add": gcp_compute_instance_group_instances_add,
-            "gcp-compute-instance-group-instances-remove": gcp_compute_instance_group_instances_remove,
-            "gcp-compute-instance-group-named-ports-set": gcp_compute_instance_group_named_ports_set,
-            "gcp-compute-region-get": gcp_compute_region_get,
-            "gcp-compute-regions-list": gcp_compute_regions_list,
-            "gcp-compute-zone-get": gcp_compute_zone_get,
-            "gcp-compute-zones-list": gcp_compute_zones_list,
-            "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
-            "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
-            "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
-            "gcp-compute-networks-list": gcp_compute_networks_list,
-            "gcp-compute-network-insert": gcp_compute_network_insert,
-            "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
-            "gcp-compute-network-delete": gcp_compute_network_delete,
-            "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
-            "gcp-compute-machine-type-get": gcp_compute_machine_type_get,
-            "gcp-compute-machine-types-list": gcp_compute_machine_types_list,
-            "gcp-compute-machine-types-aggregated-list": gcp_compute_machine_types_aggregated_list,
-            "gcp-compute-global-operation-get": compute_global_operation_get,
-            "gcp-compute-zone-operation-get": compute_zone_operation_get,
-            "gcp-compute-region-operation-get": compute_region_operation_get,
-            "gcp-compute-global-operation-list": compute_global_operation_list,
-            "gcp-compute-zone-operation-list": compute_zone_operation_list,
-            "gcp-compute-region-operation-list": compute_region_operation_list,
-            "gcp-compute-global-operation-delete": compute_global_operation_delete,
-            "gcp-compute-zone-operation-delete": compute_zone_operation_delete,
-            "gcp-compute-region-operation-delete": compute_region_operation_delete,
-            # Storage commands
-            "gcp-storage-bucket-list": storage_bucket_list,
-            "gcp-storage-buckets-list": storage_bucket_list,
-            "gcp-storage-bucket-get": storage_bucket_get,
-            "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
-            "gcp-storage-bucket-policy-list": storage_bucket_policy_list,
-            "gcp-storage-bucket-policies-list": storage_bucket_policy_list,
-            "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
-            "gcp-storage-bucket-object-policy-list": storage_bucket_object_policy_list,
-            "gcp-storage-bucket-object-policies-list": storage_bucket_object_policy_list,
-            "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
-            "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
-            "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
-            "gcp-storage-bucket-create": storage_bucket_create,
-            "gcp-storage-bucket-delete": storage_bucket_delete,
-            "gcp-storage-bucket-public-access-block": storage_bucket_public_access_block,
-            "gcp-storage-bucket-object-upload": storage_bucket_object_upload,
-            "gcp-storage-bucket-object-download": storage_bucket_object_download,
-            "gcp-storage-bucket-object-copy": storage_bucket_object_copy,
-            "gcp-storage-bucket-object-delete": storage_bucket_object_delete,
-            "gcp-storage-bucket-object-policy-delete": storage_bucket_object_policy_delete,
-            # Container (GKE) commands
-            "gcp-container-cluster-security-update": container_cluster_security_update,
-            "gcp-gke-cluster-legacy-abac-auth-set": gke_cluster_legacy_abac_auth_set,
-            "gcp-gke-clusters-list": gke_clusters_list,
-            "gcp-gke-cluster-get": gke_cluster_get,
-            "gcp-gke-node-pools-list": gke_node_pools_list,
-            "gcp-gke-node-pool-get": gke_node_pool_get,
-            "gcp-gke-node-pool-management-set": gke_node_pool_management_set,
-            "gcp-gke-operations-list": gke_operations_list,
-            "gcp-gke-operation-get": gke_operation_get,
-            "gcp-gke-operation-cancel": gke_operation_cancel,
-            "gcp-gke-cluster-security-update": container_cluster_security_update,
-            # IAM commands
-            "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
-            # Resource Manager commands
-            "gcp-resource-manager-project-create": resource_manager_project_create,
-            "gcp-resource-manager-project-get": resource_manager_project_get,
-            "gcp-resource-manager-project-search": resource_manager_project_search,
-            "gcp-resource-manager-project-update": resource_manager_project_update,
-            "gcp-resource-manager-project-delete": resource_manager_project_delete,
-            "gcp-resource-manager-project-undelete": resource_manager_project_undelete,
-            "gcp-resource-manager-organization-search": resource_manager_organization_search,
-            "gcp-resource-manager-organization-get": resource_manager_organization_get,
-            # BigQuery commands
-            "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
-            # Cloud Run functions commands
-            "gcp-cloudrun-functions-list": cloud_run_function_list,
-            "gcp-cloudrun-locations-list": cloud_run_location_list,
-            "gcp-cloudrun-function-get": cloud_run_function_get,
-            "gcp-cloudfunctions-function-execute": cloud_function_execute,
-            # KMS commands
-            "gcp-kms-key-rings-list": kms_key_rings_list,
-            "gcp-kms-keys-list": kms_keys_list,
-            "gcp-kms-keys-list-all": kms_keys_list_all,
-            "gcp-kms-key-get": kms_key_get,
-            "gcp-kms-key-create": kms_key_create,
-            "gcp-kms-key-update": kms_key_update,
-            "gcp-kms-key-version-enable": kms_key_version_enable,
-            "gcp-kms-key-version-disable": kms_key_version_disable,
-            "gcp-kms-key-version-destroy": kms_key_version_destroy,
-            "gcp-kms-key-version-restore": kms_key_version_restore,
-            "gcp-kms-public-key-get": kms_public_key_get,
-            "gcp-kms-symmetric-encrypt": kms_symmetric_encrypt,
-            "gcp-kms-symmetric-decrypt": kms_symmetric_decrypt,
-            "gcp-kms-asymmetric-encrypt": kms_asymmetric_encrypt,
-            "gcp-kms-asymmetric-decrypt": kms_asymmetric_decrypt,
-            # Logging commands
-            "gcp-logging-log-entries-list": logging_log_entries_list,
-            # Quick Actions - Firewall
-            "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
-            # Quick Actions - Storage Bucket Policy
-            "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": storage_bucket_policy_delete,
-            "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action": storage_bucket_policy_delete,
-            "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": storage_bucket_policy_delete,
-            # Quick Actions - Subnet Update
-            "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
-            "gcp-compute-enable-private-ip-access-on-subnet-quick-action": compute_subnet_update,
-            # Quick Actions - Container Cluster Security
-            "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
-            "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501
-            # Quick Actions - Storage Bucket Metadata
-            "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": storage_bucket_metadata_update,
-            "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": storage_bucket_metadata_update,
-            # The following commands are currently unsupported:
-            # # Compute Engine commands
-            # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
-            # "gcp-iam-project-deny-policy-create": iam_project_deny_policy_create,
-            # "gcp-iam-service-account-delete": iam_service_account_delete,
-            # "gcp-iam-group-membership-delete": iam_group_membership_delete,
-            # # Admin Directory commands
-            # "gcp-admin-user-update": admin_user_update,
-            # "gcp-admin-user-password-reset": admin_user_password_reset,
-            # "gcp-admin-user-signout": admin_user_signout,
-        }
-
-        if command == "test-module" and (connector_id := get_connector_id()):
-            demisto.debug(f"[GCP main] Running health check for connector ID: {connector_id}")
-            return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
-
-        elif command in command_map:
-            creds = get_credentials(args, params)
-            if command in POLLING_COMMANDS:
-                demisto.debug(f"[GCP main] The {command=} is a polling command, calling it with args as the first argument.")
-                return_results(command_map[command](args, creds))
-            else:
-                return_results(command_map[command](creds, args))
-        else:
-            raise NotImplementedError(f"Command not implemented: {command}")
-
-    except HttpError as e:
-        project_id = args.get("project_id") or args.get("identifier") or "N/A"
-        handle_permission_error(e, project_id, command)
-
-    except Exception as e:
-        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
+    GCPIntegration(demisto.command(), demisto.args(), demisto.params()).run(COMMANDS_MAPPING)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
