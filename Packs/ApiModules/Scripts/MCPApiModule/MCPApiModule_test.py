@@ -748,6 +748,108 @@ async def test_discover_oauth_metadata_falls_back_to_origin_when_discovery_fails
     assert "issuer" not in metadata
 
 
+@pytest.mark.asyncio
+async def test_discover_oauth_metadata_accepts_issuer_with_path(mocker: MockerFixture):
+    """
+    Given: An authorization server whose issuer carries a path (Glean serves issuer https://<be>/oauth).
+    When: _discover_oauth_metadata is called.
+    Then: The RFC 8414 path-inserted discovery URL is tried first, and the issuer is accepted.
+    """
+    # given
+    base_url = "https://acme-be.glean.com/oauth"
+    handler = OAuthHandler(base_url=base_url, command_prefix="test")
+    response = Mock(is_success=True)
+    response.json.return_value = {"issuer": base_url, "token_endpoint": f"{base_url}/token"}
+    get_mock = AsyncMock(return_value=response)
+    mocker.patch.object(handler.session, "get", get_mock)
+
+    # when
+    metadata = await handler._discover_oauth_metadata(base_url)
+
+    # then
+    assert metadata["issuer"] == base_url
+    assert get_mock.await_args_list[0].args[0] == "https://acme-be.glean.com/.well-known/oauth-authorization-server/oauth"
+    assert get_mock.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_discover_oauth_metadata_uses_single_candidate_for_origin_issuer(mocker: MockerFixture):
+    """
+    Given: An authorization server with no issuer path (Atlassian, Cloudflare).
+    When: _discover_oauth_metadata is called.
+    Then: Only the legacy-equivalent URL is requested, so behavior is unchanged for origin-only servers.
+    """
+    # given
+    handler = OAuthHandler(base_url="https://mcp.atlassian.com", command_prefix="test")
+    response = Mock(is_success=True)
+    response.json.return_value = {"issuer": "https://mcp.atlassian.com"}
+    get_mock = AsyncMock(return_value=response)
+    mocker.patch.object(handler.session, "get", get_mock)
+
+    # when
+    await handler._discover_oauth_metadata("https://mcp.atlassian.com")
+
+    # then
+    assert get_mock.await_count == 1
+    assert get_mock.await_args_list[0].args[0] == "https://mcp.atlassian.com/.well-known/oauth-authorization-server"
+
+
+@pytest.mark.asyncio
+async def test_discover_oauth_metadata_falls_back_to_legacy_url_when_path_inserted_url_is_404(mocker: MockerFixture):
+    """
+    Given: An issuer with a path where the RFC 8414 path-inserted URL returns 404.
+    When: _discover_oauth_metadata is called.
+    Then: The legacy URL is tried next and its metadata is used.
+    """
+    # given
+    base_url = "https://acme-be.glean.com/oauth"
+    handler = OAuthHandler(base_url=base_url, command_prefix="test")
+    not_found = Mock(is_success=False, status_code=404)
+    found = Mock(is_success=True)
+    found.json.return_value = {"issuer": base_url}
+    get_mock = AsyncMock(side_effect=[not_found, found])
+    mocker.patch.object(handler.session, "get", get_mock)
+
+    # when
+    metadata = await handler._discover_oauth_metadata(base_url)
+
+    # then
+    assert metadata["issuer"] == base_url
+    assert get_mock.await_count == 2
+    assert get_mock.await_args_list[1].args[0] == "https://acme-be.glean.com/oauth/.well-known/oauth-authorization-server"
+
+
+@pytest.mark.asyncio
+async def test_discover_oauth_metadata_rejects_issuer_that_does_not_match_base_url_path(mocker: MockerFixture):
+    """
+    Given: Metadata served for https://acme-be.glean.com/oauth whose issuer is the bare origin.
+    When: _discover_oauth_metadata is called.
+    Then: A DemistoException is raised, since the issuer must match the URL it was served from.
+    """
+    # given
+    handler = OAuthHandler(base_url="https://acme-be.glean.com/oauth", command_prefix="test")
+    response = Mock(is_success=True)
+    response.json.return_value = {"issuer": "https://acme-be.glean.com"}
+    mocker.patch.object(handler.session, "get", AsyncMock(return_value=response))
+
+    # when / then
+    with pytest.raises(DemistoException, match="RFC 8414"):
+        await handler._discover_oauth_metadata("https://acme-be.glean.com/oauth")
+
+
+def test_get_client_metadata_sends_string_scope():
+    """
+    Given: A redirect URI.
+    When: get_client_metadata is called.
+    Then: scope is an empty string, not a list, since Glean returns 400 for a list.
+    """
+    # when
+    result = get_client_metadata("http://127.0.0.1:8000/callback")
+
+    # then
+    assert result["scope"] == ""
+
+
 def test_validate_authorization_response_skips_iss_when_discovery_produced_no_metadata():
     """
     Given: A flow where discovery failed, so no issuer was ever recorded.
