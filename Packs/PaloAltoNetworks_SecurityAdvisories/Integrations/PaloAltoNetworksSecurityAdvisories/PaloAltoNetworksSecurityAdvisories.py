@@ -249,7 +249,7 @@ def main():
         elif command_name == "pan-advisories-get-advisories":
             return_results(get_advisories(client, **demisto.args()))
         elif command_name == "fetch-indicators":
-            for b in batch(fetch_indicators(client, demisto.params().get("fetch_product_name"))):
+            for b in batch(fetch_indicators(client, demisto.params().get("fetch_product_name")), batch_size=2000):
                 demisto.createIndicators(b)
         else:
             raise NotImplementedError(f"command {command_name} is not implemented.")
