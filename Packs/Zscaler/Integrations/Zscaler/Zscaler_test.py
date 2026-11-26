@@ -1311,5 +1311,5 @@ def test_unblacklist_url_details_list(requests_mock):
     )
     remove_mock = requests_mock.post("http://cloud/api/v1/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST", json={})
     res = Zscaler.unblacklist_url("demisto.com")
-    assert "demisto.com" in res
+    assert res == "Removed the following URLs from the blacklist successfully:\n- demisto.com\n"
     assert remove_mock.last_request.json() == {"blacklistUrls": ["demisto.com"]}

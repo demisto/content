@@ -1633,6 +1633,11 @@ class TestClientBaseUrl:
         assert client._base_url == "https://api.example.com/zia/api/v1"
 
 
+def _listed(readable_output: str) -> list[str]:
+    """Returns the entries of a denylist readable output (lines formatted as '- <entry>')."""
+    return [line[2:] for line in readable_output.splitlines() if line.startswith("- ")]
+
+
 class TestDenylistResponseShapes:
     def test_list_new_shape(self, mock_client, mocker):
         """
@@ -1647,10 +1652,9 @@ class TestDenylistResponseShapes:
             ]
         }
         _patch_api(mocker, mock_client, data)
-        assert ".evil.com" in zia_denylist_list_command(mock_client, {}).readable_output
+        assert _listed(zia_denylist_list_command(mock_client, {}).readable_output) == ["1.2.3.4", ".evil.com"]
         ip_only = zia_denylist_list_command(mock_client, {"filter": "ip"}).readable_output
-        assert "1.2.3.4" in ip_only
-        assert ".evil.com" not in ip_only
+        assert _listed(ip_only) == ["1.2.3.4"]
         assert "No items found" not in zia_denylist_list_command(mock_client, {"query": "evil"}).readable_output
 
     def test_list_new_shape_wins_over_old(self, mock_client, mocker):
@@ -1662,8 +1666,7 @@ class TestDenylistResponseShapes:
         data = {"blacklistUrls": ["old.com"], "blacklistUrlsDetailsList": [{"type": "MALWARE", "url": "new.com"}]}
         _patch_api(mocker, mock_client, data)
         out = zia_denylist_list_command(mock_client, {}).readable_output
-        assert "new.com" in out
-        assert "old.com" not in out
+        assert _listed(out) == ["new.com"]
 
     def test_list_empty_or_missing(self, mock_client, mocker):
         """
@@ -1683,8 +1686,7 @@ class TestDenylistResponseShapes:
         """
         _patch_api(mocker, mock_client, {"blacklistUrls": ["old.com", "5.6.7.8"]})
         out = zia_denylist_list_command(mock_client, {}).readable_output
-        assert "old.com" in out
-        assert "5.6.7.8" in out
+        assert _listed(out) == ["old.com", "5.6.7.8"]
 
     @pytest.mark.parametrize("args", [{}, {"filter": "ip"}, {"query": "a"}])
     def test_list_skips_malformed_items(self, mock_client, mocker, args):
@@ -1706,5 +1708,4 @@ class TestDenylistResponseShapes:
         """
         _patch_api(mocker, mock_client, {"blacklistUrlsDetailsList": "abc", "blacklistUrls": ["fallback.com"]})
         out = zia_denylist_list_command(mock_client, {}).readable_output
-        assert "fallback.com" in out
-        assert "- a\n" not in out
+        assert _listed(out) == ["fallback.com"]
