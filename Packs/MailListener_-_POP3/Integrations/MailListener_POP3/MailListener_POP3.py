@@ -1,6 +1,7 @@
 import base64
 import poplib
 import quopri
+import traceback
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
@@ -87,9 +88,10 @@ def get_attachment_name(headers):
     if re.match(r"^.+\..{3,5}$", name):
         return name
 
-    extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)  # type: ignore
+    extension_match = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", ""))
+    extension = extension_match.group(1) if extension_match else "txt"
 
-    return name + "." + extension
+    return (name or "attachment") + "." + extension
 
 
 def parse_header(text: str | None) -> str:
@@ -379,13 +381,15 @@ def fetch_incidents():
     for msg in messages:
         try:
             incident = mail_to_incident(msg)
-        except Exception:
+        except Exception as e:
+            # Skip the malformed email so that a single message cannot block the ingestion of the whole mailbox.
             demisto.error(
-                "failed to create incident from email, index = {}, subject = {}, date = {}".format(
-                    msg["index"], msg["subject"], msg["date"]
+                "failed to create incident from email, skipping it. index = {}, subject = {}, date = {}, error = {}".format(
+                    msg.get("index"), msg.get("subject"), msg.get("date"), e
                 )
             )
-            raise
+            demisto.debug(traceback.format_exc())
+            continue
 
         temp_date = datetime.strptime(incident["occurred"], DATE_FORMAT)
 
