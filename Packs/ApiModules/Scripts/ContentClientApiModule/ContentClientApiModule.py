@@ -1639,8 +1639,9 @@ class ContentClient:
                 client = self._get_async_client()
                 http_request = client.build_request(
                     method.upper(),
-                    url=url,
-                    params=req_params,
+                    # httpx replaces a query string already in the URL when params is passed,
+                    # so merge them here to keep e.g. "endpoint?action=x" (matches BaseClient).
+                    url=httpx.URL(url).copy_merge_params(req_params),
                     json=json_data,
                     data=data,
                     files=files,
