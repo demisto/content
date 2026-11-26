@@ -19,6 +19,7 @@ FEED_SOURCE_TAG = "ThreatMon"
 
 # Maximum page size honoured by the ThreatMon TAXII server (larger values are silently capped).
 PAGE_SIZE = 500
+SAMPLE_MAX_PAGES = 10  # pages threatmon-get-indicators follows to fill its sample
 DEFAULT_FIRST_FETCH = "7 days"
 DEFAULT_LOOKBACK_MINUTES = 180
 DEFAULT_MAX_PAGES_PER_FETCH = 300
@@ -61,6 +62,12 @@ IPV4_WITH_PORT_RE = re.compile(r"^(\d{1,3}(?:\.\d{1,3}){3})(?::(\d{1,5}))?$")
 URL_SCHEME_RE = re.compile(r"^[a-z][a-z0-9+.\-]*://", re.IGNORECASE)
 ETH_ADDRESS_RE = re.compile(r"^0x[0-9a-f]{40}$", re.IGNORECASE)
 CRYPTOCURRENCY_ADDRESS_TYPE = "Cryptocurrency Address"
+
+# DBot scores used when the reputation is set by the ThreatMon severity.
+SEVERITY_SCORES = {"critical": 3, "high": 3, "medium": 2, "low": 2}
+# Standard indicator fields that exist only for some indicator types (Common Types pack).
+GEO_COUNTRY_TYPES = {FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.URL}
+AS_OWNER_TYPES = {FeedIndicatorType.IP, FeedIndicatorType.URL}
 
 
 """ CLIENT """
@@ -218,18 +225,99 @@ def classify_observable(object_path: str, property_path: str, value: str) -> tup
     return None, value, extra
 
 
-def build_description(stix_object: dict, collection_name: str) -> str:
+def as_list(value: Any) -> list[str]:
+    """Returns the non-empty strings of a STIX property that can be a list or a single value."""
+    values = value if isinstance(value, list) else [value]
+    return [str(item).strip() for item in values if item is not None and str(item).strip()]
+
+
+def as_text(value: Any) -> str | None:
+    """Returns a STIX string property, or ``None`` when it is missing, empty or not a string."""
+    return (value.strip() or None) if isinstance(value, str) else None
+
+
+def as_score(value: Any) -> int | None:
+    """Returns the ThreatMon score (0-100), or ``None`` when it is missing or not a number."""
+    if isinstance(value, bool):
+        return None
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return None
+
+
+def as_port(value: Any) -> str | None:
+    """Returns the ``x_threatmon_port`` value as a string, or ``None`` when it is not a port number (1-65535)."""
+    if isinstance(value, bool):
+        return None
+    try:
+        port = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    return str(port) if 0 < port < 65536 else None
+
+
+def to_iso(value: Any) -> str | None:
+    """Normalizes a timestamp (``2026-11-16T05:12:08.715618+00:00``) to UTC ISO 8601 with a ``Z`` suffix."""
+    parsed = parse_stix_time(value) if isinstance(value, str) else None
+    return parsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if parsed else None
+
+
+def threatmon_details(stix_object: dict) -> dict[str, Any]:
+    """
+    Reads the ThreatMon IOC details that the TAXII server publishes as ``x_threatmon_*`` STIX properties.
+    Missing or malformed properties are left out.
+    """
+    details: dict[str, Any] = {
+        "score": as_score(stix_object.get("x_threatmon_score")),
+        "severity": as_text(stix_object.get("x_threatmon_severity")),
+        "confidence_level": as_text(stix_object.get("x_threatmon_confidence_level")),
+        "status": as_text(stix_object.get("x_threatmon_status")),
+        "sources": as_list(stix_object.get("x_threatmon_source")),
+        "categories": as_list(stix_object.get("x_threatmon_categories")),
+        "last_seen": to_iso(stix_object.get("x_threatmon_last_seen")),
+        "isp": as_text(stix_object.get("x_threatmon_isp")),
+        "geo_location": as_text(stix_object.get("x_threatmon_geo_location")),
+        "resolved_ips": as_list(stix_object.get("x_threatmon_resolved_ips")),
+    }
+    return {key: value for key, value in details.items() if value not in (None, [])}
+
+
+def build_description(stix_object: dict, collection_name: str, details: dict | None = None) -> str:
+    details = details if details is not None else threatmon_details(stix_object)
     parts = [f"Source: {FEED_SOURCE_TAG} TAXII ({collection_name})"]
+    if details.get("sources"):
+        parts.append(f"Reported By: {', '.join(details['sources'])}")
+    if details.get("severity"):
+        parts.append(f"Severity: {details['severity'].capitalize()}")
+    if details.get("score") is not None:
+        parts.append(f"API Score: {details['score']}")
+    if details.get("confidence_level"):
+        parts.append(f"Confidence Level: {details['confidence_level'].capitalize()}")
+    if details.get("status"):
+        parts.append(f"Status: {details['status'].capitalize()}")
+    if details.get("categories"):
+        parts.append(f"Categories: {', '.join(details['categories'])}")
     if stix_object.get("labels"):
         parts.append(f"Labels: {', '.join(stix_object['labels'])}")
     if stix_object.get("indicator_types"):
         parts.append(f"Indicator Types: {', '.join(stix_object['indicator_types'])}")
     if stix_object.get("confidence") is not None:
         parts.append(f"Confidence: {stix_object['confidence']}")
+    if details.get("isp"):
+        parts.append(f"ISP: {details['isp']}")
+    if details.get("geo_location"):
+        parts.append(f"Country: {details['geo_location']}")
+    if details.get("resolved_ips"):
+        parts.append(f"Resolved IPs: {', '.join(details['resolved_ips'])}")
+    if stix_object.get("created"):
+        parts.append(f"Created: {stix_object['created']}")
     if stix_object.get("valid_from"):
         parts.append(f"Valid From: {stix_object['valid_from']}")
     if stix_object.get("valid_until"):
         parts.append(f"Valid Until: {stix_object['valid_until']}")
+    if details.get("last_seen"):
+        parts.append(f"Last Seen: {details['last_seen']}")
     return "\n".join(parts)
 
 
@@ -239,8 +327,46 @@ def calculate_verdict(feed_reputation: str | None) -> int:
     return mapping.get(feed_reputation or "Bad", 3)
 
 
+def indicator_score(details: dict, default_score: int, use_severity: bool) -> int:
+    """
+    Returns the DBot score of an indicator: the Indicator Reputation parameter, or, when *Set Reputation by
+    ThreatMon Severity* is selected, the score of the ThreatMon severity (Critical and High: Bad, Medium and
+    Low: Suspicious). Indicators without a known severity keep the Indicator Reputation.
+    """
+    if use_severity:
+        return SEVERITY_SCORES.get((details.get("severity") or "").lower(), default_score)
+    return default_score
+
+
+def threatmon_fields(details: dict, indicator_type: str) -> dict[str, Any]:
+    """Maps the ThreatMon IOC details to Cortex indicator fields."""
+    fields: dict[str, Any] = {}
+    if details.get("score") is not None:
+        fields["threatmonscore"] = details["score"]
+    if details.get("status"):
+        fields["threatmonstatus"] = details["status"].capitalize()
+    if details.get("severity"):
+        fields["sourceoriginalseverity"] = details["severity"].capitalize()
+    if details.get("confidence_level"):
+        fields["confidence"] = details["confidence_level"].capitalize()
+    if details.get("sources"):
+        fields["reportedby"] = details["sources"]
+    if details.get("categories"):
+        fields["category"] = ", ".join(details["categories"])
+    if details.get("geo_location") and indicator_type in GEO_COUNTRY_TYPES:
+        fields["geocountry"] = details["geo_location"]
+    if details.get("isp") and indicator_type in AS_OWNER_TYPES:
+        fields["asowner"] = details["isp"]
+    return fields
+
+
 def parse_stix_indicator(
-    stix_object: dict, collection_name: str, feed_tags: list[str], tlp_color: str | None, score: int
+    stix_object: dict,
+    collection_name: str,
+    feed_tags: list[str],
+    tlp_color: str | None,
+    score: int,
+    use_severity: bool = False,
 ) -> tuple[list[dict], list[str]]:
     """
     Converts a STIX 2.1 ``indicator`` object into Cortex indicators.
@@ -256,7 +382,9 @@ def parse_stix_indicator(
     labels = [label for label in (stix_object.get("labels") or []) if label]
     tags = list(dict.fromkeys(labels + feed_tags))
     marking_tlp = next((TLP_MARKINGS[ref] for ref in (stix_object.get("object_marking_refs") or []) if ref in TLP_MARKINGS), None)
-    description = build_description(stix_object, collection_name)
+    details = threatmon_details(stix_object)
+    description = build_description(stix_object, collection_name, details)
+    score = indicator_score(details, score, use_severity)
 
     indicators, unsupported = [], []
     for object_path, property_path, raw_value in comparisons:
@@ -264,13 +392,18 @@ def parse_stix_indicator(
         if not indicator_type or not value:
             unsupported.append(f"{object_path}:{property_path}")
             continue
+        if indicator_type == FeedIndicatorType.IP and "port" not in extra_fields:
+            port = as_port(stix_object.get("x_threatmon_port"))
+            if port:
+                extra_fields["port"] = port
 
         fields: dict[str, Any] = {
             "tags": tags,
             "description": description,
             "stixid": stix_object.get("id"),
             "firstseenbysource": stix_object.get("created"),
-            "lastseenbysource": stix_object.get("modified") or stix_object.get("created"),
+            "lastseenbysource": details.get("last_seen") or stix_object.get("modified") or stix_object.get("created"),
+            **threatmon_fields(details, indicator_type),
             **extra_fields,
         }
         tlp = tlp_color or marking_tlp
@@ -293,9 +426,14 @@ def parse_stix_indicator(
 def dedup_key(indicator: dict) -> str:
     """
     Identifies one publication of an indicator. The same value re-published later (new ``created``)
-    gets a new key, so it is sent again and its "last seen" is refreshed in Cortex.
+    gets a new key, so it is sent again and its "last seen" is refreshed in Cortex. A change of the
+    ThreatMon score, severity or status also gives a new key, so the updated details are sent.
     """
-    raw = f"{indicator['type']}|{indicator['value']}|{indicator['fields'].get('firstseenbysource')}"
+    fields = indicator["fields"]
+    raw = (
+        f"{indicator['type']}|{indicator['value']}|{fields.get('firstseenbysource')}"
+        f"|{fields.get('threatmonscore')}|{fields.get('sourceoriginalseverity')}|{fields.get('threatmonstatus')}"
+    )
     # 72 bits of a SHA-256 digest, base64 encoded to 12 characters, to keep the integration context small.
     return base64.urlsafe_b64encode(hashlib.sha256(raw.encode()).digest()[:9]).decode()
 
@@ -411,6 +549,7 @@ def crawl(
     feed_tags = list(dict.fromkeys([FEED_SOURCE_TAG] + argToList(params.get("feedTags"))))
     tlp_color = params.get("tlp_color") or None
     score = calculate_verdict(params.get("feedReputation"))
+    use_severity = argToBoolean(params.get("severity_reputation") or False)
     seen_horizon = seen_horizon_ts(now, lookback)
 
     stats: dict[str, Any] = {
@@ -457,7 +596,9 @@ def crawl(
                 stats["objects"] += 1
                 if stix_object.get("type") != "indicator":
                     continue
-                indicators, unsupported = parse_stix_indicator(stix_object, collection_name, feed_tags, tlp_color, score)
+                indicators, unsupported = parse_stix_indicator(
+                    stix_object, collection_name, feed_tags, tlp_color, score, use_severity
+                )
                 stats["unsupported"] += len(unsupported)
                 unsupported_samples.extend(unsupported[: max(0, 5 - len(unsupported_samples))])
                 for indicator in indicators:
@@ -535,12 +676,22 @@ def get_indicators_command(client: Client, params: dict, args: dict) -> CommandR
     collection_name, collection_id = collections[0]
     feed_tags = list(dict.fromkeys([FEED_SOURCE_TAG] + argToList(params.get("feedTags"))))
     score = calculate_verdict(params.get("feedReputation"))
+    use_severity = argToBoolean(params.get("severity_reputation") or False)
 
-    envelope, _ = client.get_objects_page(collection_id, None, None, limit=min(limit, PAGE_SIZE))
+    # The server can return empty pages with "more" set (objects filtered out after paging), so a
+    # few pages are followed before giving up.
     indicators: list[dict] = []
-    for stix_object in envelope.get("objects") or []:
-        if stix_object.get("type") == "indicator":
-            indicators.extend(parse_stix_indicator(stix_object, collection_name, feed_tags, params.get("tlp_color"), score)[0])
+    next_cursor = None
+    for _ in range(SAMPLE_MAX_PAGES):
+        envelope, _ = client.get_objects_page(collection_id, None, next_cursor, limit=min(limit, PAGE_SIZE))
+        for stix_object in envelope.get("objects") or []:
+            if stix_object.get("type") == "indicator":
+                indicators.extend(
+                    parse_stix_indicator(stix_object, collection_name, feed_tags, params.get("tlp_color"), score, use_severity)[0]
+                )
+        next_cursor = envelope.get("next") if envelope.get("more") else None
+        if len(indicators) >= limit or not next_cursor:
+            break
     indicators = indicators[:limit]
 
     if not indicators:
@@ -551,13 +702,36 @@ def get_indicators_command(client: Client, params: dict, args: dict) -> CommandR
             "Value": indicator["value"],
             "Type": indicator["type"],
             "Score": indicator["score"],
+            "ThreatMon Score": indicator["fields"].get("threatmonscore"),
+            "Severity": indicator["fields"].get("sourceoriginalseverity"),
+            "Confidence": indicator["fields"].get("confidence"),
+            "Status": indicator["fields"].get("threatmonstatus"),
+            "Reported By": ", ".join(indicator["fields"].get("reportedby") or []) or None,
+            "Category": indicator["fields"].get("category"),
             "Tags": ", ".join(indicator["fields"]["tags"]),
             "First Seen By Source": indicator["fields"].get("firstseenbysource"),
+            "Last Seen By Source": indicator["fields"].get("lastseenbysource"),
         }
         for indicator in indicators
     ]
+    headers = [
+        "Value",
+        "Type",
+        "Score",
+        "ThreatMon Score",
+        "Severity",
+        "Confidence",
+        "Status",
+        "Reported By",
+        "Category",
+        "Tags",
+        "First Seen By Source",
+        "Last Seen By Source",
+    ]
     return CommandResults(
-        readable_output=tableToMarkdown(f"Indicators from {FEED_SOURCE_TAG} ({collection_name})", table, removeNull=True),
+        readable_output=tableToMarkdown(
+            f"Indicators from {FEED_SOURCE_TAG} ({collection_name})", table, headers=headers, removeNull=True
+        ),
         raw_response=[indicator["rawJSON"] for indicator in indicators],
     )
 

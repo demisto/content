@@ -1,8 +1,8 @@
 {
     "name": "ThreatMon Threat Feed",
-    "description": "Ingests every ThreatMon Indicator of Compromise (IP addresses, domains, URLs, file hashes, C2 servers and cryptocurrency addresses) from the ThreatMon TAXII 2.1 server as Cortex indicators, completely and incrementally, with tags, TLP and first and last seen dates.",
+    "description": "Ingests every ThreatMon Indicator of Compromise (IP addresses, domains, URLs, file hashes, C2 servers and cryptocurrency addresses) from the ThreatMon TAXII 2.1 server as Cortex indicators, completely and incrementally, with the ThreatMon score, severity, confidence, status, sources and categories, tags, TLP and first and last seen dates.",
     "support": "community",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.2.0",
     "author": "ThreatMon",
     "url": "https://www.threatmon.io",
     "email": "support@threatmonit.io",
@@ -49,5 +49,8 @@
     "supportedModules": [
         "agentix",
         "xsiam"
+    ],
+    "itemPrefix": [
+        "ThreatMon"
     ]
 }

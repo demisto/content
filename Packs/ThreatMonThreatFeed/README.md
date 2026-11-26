@@ -7,8 +7,9 @@ This pack brings the ThreatMon IOC feed into Cortex XSOAR and Cortex XSIAM, so t
 - Ingests every ThreatMon IOC from the ThreatMon TAXII 2.1 server as Cortex indicators: IP addresses (with ports), domains, URLs, file hashes, C2 servers and cryptocurrency addresses.
 - Reads every ThreatMon collection completely with TAXII 2.1 cursor paging, and resumes an interrupted fetch from the last saved page, so no indicator is missed.
 - Corrects the indicator type of values that ThreatMon publishes in the wrong STIX type, for example `ip:port` values, URLs and Ethereum wallets published as domains.
+- Adds the ThreatMon IOC details to every indicator: the ThreatMon score and status, the severity, the confidence level, the reporting sources, the categories, and the country and ISP of IP addresses and URLs.
 - Adds the ThreatMon labels as tags and keeps the STIX ID, the first and last seen dates and the TLP marking of every indicator.
-- Applies the configured reputation, source reliability and TLP color to every indicator.
+- Applies the configured reputation, or the reputation of the ThreatMon severity, and the source reliability and TLP color to every indicator.
 - Runs incrementally: each fetch reads what ThreatMon published since the previous one, with a look-back window so late-published indicators are not missed, and without creating duplicates.
 - Provides troubleshooting commands to list the collections, sample indicators and inspect or reset the fetch state.
 
@@ -17,6 +18,7 @@ This pack brings the ThreatMon IOC feed into Cortex XSOAR and Cortex XSIAM, so t
 | Item | Name |
 | --- | --- |
 | Integration | ThreatMon Threat Feed |
+| Indicator fields | ThreatMon Score, ThreatMon Status |
 
 ## Before you start
 
