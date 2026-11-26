@@ -300,6 +300,25 @@ Rulebase_to_ContextPrefix_Map = {
 # Map Panorama rule positions to their corresponding class implementations
 Pre_Post_to_ClassType_Map = {"pre-rulebase": PreRulebase, "post-rulebase": PostRulebase}
 
+# Which kinds of container can hold each type of object. The hygiene checks use these to skip reads that can never return
+# anything, such as security rules in a template. Panorama itself stands for the "shared" container.
+
+# Rulebase type -> containers that can have it. A firewall has a single rulebase; Panorama has pre and post rulebases
+# (in device groups and in shared); templates and template stacks have no rulebases at all.
+RULEBASE_CONTAINER_TYPES: Dict[type, Tuple[type, ...]] = {
+    Rulebase: (Vsys, Firewall),
+    PreRulebase: (DeviceGroup, Panorama),
+    PostRulebase: (DeviceGroup, Panorama),
+}
+# Anti-spyware, vulnerability and URL filtering profiles are objects, so they live in vsys, device groups and shared, not in
+# templates or template stacks.
+PROFILE_CONTAINER_TYPES: Tuple[type, ...] = (Vsys, DeviceGroup, Panorama)
+# Log forwarding profiles live in the same containers, and a Panorama expert said they can also be configured in a
+# template and pushed to the managed firewalls, so templates and template stacks are read for them too.
+LOG_FORWARDING_PROFILE_CONTAINER_TYPES: Tuple[type, ...] = (*PROFILE_CONTAINER_TYPES, Template, TemplateStack)
+# Zones are network configuration, so they live in vsys, templates and template stacks, not in device groups or shared.
+ZONE_CONTAINER_TYPES: Tuple[type, ...] = (Vsys, Template, TemplateStack)
+
 
 class ExceptionCommandType(enum.Enum):
     ADD = "set"
@@ -9875,25 +9894,18 @@ class Topology:
             device_retrieval_func = self.active_top_level_devices  # type: ignore[assignment]
 
         for device in device_retrieval_func(device_filter_string):
-            device_groups = DeviceGroup.refreshall(device)
-            for device_group in device_groups:
-                containers.append((device, device_group))
-
-            templates = Template.refreshall(device)
-            for template in templates:
-                containers.append((device, template))
-
-            template_stacks = TemplateStack.refreshall(device)
-            for template_stack in template_stacks:
-                containers.append((device, template_stack))
-
-            virtual_systems = Vsys.refreshall(device)
-            for virtual_system in virtual_systems:
-                containers.append((device, virtual_system))
-
             if isinstance(device, Panorama):
-                # Add the "shared" device if Panorama. Firewalls will always have vsys1
+                # Panorama has device groups, templates and template stacks, but no vsys of its own.
+                for container_class in (DeviceGroup, Template, TemplateStack):
+                    for container in container_class.refreshall(device):
+                        containers.append((device, container))
+
+                # Add the "shared" device if Panorama.
                 containers.append((device, device))
+            else:
+                # A firewall has vsys, but no device groups, templates or template stacks.
+                for virtual_system in Vsys.refreshall(device):
+                    containers.append((device, virtual_system))
 
         return_containers = []
 
@@ -11000,23 +11012,23 @@ class HygieneRemediation:
         container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys], object_class: Union[SecurityRule, NatRule]
     ):
         """
-        Given a container (DG/template) and the class representing a type of rule object in pan-os-python, gets all the
-        associated objects.
-        :param container: Device group or template
+        Given a container (vsys, device group, shared...) and the class representing a type of rule object in pan-os-python,
+        gets all the associated objects. Only the rulebases the container can have are read (see RULEBASE_CONTAINER_TYPES),
+        so a template, which has none, makes no API call.
+        :param container: Vsys or Firewall, device group, Panorama (the "shared" container), template or template stack
         :param object_class: The pan-os-python class of objects to retrieve
         """
         if object_class not in [SecurityRule, NatRule]:
             raise ValueError(f"Given class {object_class} cannot be retrieved by this function.")
 
-        firewall_rulebase = Rulebase()
-        pre_rulebase = PreRulebase()
-        post_rulebase = PostRulebase()
-        container.add(pre_rulebase)
-        container.add(post_rulebase)
-        container.add(firewall_rulebase)
-        objects = object_class.refreshall(firewall_rulebase)
-        objects += object_class.refreshall(pre_rulebase)
-        objects += object_class.refreshall(post_rulebase)
+        objects: list = []
+        for rulebase_class, container_types in RULEBASE_CONTAINER_TYPES.items():
+            if not isinstance(container, container_types):
+                continue
+
+            rulebase = rulebase_class()
+            container.add(rulebase)
+            objects += object_class.refreshall(rulebase)
 
         return objects
 
@@ -11273,6 +11285,9 @@ class HygieneLookups:
         lf_profile_list: List[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-1", "BP-V-2", "BP-V-3"])
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, LOG_FORWARDING_PROFILE_CONTAINER_TYPES):
+                continue
+
             log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
             lf_profile_list = lf_profile_list + log_forwarding_profiles
             for log_forwarding_profile in log_forwarding_profiles:
@@ -11407,6 +11422,9 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, PROFILE_CONTAINER_TYPES):
+                continue
+
             url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
 
             conforming_profiles = HygieneLookups.get_conforming_url_filtering_profiles(url_filtering_profiles)
@@ -11440,6 +11458,9 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, PROFILE_CONTAINER_TYPES):
+                continue
+
             spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
             conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
                 spyware_profiles,
@@ -11477,6 +11498,9 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, PROFILE_CONTAINER_TYPES):
+                continue
+
             spyware_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
             conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
                 spyware_profiles,
@@ -11507,6 +11531,9 @@ class HygieneLookups:
         # pan-os-python will include Panorama template-pushed zones when checking a Firewall device without indication
         # where they are actually configured, so we have to check after.
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, ZONE_CONTAINER_TYPES):
+                continue
+
             security_zones: List[Zone] = Zone.refreshall(container)
 
             if isinstance(device, Firewall):
@@ -11668,6 +11695,9 @@ class HygieneLookups:
 
         # Check all profiles in the topology
         for device, container in topology.get_all_object_containers(device_filter_str):
+            if not isinstance(container, PROFILE_CONTAINER_TYPES):
+                continue
+
             profiles = profile_class.refreshall(container)
 
             # Get conforming profiles based on profile type

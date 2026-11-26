@@ -3186,7 +3186,7 @@ def mock_issue_with_underscores():
         "issue_code": "BP-V-1",
         "description": "Log forwarding profile is missing enhanced application logging",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3196,7 +3196,7 @@ def mock_enhanced_log_forwarding_issue_dict():
         "issuecode": "BP-V-1",
         "description": "Log forwarding profile is missing enhanced application logging",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3206,7 +3206,7 @@ def mock_security_zone_no_log_setting_issue_dict():
         "issuecode": "BP-V-7",
         "description": "Security zone has no log forwarding setting",
         "name": "test-bad",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3216,7 +3216,7 @@ def mock_security_rule_log_settings_issue_dict():
         "issuecode": "BP-V-8",
         "description": "Security rule has no log setting",
         "name": "test-bad-no-lfp",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3226,7 +3226,7 @@ def mock_security_rule_security_profile_group_issue_dict():
         "issuecode": "BP-V-10",
         "description": "Security rule has no security profile group",
         "name": "test-bad-no-spg",
-        "hostid": MOCK_FIREWALL_1_SERIAL,
+        "hostid": MOCK_PANORAMA_SERIAL,
     }
 
 
@@ -3388,6 +3388,35 @@ class TestTopology:
 
         # Because it's panorama, should be; [shared, device-group, template]
         assert len(result) == 3
+
+    def test_get_containers_only_queries_container_types_each_device_can_have(
+        self, mocker, mock_topology, mock_panorama, mock_firewall
+    ):
+        """
+        Given a topology with a Panorama and a firewall,
+        When listing the object containers,
+        Then Panorama is only asked for device groups, templates and template stacks (it has no vsys),
+        and the firewall is only asked for vsys (it has no device groups, templates or template stacks).
+        This avoids API calls that can never return anything.
+        """
+        firewall_vsys = mock_vsys()[0]
+        device_group_refresh = mocker.patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+        template_refresh = mocker.patch("Panorama.Template.refreshall", return_value=mock_templates())
+        template_stack_refresh = mocker.patch("Panorama.TemplateStack.refreshall", return_value=mock_template_stack())
+        vsys_refresh = mocker.patch("Panorama.Vsys.refreshall", return_value=[firewall_vsys])
+
+        result = mock_topology.get_all_object_containers()
+
+        device_group_refresh.assert_called_once_with(mock_panorama)
+        template_refresh.assert_called_once_with(mock_panorama)
+        template_stack_refresh.assert_called_once_with(mock_panorama)
+        vsys_refresh.assert_called_once_with(mock_firewall)
+
+        assert [device for device, _ in result].count(mock_panorama) == 4  # device group, template, stack, shared
+        assert (mock_firewall, firewall_vsys) in result
+        assert len(result) == 5
+        # The Panorama "shared" container is the Panorama device itself
+        assert (mock_panorama, mock_panorama) in result
 
 
 class TestUtilityFunctions:
@@ -4198,7 +4227,7 @@ def test_panorama_apply_dns_command2(mocker):
 
 class TestHygieneFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
     def test_check_log_forwarding(self, _, __, ___, ____, mock_topology):
@@ -4224,7 +4253,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_vulnerability_profiles(self, _, __, ___, ____, mock_topology):
         """
@@ -4266,7 +4295,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_spyware_profiles(self, _, __, ___, ____, mock_topology):
         """
@@ -4290,7 +4319,7 @@ class TestHygieneFunctions:
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
-    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_url_filtering_profiles(self, _, __, ___, ____, mock_topology):
         """
@@ -4476,6 +4505,108 @@ class TestHygieneFunctions:
         assert result
         for value in result[0].__dict__.values():
             assert value
+
+
+class TestContainerAwareReads:
+    """
+    Objects must only be read from the kinds of container that can hold them. The other containers are skipped without
+    making an API call. The container kinds are: vsys (on a firewall), device group, shared (the Panorama itself),
+    template and template stack.
+
+    The expectations below are the supported-container table. If a PAN-OS expert says the table is wrong, change the
+    matching constant in Panorama.py and the expectation here together.
+    """
+
+    PROFILE_CONTAINERS = {"vsys", "device-group", "shared"}
+    # A Panorama expert said log forwarding profiles can also be configured in a template and pushed to the firewalls,
+    # so templates and template stacks are still read for them.
+    LOG_FORWARDING_CONTAINERS = {"vsys", "device-group", "shared", "template", "template-stack"}
+    ZONE_CONTAINERS = {"vsys", "template", "template-stack"}
+
+    @staticmethod
+    def containers() -> dict:
+        """One container of each kind."""
+        return {
+            "vsys": MagicMock(spec=Vsys),
+            "device-group": MagicMock(spec=DeviceGroup),
+            "shared": MagicMock(spec=Panorama),
+            "template": MagicMock(spec=Template),
+            "template-stack": MagicMock(spec=TemplateStack),
+        }
+
+    @pytest.mark.parametrize("object_class_name", ["SecurityRule", "NatRule"])
+    @pytest.mark.parametrize(
+        "container_kind, expected_rulebases",
+        [
+            ("vsys", ["Rulebase"]),
+            ("device-group", ["PreRulebase", "PostRulebase"]),
+            ("shared", ["PreRulebase", "PostRulebase"]),
+            ("template", []),
+            ("template-stack", []),
+        ],
+    )
+    def test_rules_are_read_only_from_rulebases_the_container_can_have(
+        self, mocker, object_class_name, container_kind, expected_rulebases
+    ):
+        """
+        Given a container of each kind,
+        When reading its security or NAT rules,
+        Then only the rulebases that kind of container can have are read: a firewall vsys has a rulebase, Panorama device
+        groups and shared have pre and post rulebases, and templates and template stacks have none.
+        """
+        from Panorama import HygieneRemediation, NatRule, SecurityRule
+
+        object_class = {"SecurityRule": SecurityRule, "NatRule": NatRule}[object_class_name]
+        refresh = mocker.patch.object(object_class, "refreshall", return_value=[])
+
+        HygieneRemediation.get_all_rules_in_container(self.containers()[container_kind], object_class)
+
+        assert [type(call.args[0]).__name__ for call in refresh.call_args_list] == expected_rulebases
+
+    @pytest.mark.parametrize(
+        "check_name, kwargs, class_name, supported_containers",
+        [
+            ("check_log_forwarding_profiles", {}, "LogForwardingProfile", LOG_FORWARDING_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "spyware"}, "AntiSpywareProfile", PROFILE_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "vulnerability"}, "VulnerabilityProfile", PROFILE_CONTAINERS),
+            ("check_security_profiles", {"profile_type": "url"}, "URLFilteringProfile", PROFILE_CONTAINERS),
+            ("check_security_zones", {}, "Zone", ZONE_CONTAINERS),
+            ("get_all_conforming_url_filtering_profiles", {}, "URLFilteringProfile", PROFILE_CONTAINERS),
+            (
+                "get_all_conforming_spyware_profiles",
+                {"minimum_block_severities": [], "minimum_alert_severities": []},
+                "AntiSpywareProfile",
+                PROFILE_CONTAINERS,
+            ),
+            (
+                "get_all_conforming_vulnerability_profiles",
+                {"minimum_block_severities": [], "minimum_alert_severities": []},
+                "VulnerabilityProfile",
+                PROFILE_CONTAINERS,
+            ),
+        ],
+    )
+    def test_object_is_read_only_from_containers_that_can_hold_it(
+        self, mocker, mock_panorama, check_name, kwargs, class_name, supported_containers
+    ):
+        """
+        Given one container of each kind,
+        When running a hygiene check or lookup,
+        Then the object type is only read from the container kinds that can hold it. Security-profile and
+        conforming-profile lookups skip templates and template stacks; the log forwarding check reads them too; the zone
+        check skips device groups and shared.
+        """
+        import Panorama
+
+        containers = self.containers()
+        topology = MagicMock()
+        topology.get_all_object_containers.return_value = [(mock_panorama, container) for container in containers.values()]
+        refresh = mocker.patch.object(getattr(Panorama, class_name), "refreshall", return_value=[])
+
+        getattr(Panorama.HygieneLookups, check_name)(topology, **kwargs)
+
+        expected = [container for kind, container in containers.items() if kind in supported_containers]
+        assert [call.args[0] for call in refresh.call_args_list] == expected
 
 
 class TestObjectFunctions:
