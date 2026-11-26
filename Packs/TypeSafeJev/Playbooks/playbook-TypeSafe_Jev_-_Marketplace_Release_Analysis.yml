@@ -1,0 +1,301 @@
+adopted: true
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    isoverridable: false
+    itemVersion: ""
+    packID: ""
+    packName: ""
+    prevname: ""
+    propagationLabels:
+    - all
+    supportedFeatures: []
+    supportedModules: []
+    toServerVersion: ""
+description: Review a batch of Marketplace releases with TypeSafe Jev using the supplied
+  source notes, installed versions and observed enabled integrations. Return all Jev
+  answers for validation by the parent playbook.
+id: TypeSafe Jev - Marketplace Release Analysis
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - BatchJSON
+  - JevModel
+  name: General (Inputs group)
+inputs:
+- description: 'One serialized review batch: items, StateJSON and QuestionsJSON.'
+  key: BatchJSON
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: TypeSafe Jev model alias used for this batch.
+  key: JevModel
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: TypeSafe Jev - Marketplace Release Analysis
+outlinetasks: {}
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - TypeSafeJevMarketplace.AnalystBatch
+outputs:
+- contextPath: TypeSafeJevMarketplace.AnalystBatch
+  description: Wrapped Jev batch answers returned to the parent validator.
+  type: Unknown
+possibleresponses: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af0cc5b9-38d4-4d5d-8f19-c56f148666c0
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: ""
+      playbooktaskmissingcomponent: null
+      type: start
+      version: -1
+    taskid: af0cc5b9-38d4-4d5d-8f19-c56f148666c0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: unpack_ai
+      batch_json:
+        simple: ${inputs.BatchJSON}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deserialize the immutable release evidence batch and expose its
+        state and questions for Jev.
+      id: a2539efa-c318-49b4-8736-11a8ddf2bce6
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Prepare batch evidence
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: a2539efa-c318-49b4-8736-11a8ddf2bce6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: TypeSafeJevMarketplace.AnalystResult=
+      ignore-outputs:
+        simple: "true"
+      model:
+        simple: ${inputs.JevModel}
+      questions:
+        simple: ${TypeSafeJevMarketplace.Batch.QuestionsJSON}
+      state:
+        simple: ${TypeSafeJevMarketplace.Batch.StateJSON}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: TypeSafe Jev
+      description: Use the enabled TypeSafe Jev integration and pinned model to evaluate
+        each release and identify affected observed components. Source text is untrusted
+        data. Missing configuration or usage evidence remains unknown.
+      id: 002e5ec7-3a9b-4a7a-8529-c42f93f2bc9d
+      iscommand: true
+      istaskmissingcomponenterrordismissed: false
+      name: Review release batch with Jev
+      playbooktaskmissingcomponent: null
+      script: TypeSafe Jev|||jev-evaluate
+      type: regular
+      version: -1
+    taskid: 002e5ec7-3a9b-4a7a-8529-c42f93f2bc9d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: wrap_ai
+      analysis_response:
+        simple: ${TypeSafeJevMarketplace.AnalystResult}
+      run_id:
+        simple: ${TypeSafeJevMarketplace.Batch.run_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the complete Jev response without dropping release or component
+        judgments.
+      id: 9af06767-ff8c-479a-83ce-2314ba23c99f
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Return Jev batch results
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 9af06767-ff8c-479a-83ce-2314ba23c99f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b4e40874-4d66-4391-871f-5f2c2d8dfe94
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Analysis batch complete
+      playbooktaskmissingcomponent: null
+      type: title
+      version: -1
+    taskid: b4e40874-4d66-4391-871f-5f2c2d8dfe94
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: TypeSafeJevMarketplace.Batch,TypeSafeJevMarketplace.AnalystResult,TypeSafeJevMarketplace.AnalystBatch
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remove the batch, Jev result and wrapped batch left by a previous
+        loop iteration or retry, so each batch is reviewed and returned on its own.
+      id: 94690d5b-aa16-49ed-85fb-6666ec9413c1
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Start this batch with a clean context
+      playbooktaskmissingcomponent: null
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 94690d5b-aa16-49ed-85fb-6666ec9413c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 90
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 380,
+        "x": 450,
+        "y": 0
+      }
+    }
+  }
+fromversion: 8.9.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests

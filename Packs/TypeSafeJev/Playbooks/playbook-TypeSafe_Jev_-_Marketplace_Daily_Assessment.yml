@@ -1,0 +1,588 @@
+adopted: true
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    isoverridable: false
+    itemVersion: ""
+    packID: ""
+    packName: ""
+    prevname: ""
+    propagationLabels:
+    - all
+    supportedFeatures: []
+    supportedModules: []
+    toServerVersion: ""
+description: Daily Jev Marketplace assessment with recursive mandatory dependency
+  planning, supported ContentPackInstaller execution, verified versions, and deduplicated
+  issues for evidenced breaking impact. Held, unresolved or failed updates get one
+  deduplicated manual-review case each.
+id: TypeSafe Jev - Marketplace Daily Assessment
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - DryRun
+  - CoreInstance
+  - JevModel
+  name: General (Inputs group)
+inputs:
+- description: Run without installing packs or creating, updating, or closing cases.
+    Set to false only after reviewing the playbook behavior in your environment.
+  key: DryRun
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: Core REST API integration instance name. An explicit instance prevents
+    tenant inventory or state-changing requests from being sent to multiple instances.
+  key: CoreInstance
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: ""
+- description: TypeSafe Jev model alias used for Marketplace release judgments.
+  key: JevModel
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: jev-1.13.0
+name: TypeSafe Jev - Marketplace Daily Assessment
+outlinetasks: {}
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+possibleresponses: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27321f7e-3d84-46e1-8c87-294fcd509ccd
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: ""
+      playbooktaskmissingcomponent: null
+      version: -1
+    taskid: 27321f7e-3d84-46e1-8c87-294fcd509ccd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: collect
+      core_instance:
+        simple: ${inputs.CoreInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Collects Marketplace inventory and enabled integration evidence
+        with the Python automation.
+      id: 1a793fa9-36c5-434a-878e-7db1a07922a9
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Collect installed packs and enabled integrations
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 1a793fa9-36c5-434a-878e-7db1a07922a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 405
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: prepare_ai
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      jev_model:
+        simple: ${inputs.JevModel}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Builds bounded, evidence-bound Jev questions with the Python automation.
+      id: 9193c96e-b61e-4127-8f54-025ebdcc18e5
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Prepare release evidence for Jev
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 9193c96e-b61e-4127-8f54-025ebdcc18e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: publish
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Routes confirmed affected releases to validation issues with the
+        Python automation.
+      id: 57abfb01-ba72-4187-8d7e-39c40dc2acf1
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Create validation cases for affected breaking changes
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 57abfb01-ba72-4187-8d7e-39c40dc2acf1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1515
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Marketplace release review, guarded installation and manual-review
+          case routing completed. See TypeSafeJevMarketplace.Assessment, Routing,
+          Installation and Review. Only this run's host investigation is closed; review
+          cases stay open.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close only the investigation created for this completed scheduled
+        run. Review cases remain open until resolved.
+      id: 3c1859da-72a2-473d-872d-3127ac589d92
+      iscommand: true
+      istaskmissingcomponenterrordismissed: false
+      name: Close the completed Marketplace run
+      playbooktaskmissingcomponent: null
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 3c1859da-72a2-473d-872d-3127ac589d92
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2070
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TypeSafeJevMarketplace.ReviewPlan.Required
+          operator: isTrue
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Continue to Jev analysis only when the collected Marketplace inventory
+        contains newer releases requiring review.
+      id: 64dcc209-bac1-42f6-8c2e-44cf40d663df
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Are there newer releases to review?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 64dcc209-bac1-42f6-8c2e-44cf40d663df
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 775
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      BatchJSON:
+        simple: ${TypeSafeJevMarketplace.ReviewPlan.BatchJSON}
+      JevModel:
+        simple: ${inputs.JevModel}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run TypeSafe Jev for every evidence batch. Each returned question
+        ID remains tied to its source release.
+      id: ec057e14-e103-4cdc-86a6-281c5dd81fe3
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Review pending releases with Jev
+      playbookId: TypeSafe Jev - Marketplace Release Analysis
+      playbooktaskmissingcomponent: null
+      type: playbook
+      version: -1
+    taskid: ec057e14-e103-4cdc-86a6-281c5dd81fe3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1145
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: apply_ai
+      analysis_response:
+        simple: ${TypeSafeJevMarketplace.AnalystBatch}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      review_plan:
+        simple: ${TypeSafeJevMarketplace.ReviewPlan}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Validate the complete collection of Jev answers in a single invocation.
+        Accept supported JSON and array envelopes, reject conflicting answers, preserve
+        missing or uncertain judgments as unresolved.
+      id: 413fd961-2d0e-4742-8173-09a62db6eefa
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Validate Jev decisions against supplied evidence
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 413fd961-2d0e-4742-8173-09a62db6eefa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+  "8":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "9"
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: install
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Install reviewed exact-version packs using CommonScripts ContentPackInstaller,
+        then verify each installed version. A failed dependency blocks its dependents.
+      id: 5e03eeb3-d3ab-48a1-8a16-ce7458ece6f8
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Install approved updates and verify versions
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 5e03eeb3-d3ab-48a1-8a16-ce7458ece6f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1700
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: review
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+      installation:
+        simple: ${TypeSafeJevMarketplace.Installation}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Create or retain one deduplicated review issue per held or failed
+        pack update (key: pack + target version). This step never installs or approves
+        an update.'
+      id: b227e28e-e1b4-4633-8eef-1d42b0242bdc
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Create manual review cases for held or unresolved updates
+      playbooktaskmissingcomponent: null
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: b227e28e-e1b4-4633-8eef-1d42b0242bdc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: TypeSafeJevMarketplace.Snapshot,TypeSafeJevMarketplace.ReviewPlan,TypeSafeJevMarketplace.Assessment,TypeSafeJevMarketplace.AnalystBatch
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remove Marketplace snapshot, review plan, assessment and Jev batches
+        left by an earlier run in this issue so this run only validates its own results.
+      id: eef0f222-9ec0-428f-8bfe-56ae3be083ce
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Clear results from earlier runs
+      playbooktaskmissingcomponent: null
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: eef0f222-9ec0-428f-8bfe-56ae3be083ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: TypeSafeJevMarketplace.AnalystBatch
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remove any Jev batches already in context before the review loop
+        so only this run's answers reach validation.
+      id: 5ace20a6-8ef8-413d-8903-f5a6acca4035
+      iscommand: false
+      istaskmissingcomponenterrordismissed: false
+      name: Clear earlier Jev batches
+      playbooktaskmissingcomponent: null
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5ace20a6-8ef8-413d-8903-f5a6acca4035
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 960
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2095,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 8.9.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests
