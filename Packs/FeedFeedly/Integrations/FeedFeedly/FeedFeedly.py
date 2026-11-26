@@ -872,7 +872,10 @@ class STIX2Parser:
         Builds a list of cortex indicators objects from the STIX2 objects
         :return: Cortex indicators list
         """
-        envelopes = STIX2Parser.create_envelopes_by_type(objects)
+        author_ids = {obj["created_by_ref"] for obj in objects if obj.get("created_by_ref")}
+        envelopes = STIX2Parser.create_envelopes_by_type(
+            [obj for obj in objects if obj.get("type") != "identity" or obj.get("id") not in author_ids]
+        )
         indicators = self.load_stix_objects_from_envelope(envelopes)
         self.add_vulnerable_products(objects)
 

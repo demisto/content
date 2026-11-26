@@ -168,6 +168,23 @@ def test_parse_identity_keeps_its_sectors():
     assert identity["customFields"]["industrysectors"] == ["technology"]
 
 
+def test_parse_identity_skips_the_authors_of_the_objects():
+    """
+    Given:
+        - The Feedly AI identity, referenced as the author of a report
+    When:
+        - Parsing the STIX objects
+    Then:
+        - No Identity indicator is created for the author
+    """
+    author = {"type": "identity", "id": "identity--feedly-ai", "name": "Feedly AI", "identity_class": "organization"}
+    report = {"type": "report", "id": "report--1", "name": "A report", "created_by_ref": author["id"], "object_refs": []}
+
+    indicators = STIX2Parser().parse_stix2_objects([author, report])
+
+    assert "Feedly AI" not in {indicator["value"] for indicator in indicators}
+
+
 def test_parse_location_falls_back_to_the_country_code():
     """
     Given:
