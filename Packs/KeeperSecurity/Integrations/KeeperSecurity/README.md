@@ -1,14 +1,14 @@
-Use this integration to fetch audit logs from Keeper Security Admin Console as XSIAM events.
-This integration was integrated and tested with version 16.11.8 of Keeper Commander.
+Use this integration to fetch audit events from the Keeper Security Admin REST API as Cortex XSIAM events.
+This integration uses the `GET /api/rest/public/events` endpoint (ARAM Events) and authenticates with an Admin REST API key.
 
-## Configure Keeper Secrets Manager Event Collector in Cortex
+## Configure Keeper Security Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The server URL. For more help, checkout the 'Server Regions' section in the description. | True |
-| Username |  | True |
-| Password |  | True |
-| Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch. |  |
+| Server URL | The server URL of your Keeper region. For more help, check out the 'Server Regions' section in the description. | True |
+| API Key | A Keeper Admin REST API key with the SIEM:1 (read) scope. | True |
+| First fetch time | How far back to fetch events on the first run, for example "1 hour" or "3 days". | False |
+| Maximum number of Alerts to fetch. | The maximum number of events to fetch per run. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -17,67 +17,29 @@ This integration was integrated and tested with version 16.11.8 of Keeper Comman
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### keeper-security-register-start
+### keeper-security-get-events
 
 ***
-Use this command to start the registration process.
+Gets audit events from Keeper Security. This command is used for development and debugging and might create duplicate events when should_push_events is true.
 
 #### Base Command
 
-`keeper-security-register-start`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Human Readable Output
-
->Code was sent successfully to the user's email
-
-### keeper-security-register-complete
-
-***
-Use this command to complete the registration process.
-
-#### Base Command
-
-`keeper-security-register-complete`
+`keeper-security-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| code | The authorization code retrieved from user's email. | Optional |
+| limit | Maximum number of events to return. Default is 50. | Optional |
+| start_date | Start of the time range, for example "1 hour" or "2024-01-01T00:00:00Z". Defaults to 1 hour ago. | Optional |
+| end_date | End of the time range. Defaults to now. | Optional |
+| should_push_events | Set to true to create events from the retrieved results, otherwise they are only displayed. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
-#### Human Readable Output
+## Known Limitations
 
->Login completed
-
-### keeper-security-register-test
-
-***
-Use this command to test the connectivity of the instance.
-
-#### Base Command
-
-`keeper-security-register-test`
-
-#### Input
-
-There is no context output for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Human Readable Output
-
->Successful connection
+- The API does not return an event ID, so events are de-duplicated by a hash of their fields.
+- The API is limited to 10 requests per 10 seconds per API key; the integration paces its requests accordingly.
