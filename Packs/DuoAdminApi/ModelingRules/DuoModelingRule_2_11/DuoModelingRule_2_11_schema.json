@@ -1,104 +1,130 @@
 {
   "duo_duo_raw": {
+    "dataset_description": "Duo is a Cisco multi-factor authentication and zero-trust access platform.",
     "access_device": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The device used to access the protected application."
     },
     "application": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The Duo-protected application the user authenticated to."
     },
     "eventtype": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The event type of the Duo record."
     },
     "factor": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The authentication factor the user used to complete the Duo authentication."
     },
     "action": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The type of administrative operation the Duo administrator performed."
     },
     "description": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The details of the Duo administrative change."
     },
     "object": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The name of the Duo object the administrative action was performed on."
     },
     "username": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The user name of the Duo administrator who performed the administrative action."
     },
     "context": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The description of the Duo activity that caused the telephony message or call to be sent."
     },
     "phone": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The phone number that received the Duo telephony SMS or voice call."
     },
     "type": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The telephony method Duo used to deliver the multi-factor authentication message."
     },
     "host": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The hostname of the Duo API endpoint of the account that generated the telephony record."
     },
     "reason": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The reason Duo gives for the outcome of the authentication attempt."
     },
     "result": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The outcome Duo recorded for the authentication attempt."
     },
     "integration": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The Duo integration associated with the activity."
     },
     "user": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The Duo user who attempted to authenticate."
     },
     "auth_device": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The device used to approve the Duo authentication."
     },
     "telephony_id": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The unique ID Duo assigns to the telephony event."
     },
     "email": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The email address of the Duo user who initiated the authentication."
     },
     "_id": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The unique identifier the platform assigns to the event."
     },
     "event_type": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The original event type Duo assigns to the user access attempt record."
     },
     "ood_software": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The software reported for the access device."
     },
     "txid": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The unique Duo transaction ID of the activity."
     },
     "adaptive_trust_assessments": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The Duo risk-based trust assessments for the authentication."
     },
     "alias": {
       "type": "string",
-      "is_array": false
-    }                                        
+      "is_array": false,
+      "field_description": "The username alias the user entered when authenticating to Duo."
+    }
   }
 }
