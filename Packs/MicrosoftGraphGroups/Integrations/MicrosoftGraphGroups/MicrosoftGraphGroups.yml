@@ -12,10 +12,16 @@ configuration:
   required: true
   type: 0
   section: Connect
+- name: _auth_id
+  type: 0
+  section: Connect
+  display: ID or Client ID
+  required: false
 - name: creds_auth_id
   type: 9
   displaypassword: ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   section: Connect
   required: false
 - name: creds_tenant_id
@@ -23,12 +29,6 @@ configuration:
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
-  required: false
-- name: _auth_id
-  type: 0
-  section: Connect
-  display: ID
-  hidden: true
   required: false
 - display: Token
   name: _tenant_id
@@ -450,7 +450,7 @@ script:
     execution: false
     name: msgraph-groups-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.10120494
+  dockerimage: demisto/crypto:1.0.0.14788468
   runonce: false
   script: '-'
   subtype: python3

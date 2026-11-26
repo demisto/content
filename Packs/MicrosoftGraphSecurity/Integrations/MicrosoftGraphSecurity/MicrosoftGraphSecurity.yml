@@ -29,11 +29,17 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- name: _auth_id
+  type: 0
+  section: Connect
+  display: Application ID or Client ID
+  required: false
 - name: creds_auth_id
   type: 9
   section: Connect
   displaypassword: Application ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   required: false
 - name: creds_tenant_id
   type: 9

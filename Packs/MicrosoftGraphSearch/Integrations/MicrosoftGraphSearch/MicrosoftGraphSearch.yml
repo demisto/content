@@ -6,11 +6,17 @@ commonfields:
   id: Microsoft Graph Search
   version: -1
 configuration:
+- display: ID or Client ID
+  name: _auth_id
+  required: false
+  type: 0
+  section: Connect
 - display: ""
   displaypassword: ID or Client ID
   hiddenusername: true
+  hiddenpassword: true
   name: creds_auth_id
-  required: true
+  required: false
   type: 9
   section: Connect
 - display: ""
@@ -96,7 +102,7 @@ script:
   - name: msgraph-search-generate-login-url
     arguments: []
     description: Generate the login url used for Authorization code flow.
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.14788468
   script: ''
   subtype: python3
   type: python

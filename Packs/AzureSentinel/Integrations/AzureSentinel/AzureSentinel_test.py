@@ -2541,7 +2541,7 @@ def test_odata_filter_parameters(mocker):
 def test_main_uses_new_separate_client_id(mocker):
     """
     Given
-    - The new 'creds_client_id' param is provided with a Client ID value.
+    - The masked 'creds_client_id' param is provided with a Client ID value.
     - The legacy 'credentials' param is NOT provided.
 
     When
@@ -2578,7 +2578,7 @@ def test_main_uses_new_separate_client_id(mocker):
 def test_main_falls_back_to_legacy_client_id_when_new_param_absent(mocker):
     """
     Given
-    - The new 'creds_client_id' param is NOT provided.
+    - The masked 'creds_client_id' param is NOT provided.
     - The legacy 'credentials' param IS provided with both identifier (client_id) and password (client_secret).
 
     When
@@ -2903,3 +2903,46 @@ def test_fetch_incidents_e2e_with_lookback(mocker):
     assert len(incidents) == 2
     assert incidents[0]["name"] == "[Azure Sentinel] Regular Incident"
     assert incidents[1]["name"] == "[Azure Sentinel] Lookback Incident"
+
+
+@pytest.mark.parametrize(
+    "id_params, expected_client_id",
+    [
+        ({"client_id": "new-id"}, "new-id"),
+        ({"client_id": "new-id", "creds_client_id": {"password": "masked-id"}}, "new-id"),
+        ({"creds_client_id": {"password": "masked-id"}}, "masked-id"),
+        ({"credentials": {"identifier": "legacy-id", "password": "client-secret"}}, "legacy-id"),
+    ],
+)
+def test_main_client_id_precedence(mocker, id_params, expected_client_id):
+    """
+    Given
+    - Different combinations of the plain-text 'client_id' param, the masked 'creds_client_id' param
+      and the legacy 'credentials.identifier' param.
+
+    When
+    - main() is called.
+
+    Then
+    - AzureSentinelClient is instantiated with the client_id by precedence:
+      'client_id' > 'creds_client_id.password' > 'credentials.identifier'.
+    """
+    import AzureSentinel
+    from AzureSentinel import main
+
+    params = {
+        "credentials": {"password": "client-secret"},
+        "creds_tenant_id": {"password": "tenant-id"},
+        "azure_cloud": "Worldwide",
+        **id_params,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureSentinel.AzureSentinelClient", autospec=True)
+    mocker.patch.object(AzureSentinel, "return_results")
+    mocker.patch("AzureSentinel.test_module", return_value="ok")
+
+    main()
+
+    assert mock_client_cls.call_args[1]["client_id"] == expected_client_id

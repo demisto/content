@@ -503,7 +503,9 @@ def main():
     params: dict = demisto.params()
     url = params.get("url", "").rstrip("/") + "/v1.0/"
     tenant = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id")
-    auth_and_token_url = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id", "")
+    auth_and_token_url = (
+        params.get("_auth_id") or params.get("credentials_auth_id", {}).get("password") or params.get("auth_id", "")
+    )
     enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)

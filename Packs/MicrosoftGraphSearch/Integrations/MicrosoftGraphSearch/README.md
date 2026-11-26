@@ -4,7 +4,7 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| ID or Client ID |  | True |
+| ID or Client ID |  | False |
 | Token or Tenant ID |  | True |
 | Key or Client Secret (can be used instead of Certificate Thumbprint and Private Key) |  | False |
 | Certificate Thumbprint (can be used instead of Client Secret) |  | False |

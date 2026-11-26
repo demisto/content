@@ -18,10 +18,16 @@ configuration:
   hidden: true
   required: false
   section: Connect
+- display: Application ID / Client ID
+  name: _auth_id
+  type: 0
+  required: false
+  section: Connect
 - name: credentials_auth_id
   type: 9
   displaypassword: Application ID / Client ID
   hiddenusername: true
+  hiddenpassword: true
   required: false
   section: Connect
 - display: Token / Tenant ID
@@ -1406,7 +1412,7 @@ script:
     - contextPath: FileContent.Url
       description: The original URL used to retrieve the file.
       type: String
-  dockerimage: demisto/crypto:1.0.0.10120494
+  dockerimage: demisto/crypto:1.0.0.14788468
   script: ''
   subtype: python3
   type: python

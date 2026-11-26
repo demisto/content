@@ -133,7 +133,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     ok_codes = (200, 201, 202)
     refresh_token = params.get("creds_refresh_token", {}).get("password") or params.get("refresh_token", "")
-    auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
+    auth_and_token_url = params.get("_auth_id") or params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key", "")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
