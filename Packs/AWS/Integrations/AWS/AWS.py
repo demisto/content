@@ -32,6 +32,8 @@ AWS_CLI_UMASK = 0o077
 AWS_CLI_CONFIG = "[default]\ncli_follow_urlparam = false\n"
 # Parameter prefixes that make the AWS CLI read a local file and use its content as the parameter value.
 AWS_CLI_LOCAL_FILE_PREFIXES = ("file://", "fileb://")
+# CLI command groups that are not AWS services. 'configure' can read or export the credentials (CLI v2.9+).
+AWS_CLI_BLOCKED_COMMANDS = ("configure",)
 # The only container environment variables passed to the AWS CLI subprocess (binary lookup, proxy, and custom CA certificates).
 AWS_CLI_PASSTHROUGH_ENV_VARS = (
     "PATH",
@@ -11472,14 +11474,17 @@ def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[
     return env
 
 
-def get_cli_privilege_kwargs(home_dir: str) -> dict[str, Any]:
+def get_cli_privilege_kwargs(run_dir: str, home_dir: str) -> dict[str, Any]:
     """
     Build the subprocess arguments that drop root privileges for the AWS CLI subprocess.
 
-    When the integration runs as root, the CLI runs as the unprivileged user with no supplementary groups,
-    and the per-run home directory is handed over to that user. Otherwise, the CLI keeps the current user.
+    When the integration runs as root, the CLI runs as the unprivileged user with no supplementary groups.
+    The run directory stays owned by root, and only the unprivileged group can enter it (no listing, no writing),
+    so the CLI can reach its config and home directory but cannot replace the read-only config.
+    The per-run home directory is handed over to the unprivileged user. Otherwise, the CLI keeps the current user.
 
     Args:
+        run_dir (str): The per-run temporary directory that holds the CLI config and home directory.
         home_dir (str): The per-run temporary home directory of the CLI subprocess.
 
     Returns:
@@ -11487,6 +11492,8 @@ def get_cli_privilege_kwargs(home_dir: str) -> dict[str, Any]:
     """
     if os.geteuid() != 0:
         return {}
+    os.chown(run_dir, 0, AWS_CLI_UNPRIVILEGED_GID)  # root:4000 - root keeps ownership.
+    os.chmod(run_dir, 0o710)  # The unprivileged group can only enter; others get no access.
     os.chown(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID)
     return {
         "user": AWS_CLI_UNPRIVILEGED_UID,
@@ -11500,7 +11507,7 @@ def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedP
     """
     Run the AWS CLI binary with the given tokens. No shell is invoked.
 
-    The CLI runs as an unprivileged user (when the integration runs as root) with a fresh temporary home
+    The CLI runs as an unprivileged user (as opposed to the integration that runs as root) with a fresh temporary home
     directory, so it cannot read root-only files or persist AWS CLI configuration between runs.
     The CLI config is a read-only file outside the home directory, the shared credentials file and the
     instance metadata service are disabled, so profiles, ``credential_process`` and config changes cannot be used.
@@ -11513,14 +11520,13 @@ def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedP
         subprocess.CompletedProcess: The completed process with captured stdout and stderr.
     """
     with tempfile.TemporaryDirectory(prefix="aws-cli-") as run_dir:
-        os.chmod(run_dir, 0o755)
         config_file = os.path.join(run_dir, "config")
         with open(config_file, "w") as config:
             config.write(AWS_CLI_CONFIG)
         os.chmod(config_file, 0o444)
         home_dir = os.path.join(run_dir, "home")
-        os.mkdir(home_dir)
-        privilege_kwargs = get_cli_privilege_kwargs(home_dir)
+        os.mkdir(home_dir, 0o700)
+        privilege_kwargs = get_cli_privilege_kwargs(run_dir, home_dir)
         cli_env = env | {
             "HOME": home_dir,
             "AWS_CONFIG_FILE": config_file,
@@ -11533,6 +11539,7 @@ def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedP
                 capture_output=True,
                 text=True,
                 env=cli_env,
+                cwd=home_dir,
                 timeout=AWS_CLI_TIMEOUT_SECONDS,
                 **privilege_kwargs,
             )
@@ -11547,7 +11554,7 @@ def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -
     Execute an AWS CLI command against the specified account and region.
 
     Args:
-        credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
+        credentials (dict): Platform-supplied CTS credentials.
         params (dict): Integration configuration parameters.
         args (Dict[str, Any]): Command arguments including cli_command, account_id, and region.
 
@@ -11560,6 +11567,10 @@ def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -
         tokens = tokens[1:]
     if not tokens:
         raise ValueError("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
+    if tokens[0].startswith("-"):
+        raise ValueError("The cli_command argument must start with the service name. Place global options after the operation.")
+    if tokens[0] in AWS_CLI_BLOCKED_COMMANDS:
+        raise ValueError(f"The '{tokens[0]}' command is not supported.")
     if any(prefix in token.lower() for token in tokens for prefix in AWS_CLI_LOCAL_FILE_PREFIXES):
         raise ValueError("Local file parameters (file:// and fileb://) are not supported. Pass the value inline instead.")
     if "--output" not in tokens:
@@ -11835,7 +11846,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
-    "aws-cli": execute_cli_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -12326,12 +12336,6 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
         demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
         os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = regional.lower()
 
-    # aws-cli runs the aws binary directly (engine0) - no boto3 service client is needed.
-    if command == AWS_CLI_COMMAND:
-        cli_account_id: str = args.get("account_id", "")
-        cli_credentials = get_cloud_credentials(CloudTypes.AWS.value, cli_account_id) if get_connector_id() else {}
-        return execute_cli_command(cli_credentials, params, args)
-
     role_name = (params.get("access_role_name") or "").removeprefix("role/")
     accounts = argToList(params.get("accounts_to_access"))
 
@@ -12399,6 +12403,13 @@ def main():  # pragma: no cover
             )
             demisto.info(f"[AWS] Health Check Results: {results}")
             return_results(results)
+
+        elif command == AWS_CLI_COMMAND:
+            # aws-cli runs the aws binary directly (no boto3 service client), so it is dispatched outside COMMANDS_MAPPING.
+            if not get_connector_id():
+                raise DemistoException(f"The {AWS_CLI_COMMAND} command is supported only on Cortex Platform tenants.")
+            cli_credentials = get_cloud_credentials(CloudTypes.AWS.value, args.get("account_id", ""))
+            return_results(execute_cli_command(cli_credentials, params, args))
 
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))

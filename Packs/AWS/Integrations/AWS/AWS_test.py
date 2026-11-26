@@ -1558,17 +1558,16 @@ def test_ecs_update_cluster_settings_command_failure(mocker):
         ECS.update_cluster_settings_command(mock_client, args)
 
 
-def test_get_service_client_platform_path_does_not_use_proxydome(mocker):
+def test_get_service_client_platform_path_does_not_use_proxy(mocker):
     """
     Given: Platform CTS credentials.
     When: get_service_client builds a boto3 client.
-    Then: No proxy is configured, SSL verification is enabled, and no ProxyDome token is fetched.
+    Then: No proxy is configured and SSL verification is enabled.
     """
     from AWS import get_service_client
 
     mock_session = mocker.Mock()
     mocker.patch("AWS.get_connector_id", return_value="connector-id")
-    mock_get_token = mocker.patch("AWS.get_proxydome_token", create=True)
 
     get_service_client(
         credentials={"key": "key", "access_token": "secret", "session_token": "token"},
@@ -1581,7 +1580,6 @@ def test_get_service_client_platform_path_does_not_use_proxydome(mocker):
     call_kwargs = mock_session.client.call_args.kwargs
     assert call_kwargs["verify"] is True
     assert not call_kwargs["config"].proxies
-    mock_get_token.assert_not_called()
 
 
 def test_aws_error_handler_handle_response_error_with_request_id(mocker):
@@ -22564,9 +22562,10 @@ def _is_included_command(command_name: str) -> bool:
         command_name: The command name as declared in the YML / COMMANDS_MAPPING.
 
     Returns:
-        True if the command is neither ``test-module`` nor a quick action, False otherwise.
+        True if the command is neither ``test-module``, ``aws-cli`` (dispatched in main() outside
+        COMMANDS_MAPPING), nor a quick action, False otherwise.
     """
-    return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
+    return command_name not in ("test-module", "aws-cli") and not command_name.endswith(QUICK_ACTION_SUFFIX)
 
 
 def _load_yml_spec() -> dict:
@@ -23146,6 +23145,32 @@ def test_execute_cli_command_local_file_parameters_rejected(mocker, cli_command)
     mock_run.assert_not_called()
 
 
+@pytest.mark.parametrize(
+    "cli_command, match",
+    [
+        ("aws configure export-credentials --format env", "'configure' command is not supported"),
+        ("aws configure set profile.x.credential_process id", "'configure' command is not supported"),
+        ("configure list", "'configure' command is not supported"),
+        ("aws --region us-east-1 configure export-credentials", "must start with the service name"),
+        ("aws --debug sts get-caller-identity", "must start with the service name"),
+    ],
+)
+def test_execute_cli_command_blocked_commands_rejected(mocker, cli_command, match):
+    """
+    Given: A 'configure' command (which can read or export the credentials), or a global option placed before the service.
+    When: execute_cli_command is called.
+    Then: A ValueError is raised and the aws binary is never started.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run")
+
+    with pytest.raises(ValueError, match=match):
+        execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, {"cli_command": cli_command, "account_id": "1"})
+
+    mock_run.assert_not_called()
+
+
 def test_execute_cli_command_value_mentioning_file_is_allowed(mocker):
     """
     Given: A CLI command whose values contain the word 'file' without a file:// or fileb:// prefix.
@@ -23187,29 +23212,48 @@ def test_run_aws_cli_drops_root_privileges(mocker):
     """
     Given: The integration runs as root.
     When: run_aws_cli is called.
-    Then: The CLI runs as the unprivileged user with no supplementary groups, a restrictive umask,
-          and a fresh temporary HOME owned by that user, without changing the caller's environment.
+    Then: The CLI runs as the unprivileged user with no supplementary groups, a restrictive umask, and its HOME as
+          the working directory. The run directory stays owned by root with group-only enter access (0o710),
+          HOME is private (0o700) and owned by the unprivileged user, and the caller's environment is unchanged.
     """
+    from pathlib import Path
+
     from AWS import AWS_CLI_UNPRIVILEGED_GID, AWS_CLI_UNPRIVILEGED_UID, run_aws_cli
 
     mocker.patch("AWS.os.geteuid", return_value=0)
     mock_chown = mocker.patch("AWS.os.chown")
-    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+    seen: dict = {}
+
+    def fake_run(cmd, **kwargs):
+        home_dir = kwargs["env"]["HOME"]
+        seen["kwargs"] = kwargs
+        seen["run_dir_mode"] = Path(home_dir).parent.stat().st_mode & 0o777
+        seen["home_dir_mode"] = Path(home_dir).stat().st_mode & 0o777
+        return _completed_process(stdout="{}")
+
+    mocker.patch("AWS.subprocess.run", side_effect=fake_run)
     env = {"AWS_ACCESS_KEY_ID": "ASIAKEY", "HOME": "/root"}
 
     run_aws_cli(["s3api", "list-buckets"], env)
 
-    run_kwargs = mock_run.call_args[1]
+    run_kwargs = seen["kwargs"]
     home_dir = run_kwargs["env"]["HOME"]
+    run_dir = os.path.dirname(home_dir)
     assert run_kwargs["user"] == AWS_CLI_UNPRIVILEGED_UID
     assert run_kwargs["group"] == AWS_CLI_UNPRIVILEGED_GID
     assert run_kwargs["extra_groups"] == []
     assert run_kwargs["umask"] == 0o077
+    assert run_kwargs["cwd"] == home_dir
     assert home_dir != "/root"
     assert run_kwargs["env"]["AWS_ACCESS_KEY_ID"] == "ASIAKEY"
-    mock_chown.assert_called_once_with(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID)
+    assert seen["run_dir_mode"] == 0o710
+    assert seen["home_dir_mode"] == 0o700
+    assert mock_chown.call_args_list == [
+        mocker.call(run_dir, 0, AWS_CLI_UNPRIVILEGED_GID),
+        mocker.call(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID),
+    ]
     assert env["HOME"] == "/root"
-    assert not os.path.exists(home_dir)
+    assert not os.path.exists(run_dir)
 
 
 def test_run_aws_cli_uses_locked_config(mocker):
@@ -23252,19 +23296,34 @@ def test_run_aws_cli_non_root_keeps_current_user(mocker):
     """
     Given: The integration does not run as root.
     When: run_aws_cli is called.
-    Then: The CLI keeps the current user (no privilege arguments) but still gets a fresh temporary HOME.
+    Then: The CLI keeps the current user (no privilege arguments) but still gets a fresh, private temporary HOME
+          as its working directory, and the run directory keeps its owner-only mode (0o700).
     """
+    from pathlib import Path
+
     from AWS import run_aws_cli
 
     mocker.patch("AWS.os.geteuid", return_value=4000)
     mock_chown = mocker.patch("AWS.os.chown")
-    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+    seen: dict = {}
+
+    def fake_run(cmd, **kwargs):
+        home_dir = kwargs["env"]["HOME"]
+        seen["kwargs"] = kwargs
+        seen["run_dir_mode"] = Path(home_dir).parent.stat().st_mode & 0o777
+        seen["home_dir_mode"] = Path(home_dir).stat().st_mode & 0o777
+        return _completed_process(stdout="{}")
+
+    mocker.patch("AWS.subprocess.run", side_effect=fake_run)
 
     run_aws_cli(["s3api", "list-buckets"], {"HOME": "/home/demisto"})
 
-    run_kwargs = mock_run.call_args[1]
+    run_kwargs = seen["kwargs"]
     assert not {"user", "group", "extra_groups", "umask"} & run_kwargs.keys()
     assert run_kwargs["env"]["HOME"] != "/home/demisto"
+    assert run_kwargs["cwd"] == run_kwargs["env"]["HOME"]
+    assert seen["run_dir_mode"] == 0o700
+    assert seen["home_dir_mode"] == 0o700
     mock_chown.assert_not_called()
 
 
@@ -23352,24 +23411,48 @@ def test_build_cli_environment_missing_credentials():
         build_cli_environment({}, {}, "us-east-1")
 
 
-def test_execute_aws_command_routes_aws_cli(mocker):
+def test_main_dispatches_aws_cli_on_platform(mocker):
     """
-    Given: The aws-cli command on the Cortex Platform path.
-    When: execute_aws_command is called.
-    Then: CTS credentials are fetched for the given account and execute_cli_command runs without a boto3 client.
+    Given: The aws-cli command on a Cortex Platform tenant.
+    When: main is called.
+    Then: CTS credentials are fetched for the given account and execute_cli_command runs with them.
     """
-    from AWS import execute_aws_command
-
-    mocker.patch("AWS.get_connector_id", return_value="connector-1")
-    mock_get_creds = mocker.patch("AWS.get_cloud_credentials", return_value=CLI_PLATFORM_CREDENTIALS)
-    mock_service_client = mocker.patch("AWS.get_service_client")
-    mock_result = CommandResults(readable_output="ok")
-    mock_execute = mocker.patch("AWS.execute_cli_command", return_value=mock_result)
+    from AWS import main
 
     args = {"cli_command": "aws s3api list-buckets", "account_id": "123456789012", "region": "us-east-1"}
-    result = execute_aws_command("aws-cli", args, {})
+    mocker.patch.object(demisto, "command", return_value="aws-cli")
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch("AWS.get_connector_id", return_value="connector-1")
+    mock_get_creds = mocker.patch("AWS.get_cloud_credentials", return_value=CLI_PLATFORM_CREDENTIALS)
+    mock_result = CommandResults(readable_output="ok")
+    mock_execute = mocker.patch("AWS.execute_cli_command", return_value=mock_result)
+    mock_return_results = mocker.patch("AWS.return_results")
 
-    assert result == mock_result
+    main()
+
     mock_get_creds.assert_called_once_with("AWS", "123456789012")
     mock_execute.assert_called_once_with(CLI_PLATFORM_CREDENTIALS, {}, args)
-    mock_service_client.assert_not_called()
+    mock_return_results.assert_called_once_with(mock_result)
+
+
+def test_main_rejects_aws_cli_outside_platform(mocker):
+    """
+    Given: The aws-cli command on a non-Platform tenant (no connector ID).
+    When: main is called.
+    Then: An error is returned stating the command is supported only on Cortex Platform tenants,
+          and the CLI is not executed.
+    """
+    from AWS import main
+
+    mocker.patch.object(demisto, "command", return_value="aws-cli")
+    mocker.patch.object(demisto, "args", return_value={"cli_command": "aws s3api list-buckets"})
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mock_execute = mocker.patch("AWS.execute_cli_command")
+    mock_return_error = mocker.patch("AWS.return_error")
+
+    main()
+
+    mock_execute.assert_not_called()
+    assert "supported only on Cortex Platform tenants" in mock_return_error.call_args[0][0]
