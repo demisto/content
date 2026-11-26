@@ -289,7 +289,7 @@ script:
     - contextPath: GreyNoise.IP.message
       description: Message from GreyNoise API.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.14169403
+  dockerimage: demisto/greynoise:1.0.0.14788468
   runonce: false
   script: '-'
   subtype: python3
