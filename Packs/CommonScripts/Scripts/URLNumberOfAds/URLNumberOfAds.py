@@ -3,7 +3,8 @@ import re
 import socket
 import traceback
 from functools import reduce
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin as urllib_urljoin  # alias: CommonServerPython defines its own, different urljoin
+from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -73,7 +74,7 @@ def safe_get(url: str, arg_name: str = "url") -> requests.Response:
         location = response.headers.get("Location") if response.is_redirect else None
         if not location:
             return response
-        url = urljoin(url, location)
+        url = urllib_urljoin(url, location)
     raise ValueError(f"Too many redirects (more than {MAX_REDIRECTS}) for '{arg_name}'.")
 
 
@@ -99,6 +100,9 @@ def main():  # pragma: no cover
     try:
         url = demisto.args()["url"]
         easylist_url = demisto.args().get("easylist", "https://easylist.github.io/easylist/easylist.txt")
+
+        validate_url_safe(url, "url")
+        validate_url_safe(easylist_url, "easylist")
 
         r = safe_get(url, "url")
         reasy = safe_get(easylist_url, "easylist")
