@@ -11431,40 +11431,20 @@ class NetworkFirewall:
         )
 
 
-def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[str, str]:
+def build_cli_environment(credentials: dict, region: str) -> dict[str, str]:
     """
-    Build the environment variables for the AWS CLI subprocess.
-
-    On the Cortex Platform path, the CTS short-lived credentials are used.
-    On the marketplace path, the configured access keys are used (optionally via STS AssumeRole).
+    Build the environment variables for the AWS CLI subprocess from the Cortex Platform CTS short-lived credentials.
 
     Args:
-        credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
-        params (dict): Integration configuration parameters.
+        credentials (dict): Platform-supplied CTS credentials.
         region (str): The AWS region to run the command against.
 
     Returns:
         dict[str, str]: A minimal environment with only the passthrough variables and the AWS credential variables.
     """
-    if credentials:
-        access_key_id = credentials.get("key", "")
-        secret_access_key = credentials.get("access_token", "")
-        session_token = credentials.get("session_token", "")
-    else:
-        creds_param = params.get("credentials") or {}
-        access_key_id = creds_param.get("identifier", "")
-        secret_access_key = creds_param.get("password", "")
-        session_token = ""
-        if not (access_key_id and secret_access_key):
-            raise DemistoException(
-                "AWS credentials are not configured. Provide an Access Key and Secret Key "
-                "on the integration instance, or run the integration through a Cortex Cloud connector."
-            )
-        if params.get("role_arn"):
-            tmp_creds = _assume_role_credentials(params, access_key_id, secret_access_key, region)
-            access_key_id = tmp_creds["AccessKeyId"]
-            secret_access_key = tmp_creds["SecretAccessKey"]
-            session_token = tmp_creds["SessionToken"]
+    access_key_id = credentials.get("key", "")
+    secret_access_key = credentials.get("access_token", "")
+    session_token = credentials.get("session_token", "")
 
     env = {name: os.environ[name] for name in AWS_CLI_PASSTHROUGH_ENV_VARS if name in os.environ}
     env.update({"AWS_ACCESS_KEY_ID": access_key_id, "AWS_SECRET_ACCESS_KEY": secret_access_key, "AWS_DEFAULT_REGION": region})
@@ -11543,42 +11523,59 @@ def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedP
                 timeout=AWS_CLI_TIMEOUT_SECONDS,
                 **privilege_kwargs,
             )
-        except FileNotFoundError as e:
-            raise DemistoException("The 'aws' CLI binary was not found. Ensure 'awscli' is installed in the Docker image.") from e
         except subprocess.TimeoutExpired as e:
             raise DemistoException(f"The AWS CLI command timed out after {AWS_CLI_TIMEOUT_SECONDS} seconds.") from e
 
 
-def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -> CommandResults:
+def validate_cli_command(cli_command: str) -> list[str]:
+    """
+    Split the AWS CLI command into tokens and validate them.
+
+    Args:
+        cli_command (str): The AWS CLI command, with or without the leading ``aws`` token.
+
+    Returns:
+        list[str]: The CLI tokens without the leading ``aws`` token.
+
+    Raises:
+        DemistoException: If the command is empty, starts with a global option, is a blocked command,
+            or uses a local file parameter.
+    """
+    tokens = shlex.split(cli_command.strip())
+    if tokens and tokens[0] == "aws":
+        tokens = tokens[1:]
+    if not tokens:
+        raise DemistoException("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
+    if tokens[0].startswith("-"):
+        raise DemistoException(
+            "The cli_command argument must start with the service name. Place global options after the operation."
+        )
+    if tokens[0] in AWS_CLI_BLOCKED_COMMANDS:
+        raise DemistoException(f"The '{tokens[0]}' command is not supported.")
+    if any(prefix in token.lower() for token in tokens for prefix in AWS_CLI_LOCAL_FILE_PREFIXES):
+        raise DemistoException("Local file parameters (file:// and fileb://) are not supported. Pass the value inline instead.")
+    return tokens
+
+
+def execute_cli_command(credentials: dict, args: Dict[str, Any]) -> CommandResults:
     """
     Execute an AWS CLI command against the specified account and region.
 
     Args:
         credentials (dict): Platform-supplied CTS credentials.
-        params (dict): Integration configuration parameters.
         args (Dict[str, Any]): Command arguments including cli_command, account_id, and region.
 
     Returns:
         CommandResults: The JSON response of the AWS CLI command and a readable summary.
     """
     cli_command: str = args.get("cli_command") or ""
-    tokens = shlex.split(cli_command.strip())
-    if tokens and tokens[0] == "aws":
-        tokens = tokens[1:]
-    if not tokens:
-        raise ValueError("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
-    if tokens[0].startswith("-"):
-        raise ValueError("The cli_command argument must start with the service name. Place global options after the operation.")
-    if tokens[0] in AWS_CLI_BLOCKED_COMMANDS:
-        raise ValueError(f"The '{tokens[0]}' command is not supported.")
-    if any(prefix in token.lower() for token in tokens for prefix in AWS_CLI_LOCAL_FILE_PREFIXES):
-        raise ValueError("Local file parameters (file:// and fileb://) are not supported. Pass the value inline instead.")
+    tokens = validate_cli_command(cli_command)
     if "--output" not in tokens:
         tokens += ["--output", "json"]
 
     account_id = args.get("account_id")
-    region: str = args.get("region") or params.get("region") or DEFAULT_REGION
-    env = build_cli_environment(credentials, params, region)
+    region: str = args.get("region") or DEFAULT_REGION
+    env = build_cli_environment(credentials, region)
 
     demisto.debug(f"[AWS CLI] Running 'aws {' '.join(tokens[:2])}' on {account_id=}, {region=}")
     result = run_aws_cli(tokens, env)
@@ -11592,9 +11589,12 @@ def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -
         response: Any = json.loads(stdout) if stdout else {}
     except json.JSONDecodeError:
         # A non-JSON output format was explicitly requested (e.g. --output text).
-        return CommandResults(readable_output=f"### AWS CLI Result\n```\n{stdout}\n```", raw_response=stdout)
+        # The code fence is longer than any backtick run in the output, so the output cannot close it early.
+        longest_backtick_run = max((len(run) for run in re.findall(r"`+", stdout)), default=0)
+        fence = "`" * max(3, longest_backtick_run + 1)
+        return CommandResults(readable_output=f"### AWS CLI Result\n{fence}\n{stdout}\n{fence}", raw_response=stdout)
 
-    outputs = remove_empty_elements({"Command": cli_command, "AccountId": account_id, "Region": region, "Output": response})
+    outputs = {"Command": cli_command, "AccountId": account_id, "Region": region, "Output": response}
     readable_output = (
         tableToMarkdown("AWS CLI Result", response, headerTransform=pascalToSpace, removeNull=True)
         if response
@@ -12389,6 +12389,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
+    connector_id = get_connector_id()
 
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
@@ -12398,7 +12399,7 @@ def main():  # pragma: no cover
         if command == "test-module":
             results = (
                 run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
-                if (connector_id := get_connector_id())
+                if connector_id
                 else test_module(params)
             )
             demisto.info(f"[AWS] Health Check Results: {results}")
@@ -12406,10 +12407,10 @@ def main():  # pragma: no cover
 
         elif command == AWS_CLI_COMMAND:
             # aws-cli runs the aws binary directly (no boto3 service client), so it is dispatched outside COMMANDS_MAPPING.
-            if not get_connector_id():
+            if not connector_id:
                 raise DemistoException(f"The {AWS_CLI_COMMAND} command is supported only on Cortex Platform tenants.")
             cli_credentials = get_cloud_credentials(CloudTypes.AWS.value, args.get("account_id", ""))
-            return_results(execute_cli_command(cli_credentials, params, args))
+            return_results(execute_cli_command(cli_credentials, args))
 
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
