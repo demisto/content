@@ -2,8 +2,8 @@
 
 
 ### Generate an API Key
-1. Sign-up or login to [https://console.anthropic.com](https://console.anthropic.com).
-2. Generate a new API Key at [https://console.anthropic.com/keys](https://console.anthropic.com/keys).
+1. Sign-up or login to [https://platform.claude.com](https://platform.claude.com).
+2. Generate a new API Key at [https://platform.claude.com/settings/keys](https://platform.claude.com/settings/keys).
 
 ### Models & Rate Limits
 The integration utilizes the **'Messages'** endpoint. Therefore, it will only be possible to configure models that support the following endpoint: _https://api.anthropic.com/v1/messages_.
@@ -27,7 +27,7 @@ This integration allows you to:
 
 ### Credentials
 This integration supports two independent credentials; configure either or both:
-- **API Key** — required for the LLM commands (`claude-send-message`, `claude-check-email-*`, `claude-create-soc-email-template`). Generate one at [https://console.anthropic.com/keys](https://console.anthropic.com/keys).
+- **API Key** — required for the LLM commands (`claude-send-message`, `claude-check-email-*`, `claude-create-soc-email-template`). Generate one at [https://platform.claude.com/settings/keys](https://platform.claude.com/settings/keys).
 - **Compliance Access Key** (`sk-ant-api01-...`) — required for event collection and the read-only `claude-list-*` / `claude-get-*` commands.
 
 ### Compliance API
