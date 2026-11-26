@@ -10313,13 +10313,13 @@ def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], a
     )
 
 
-def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+@AzureIntegration.register("azure-rm-subscriptions-list")
+def subscriptions_list_command(client: AzureClient, args: dict[str, Any]) -> CommandResults:
     """
     List all subscriptions the authenticated identity has access to in the tenant.
     Args:
-        client (AzureClient): Azure Client.
+        client (AzureClient): Azure Client, built by ``AzureIntegration.get_client``.
         args (Dict[str, Any]): command arguments.
-        params (Dict[str, Any]): configuration parameters.
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
@@ -13682,7 +13682,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
     "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
     "azure-vn-virtual-networks-list": virtual_networks_list_command,
-    "azure-rm-subscriptions-list": subscriptions_list_command,
     "azure-vm-instance-start": start_vm_command,
     "azure-compute-vm-start": start_vm_command,
     "azure-vm-instance-power-off": poweroff_vm_command,

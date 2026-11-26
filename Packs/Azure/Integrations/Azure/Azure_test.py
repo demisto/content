@@ -16062,6 +16062,18 @@ def test_list_virtual_networks_request_error(mocker, client):
     assert call_kwargs["subscription_id"] == "subid"
 
 
+def test_subscriptions_list_command_is_registered():
+    """
+    Given: The azure-rm-subscriptions-list command.
+    When: Looking it up in the AzureIntegration registry and in COMMANDS_MAPPING.
+    Then: It is registered on AzureIntegration as a non-polling handler and is no longer in COMMANDS_MAPPING.
+    """
+    from Azure import COMMANDS_MAPPING, AzureIntegration, subscriptions_list_command
+
+    assert AzureIntegration._registry["azure-rm-subscriptions-list"] == (subscriptions_list_command, False)
+    assert "azure-rm-subscriptions-list" not in COMMANDS_MAPPING
+
+
 def test_subscriptions_list_command(mocker):
     """
     Given: An Azure client mock and the list_subscriptions_response.json file.
@@ -16077,7 +16089,7 @@ def test_subscriptions_list_command(mocker):
     mock_client = mocker.Mock()
     mock_client.list_subscriptions_request.return_value = mock_response
 
-    result: CommandResults = subscriptions_list_command(mock_client, {}, {})
+    result: CommandResults = subscriptions_list_command(mock_client, {})
 
     subscriptions = result.outputs["Azure.ResourceManagement.Subscriptions(val.id && val.id == obj.id)"]
     assert len(subscriptions) == 2
@@ -16109,7 +16121,7 @@ def test_subscriptions_list_command_with_next_token(mocker):
         "nextLink": next_link,
     }
 
-    result: CommandResults = subscriptions_list_command(mock_client, {}, {"next_token": "page2"})
+    result: CommandResults = subscriptions_list_command(mock_client, {"next_token": "page2"})
 
     assert result.outputs["Azure.ResourceManagement(true)"] == {"SubscriptionsNextToken": next_link}
     mock_client.list_subscriptions_request.assert_called_once_with(next_token="page2")
@@ -16126,7 +16138,7 @@ def test_subscriptions_list_command_empty_response(mocker):
     mock_client = mocker.Mock()
     mock_client.list_subscriptions_request.return_value = {"value": []}
 
-    result: CommandResults = subscriptions_list_command(mock_client, {}, {})
+    result: CommandResults = subscriptions_list_command(mock_client, {})
 
     assert result.outputs is None
     assert result.readable_output == "No subscriptions were found."

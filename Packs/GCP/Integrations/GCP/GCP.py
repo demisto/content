@@ -5998,12 +5998,13 @@ def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
-def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+@GCPIntegration.register("gcp-compute-regions-list")
+def gcp_compute_regions_list(client: Resource, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of region resources available to the specified project.
 
     Args:
-        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        client (Resource): Compute Engine API client, built by ``GCPIntegration.get_client``.
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
@@ -6029,8 +6030,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
     remove_nulls_from_dictionary(params)
     demisto.debug(f"[GCP: gcp_compute_regions_list] Request params: {params}")
 
-    compute = GCPServices.COMPUTE.build(creds)
-    response = compute.regions().list(**params).execute()  # pylint: disable=E1101
+    response = client.regions().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
@@ -8282,7 +8282,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "gcp-compute-instance-group-instances-remove": gcp_compute_instance_group_instances_remove,
     "gcp-compute-instance-group-named-ports-set": gcp_compute_instance_group_named_ports_set,
     "gcp-compute-region-get": gcp_compute_region_get,
-    "gcp-compute-regions-list": gcp_compute_regions_list,
     "gcp-compute-zone-get": gcp_compute_zone_get,
     "gcp-compute-zones-list": gcp_compute_zones_list,
     "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,

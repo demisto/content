@@ -5901,15 +5901,25 @@ class TestGCPComputeNetworksList:
 
 
 class TestGCPComputeRegionsList:
+    def test_gcp_compute_regions_list_is_registered(self):
+        """
+        Given: The gcp-compute-regions-list command.
+        When: Looking it up in the GCPIntegration registry and in COMMANDS_MAPPING.
+        Then: It is registered on GCPIntegration as a non-polling handler and is no longer in COMMANDS_MAPPING.
+        """
+        from GCP import COMMANDS_MAPPING, GCPIntegration, gcp_compute_regions_list
+
+        assert GCPIntegration._registry["gcp-compute-regions-list"] == (gcp_compute_regions_list, False)
+        assert "gcp-compute-regions-list" not in COMMANDS_MAPPING
+
     def test_gcp_compute_regions_list_default_limit(self, mocker):
         """
-        Given: A mocked Compute API returning a single region item.
+        Given: A mocked Compute API client returning a single region item.
         When: gcp_compute_regions_list is called with only the project_id argument.
         Then: The API is called with the default maxResults of 50 and the region is returned in the outputs.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -5919,9 +5929,8 @@ class TestGCPComputeRegionsList:
         }
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+        result = gcp_compute_regions_list(mock_compute, {"project_id": "test-project"})
 
         mock_regions.list.assert_called_once_with(project="test-project", maxResults=50)
         regions = result.outputs["GCP.Compute.Regions(val.id && val.id == obj.id)"]
@@ -5935,9 +5944,8 @@ class TestGCPComputeRegionsList:
         When: gcp_compute_regions_list is called with limit, filter, order_by and next_token.
         Then: The API is called with all the provided parameters and the next token is returned in the outputs.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -5948,7 +5956,6 @@ class TestGCPComputeRegionsList:
         }
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
         args = {
             "project_id": "test-project",
@@ -5957,7 +5964,7 @@ class TestGCPComputeRegionsList:
             "order_by": "name",
             "next_token": "prev-token",
         }
-        result = gcp_compute_regions_list(mock_creds, args)
+        result = gcp_compute_regions_list(mock_compute, args)
 
         mock_regions.list.assert_called_once_with(
             project="test-project", maxResults=25, filter="name=europe*", orderBy="name", pageToken="prev-token"
@@ -5970,9 +5977,8 @@ class TestGCPComputeRegionsList:
         When: gcp_compute_regions_list is called with the project ID.
         Then: A no-results message is returned and no context outputs are set.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -5980,9 +5986,8 @@ class TestGCPComputeRegionsList:
         mock_list.execute.return_value = {}
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+        result = gcp_compute_regions_list(mock_compute, {"project_id": "test-project"})
 
         assert result.readable_output == "No regions were found in project 'test-project'."
         assert not result.outputs
@@ -5993,9 +5998,8 @@ class TestGCPComputeRegionsList:
         When: gcp_compute_regions_list is called with the project ID.
         Then: A no-results message is returned and no context outputs are set.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -6003,9 +6007,8 @@ class TestGCPComputeRegionsList:
         mock_list.execute.return_value = {"items": [], "nextPageToken": "next-token-789"}
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+        result = gcp_compute_regions_list(mock_compute, {"project_id": "test-project"})
 
         assert result.readable_output == "No regions were found in project 'test-project'."
         assert not result.outputs
@@ -6017,9 +6020,8 @@ class TestGCPComputeRegionsList:
         When: gcp_compute_regions_list is called.
         Then: The default limit is used instead of raising a TypeError or requesting zero results.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -6027,9 +6029,8 @@ class TestGCPComputeRegionsList:
         mock_list.execute.return_value = {"items": [{"id": "1000", "name": "us-central1", "status": "UP"}]}
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        gcp_compute_regions_list(mock_creds, {"project_id": "test-project", "limit": limit})
+        gcp_compute_regions_list(mock_compute, {"project_id": "test-project", "limit": limit})
 
         assert mock_regions.list.call_args[1]["maxResults"] == 50
 
@@ -6039,9 +6040,8 @@ class TestGCPComputeRegionsList:
         When: gcp_compute_regions_list is called.
         Then: The error propagates so main can route it to the permission error handler.
         """
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
         mock_compute = mocker.Mock()
         mock_regions = mocker.Mock()
         mock_list = mocker.Mock()
@@ -6049,10 +6049,9 @@ class TestGCPComputeRegionsList:
         mock_list.execute.side_effect = Exception("API Error")
         mock_regions.list.return_value = mock_list
         mock_compute.regions.return_value = mock_regions
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
         with pytest.raises(Exception, match="API Error"):
-            gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+            gcp_compute_regions_list(mock_compute, {"project_id": "test-project"})
 
     def test_gcp_compute_regions_list_invalid_limit(self, mocker):
         """
@@ -6061,15 +6060,14 @@ class TestGCPComputeRegionsList:
         Then: A DemistoException is raised and no API call is made.
         """
         from CommonServerPython import DemistoException
-        from GCP import GCPServices, gcp_compute_regions_list
+        from GCP import gcp_compute_regions_list
 
-        mock_creds = mocker.Mock()
-        mock_build = mocker.patch.object(GCPServices.COMPUTE, "build")
+        mock_compute = mocker.Mock()
 
         with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
-            gcp_compute_regions_list(mock_creds, {"project_id": "test-project", "limit": "501"})
+            gcp_compute_regions_list(mock_compute, {"project_id": "test-project", "limit": "501"})
 
-        mock_build.assert_not_called()
+        mock_compute.regions.assert_not_called()
 
 
 # gcp_compute_zones_list
@@ -9029,6 +9027,44 @@ def _top_level_functions(tree: ast.Module) -> dict:
     return functions
 
 
+def _read_register_decorator_command(decorator: ast.expr) -> str | None:
+    """Return the command name of a ``@GCPIntegration.register("<command>")`` decorator, or None.
+
+    The command name may be passed positionally or as ``command_name=``; a non-literal name
+    cannot be resolved statically and returns None.
+    """
+    if not (
+        isinstance(decorator, ast.Call)
+        and isinstance(decorator.func, ast.Attribute)
+        and decorator.func.attr == "register"
+        and isinstance(decorator.func.value, ast.Name)
+        and decorator.func.value.id == "GCPIntegration"
+    ):
+        return None
+    command_node = decorator.args[0] if decorator.args else None
+    for keyword in decorator.keywords:
+        if keyword.arg == "command_name":
+            command_node = keyword.value
+    return _string_constant(command_node) if command_node is not None else None
+
+
+def _parse_registered_commands(tree: ast.Module) -> dict:
+    """Map every command registered with ``@GCPIntegration.register`` on a top-level function to its handler name.
+
+    Returns:
+        dict mapping command_name -> handler_function_name, excluding test-module and quick-action commands.
+    """
+    registered: dict = {}
+    for node in tree.body:
+        if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            continue
+        for decorator in node.decorator_list:
+            command_name = _read_register_decorator_command(decorator)
+            if command_name and _is_included_command(command_name):
+                registered[command_name] = node.name
+    return registered
+
+
 def _string_constant(node: ast.AST) -> str | None:
     """Return the value of a string-literal AST node, or None if it is not one."""
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
@@ -9179,8 +9215,30 @@ def _collect_output_prefixes(function_node: ast.AST, seen: set) -> set:
 
 
 # Derived once from the single parse of GCP.py and reused by every check below.
-_COMMAND_MAP = _parse_command_map(_PY_TREE)
+# Commands are wired either in COMMANDS_MAPPING or with @GCPIntegration.register.
+_COMMAND_MAP = _parse_command_map(_PY_TREE) | _parse_registered_commands(_PY_TREE)
 _FUNCTION_NODES = _top_level_functions(_PY_TREE)
+
+
+def test_parse_registered_commands_reads_register_decorators():
+    """
+    Given: A source with a positional and a keyword @GCPIntegration.register, and an unrelated decorated function.
+    When: Parsing it with _parse_registered_commands.
+    Then: Only the two registered commands are returned, mapped to their handler names.
+    """
+    source = (
+        "@GCPIntegration.register('gcp-sample-list')\n"
+        "def sample_list(client, args):\n"
+        "    return None\n"
+        "@GCPIntegration.register(command_name='gcp-sample-get', polling=True)\n"
+        "def sample_get(args, client):\n"
+        "    return None\n"
+        "@other.register('gcp-not-registered')\n"
+        "def not_registered(client, args):\n"
+        "    return None\n"
+    )
+
+    assert _parse_registered_commands(ast.parse(source)) == {"gcp-sample-list": "sample_list", "gcp-sample-get": "sample_get"}
 
 
 def test_command_map_parser_ignores_commented_out_entries():
@@ -9219,7 +9277,7 @@ def test_command_map_handlers_resolve_to_real_functions():
 def test_yml_commands_are_wired_in_py():
     """
     Given: The integration YML declaring command names.
-    When: Comparing against the COMMANDS_MAPPING wired in the .py.
+    When: Comparing against the COMMANDS_MAPPING entries and @GCPIntegration.register commands in the .py.
     Then: Every non-quick-action YML command must be wired in the .py.
     """
     missing = sorted(name for name in _YML_SPEC if name not in _COMMAND_MAP)

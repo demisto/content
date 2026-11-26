@@ -9155,6 +9155,18 @@ def test_network_interface_attribute_modify_command_validation_error(mocker):
         EC2.network_interface_attribute_modify_command(mock_client, args)
 
 
+def test_regions_describe_command_is_registered():
+    """
+    Given: The aws-ec2-regions-describe command.
+    When: Looking it up in the AWSIntegration registry and in COMMANDS_MAPPING.
+    Then: It is registered on AWSIntegration as a non-polling handler and is no longer in COMMANDS_MAPPING.
+    """
+    from AWS import COMMANDS_MAPPING, EC2, AWSIntegration
+
+    assert AWSIntegration._registry["aws-ec2-regions-describe"] == (EC2.regions_describe_command, False)
+    assert "aws-ec2-regions-describe" not in COMMANDS_MAPPING
+
+
 def test_regions_describe_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client returning a list of regions.
@@ -22824,6 +22836,73 @@ def _parse_commands_mapping(tree: ast.Module) -> dict[str, str]:
     return mapping
 
 
+def _read_register_decorator_command(decorator: ast.expr) -> str | None:
+    """Return the command name of an ``@AWSIntegration.register("<command>")`` decorator, or None.
+
+    Args:
+        decorator: A decorator expression of a function definition.
+
+    Returns:
+        The registered command name when the decorator is an ``AWSIntegration.register`` call
+        with a string literal command name (positional or ``command_name=``), None otherwise.
+    """
+    if not (
+        isinstance(decorator, ast.Call)
+        and isinstance(decorator.func, ast.Attribute)
+        and decorator.func.attr == "register"
+        and isinstance(decorator.func.value, ast.Name)
+        and decorator.func.value.id == "AWSIntegration"
+    ):
+        return None
+    command_node = decorator.args[0] if decorator.args else None
+    for keyword in decorator.keywords:
+        if keyword.arg == "command_name":
+            command_node = keyword.value
+    if isinstance(command_node, ast.Constant) and isinstance(command_node.value, str):
+        return command_node.value
+    return None
+
+
+def _parse_registered_commands(tree: ast.Module) -> dict[str, str]:
+    """Parse the commands registered with ``@AWSIntegration.register("<command>")``.
+
+    Both module-level functions and static methods of service classes are scanned.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A dict mapping command_name -> qualified handler name (e.g. "EC2.regions_describe_command"),
+        excluding test-module and quick-action commands.
+    """
+    registered: dict[str, str] = {}
+
+    def walk(node: ast.AST, prefix: str = "") -> None:
+        for child in getattr(node, "body", []):
+            if isinstance(child, ast.ClassDef):
+                walk(child, f"{prefix}{child.name}.")
+            elif isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
+                for decorator in child.decorator_list:
+                    command_name = _read_register_decorator_command(decorator)
+                    if command_name and _is_included_command(command_name):
+                        registered[command_name] = f"{prefix}{child.name}"
+
+    walk(tree)
+    return registered
+
+
+def _parse_command_handlers(tree: ast.Module) -> dict[str, str]:
+    """Map every wired command to its handler: ``COMMANDS_MAPPING`` entries plus registered commands.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A dict mapping command_name -> dotted handler name.
+    """
+    return _parse_commands_mapping(tree) | _parse_registered_commands(tree)
+
+
 def _index_functions(tree: ast.Module) -> tuple:
     """Index every function in the module by qualified name and by short name.
 
@@ -23024,10 +23103,37 @@ def test_camel_to_snake(value: str, expected: str) -> None:
     assert _camel_to_snake(value) == expected
 
 
+def test_parse_registered_commands_reads_static_and_module_level_handlers() -> None:
+    """
+    Given: A source with a registered static method, a registered module-level function
+           (keyword command name) and an unrelated decorated function.
+    When: Parsing it with _parse_registered_commands.
+    Then: Only the two registered commands are returned, mapped to their qualified handler names.
+    """
+    source = (
+        "class EC2:\n"
+        "    @staticmethod\n"
+        "    @AWSIntegration.register('aws-ec2-sample-list')\n"
+        "    def sample_list_command(client, args):\n"
+        "        return None\n"
+        "@AWSIntegration.register(command_name='aws-s3-sample-get')\n"
+        "def sample_get_command(client, args):\n"
+        "    return None\n"
+        "@other.register('aws-not-registered')\n"
+        "def not_registered(client, args):\n"
+        "    return None\n"
+    )
+
+    registered = _parse_registered_commands(ast.parse(source))
+
+    assert registered == {"aws-ec2-sample-list": "EC2.sample_list_command", "aws-s3-sample-get": "sample_get_command"}
+
+
 def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> None:
     """
     Given: The integration YML declaring command names.
-    When: Comparing against the COMMANDS_MAPPING wired in AWS.py.
+    When: Comparing against the COMMANDS_MAPPING entries and the @AWSIntegration.register
+          commands wired in AWS.py.
     Then: Every non-quick-action YML command must be wired in the .py, and every
           wired handler must resolve to a real function.
 
@@ -23036,21 +23142,20 @@ def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> No
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # When
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     # Then
     missing = sorted(name for name in yml_spec if name not in command_map)
     assert not missing, (
-        "The following commands are declared in AWS.yml but are NOT wired in " f"COMMANDS_MAPPING in AWS.py: {missing}"
+        "The following commands are declared in AWS.yml but are NOT wired in AWS.py "
+        f"(neither in COMMANDS_MAPPING nor via @AWSIntegration.register): {missing}"
     )
 
     unresolved = sorted(
         f"{command} -> {handler}" for command, handler in command_map.items() if _resolve(handler, qualified, short) is None
     )
-    assert not unresolved, (
-        "The following COMMANDS_MAPPING handlers do not resolve to a function " f"defined in AWS.py: {unresolved}"
-    )
+    assert not unresolved, f"The following command handlers do not resolve to a function defined in AWS.py: {unresolved}"
 
 
 def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module) -> None:
@@ -23067,7 +23172,7 @@ def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module)
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     # When
@@ -23107,7 +23212,7 @@ def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list
         py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
-    command_map = _parse_commands_mapping(py_tree)
+    command_map = _parse_command_handlers(py_tree)
     qualified, short = _index_functions(py_tree)
 
     def _is_covered(context_path: str, prefixes: set) -> bool:

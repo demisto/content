@@ -3365,6 +3365,7 @@ class EC2:
         )
 
     @staticmethod
+    @AWSIntegration.register("aws-ec2-regions-describe")
     def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the Regions that are enabled for your account, or all Regions.
@@ -11351,7 +11352,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
     "aws-ec2-tags-create": EC2.create_tags_command,
-    "aws-ec2-regions-describe": EC2.regions_describe_command,
     "aws-ec2-network-interface-attribute-modify": EC2.network_interface_attribute_modify_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
