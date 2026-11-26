@@ -45,7 +45,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  additionalinfo: How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically.
+  additionalinfo: How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically. Empty, 0, or negative values use the default value.
 - display: Incident type
   name: incidentType
   type: 13
@@ -198,7 +198,7 @@ script:
       required: true
     description: Removes tags from a given message.
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.16.14990175
   isfetch: true
   runonce: false
   script: '-'
