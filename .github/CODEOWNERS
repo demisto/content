@@ -24,8 +24,6 @@
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/ContentManagement/* @DeanArbel @kamalq97
-/Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
-/Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
 /Packs/rasterize/Integrations/rasterize/* @MosheEichler @DeanArbel
 
 # Important Scripts
@@ -34,25 +32,12 @@
 /Packs/ApiModules/Scripts/MicrosoftApiModule @noydavidi
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @noydavidi
 /Packs/ApiModules/Scripts/EWSApiModule @noydavidi
-/Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
-/Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
 # Common Packs
 /Packs/CommonTypes/ @melamedbn @idovandijk
 /Packs/CommonPlaybooks/ @melamedbn @idovandijk
 /Packs/CommonDashboards/ @melamedbn @idovandijk
 /Packs/ContentManagement/ @talzich
-/Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
-/Packs/CommonTypes/Layouts/* @Ni-Knight
-
-# Indicators Formatters
-/Packs/CommonScripts/Scripts/ExtractDomainAndFQDNFromUrlAndEmail/* @Ni-Knight
-/Packs/CommonScripts/Scripts/FormatURL/* @Ni-Knight
-/Packs/CommonScripts/Scripts/ExtractAttackPattern/* @Ni-Knight
-/Packs/CommonScripts/Scripts/VerifyCIDR/* @Ni-Knight
-/Packs/CommonScripts/Scripts/VerifyIPv6Indicator/* @Ni-Knight
-/Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
-/Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
 .pre-commit-config_template.yaml @yedidyacohenpalo
@@ -105,7 +90,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/MicrosoftGraphMail @Shellyber @noydavidi
 /Packs/MicrosoftGraphSecurity @Shellyber @noydavidi
 /Packs/MicrosoftGraphFiles @Shellyber @noydavidi
-
 
 /Packs/AWS @Moish-Gilboa @RotemAmit
 /Packs/AWS-AccessAnalyzer @Moish-Gilboa @RotemAmit

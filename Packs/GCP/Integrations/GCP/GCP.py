@@ -283,7 +283,7 @@ class GCPServices(Enum):
         elif self == GCPServices.BIGQUERY:
             # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
             client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
-        elif self == GCPServices.CLOUD_FUNCTIONS:
+        elif self == GCPServices.CLOUD_FUNCTIONS or self == GCPServices.CLOUD_FUNCTIONS_V1:
             # Cloud Functions exposes testIamPermissions only at function scope (the API requires a
             # resource matching projects/*/locations/*/functions/*), so a placeholder function is used.
             # Per the API contract a non-existent resource returns an empty permission set rather than

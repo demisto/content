@@ -77,4 +77,82 @@ Edit Fluent Bit conf file **/fluent-bit/etc/fluent-bit.conf** and input the foll
 
 Refer to the [Fluent Bit manual](https://docs.fluentbit.io/manual/data-pipeline/outputs/output_formats) for details on additional output plugins and configurations.
 
+### Large deployments - Fluent Bit edge to aggregator
+
+The setup above sends logs from each Fluent Bit instance directly to Cortex XSIAM. This works well for a small number of BlueField DPUs. For large AI factories, use two tiers of Fluent Bit so that only a few hosts need internet access and the HTTP collector token:
+
+| Tier                   | Runs on                                                       | Sends to                                                              |
+|:-----------------------|:--------------------------------------------------------------|:----------------------------------------------------------------------|
+| Edge forwarder         | Each host or DPU that collects DOCA Argus output              | Aggregators, using the Fluent Bit `forward` protocol (TCP 24224, TLS) |
+| Aggregator (2 or more) | Hosts on the management network with outbound HTTPS access    | Cortex XSIAM HTTP log collector (HTTPS 443)                           |
+
+Benefits:
+
+* Only the aggregators connect to the internet and hold the Cortex XSIAM token.
+* Edge forwarders balance traffic across the aggregators.
+* Aggregators buffer logs to disk, so logs are kept and resent if the internet link or the tenant is unavailable.
+* No change in Cortex XSIAM. The dataset, parsing and modeling rules are the same as for direct delivery.
+
+#### Edge forwarder - [OUTPUT] details
+
+Keep your existing DOCA Argus `[INPUT]`, and replace the `http` output with a `forward` output:
+
+  | Parameter              | Value                                   |
+  |:-----------------------|:----------------------------------------|
+  | `Name`                 | forward                                 |
+  | `Match`                | argus                                   |
+  | `Upstream`             | /fluent-bit/etc/upstream.conf           |
+  | `Require_Ack_Response` | True                                    |
+
+Create **/fluent-bit/etc/upstream.conf** listing the aggregators. Traffic is balanced round-robin. When an upstream file is used, the TLS and shared key settings are set on each `[NODE]`:
+
+```
+[UPSTREAM]
+    name  argus-aggregators
+
+[NODE]
+    name           aggregator-1
+    host           <aggregator_1_address>
+    port           24224
+    tls            on
+    tls.verify     on
+    tls.ca_file    <path_to_ca_certificate>
+    shared_key     <forward_shared_key>
+    self_hostname  <edge_hostname>
+
+[NODE]
+    name           aggregator-2
+    host           <aggregator_2_address>
+    port           24224
+    tls            on
+    tls.verify     on
+    tls.ca_file    <path_to_ca_certificate>
+    shared_key     <forward_shared_key>
+    self_hostname  <edge_hostname>
+```
+
+#### Aggregator - [SERVICE], [INPUT] and [OUTPUT] details
+
+  | Section     | Parameter       | Value                                  |
+  |:------------|:----------------|:---------------------------------------|
+  | `[SERVICE]` | `storage.path`  | /var/lib/fluent-bit/buffer             |
+  | `[INPUT]`   | `Name`          | forward                                |
+  | `[INPUT]`   | `Listen`        | 0.0.0.0                                |
+  | `[INPUT]`   | `Port`          | 24224                                  |
+  | `[INPUT]`   | `storage.type`  | filesystem                             |
+  | `[INPUT]`   | `tls`           | On                                     |
+  | `[INPUT]`   | `tls.crt_file`  | **<path_to_aggregator_certificate>**   |
+  | `[INPUT]`   | `tls.key_file`  | **<path_to_aggregator_private_key>**   |
+  | `[INPUT]`   | `Shared_Key`    | **<forward_shared_key>**               |
+  | `[INPUT]`   | `Self_Hostname` | **<aggregator_hostname>**              |
+  | `[OUTPUT]`  | all parameters  | Same as the `http` output in **HTTP out to Cortex XSIAM** above |
+
+Notes:
+
+* `Shared_Key` must be the same on the edge forwarders and the aggregators. `Self_Hostname` must be different on each side.
+* `tls.ca_file` on the edge forwarders must point to the CA certificate that signed the aggregator certificate.
+* Size the aggregators for your total log volume, and run at least two for redundancy.
+
+For more information, see the Fluent Bit manual: [forward output](https://docs.fluentbit.io/manual/data-pipeline/outputs/forward), [forward input](https://docs.fluentbit.io/manual/data-pipeline/inputs/forward) and [upstream servers](https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/upstream-servers).
+
 </~XSIAM>
