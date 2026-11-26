@@ -2318,6 +2318,54 @@ tasks:
         complex:
           root: Blocklist
           accessor: Final
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '@'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.IAMUserDomain
+                iscontext: true
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format:
+                value:
+                  simple: \1
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ^([^@]*@[^@]*)@.*$
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format:
+                value:
+                  simple: \1
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ^[^\\]*\\([^@\\]+@.+)$
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '@$'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2616,6 +2664,11 @@ inputs:
   description: |-
     Possible values:True/False. Default:True.
     Specify if User Verification is Requrired
+  playbookInputQuery:
+- key: IAMUserDomain
+  value: {}
+  required: false
+  description: The IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
   playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final

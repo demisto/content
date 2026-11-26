@@ -227,7 +227,7 @@ Retrieves a list of all policies. Use the 'page' and 'page_size' arguments to fe
 >|Id|Name|Description|Action|Enabled|Group Ids|Creator Fullname|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | My Policy | This policy blocks high-risk extensions | block | true | 1, 2, 3 | John Doe | 2025-04-23T17:22:24.023Z | 2025-04-23T17:22:24.023Z |
->| 2 | Allow Policy | This policy allows approved extensions | allow | false | 4 | Jane Smith | 2025-04-24T10:00:00.000Z | 2025-04-24T12:30:00.000Z |
+>| 2 | Allow Policy | This policy allows approved extensions | allow | false | 4 | jane Test | 2025-04-24T10:00:00.000Z | 2025-04-24T12:30:00.000Z |
 
 ### koi-inventory-item-get
 

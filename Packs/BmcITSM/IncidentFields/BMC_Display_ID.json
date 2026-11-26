@@ -43,5 +43,9 @@
             "type": "shortText",
             "name": "Bmc Display ID"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
