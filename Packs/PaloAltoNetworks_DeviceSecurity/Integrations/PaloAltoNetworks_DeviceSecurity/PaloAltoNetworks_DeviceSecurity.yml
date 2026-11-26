@@ -394,7 +394,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/fastapi:0.162.0.14169403
+  dockerimage: demisto/fastapi:0.163.1.14846051
 fromversion: 6.10.0
 tests:
 - PaloAltoNetworks_DeviceSecurity-Test
