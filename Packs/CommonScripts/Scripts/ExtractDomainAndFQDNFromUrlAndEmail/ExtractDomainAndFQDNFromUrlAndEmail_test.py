@@ -53,6 +53,12 @@ from pytest_mock import MockFixture
         ("test.com@", ""),  # disable-secrets-detection
         ("%40subdomain.domain.com", "subdomain.domain.com"),  # disable-secrets-detection
         ("detect.ps1", ""),  # TLD with digits should not be extracted as domains (file extensions)
+        # a hyphenated tail right after the TLD is not a domain (XSUP-81709)
+        ("foo.com-bar", ""),
+        ("foo.com-", ""),
+        ("a.bc-d.com", "a.bc-d.com"),
+        ("http://a.com/x.html-z", "a.com"),  # disable-secrets-detection
+        ("www.walla.co.il", "www.walla.co.il"),
     ],
 )  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):

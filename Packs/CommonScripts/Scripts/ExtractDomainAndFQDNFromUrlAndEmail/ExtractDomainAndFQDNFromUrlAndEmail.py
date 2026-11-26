@@ -94,8 +94,23 @@ def check_if_known_url(the_input):
     return the_input
 
 
+def has_hyphen_after_tld(the_input: str) -> bool:
+    """Checks whether the host part ends with a hyphenated suffix after the last dot (e.g. `foo.com-bar`).
+
+    The domain indicator regex also matches a `-<text>` tail that directly follows the TLD, so that such tokens
+    can be rejected here instead of being extracted as a domain (`foo.com-bar` is not `foo.com`).
+    Punycode TLDs (`xn--...`) legitimately contain hyphens and are kept.
+    """
+    host = re.sub(r"(?i)^[a-z]+s?(?:://|-3A__|%3A%2F%2F)", "", the_input.replace("[.]", "."))
+    host = re.split(r"[/?#:\s]", host, maxsplit=1)[0]
+    last_label = host.rsplit(".", 1)[-1]
+    return "-" in last_label and not last_label.lower().startswith("xn--")
+
+
 def extract_fqdn(the_input):
     the_input = unquote(the_input)
+    if has_hyphen_after_tld(the_input):
+        return ""
     if the_input.endswith("@") or the_input.startswith("_"):
         return ""
     # Check if the TLD contains a digit - if so, don't extract as domain (e.g., file.ps1)
