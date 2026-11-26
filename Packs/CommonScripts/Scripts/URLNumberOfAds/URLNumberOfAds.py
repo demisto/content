@@ -1,12 +1,17 @@
 import ipaddress
 import re
 import socket
+import traceback
 from functools import reduce
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
+
+
+REQUEST_TIMEOUT = 30
+MAX_REDIRECTS = 5
 
 
 def is_ip_internal_or_restricted(ip_str: str) -> bool:
@@ -16,6 +21,8 @@ def is_ip_internal_or_restricted(ip_str: str) -> bool:
     """
     try:
         ip = ipaddress.ip_address(ip_str)
+        if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped:
+            ip = ip.ipv4_mapped
         return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved or ip.is_unspecified
     except ValueError:
         return False
@@ -55,6 +62,21 @@ def validate_url_safe(url: str, arg_name: str = "url") -> str:
     return url
 
 
+def safe_get(url: str, arg_name: str = "url") -> requests.Response:
+    """
+    Performs a GET request, validating the URL and every redirect hop
+    against SSRF restrictions instead of blindly following redirects.
+    """
+    for _ in range(MAX_REDIRECTS + 1):
+        validate_url_safe(url, arg_name)
+        response = requests.get(url, timeout=REQUEST_TIMEOUT, allow_redirects=False)
+        location = response.headers.get("Location") if response.is_redirect else None
+        if not location:
+            return response
+        url = urljoin(url, location)
+    raise ValueError(f"Too many redirects (more than {MAX_REDIRECTS}) for '{arg_name}'.")
+
+
 def ads(html, termlist):
     results: dict = {}
     tags = re.findall("<[^/][^>]*>", html)
@@ -78,11 +100,8 @@ def main():  # pragma: no cover
         url = demisto.args()["url"]
         easylist_url = demisto.args().get("easylist", "https://easylist.github.io/easylist/easylist.txt")
 
-        safe_url = validate_url_safe(url, "url")
-        safe_easylist_url = validate_url_safe(easylist_url, "easylist")
-
-        r = requests.get(safe_url)
-        reasy = requests.get(safe_easylist_url)
+        r = safe_get(url, "url")
+        reasy = safe_get(easylist_url, "easylist")
         res = ads(r.text, reasy.text)
         nicerRes = [{"URL": k, "Count": res[k]} for k in res]
         totalAds = reduce(lambda x, y: x + y["Count"], nicerRes, 0)
@@ -96,7 +115,8 @@ def main():  # pragma: no cover
             }
         )
     except Exception as e:
-        return_error(f"Failed to execute URLNumberOfAds. Error:\n{e!s}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute URLNumberOfAds. Error:\n{e!s}", error=e)
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
