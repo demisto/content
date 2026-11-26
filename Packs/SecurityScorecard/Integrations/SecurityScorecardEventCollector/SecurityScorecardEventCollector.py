@@ -21,7 +21,7 @@ class Config:
 
     # Fetch defaults
     DEFAULT_MAX_FETCH = 1000
-    DEFAULT_FIRST_FETCH = "1 minute"
+    DEFAULT_FIRST_FETCH = "1 day"
 
     # API status codes
     RATE_LIMIT_STATUS_CODE = 429
@@ -247,7 +247,8 @@ def calculate_last_run(
 def get_fetch_start_time(params: dict[str, Any], last_run: dict[str, Any]) -> str:
     """Determine the start time for fetching events.
 
-    Uses last_run if available, otherwise falls back to first_fetch parameter.
+    Uses last_run if available, otherwise falls back to first_fetch parameter,
+    floored to midnight UTC because history events are dated at midnight UTC.
 
     Args:
         params: Integration parameters.
@@ -268,6 +269,7 @@ def get_fetch_start_time(params: dict[str, Any], last_run: dict[str, Any]) -> st
     if first_fetch_dt is None:
         raise DemistoException(f"Failed to parse first_fetch parameter: {first_fetch}")
 
+    first_fetch_dt = first_fetch_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     return first_fetch_dt.strftime(Config.DATE_FORMAT)
 
 
@@ -437,7 +439,10 @@ def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
         events = []
 
     if not events or rate_limit_on_history:
-        demisto.debug("[Fetch] No events found or rate limited on initial fetch.")
+        # Persist the start time so the window stays anchored instead of sliding to "now - first_fetch"
+        # every cycle, which would skip events published later with an earlier (midnight UTC) date.
+        demisto.debug("[Fetch] No events found or rate limited on initial fetch. Preserving fetch start time.")
+        demisto.setLastRun({"last_fetch": date_from, "last_fetched_ids": last_fetched_ids})
         return
 
     # Step 2: Sort events by date ascending
