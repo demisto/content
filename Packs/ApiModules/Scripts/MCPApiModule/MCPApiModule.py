@@ -372,7 +372,7 @@ def get_client_metadata(redirect_uri: str) -> dict[str, Any]:
         "client_uri": demisto.demistoUrls().get("server", ""),
         "software_id": SOFTWARE_ID,
         "software_version": SOFTWARE_VERSION,
-        "scope": [],
+        "scope": "",
         "logo_uri": LOGO_URI,
     }
 
@@ -455,16 +455,21 @@ class OAuthHandler:
             "authorization_endpoint": url_origin_join(base_url, "oauth2/authorize"),
         }
         error_message = f"Error discovering OAuth metadata for {base_url}, using default metadata."
-        try:
-            response = await self.session.get(
-                f"{base_url}/.well-known/oauth-authorization-server", headers=OAUTH_DISCOVERY_HEADERS
-            )
-            if response.is_success:
-                metadata.update(response.json())
-            else:
-                demisto.debug(error_message)
-        except Exception:
-            demisto.debug(error_message)
+        # RFC 8414 section 3.1: insert the well-known segment before the issuer path, then fall back to the legacy form.
+        issuer_path = urlparse(base_url).path.rstrip("/")
+        candidates = [url_origin_join(base_url, f".well-known/oauth-authorization-server{issuer_path}")]
+        legacy = f"{base_url.rstrip('/')}/.well-known/oauth-authorization-server"
+        if legacy not in candidates:
+            candidates.append(legacy)
+        for discovery_url in candidates:
+            try:
+                response = await self.session.get(discovery_url, headers=OAUTH_DISCOVERY_HEADERS)
+                if response.is_success:
+                    metadata.update(response.json())
+                    break
+                demisto.debug(f"{error_message} ({discovery_url} returned {response.status_code})")
+            except Exception:
+                demisto.debug(f"{error_message} ({discovery_url})")
 
         # Anchor the issuer to the URL it was discovered from (RFC 8414 section 3.3 / SEP-2468).
         # Without this, the later `iss` check would compare a server's self-declaration against
@@ -476,7 +481,7 @@ class OAuthHandler:
         # issuer value we invented.
         if parsed_metadata := build_oauth_metadata(metadata):
             try:
-                validate_metadata_issuer(parsed_metadata, url_origin_join(base_url))
+                validate_metadata_issuer(parsed_metadata, base_url.rstrip("/"))
             except OAuthFlowError as error:
                 raise DemistoException(
                     f"OAuth authorization server metadata is inconsistent: {error}. RFC 8414 requires the "
