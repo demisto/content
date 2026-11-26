@@ -66,7 +66,12 @@ filter api_object_type ~= "ApiEvent|APIEvent" // ApiEvent
     xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
     xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
     xdm.source.cloud.service = if(Client = "Unknown", null, Client),
-    xdm.source.host.os = if(Platform = "Unknown", null, Platform),
+    xdm.source.host.os = if(Platform = "Unknown", null, Platform)
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        OperationStatus = "Failure" or PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.network.rule = PolicyId,
     xdm.event.operation_sub_type = PolicyOutcome,
     xdm.network.session_id = SessionKey;
@@ -122,7 +127,8 @@ filter api_object_type ~= "FileEvent"
     xdm.source.identity.full_domain_name = arrayindex(get_Username,1),
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.event.outcome = if(
-        PolicyOutcome IN("*Error*", "*Block*"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
         XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation_sub_type = coalesce(FileAction, PolicyOutcome),
     xdm.target.resource.id = FileName,
@@ -209,7 +215,12 @@ filter api_object_type ~= "ReportEventStream"
     xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
     xdm.source.identity.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
-    xdm.target.file.file_type = ExportFileFormat,
+    xdm.target.file.file_type = ExportFileFormat
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation_sub_type = Operation,
     xdm.network.rule = PolicyId,
     xdm.network.session_id = SessionKey;
@@ -234,7 +245,8 @@ filter api_object_type ~= "ListViewEventStream"
     xdm.source.identity.full_domain_name = arrayindex(get_Username,1),
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.event.outcome = if(
-        PolicyOutcome IN("*Error*", "*Block*", "*Failed*", "TwoFADenied", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
         XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.outcome_reason = PolicyOutcome,
     xdm.event.operation_sub_type = PolicyOutcome,
@@ -269,7 +281,7 @@ filter api_object_type ~= "UriEventStream"
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.event.outcome = if(
         OperationStatus CONTAINS "Failure", XDM_CONST.OUTCOME_FAILED,
-        OperationStatus CONTAINS "Initiated",XDM_CONST.OUTCOME_PARTIAL,
+        OperationStatus CONTAINS "Initiated",XDM_CONST.OUTCOME_SUCCESS,
         OperationStatus CONTAINS "Success",XDM_CONST.OUTCOME_SUCCESS,
         XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = Message,
@@ -307,7 +319,8 @@ filter api_object_type ~= "PermissionSetEvent"
     xdm.source.identity.full_domain_name = arrayindex(get_Username,1),
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.event.outcome = if(
-        PolicyOutcome IN("*Error*", "*Block*", "*Failed*", "*Denied*", "*EndSession*"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
         XDM_CONST.OUTCOME_SUCCESS),
     xdm.target.resource.id = to_string(PermissionList),
     xdm.target.resource.name = to_string(PermissionList),
@@ -453,7 +466,12 @@ filter api_object_type ~= "ApiAnomalyEvent"
         XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = PolicyOutcome,
     xdm.target.resource.id = Uri,
-    xdm.target.resource.name = Uri,
+    xdm.target.resource.name = Uri
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation = "OTHER",
     xdm.event.operation_sub_type = Operation,
     xdm.source.user_agent = UserAgent,
@@ -488,7 +506,12 @@ filter api_object_type ~= "ReportAnomalyEvent"
         XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = PolicyOutcome,
     xdm.target.resource.id = Report,
-    xdm.target.resource.name = Report,
+    xdm.target.resource.name = Report
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation = "OTHER",
     xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
     xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
@@ -542,7 +565,12 @@ filter api_object_type ~= "SessionHijackingEvent"
     xdm.source.ipv4 = if(is_ipv4(CurrentIp), CurrentIp, ""),
     xdm.source.ipv6 = if(is_ipv6(CurrentIp), CurrentIp, ""),
     xdm.intermediate.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
-    xdm.intermediate.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.intermediate.ipv6 = if(is_ipv6(SourceIp), SourceIp, "")
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.intermediate.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.intermediate.identity.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.network.rule = PolicyId,
@@ -719,7 +747,12 @@ filter api_object_type ~= "GuestUserAnomalyEvent"
     xdm.event.outcome_reason = Summary,
     xdm.event.description = Summary,
     xdm.target.resource.id = SoqlCommands,
-    xdm.target.resource.name = SoqlCommands,
+    xdm.target.resource.name = SoqlCommands
+    | alter //XDM mapping - event outcome
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Block", "Error", "MeteringBlock", "EndSession", "FailedInvalidPassword", "FailedPasswordLockout", "TwoFADenied", "TwoFAFailedGeneralError", "TwoFAFailedInvalidCode", "TwoFAFailedTooManyAttempts", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome IN("StepUpInitiated", "TwoFAInitiated", "TwoFAInProgress", "TwoFARecoverableError"), XDM_CONST.OUTCOME_PARTIAL,
+        XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.operation = "OTHER",
     xdm.source.user_agent = UserAgent,
     xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
