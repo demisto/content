@@ -1,6 +1,6 @@
 import json
 
-from FeedFeedly import Client
+from FeedFeedly import Client, STIX2Parser
 
 URL = (
     "https://api.feedly.com/v3/enterprise/ioc?"
@@ -74,3 +74,117 @@ def test_build_iterator_with_instance_tags(requests_mock):
     for indicator in indicators:
         tags = set(indicator["fields"].get("tags", []))
         assert {"incoming_feed", "source_feedly"} <= tags
+
+
+def test_parse_vulnerability_maps_cvss_fields():
+    """
+    Given:
+        - A vulnerability exported with Feedly's CVSS v3 custom properties
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The CVE indicator gets its CVSS score, version, vector and table
+    """
+    [cve] = STIX2Parser().parse_stix2_objects([make_vulnerability()])
+
+    fields = cve["customFields"]
+    assert fields["cvssscore"] == 9.6
+    assert fields["cvssversion"] == "3.1"
+    assert fields["cvssvector"] == CVSS_VECTOR
+    assert {"metrics": "AV", "value": "N"} in fields["cvsstable"]
+    assert {"metrics": "C", "value": "H"} in fields["cvsstable"]
+
+
+def test_parse_vulnerability_tags_its_cwes():
+    """
+    Given:
+        - A vulnerability with a CWE external reference
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The CWE id is added to the CVE indicator's tags
+    """
+    [cve] = STIX2Parser().parse_stix2_objects([make_vulnerability()])
+
+    assert "CWE-89" in cve["customFields"]["tags"]
+
+
+def test_parse_vulnerability_without_cvss_leaves_cvss_fields_unset():
+    """
+    Given:
+        - A vulnerability exported without CVSS data
+    When:
+        - Parsing the STIX objects
+    Then:
+        - No CVSS field is set on the CVE indicator
+    """
+    vulnerability = make_vulnerability()
+    del vulnerability["x_feedly_cvss_v3_base_score"]
+    del vulnerability["x_feedly_cvss_v3_vector"]
+
+    [cve] = STIX2Parser().parse_stix2_objects([vulnerability])
+
+    assert not {"cvssscore", "cvssversion", "cvssvector", "cvsstable"} & cve["customFields"].keys()
+
+
+def test_parse_vulnerability_lists_the_cpes_of_its_related_softwares():
+    """
+    Given:
+        - A vulnerability with two related software objects, one without a CPE
+    When:
+        - Parsing the STIX objects
+    Then:
+        - The CVE indicator's vulnerable products list the CPE of the software that has one
+    """
+    objects = [
+        make_vulnerability(),
+        make_software("software--1", "cpe:2.3:a:adobe:campaign_classic:*:*:*:*:*:*:*:*"),
+        make_software("software--2", None),
+        make_related_to("software--1", VULNERABILITY_ID),
+        make_related_to("software--2", VULNERABILITY_ID),
+    ]
+
+    [cve] = STIX2Parser().parse_stix2_objects(objects)
+
+    assert cve["customFields"]["vulnerableproducts"] == [{"CPE": "cpe:2.3:a:adobe:campaign_classic:*:*:*:*:*:*:*:*"}]
+
+
+CVSS_VECTOR = "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:N"
+VULNERABILITY_ID = "vulnerability--1"
+
+
+def make_vulnerability() -> dict:
+    return {
+        "type": "vulnerability",
+        "id": VULNERABILITY_ID,
+        "name": "CVE-2026-125717",
+        "description": "SQL injection in Adobe Campaign Classic.",
+        "external_references": [
+            {"source_name": "cve", "external_id": "CVE-2026-125717"},
+            {
+                "source_name": "cwe",
+                "external_id": "CWE-89",
+                "description": "SQL Injection",
+                "url": "https://cwe.mitre.org/data/definitions/89.html",
+            },
+        ],
+        "x_feedly_cvss_v3_base_score": 9.6,
+        "x_feedly_cvss_v3_vector": CVSS_VECTOR,
+    }
+
+
+def make_software(software_id: str, cpe: str | None) -> dict:
+    software = {"type": "software", "id": software_id, "name": "Adobe Campaign Classic", "vendor": "Adobe"}
+    if cpe:
+        software["cpe"] = cpe
+    return software
+
+
+def make_related_to(source_ref: str, target_ref: str) -> dict:
+    return {
+        "type": "relationship",
+        "id": f"relationship--{source_ref}",
+        "relationship_type": "related-to",
+        "source_ref": source_ref,
+        "target_ref": target_ref,
+    }

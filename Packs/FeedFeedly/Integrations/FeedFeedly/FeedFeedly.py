@@ -688,11 +688,48 @@ class STIX2Parser:
             "modified": vulnerability_obj.get("modified"),
             "description": vulnerability_obj.get("description", ""),
             "external_references": vulnerability_obj.get("external_references", []),
-            "tags": list(set(vulnerability_obj.get("labels", []))),
+            "tags": list(set(vulnerability_obj.get("labels", [])) | set(STIX2Parser.get_cwe_ids(vulnerability_obj))),
+            **STIX2Parser.get_cvss_fields(vulnerability_obj),
         }
 
         vulnerability["customFields"] = fields
         return [vulnerability]
+
+    @staticmethod
+    def get_cvss_fields(vulnerability_obj: dict[str, Any]) -> dict[str, Any]:
+        """
+        Builds the CVSS fields of a CVE from Feedly's CVSS v3 custom properties.
+
+        Args:
+            vulnerability_obj (dict): vulnerability object.
+        """
+        vector = vulnerability_obj.get("x_feedly_cvss_v3_vector")
+        score = vulnerability_obj.get("x_feedly_cvss_v3_base_score")
+        fields: dict[str, Any] = {}
+        if score is not None:
+            fields["cvssscore"] = score
+        if vector:
+            version, _, metrics = vector.partition("/")
+            fields["cvssvector"] = vector
+            fields["cvssversion"] = version.removeprefix("CVSS:")
+            fields["cvsstable"] = [
+                {"metrics": metric, "value": value} for metric, _, value in (pair.partition(":") for pair in metrics.split("/"))
+            ]
+        return fields
+
+    @staticmethod
+    def get_cwe_ids(vulnerability_obj: dict[str, Any]) -> list[str]:
+        """
+        Returns the CWE ids referenced by a vulnerability.
+
+        Args:
+            vulnerability_obj (dict): vulnerability object.
+        """
+        return [
+            reference["external_id"]
+            for reference in vulnerability_obj.get("external_references", [])
+            if reference.get("source_name") == "cwe" and reference.get("external_id")
+        ]
 
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
@@ -764,8 +801,28 @@ class STIX2Parser:
         """
         envelopes = STIX2Parser.create_envelopes_by_type(objects)
         indicators = self.load_stix_objects_from_envelope(envelopes)
+        self.add_vulnerable_products(objects)
 
         return indicators
+
+    def add_vulnerable_products(self, objects: list[dict]) -> None:
+        """
+        Fills the vulnerable products of each parsed CVE with the CPEs of the software objects related to it.
+
+        Args:
+            objects (list): all the STIX objects fetched from the feed.
+        """
+        software_id_to_cpe = {obj["id"]: obj["cpe"] for obj in objects if obj.get("type") == "software" and obj.get("cpe")}
+        for obj in objects:
+            if obj.get("type") != "relationship" or obj.get("relationship_type") != "related-to":
+                continue
+            cpe = software_id_to_cpe.get(obj.get("source_ref", ""))
+            cve = self.parsed_object_id_to_object.get(obj.get("target_ref", ""))
+            if not cpe or not cve or cve.get("indicator_type") != FeedIndicatorType.CVE:
+                continue
+            vulnerable_products = cve["customFields"].setdefault("vulnerableproducts", [])
+            if {"CPE": cpe} not in vulnerable_products:
+                vulnerable_products.append({"CPE": cpe})
 
     def load_stix_objects_from_envelope(self, envelopes: dict[str, Any]):
         parse_stix_2_objects = {
