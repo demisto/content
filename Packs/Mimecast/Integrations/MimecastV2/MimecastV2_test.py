@@ -1360,6 +1360,70 @@ class TestFetchLogType:
         assert "url_next_page" in new_last_run
         assert new_last_run["url_next_page"] == "next_token_456"
 
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_fetch_log_type_held_message_newest_first_pagination_cycle(self, mocker):
+        """
+        Given:
+            - A Held Messages fetch cycle spanning two pages, returned newest-first by the API (XSUP-81480).
+        When:
+            - Running fetch_log_type for the first page and then for the last page.
+        Then:
+            - The newest timestamp is persisted while paginating, and it is still the saved time (with its dedup ID)
+              once pagination completes, instead of the timestamp of the oldest entries.
+            - The next query starts from the newest timestamp, so messages still held are not re-ingested.
+        """
+        newest = {"id": "held_new", "subject": "new", "dateReceived": "2024-01-15T11:50:00+0000"}
+        middle = {"id": "held_mid", "subject": "mid", "dateReceived": "2024-01-15T11:30:00+0000"}
+        oldest = {"id": "held_old", "subject": "old", "dateReceived": "2024-01-15T11:10:00+0000"}
+        kwargs = {
+            "log_type": "held_message",
+            "api_endpoint": "/api/gateway/get-hold-message-list",
+            "response_param": None,
+            "search_params": {"start": "2024-01-15T11:00:00+0000", "admin": True},
+            "to_incident_func": MimecastV2.held_to_incident,
+            "current_fetch": datetime(2024, 1, 15, 11, 0, 0),
+        }
+
+        # Page 1 of the cycle: newest-first, more pages available
+        mocker.patch.object(MimecastV2, "fetch_logs_with_pagination", return_value=([newest, middle], 2, "token_2"))
+        incidents_1: list = []
+        new_last_run_1: dict = {}
+        MimecastV2.fetch_log_type(last_run={}, incidents=incidents_1, new_last_run=new_last_run_1, **kwargs)
+
+        assert len(incidents_1) == 2
+        assert new_last_run_1["time_held_message"] == "2024-01-15T11:50:00Z"
+        assert new_last_run_1["dedup_held_message"] == ["held_new"]
+        assert new_last_run_1["held_message_next_page"] == "token_2"
+        assert new_last_run_1["time_held_message_for_next_page"] == "2024-01-15T11:00:00Z"
+
+        # Last page of the cycle: only older entries, no next page
+        mocker.patch.object(MimecastV2, "fetch_logs_with_pagination", return_value=([oldest], 1, ""))
+        incidents_2: list = []
+        new_last_run_2: dict = {}
+        MimecastV2.fetch_log_type(last_run=new_last_run_1, incidents=incidents_2, new_last_run=new_last_run_2, **kwargs)
+
+        assert len(incidents_2) == 1
+        assert new_last_run_2["time_held_message"] == "2024-01-15T11:50:00Z"
+        assert new_last_run_2["dedup_held_message"] == ["held_new"]
+        assert "held_message_next_page" not in new_last_run_2
+        assert "time_held_message_for_next_page" not in new_last_run_2
+
+        # The following cycle queries from the newest message, not from the oldest one
+        start = MimecastV2.get_log_type_fetch_time(new_last_run_2, "time_held_message", "default")
+        assert start == "2024-01-15T11:50:00+0000"
+
+    def test_get_log_type_fetch_time_uses_original_start_while_paginating(self):
+        """
+        Given:
+            - A last run in the middle of a paginated cycle.
+        When:
+            - Calculating the fetch time of the log type.
+        Then:
+            - The start time the cycle began with is used, not the latest time seen so far.
+        """
+        last_run = {"time_held_message": "2024-01-15T11:50:00Z", "time_held_message_for_next_page": "2024-01-15T11:00:00Z"}
+        assert MimecastV2.get_log_type_fetch_time(last_run, "time_held_message", "default") == "2024-01-15T11:00:00+0000"
+
 
 class TestFetchIncidents:
     """Tests for the main fetch_incidents function."""
