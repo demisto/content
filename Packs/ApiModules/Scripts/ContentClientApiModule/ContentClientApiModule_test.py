@@ -1633,6 +1633,29 @@ def test_api_key_auth_query_param():
     client.close()
 
 
+@pytest.mark.parametrize(
+    "base_url, url_suffix, params, expected_query",
+    [
+        ("https://api.example.com", "/admin?action=log_get", None, "action=log_get"),
+        ("https://api.example.com", "/admin?action=log_get", {"limit": "5"}, "action=log_get&limit=5"),
+    ],
+)
+@respx.mock
+def test_query_string_in_url_is_kept(base_url, url_suffix, params, expected_query):
+    """
+    Given: a query string embedded in the URL suffix.
+    When: a request is sent, with or without params.
+    Then: the embedded query string is merged with params instead of being dropped (XSUP-82056).
+    """
+    route = respx.post(url__startswith="https://api.example.com").mock(return_value=Response(200, json={}))
+    client = ContentClient(base_url=base_url)
+
+    client._http_request("POST", url_suffix, params=params, json_data={"a": 1})
+
+    assert route.calls[0].request.url.query.decode() == expected_query
+    client.close()
+
+
 @respx.mock
 def test_content_client_with_proxy(mocker):
     """Test ContentClient with proxy enabled."""

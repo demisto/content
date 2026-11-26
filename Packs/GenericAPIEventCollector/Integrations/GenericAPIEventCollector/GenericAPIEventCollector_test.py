@@ -1695,3 +1695,30 @@ def test_derive_authorize_url_edge_cases(token_url, expected):
     Then: a well-formed authorize URL is produced without empty or doubled path segments.
     """
     assert derive_authorize_url(token_url) == expected
+
+
+@pytest.mark.parametrize(
+    "base_url, endpoint, query_params, expected_query",
+    [
+        ("https://api.example.com", "/events?api_key=abc", None, "api_key=abc"),
+        ("https://api.example.com", "/events?api_key=abc", {"since": "x"}, "api_key=abc&since=x"),
+    ],
+)
+def test_search_events_keeps_query_string_in_url(mocker, base_url, endpoint, query_params, expected_query):
+    """
+    Given: a query string embedded in the endpoint (worked on 1.0.8, BaseClient/requests).
+    When: search_events sends the request.
+    Then: the embedded query string reaches the server, merged with any configured query params.
+    """
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["query"] = request.url.query.decode()
+        return httpx.Response(200, json={})
+
+    client = Client(base_url=base_url, verify=False, headers={}, proxy=False)
+    mocker.patch.object(
+        Client, "_get_async_client", side_effect=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    )
+    client.search_events(endpoint=endpoint, http_method="GET", request_data=RequestData(None, None, query_params), ok_codes=[200])
+    assert seen["query"] == expected_query
