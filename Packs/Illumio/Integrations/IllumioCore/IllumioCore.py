@@ -37,6 +37,22 @@ EXISTING_VIRTUAL_SERVICE = "Name must be unique"
 EXISTING_ENFORCEMENT_BOUNDARY = "Rule name already in use"
 EXISTING_RULESET = "Rule set name is already in use"
 EXISTING_OBJECT = "One or more specified objects either don't exist, or do not have a draft version."
+DEFAULT_LABELS_MAX_RESULTS = 50
+WORKLOAD_UPDATE_STRING_FIELDS = [
+    "name",
+    "description",
+    "service_provider",
+    "data_center",
+    "data_center_zone",
+    "service_principal_name",
+    "agent_to_pce_certificate_authentication_id",
+    "external_data_set",
+    "external_data_reference",
+]
+WORKLOAD_UPDATE_NO_FIELDS_ERROR = (
+    "At least one field to update must be provided in addition to workload_id, "
+    f"such as labels, enforcement_mode, or one of: {', '.join(WORKLOAD_UPDATE_STRING_FIELDS)}, datacenter_nat_1to1."
+)
 
 
 class Protocol(Enum):
@@ -490,6 +506,101 @@ def prepare_update_enforcement_mode_output(response: list):
     )
 
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
+
+
+def format_hr_date(value: Optional[str]) -> Optional[str]:
+    """Format an ISO date string into the human-readable date format.
+
+    Args:
+        value: ISO formatted date string.
+
+    Returns:
+        Formatted date string, or None if the value is empty.
+    """
+    if not value:
+        return None
+    return arg_to_datetime(value).strftime(HR_DATE_FORMAT)  # type: ignore[union-attr]
+
+
+def prepare_labels_get_output(response: list) -> str:
+    """Prepare human-readable output for labels-get command.
+
+    Args:
+        response: list of labels in dict format.
+
+    Returns:
+        markdown string to be displayed in the war room.
+    """
+    hr_outputs = [
+        {
+            "HREF": label.get("href"),
+            "Key": label.get("key"),
+            "Value": label.get("value"),
+            "Deleted": label.get("deleted"),
+            "Created At": format_hr_date(label.get("created_at")),
+            "Updated At": format_hr_date(label.get("updated_at")),
+        }
+        for label in response
+    ]
+    headers = ["HREF", "Key", "Value", "Deleted", "Created At", "Updated At"]
+    return tableToMarkdown("Labels:\n", hr_outputs, headers=headers, removeNull=True)
+
+
+def validate_labels_get_arguments(max_results: Optional[int]) -> None:
+    """Validate arguments for labels-get command.
+
+    Args:
+        max_results: Number of maximum results returned.
+    """
+    if max_results is not None and max_results < 1:
+        raise InvalidValueError(
+            message=f"{max_results} is an invalid value for max_results. Max results must be positive integer."
+        )
+
+
+def build_workload_update_body(args: dict[str, Any]) -> dict[str, Any]:
+    """Build the request body for the workload-update command from the command arguments.
+
+    Args:
+        args: arguments obtained from demisto.args().
+
+    Returns:
+        The body of the update request, containing only the provided fields.
+    """
+    body: dict[str, Any] = {field: args[field] for field in WORKLOAD_UPDATE_STRING_FIELDS if args.get(field)}
+
+    labels = [label_href for label_href in argToList(args.get("labels")) if label_href]
+    if labels:
+        body["labels"] = [{"href": label_href} for label_href in labels]
+
+    enforcement_mode = args.get("enforcement_mode")
+    if enforcement_mode:
+        enforcement_mode = enforcement_mode.lower()
+        if enforcement_mode not in SUPPORTED_ENFORCEMENT_MODES:
+            raise InvalidValueError("enforcement_mode", enforcement_mode, SUPPORTED_ENFORCEMENT_MODES)
+        body["enforcement_mode"] = enforcement_mode
+
+    datacenter_nat_1to1 = args.get("datacenter_nat_1to1")
+    if datacenter_nat_1to1 is not None:
+        body["datacenter_nat_1to1"] = argToBoolean(datacenter_nat_1to1)
+
+    return body
+
+
+def build_workload_href(client: PolicyComputeEngine, workload_id: str) -> str:
+    """Build the workload HREF from the workload ID.
+
+    Args:
+        client: PolicyComputeEngine to use.
+        workload_id: Workload UUID or a workload HREF (e.g., /orgs/1/workloads/<uuid>).
+
+    Returns:
+        The workload HREF.
+    """
+    workload_ref = workload_id.removeprefix("/api/v2")
+    if "/workloads/" in workload_ref:
+        return workload_ref if workload_ref.startswith("/") else f"/{workload_ref}"
+    return f"/orgs/{client.org_id}/workloads/{workload_ref}"
 
 
 def ip_list_human_readable(response: dict) -> dict:
@@ -994,6 +1105,87 @@ def update_enforcement_mode_command(client: PolicyComputeEngine, args: dict[str,
     )
 
 
+def labels_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
+    """Retrieve the labels list.
+
+    Args:
+        client: PolicyComputeEngine to use.
+        args: arguments obtained from demisto.args()
+
+    Returns:
+        CommandResult object
+    """
+    max_results = arg_to_number(args.get("max_results", DEFAULT_LABELS_MAX_RESULTS), arg_name="max_results")
+    validate_labels_get_arguments(max_results)
+
+    include_deleted = args.get("include_deleted")
+    usage = args.get("usage")
+    params = {
+        "key": args.get("key"),
+        "value": args.get("value"),
+        "include_deleted": str(argToBoolean(include_deleted)).lower() if include_deleted is not None else None,
+        "usage": str(argToBoolean(usage)).lower() if usage is not None else None,
+        "max_results": max_results,
+        "external_data_set": args.get("external_data_set"),
+        "external_data_reference": args.get("external_data_reference"),
+    }
+    labels = client.labels.get(params=remove_empty_elements(params))  # type: ignore[call-overload]
+
+    labels_json = [label.to_json() for label in labels]
+    readable_output = prepare_labels_get_output(labels_json)
+
+    return CommandResults(
+        outputs_prefix="Illumio.Labels",
+        readable_output=readable_output,
+        outputs_key_field="href",
+        raw_response=labels_json,
+        outputs=[remove_empty_elements(label) for label in labels_json],
+    )
+
+
+def workload_update_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
+    """Update a single workload, for example to apply labels to it.
+
+    Args:
+        client: PolicyComputeEngine to use.
+        args: arguments obtained from demisto.args()
+
+    Returns:
+        CommandResult object
+    """
+    workload_id = args.get("workload_id")
+    validate_required_parameters(workload_id=workload_id)
+
+    body = build_workload_update_body(args)
+    if not body:
+        raise ValueError(WORKLOAD_UPDATE_NO_FIELDS_ERROR)
+
+    workload_href = build_workload_href(client, workload_id)  # type: ignore[arg-type]
+    client.workloads.update(workload_href, body)  # type: ignore[call-overload]
+    demisto.debug(f"Updated workload {workload_href} with fields: {list(body.keys())}")
+
+    readable_output = f"The workload {workload_id} was successfully updated."
+
+    # The update API returns 204 No Content, so retrieve the workload to reflect its updated state.
+    # The update already succeeded at this point, so a failed retrieval must not be reported as a failed update.
+    try:
+        updated_workload = client.workloads.get_by_reference(workload_href)  # type: ignore[call-overload]
+    except Exception as e:
+        demisto.debug(traceback.format_exc())
+        demisto.debug(f"Workload {workload_href} was updated, but retrieving its updated details failed: {e}")
+        return CommandResults(readable_output=readable_output)
+
+    results = json.loads(json.dumps(updated_workload, cls=IllumioEncoder))
+
+    return CommandResults(
+        outputs_prefix="Illumio.Workloads",
+        readable_output=readable_output,
+        outputs_key_field="href",
+        outputs=remove_empty_elements(results),
+        raw_response=results,
+    )
+
+
 def ip_list_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Get the details of the IP List.
 
@@ -1214,6 +1406,8 @@ def main():
                 "illumio-ip-lists-get": ip_lists_get_command,
                 "illumio-ruleset-create": ruleset_create_command,
                 "illumio-rule-create": rule_create_command,
+                "illumio-labels-get": labels_get_command,
+                "illumio-workload-update": workload_update_command,
             }
             if command in illumio_commands:
                 args = demisto.args()
