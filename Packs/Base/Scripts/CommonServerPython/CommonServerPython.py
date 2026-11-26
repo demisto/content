@@ -11982,6 +11982,23 @@ class CortexPermissionError(CortexError):
     | DO NOT use for: failed authentication/credentials (CortexAuthError). |
     +======================================================================+
 
+    Usage::
+
+        CortexPermissionError(missing_permissions=['CSP', 'Tenant support entitlement'])
+        # "Permission denied. You do not have the required permissions to perform
+        #  this action. Missing: CSP, Tenant support entitlement."
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :type missing_permissions: ``str`` or ``list``
+    :param missing_permissions: Name of the missing permission, or a list of
+        names. When provided, they are listed in the auto-built message
+        (``... Missing: A, B.``) and exposed in ``details``. Like
+        every CortexError, an ``override_message`` is still shown verbatim to
+        non-Agentix callers, while Agentix always gets the auto-built message.
+
     :return: None
     :rtype: ``None``
     """
@@ -11989,6 +12006,21 @@ class CortexPermissionError(CortexError):
     error_code = CortexErrorCode.PERMISSION_ERROR
     retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Permission denied. You do not have the required permissions to perform this action."
+
+    def __init__(self, override_message=None, missing_permissions=None):
+        if isinstance(missing_permissions, (list, tuple, set)):
+            self.missing_permissions = [str(p) for p in missing_permissions]
+        else:
+            self.missing_permissions = [str(missing_permissions)] if missing_permissions else []
+        details = {}  # type: dict
+        if self.missing_permissions:
+            details["missing_permissions"] = self.missing_permissions
+        super(CortexPermissionError, self).__init__(override_message, details=details)
+
+    def _base_message(self):
+        if self.missing_permissions:
+            return "{} Missing: {}.".format(self._default_message, ', '.join(self.missing_permissions))
+        return self._default_message
 
 
 class CortexExecutionError(CortexError):
