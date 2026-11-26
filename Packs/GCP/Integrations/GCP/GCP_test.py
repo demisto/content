@@ -16266,7 +16266,7 @@ def test_cspm_remediation_allowed_permissions_are_used_by_commands():
         ("gcp-storage-bucket-metadata-update", True),
         ("gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action", True),
         ("gcp-storage-bucket-policies-list", True),
-        ("gcp-container-cluster-security-update", True),
+        ("gcp-gke-cluster-security-update", True),
         ("gcp-compute-firewall-patch", False),
         ("gcp-compute-firewall-delete", False),
         ("gcp-compute-firewall-insert", False),
@@ -16281,3 +16281,140 @@ def test_cspm_remediation_command_permissions_validation(command, is_allowed):
     from GCP import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
 
     assert (set(COMMAND_REQUIREMENTS[command][1]) <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed
+
+
+def test_cspm_remediation_deprecated_commands_are_blocked():
+    """
+    Given: The deprecated commands declared in the integration YML and the CSPM Remediation permission set.
+    When: Comparing them to CSPM_REMEDIATION_DEPRECATED_COMMANDS.
+    Then: Every deprecated command whose required permissions are all allowed is blocked,
+          and every blocked command is deprecated in the YML.
+    """
+    from GCP import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS, CSPM_REMEDIATION_DEPRECATED_COMMANDS
+
+    deprecated_commands = {command["name"] for command in _YML["script"]["commands"] if command.get("deprecated")}
+    deprecated_commands_with_allowed_permissions = {
+        command
+        for command in deprecated_commands
+        if command in COMMAND_REQUIREMENTS
+        and COMMAND_REQUIREMENTS[command][1]
+        and set(COMMAND_REQUIREMENTS[command][1]) <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+    }
+
+    assert deprecated_commands_with_allowed_permissions <= CSPM_REMEDIATION_DEPRECATED_COMMANDS
+    assert deprecated_commands >= CSPM_REMEDIATION_DEPRECATED_COMMANDS
+
+
+def _mock_resource_manager_test_iam_permissions(mocker, response=None, side_effect=None):
+    """Mocks the Resource Manager client so projects().testIamPermissions().execute() returns the response."""
+    mock_client = mocker.Mock()
+    mock_execute = mock_client.projects.return_value.testIamPermissions.return_value.execute
+    if side_effect is not None:
+        mock_execute.side_effect = side_effect
+    else:
+        mock_execute.return_value = response
+    mocker.patch("GCP.GCPServices.build", return_value=mock_client)
+    return mock_client
+
+
+def test_cspm_remediation_health_check_all_permissions_granted(mocker):
+    """
+    Given: A project that grants all the CSPM Remediation permissions.
+    When: cspm_remediation_health_check is called.
+    Then: None is returned, and testIamPermissions is called with the CSPM Remediation permissions only.
+    """
+    from GCP import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, cspm_remediation_health_check
+
+    mock_client = _mock_resource_manager_test_iam_permissions(
+        mocker, response={"permissions": sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS)}
+    )
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "test-project", "connector-123")
+
+    assert result is None
+    mock_client.projects.return_value.testIamPermissions.assert_called_once_with(
+        resource="projects/test-project", body={"permissions": sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS)}
+    )
+
+
+def test_cspm_remediation_health_check_missing_permissions(mocker):
+    """
+    Given: A project that grants only some of the CSPM Remediation permissions.
+    When: cspm_remediation_health_check is called.
+    Then: A permission error (WARNING) is returned per missing permission, with the AUTOMATION-format fields
+          and the permission name.
+    """
+    from GCP import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthStatus
+
+    granted_permissions = sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS - {"storage.buckets.update", "compute.firewalls.update"})
+    _mock_resource_manager_test_iam_permissions(mocker, response={"permissions": granted_permissions})
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "test-project", "connector-123")
+
+    assert isinstance(result, list)
+    errors = [error.to_dict() for error in result]
+    assert [error["name"] for error in errors] == ["compute.firewalls.update", "storage.buckets.update"]
+    assert errors[0] == {
+        "account_id": "test-project",
+        "connector_id": "connector-123",
+        "message": "Missing permission compute.firewalls.update",
+        "error": ErrorType.PERMISSION_ERROR,
+        "classification": HealthStatus.WARNING,
+        "capability": "AUTOMATION",
+        "name": "compute.firewalls.update",
+    }
+
+
+def test_cspm_remediation_health_check_no_permissions_granted(mocker):
+    """
+    Given: A project that grants none of the CSPM Remediation permissions (the response has no permissions key).
+    When: cspm_remediation_health_check is called.
+    Then: A permission error is returned for every CSPM Remediation permission.
+    """
+    from GCP import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, cspm_remediation_health_check
+
+    _mock_resource_manager_test_iam_permissions(mocker, response={})
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "test-project", "connector-123")
+
+    assert isinstance(result, list)
+    assert [error.name for error in result] == sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS)
+
+
+def test_cspm_remediation_health_check_missing_token(mocker):
+    """
+    Given: Shared credentials without an access token.
+    When: cspm_remediation_health_check is called.
+    Then: A connectivity error (ERROR) is returned and no API call is made.
+    """
+    from GCP import cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthCheckError, HealthStatus
+
+    mock_build = mocker.patch("GCP.GCPServices.build")
+
+    result = cspm_remediation_health_check({}, "test-project", "connector-123")
+
+    assert isinstance(result, HealthCheckError)
+    assert result.error_type == ErrorType.CONNECTIVITY_ERROR
+    assert result.classification == HealthStatus.ERROR
+    mock_build.assert_not_called()
+
+
+def test_cspm_remediation_health_check_api_failure(mocker):
+    """
+    Given: A testIamPermissions call that fails (e.g. the Resource Manager API is unreachable).
+    When: cspm_remediation_health_check is called.
+    Then: A connectivity error (ERROR) that includes the failure reason is returned.
+    """
+    from GCP import cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthCheckError, HealthStatus
+
+    _mock_resource_manager_test_iam_permissions(mocker, side_effect=Exception("Connection refused"))
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "test-project", "connector-123")
+
+    assert isinstance(result, HealthCheckError)
+    assert result.error_type == ErrorType.CONNECTIVITY_ERROR
+    assert result.classification == HealthStatus.ERROR
+    assert "Connection refused" in result.message

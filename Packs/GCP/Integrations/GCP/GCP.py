@@ -738,6 +738,15 @@ CSPM_REMEDIATION_ALLOWED_PERMISSIONS: frozenset[str] = frozenset(
     }
 )
 
+# Deprecated commands that are not allowed with the CSPM Remediation permission set,
+# although all their required permissions are granted by it. Use their replacement commands instead.
+CSPM_REMEDIATION_DEPRECATED_COMMANDS: frozenset[str] = frozenset(
+    {
+        "gcp-container-cluster-security-update",
+        "gcp-storage-bucket-policy-list",
+    }
+)
+
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 DISK_TABLE = ["id", "name", "sizeGb", "zone", "status", "type"]
 DISK_TYPE_TABLE = ["id", "name", "validDiskSize", "defaultDiskSizeGb", "zone"]
@@ -6422,6 +6431,66 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     return None
 
 
+def cspm_remediation_health_check(
+    shared_creds: dict, project_id: str, connector_id: str
+) -> HealthCheckError | list[HealthCheckError] | None:
+    """Checks that the CSPM Remediation permission set is granted on the GCP project.
+
+    Unlike ``health_check``, which probes every service used by the automation commands, this check only
+    verifies the permissions in ``CSPM_REMEDIATION_ALLOWED_PERMISSIONS``, so accounts granted only the
+    CSPM Remediation permission set are not reported as missing automation permissions.
+    The permissions are checked with the Resource Manager ``testIamPermissions`` method, which requires no
+    permissions and returns the subset of the requested permissions granted to the caller.
+
+    Args:
+        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
+        project_id (str): The GCP project ID to check against.
+        connector_id (str): The connector ID for the Cloud integration.
+
+    Returns:
+        HealthCheckError | list[HealthCheckError] | None: A permission error (WARNING) per missing permission,
+        a connectivity error (ERROR) if the check could not run, or None if all the permissions are granted.
+    """
+    token = shared_creds.get("access_token")
+    if not token:
+        return HealthCheckError(
+            account_id=project_id,
+            connector_id=connector_id,
+            message="Failed to authenticate with GCP - token is missing from credentials",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+    requested_permissions = sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS)
+    try:
+        client = GCPServices.RESOURCE_MANAGER.build(Credentials(token=token))
+        response = (
+            client.projects()  # pylint: disable=E1101
+            .testIamPermissions(resource=f"projects/{project_id}", body={"permissions": requested_permissions})
+            .execute()
+        )
+    except Exception as e:
+        demisto.debug(f"[GCP CSPM Remediation Health Check] Failed to test the permissions of {project_id=}: {e}")
+        return HealthCheckError(
+            account_id=project_id,
+            connector_id=connector_id,
+            message=f"Failed to check the CSPM Remediation permissions for account {project_id}. Error: {e}",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+
+    granted_permissions = set(response.get("permissions", []))
+    missing_permissions = [permission for permission in requested_permissions if permission not in granted_permissions]
+    demisto.debug(f"[GCP CSPM Remediation Health Check] {project_id=}, {len(granted_permissions)=}, {missing_permissions=}")
+    return [
+        HealthCheckError(
+            account_id=project_id,
+            connector_id=connector_id,
+            message=f"Missing permission {permission}",
+            error_type=ErrorType.PERMISSION_ERROR,
+            name=permission,
+        )
+        for permission in missing_permissions
+    ] or None
+
+
 def _resolve_project_id_for_test(params: dict[str, Any]) -> str:
     """Resolves the project ID for the connectivity test.
 
@@ -9181,14 +9250,14 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        # TODO: Determine the user type (full vs. CSPM Remediation permissions) once the mechanism is defined.
-        is_all_commands_allowed = True
+        is_all_commands_allowed = get_is_all_commands_allowed()
         validate_command_is_allowed(
             command,
             COMMAND_REQUIREMENTS.get(command, (None, []))[1],
             CSPM_REMEDIATION_ALLOWED_PERMISSIONS,
             CloudTypes.GCP.value,
             is_all_commands_allowed,
+            blocked_commands=CSPM_REMEDIATION_DEPRECATED_COMMANDS,
         )
 
         # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
@@ -9383,7 +9452,7 @@ def main():  # pragma: no cover
                 run_health_check_for_accounts(
                     connector_id,
                     CloudTypes.GCP.value,
-                    health_check,
+                    health_check if is_all_commands_allowed else cspm_remediation_health_check,
                     get_health_check_capability(is_all_commands_allowed),
                 )
             )

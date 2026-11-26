@@ -298,6 +298,33 @@ def test_health_check_error_to_dict_capability():
     assert cspm_error_dict["capability"] == Capability.CSPM_REMEDIATION
 
 
+@pytest.mark.parametrize(
+    "calling_context, expected",
+    [
+        ({"context": {"CloudIntegrationInfo": {"metadata": {"automation": True, "cspm_remediation": False}}}}, True),
+        ({"context": {"CloudIntegrationInfo": {"metadata": {"automation": "false", "cspm_remediation": "true"}}}}, False),
+        ({"context": {"CloudIntegrationInfo": {"metadata": {"cspm_remediation": True}}}}, False),
+        ({"context": {"CloudIntegrationInfo": {"metadata": {"automation": "True", "cspm_remediation": "True"}}}}, True),
+        ({"context": {"CloudIntegrationInfo": {"metadata": {}}}}, True),
+        ({"context": {"CloudIntegrationInfo": {"metadata": None}}}, True),
+        ({"context": {"CloudIntegrationInfo": None}}, True),
+        ({}, True),
+    ],
+)
+def test_get_is_all_commands_allowed(mocker, calling_context, expected):
+    """
+    Given: A calling context with the Automation and CSPM Remediation capabilities as booleans or strings,
+           or without capabilities.
+    When: get_is_all_commands_allowed is called.
+    Then: It returns False only when CSPM Remediation is selected and Automation is not, otherwise True.
+    """
+    from COOCApiModule import get_is_all_commands_allowed
+
+    mocker.patch.object(demisto, "callingContext", calling_context)
+
+    assert get_is_all_commands_allowed() is expected
+
+
 @pytest.mark.parametrize("is_all_commands_allowed, expected_capability", [(True, "AUTOMATION"), (False, "CSPM_remediation")])
 def test_get_health_check_capability(is_all_commands_allowed, expected_capability):
     """
@@ -1513,6 +1540,47 @@ def test_validate_command_is_allowed_cspm_remediation_user_disallowed_command(co
         match=f"The '{command}' command cannot be used while the CSPM Remediation AWS checkbox is selected.",
     ):
         validate_command_is_allowed(command, command_permissions, ALLOWED_PERMISSIONS, CloudTypes.AWS.value, False)
+
+
+def test_validate_command_is_allowed_cspm_remediation_user_blocked_command():
+    """
+    Given: A user with the CSPM Remediation permission set, and a blocked (e.g. deprecated) command
+           whose required permissions are all in the allowed permissions set.
+    When: validate_command_is_allowed is called with is_all_commands_allowed=False.
+    Then: A DemistoException with an informative message is raised.
+    """
+    from COOCApiModule import validate_command_is_allowed
+
+    with pytest.raises(
+        DemistoException,
+        match="The 'aws-s3-bucket-versioning-put' command cannot be used while the CSPM Remediation AWS checkbox is selected.",
+    ):
+        validate_command_is_allowed(
+            "aws-s3-bucket-versioning-put",
+            ["s3:PutBucketVersioning"],
+            ALLOWED_PERMISSIONS,
+            CloudTypes.AWS.value,
+            False,
+            blocked_commands=frozenset({"aws-s3-bucket-versioning-put"}),
+        )
+
+
+def test_validate_command_is_allowed_full_user_blocked_command():
+    """
+    Given: A user with full permissions, and a blocked (e.g. deprecated) command.
+    When: validate_command_is_allowed is called with is_all_commands_allowed=True.
+    Then: No exception is raised.
+    """
+    from COOCApiModule import validate_command_is_allowed
+
+    validate_command_is_allowed(
+        "aws-s3-bucket-versioning-put",
+        ["s3:PutBucketVersioning"],
+        ALLOWED_PERMISSIONS,
+        CloudTypes.AWS.value,
+        True,
+        blocked_commands=frozenset({"aws-s3-bucket-versioning-put"}),
+    )
 
 
 def test_validate_command_is_allowed_full_user_any_command():

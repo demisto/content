@@ -14,6 +14,7 @@ import defusedxml.ElementTree as defused_ET
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 from datetime import UTC
+from fnmatch import fnmatchcase
 
 
 # Disable insecure warnings
@@ -496,6 +497,27 @@ CSPM_REMEDIATION_ALWAYS_ALLOWED_COMMANDS: frozenset[str] = frozenset(
         "azure-auth-test",
         "azure-auth-reset",
         "azure-generate-login-url",
+    }
+)
+
+# Deprecated commands that are not allowed with the CSPM Remediation permission set,
+# although all their required permissions are granted by it. Use their replacement commands instead.
+CSPM_REMEDIATION_DEPRECATED_COMMANDS: frozenset[str] = frozenset(
+    {
+        "azure-cosmos-db-update",
+        "azure-function-app-set-min-tls-version-quick-action",
+        "azure-nsg-security-rule-create",
+        "azure-nsg-security-rule-delete",
+        "azure-set-function-app-http-version2-0-quick-action",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-auth-update",
+        "azure-webapp-auth-update-quick-action",
+        "azure-webapp-config-set",
+        "azure-webapp-disable-remote-debugging-quick-action",
+        "azure-webapp-set-http2-quick-action",
+        "azure-webapp-set-min-tls-version-quick-action",
+        "azure-webapp-update",
+        "azure-webapp-update-assign-managed-identity-quick-action",
     }
 )
 
@@ -13615,6 +13637,94 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     return None
 
 
+def is_azure_permission_granted(permission: str, permission_entries: list[dict[str, Any]]) -> bool:
+    """Returns whether an Azure action is granted by the caller's effective permissions.
+
+    An action is granted if it matches an ``actions`` pattern of a permission entry and does not match a
+    ``notActions`` pattern of the same entry. Patterns may contain ``*`` wildcards, and matching is case-insensitive.
+
+    Args:
+        permission (str): The Azure action to check (e.g. ``Microsoft.Storage/storageAccounts/write``).
+        permission_entries (list[dict[str, Any]]): The ``value`` entries returned by the
+            ``Microsoft.Authorization/permissions`` API.
+
+    Returns:
+        bool: True if the action is granted, False otherwise.
+    """
+    permission = permission.lower()
+    return any(
+        any(fnmatchcase(permission, action.lower()) for action in entry.get("actions", []))
+        and not any(fnmatchcase(permission, not_action.lower()) for not_action in entry.get("notActions", []))
+        for entry in permission_entries
+    )
+
+
+def cspm_remediation_health_check(
+    shared_creds: dict, subscription_id: str, connector_id: str
+) -> HealthCheckError | list[HealthCheckError] | None:
+    """Checks that the CSPM Remediation permission set is granted on the Azure subscription.
+
+    Unlike ``health_check``, which validates the permissions used by the automation commands, this check only
+    verifies the permissions in ``CSPM_REMEDIATION_ALLOWED_PERMISSIONS``, so accounts granted only the
+    CSPM Remediation permission set are not reported as missing automation permissions.
+    The permissions are read with the ``Microsoft.Authorization/permissions`` API, which any caller may use
+    to list its own effective permissions on the subscription.
+
+    Args:
+        shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
+        subscription_id (str): The Azure subscription ID to check against.
+        connector_id (str): The connector ID for the Cloud integration.
+
+    Returns:
+        HealthCheckError | list[HealthCheckError] | None: A permission error (WARNING) per missing permission,
+        a connectivity or internal error (ERROR) if the check could not run, or None if all the permissions are granted.
+    """
+    if not subscription_id:
+        return HealthCheckError(
+            account_id=subscription_id,
+            connector_id=connector_id,
+            message="Missing Subscription ID for Azure integration",
+            error_type=ErrorType.INTERNAL_ERROR,
+        )
+    token = shared_creds.get("access_token")
+    if not token:
+        return HealthCheckError(
+            account_id=subscription_id,
+            connector_id=connector_id,
+            message="Failed to authenticate with Azure",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+    client = AzureClient(subscription_id=subscription_id, headers=headers)
+    permission_entries: list[dict[str, Any]] = []
+    try:
+        next_url: str | None = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Authorization/permissions"
+        while next_url:
+            response = client.http_request(method="GET", full_url=next_url, params={"api-version": PERMISSIONS_VERSION})
+            permission_entries.extend(response.get("value", []))  # type: ignore[union-attr]
+            next_url = response.get("nextLink")  # type: ignore[union-attr]
+    except Exception as e:
+        demisto.debug(f"[Azure CSPM Remediation Health Check] Failed to list the permissions of {subscription_id=}: {e}")
+        return build_azure_health_check_error(e, subscription_id, connector_id)
+
+    missing_permissions = [
+        permission
+        for permission in sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS)
+        if not is_azure_permission_granted(permission, permission_entries)
+    ]
+    demisto.debug(f"[Azure CSPM Remediation Health Check] {subscription_id=}, {len(permission_entries)=}, {missing_permissions=}")
+    return [
+        HealthCheckError(
+            account_id=subscription_id,
+            connector_id=connector_id,
+            message=f"Missing permission {permission}",
+            error_type=ErrorType.PERMISSION_ERROR,
+            name=permission,
+        )
+        for permission in missing_permissions
+    ] or None
+
+
 # Auth-helper commands establish or reset authentication and therefore must not require the
 # Authorization code, which is only obtained by first running azure-generate-login-url. Requiring
 # it here would create a chicken-and-egg block on the command whose purpose is to produce the code.
@@ -13780,8 +13890,7 @@ def main():  # pragma: no cover
     demisto.debug(f"{connector_id=}")
     handle_proxy()
     try:
-        # TODO: Determine the user type (full vs. CSPM Remediation permissions) once the mechanism is defined.
-        is_all_commands_allowed = True
+        is_all_commands_allowed = get_is_all_commands_allowed()
         validate_command_is_allowed(
             command,
             [permission for permission, commands in PERMISSIONS_TO_COMMANDS.items() if command in commands],
@@ -13789,6 +13898,7 @@ def main():  # pragma: no cover
             CloudTypes.AZURE.value,
             is_all_commands_allowed,
             CSPM_REMEDIATION_ALWAYS_ALLOWED_COMMANDS,
+            CSPM_REMEDIATION_DEPRECATED_COMMANDS,
         )
 
         commands_with_params_and_args = {
@@ -14019,7 +14129,7 @@ def main():  # pragma: no cover
                     run_health_check_for_accounts(
                         connector_id,
                         CloudTypes.AZURE.value,
-                        health_check,
+                        health_check if is_all_commands_allowed else cspm_remediation_health_check,
                         get_health_check_capability(is_all_commands_allowed),
                     )
                 )

@@ -286,6 +286,24 @@ def _check_account(
         )
 
 
+def get_is_all_commands_allowed() -> bool:
+    """Determines whether the current user may run all commands, based on the capabilities selected for the connector.
+
+    The capabilities are read from the ``metadata`` of the ``CloudIntegrationInfo`` in the calling context.
+    Their values may be booleans or string representations of booleans.
+    Only a connector with the CSPM Remediation capability selected and the Automation capability not selected
+    is restricted to the CSPM Remediation permission set.
+
+    Returns:
+        bool: False if only the CSPM Remediation capability is selected, otherwise True.
+    """
+    capabilities = (demisto.callingContext.get("context", {}).get("CloudIntegrationInfo") or {}).get("metadata") or {}
+    is_automation = str(capabilities.get("automation")).lower() == "true"
+    is_cspm_remediation = str(capabilities.get("cspm_remediation")).lower() == "true"
+    demisto.debug(f"[COOC API] Connector capabilities: {is_automation=}, {is_cspm_remediation=}")
+    return is_automation or not is_cspm_remediation
+
+
 def get_health_check_capability(is_all_commands_allowed: bool) -> str:
     """Returns the health check capability matching the permission set granted to the account.
 
@@ -500,13 +518,15 @@ def validate_command_is_allowed(
     cloud_type: str,
     is_all_commands_allowed: bool,
     always_allowed_commands: set[str] | frozenset[str] = frozenset(),
+    blocked_commands: set[str] | frozenset[str] = frozenset(),
 ) -> None:
     """
     Validate that the given command may run for the current user before any cloud API call is made.
 
     Users with full permissions may run every command. Users with the CSPM Remediation permission set
     may only run commands whose required permissions are all in ``allowed_permissions``.
-    Commands with no known required permissions are not allowed with the CSPM Remediation permission set.
+    Commands with no known required permissions, and the commands in ``blocked_commands``, are not allowed
+    with the CSPM Remediation permission set.
     The ``test-module`` command and the commands in ``always_allowed_commands`` are always allowed.
 
     Args:
@@ -518,6 +538,8 @@ def validate_command_is_allowed(
             False if the user is granted only the CSPM Remediation permission set.
         always_allowed_commands (set[str] | frozenset[str]): Commands that require no cloud resource permissions
             and are allowed with the CSPM Remediation permission set (e.g. authentication commands).
+        blocked_commands (set[str] | frozenset[str]): Commands that are not allowed with the CSPM Remediation
+            permission set even if all their required permissions are allowed (e.g. deprecated commands).
 
     Raises:
         DemistoException: If the command is not allowed with the CSPM Remediation permission set.
@@ -526,12 +548,13 @@ def validate_command_is_allowed(
         return
 
     missing_permissions = set(command_permissions) - set(allowed_permissions)
-    if command_permissions and not missing_permissions:
+    is_blocked_command = command in blocked_commands
+    if command_permissions and not missing_permissions and not is_blocked_command:
         return
 
     demisto.debug(
         f"[COOC API] The {command=} is not allowed with the CSPM {cloud_type} permission set. "
-        f"{command_permissions=}, missing_permissions={sorted(missing_permissions)}"
+        f"{command_permissions=}, missing_permissions={sorted(missing_permissions)}, {is_blocked_command=}"
     )
     raise DemistoException(
         f"The '{command}' command cannot be used while the CSPM Remediation {cloud_type} checkbox is selected. "

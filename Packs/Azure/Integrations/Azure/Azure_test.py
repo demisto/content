@@ -15451,7 +15451,7 @@ def test_cspm_remediation_allowed_permissions_are_mapped_to_commands():
         ("azure-vn-security-rule-delete", True),
         ("azure-nsg-security-rule-delete-quick-action", True),
         ("azure-storage-account-update", True),
-        ("azure-webapp-update", True),
+        ("azure-appservice-webapp-update", True),
         ("azure-nsg-security-rule-update", False),
         ("azure-storage-container-delete", False),
         ("azure-disk-update", False),
@@ -15467,6 +15467,32 @@ def test_cspm_remediation_command_permissions_validation(command, is_allowed):
 
     command_permissions = {permission for permission, commands in PERMISSIONS_TO_COMMANDS.items() if command in commands}
     assert (bool(command_permissions) and command_permissions <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed
+
+
+def test_cspm_remediation_deprecated_commands_are_blocked():
+    """
+    Given: The deprecated commands declared in the integration YML and the CSPM Remediation permission set.
+    When: Comparing them to CSPM_REMEDIATION_DEPRECATED_COMMANDS.
+    Then: Every deprecated command whose required permissions are all allowed is blocked,
+          and every blocked command is deprecated in the YML.
+    """
+    from Azure import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, CSPM_REMEDIATION_DEPRECATED_COMMANDS, PERMISSIONS_TO_COMMANDS
+
+    deprecated_commands = {
+        command["name"] for command in yaml.safe_load(YML_PATH.read_text())["script"]["commands"] if command.get("deprecated")
+    }
+    command_to_permissions: dict[str, set[str]] = {}
+    for permission, commands in PERMISSIONS_TO_COMMANDS.items():
+        for command in commands:
+            command_to_permissions.setdefault(command, set()).add(permission)
+    deprecated_commands_with_allowed_permissions = {
+        command
+        for command in deprecated_commands
+        if command_to_permissions.get(command) and command_to_permissions[command] <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+    }
+
+    assert deprecated_commands_with_allowed_permissions <= CSPM_REMEDIATION_DEPRECATED_COMMANDS
+    assert deprecated_commands >= CSPM_REMEDIATION_DEPRECATED_COMMANDS
 
 
 def test_build_azure_health_check_error_authorization_failed():
@@ -15531,3 +15557,136 @@ def test_build_azure_health_check_error_connectivity():
     assert result["classification"] == HealthStatus.ERROR
     assert result["message"] == "Failed to connect to Azure: Connectivity Error: Cannot reach Azure endpoint"
     assert "name" not in result
+
+
+@pytest.mark.parametrize(
+    "permission, permission_entries, expected",
+    [
+        ("Microsoft.Web/sites/write", [{"actions": ["Microsoft.Web/sites/write"], "notActions": []}], True),
+        ("Microsoft.Web/sites/write", [{"actions": ["*"], "notActions": []}], True),
+        ("Microsoft.Web/sites/write", [{"actions": ["microsoft.web/*"], "notActions": []}], True),
+        ("Microsoft.Web/sites/write", [{"actions": ["*/read"], "notActions": []}], False),
+        ("Microsoft.Web/sites/write", [{"actions": ["*"], "notActions": ["Microsoft.Web/*"]}], False),
+        (
+            "Microsoft.Web/sites/write",
+            [{"actions": ["*"], "notActions": ["Microsoft.Web/*"]}, {"actions": ["Microsoft.Web/sites/write"]}],
+            True,
+        ),
+        ("Microsoft.Web/sites/write", [], False),
+    ],
+)
+def test_is_azure_permission_granted(permission, permission_entries, expected):
+    """
+    Given: An Azure action and the caller's effective permission entries (exact, wildcard, and notActions patterns).
+    When: is_azure_permission_granted is called.
+    Then: The action is granted only if an entry's actions match it and the same entry's notActions do not,
+          case-insensitively.
+    """
+    from Azure import is_azure_permission_granted
+
+    assert is_azure_permission_granted(permission, permission_entries) == expected
+
+
+def test_cspm_remediation_health_check_all_permissions_granted(mocker):
+    """
+    Given: A subscription where the caller's effective permissions grant all the CSPM Remediation permissions.
+    When: cspm_remediation_health_check is called.
+    Then: None is returned, and the Microsoft.Authorization/permissions API is called for the subscription.
+    """
+    from Azure import PERMISSIONS_VERSION, cspm_remediation_health_check
+
+    mock_http_request = mocker.patch.object(
+        AzureClient, "http_request", return_value={"value": [{"actions": ["*"], "notActions": []}]}
+    )
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "sub-1", "connector-1")
+
+    assert result is None
+    mock_http_request.assert_called_once_with(
+        method="GET",
+        full_url="https://management.azure.com/subscriptions/sub-1/providers/Microsoft.Authorization/permissions",
+        params={"api-version": PERMISSIONS_VERSION},
+    )
+
+
+def test_cspm_remediation_health_check_missing_permissions_with_pagination(mocker):
+    """
+    Given: A subscription whose effective permissions are split across two pages and miss two CSPM Remediation permissions.
+    When: cspm_remediation_health_check is called.
+    Then: Both pages are read, and a permission error (WARNING) is returned per missing permission.
+    """
+    from Azure import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthStatus
+
+    missing_permissions = ["Microsoft.Insights/logprofiles/write", "Microsoft.Web/sites/write"]
+    granted_actions = sorted(CSPM_REMEDIATION_ALLOWED_PERMISSIONS - set(missing_permissions))
+    mock_http_request = mocker.patch.object(
+        AzureClient,
+        "http_request",
+        side_effect=[
+            {"value": [{"actions": granted_actions[:3]}], "nextLink": "https://management.azure.com/next-page"},
+            {"value": [{"actions": granted_actions[3:]}]},
+        ],
+    )
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "sub-1", "connector-1")
+
+    assert mock_http_request.call_count == 2
+    assert mock_http_request.call_args.kwargs["full_url"] == "https://management.azure.com/next-page"
+    assert isinstance(result, list)
+    errors = [error.to_dict() for error in result]
+    assert [error["name"] for error in errors] == missing_permissions
+    assert errors[0] == {
+        "account_id": "sub-1",
+        "connector_id": "connector-1",
+        "message": "Missing permission Microsoft.Insights/logprofiles/write",
+        "error": ErrorType.PERMISSION_ERROR,
+        "classification": HealthStatus.WARNING,
+        "capability": "AUTOMATION",
+        "name": "Microsoft.Insights/logprofiles/write",
+    }
+
+
+@pytest.mark.parametrize(
+    "subscription_id, shared_creds, expected_error_type",
+    [
+        ("", {"access_token": "token"}, "Internal Error"),
+        ("sub-1", {}, "Connectivity Error"),
+    ],
+)
+def test_cspm_remediation_health_check_invalid_input(mocker, subscription_id, shared_creds, expected_error_type):
+    """
+    Given: A missing subscription ID, or shared credentials without an access token.
+    When: cspm_remediation_health_check is called.
+    Then: An ERROR is returned with the matching error type and no API call is made.
+    """
+    from Azure import cspm_remediation_health_check
+    from COOCApiModule import HealthCheckError, HealthStatus
+
+    mock_http_request = mocker.patch.object(AzureClient, "http_request")
+
+    result = cspm_remediation_health_check(shared_creds, subscription_id, "connector-1")
+
+    assert isinstance(result, HealthCheckError)
+    assert result.error_type == expected_error_type
+    assert result.classification == HealthStatus.ERROR
+    mock_http_request.assert_not_called()
+
+
+def test_cspm_remediation_health_check_api_failure(mocker):
+    """
+    Given: A Microsoft.Authorization/permissions call that fails with a connectivity error.
+    When: cspm_remediation_health_check is called.
+    Then: The failure is converted with build_azure_health_check_error into a connectivity error (ERROR).
+    """
+    from Azure import cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthCheckError, HealthStatus
+
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Connectivity Error: Cannot reach Azure endpoint"))
+
+    result = cspm_remediation_health_check({"access_token": "token"}, "sub-1", "connector-1")
+
+    assert isinstance(result, HealthCheckError)
+    assert result.error_type == ErrorType.CONNECTIVITY_ERROR
+    assert result.classification == HealthStatus.ERROR
+    assert result.message == "Failed to connect to Azure: Connectivity Error: Cannot reach Azure endpoint"

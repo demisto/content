@@ -12207,6 +12207,41 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         return internal_error
 
 
+def cspm_remediation_health_check(credentials: dict, account_id: str, connector_id: str) -> HealthCheckError | None:
+    """
+    Perform the AWS health check for accounts granted only the CSPM Remediation permission set.
+
+    Unlike ``health_check``, which connects to every service used by the automation commands, this check only
+    validates the credentials with ``sts:GetCallerIdentity``, which requires no IAM permissions, so accounts
+    granted only the CSPM Remediation permission set are not reported as missing automation permissions.
+
+    Args:
+        credentials (dict): AWS credentials
+        account_id (str): AWS account ID
+        connector_id (str): Connector identifier
+
+    Returns:
+        HealthCheckError | None: A connectivity error (ERROR) if the credentials could not be validated, None otherwise.
+    """
+    try:
+        sts_client, _ = get_service_client(
+            credentials=credentials,
+            service_name=AWSServices.STS,
+            config=Config(connect_timeout=3, read_timeout=3, retries={"max_attempts": 1}),
+        )
+        sts_client.get_caller_identity()
+    except Exception as err:
+        demisto.debug(f"[AWS CSPM Remediation Health Check] Failed to validate the credentials of {account_id=}: {err}")
+        return HealthCheckError(
+            account_id=account_id,
+            connector_id=connector_id,
+            message=f"Failed to connect to AWS: {err}",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+    demisto.debug(f"[AWS CSPM Remediation Health Check] The credentials of {account_id=} are valid")
+    return None
+
+
 def register_proxydome_header(boto_client: BotoClient) -> None:
     """
     Register ProxyDome authentication header for all AWS API requests.
@@ -12479,8 +12514,7 @@ def main():  # pragma: no cover
     handle_proxy()
 
     try:
-        # TODO: Determine the user type (full vs. CSPM Remediation permissions) once the mechanism is defined.
-        is_all_commands_allowed = True
+        is_all_commands_allowed = get_is_all_commands_allowed()
         validate_command_is_allowed(
             command,
             COMMAND_REQUIREMENTS.get(command, (None, []))[1],
@@ -12494,7 +12528,7 @@ def main():  # pragma: no cover
                 run_health_check_for_accounts(
                     connector_id,
                     CloudTypes.AWS.value,
-                    health_check,
+                    health_check if is_all_commands_allowed else cspm_remediation_health_check,
                     get_health_check_capability(is_all_commands_allowed),
                 )
                 if (connector_id := get_connector_id())

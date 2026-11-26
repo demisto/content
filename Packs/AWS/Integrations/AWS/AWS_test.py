@@ -22730,3 +22730,50 @@ def test_cspm_remediation_command_permissions_validation(command, is_allowed):
     from AWS import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
 
     assert (set(COMMAND_REQUIREMENTS[command][1]) <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed
+
+
+def test_cspm_remediation_health_check_success(mocker):
+    """
+    Given: Valid AWS credentials.
+    When: cspm_remediation_health_check is called.
+    Then: None is returned, and only an STS client is created to call get_caller_identity with the credentials.
+    """
+    from AWS import AWSServices, cspm_remediation_health_check
+
+    mock_sts_client = mocker.Mock()
+    mock_get_service_client = mocker.patch("AWS.get_service_client", return_value=(mock_sts_client, None))
+    credentials = {"key": "key", "access_token": "secret", "session_token": "token"}
+
+    result = cspm_remediation_health_check(credentials, "123456789012", "connector-1")
+
+    assert result is None
+    mock_get_service_client.assert_called_once()
+    assert mock_get_service_client.call_args.kwargs["credentials"] == credentials
+    assert mock_get_service_client.call_args.kwargs["service_name"] == AWSServices.STS
+    mock_sts_client.get_caller_identity.assert_called_once_with()
+
+
+def test_cspm_remediation_health_check_failure(mocker):
+    """
+    Given: AWS credentials that cannot be validated (get_caller_identity fails).
+    When: cspm_remediation_health_check is called.
+    Then: A connectivity error (ERROR) with the AUTOMATION-format fields and the failure reason is returned.
+    """
+    from AWS import cspm_remediation_health_check
+    from COOCApiModule import ErrorType, HealthStatus
+
+    mock_sts_client = mocker.Mock()
+    mock_sts_client.get_caller_identity.side_effect = Exception("The security token included in the request is invalid")
+    mocker.patch("AWS.get_service_client", return_value=(mock_sts_client, None))
+
+    result = cspm_remediation_health_check({"key": "key"}, "123456789012", "connector-1")
+
+    assert result is not None
+    assert result.to_dict() == {
+        "account_id": "123456789012",
+        "connector_id": "connector-1",
+        "message": "Failed to connect to AWS: The security token included in the request is invalid",
+        "error": ErrorType.CONNECTIVITY_ERROR,
+        "classification": HealthStatus.ERROR,
+        "capability": "AUTOMATION",
+    }
