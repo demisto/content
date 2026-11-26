@@ -12,8 +12,8 @@ CLOSE_REASON_MAP = {
 
 
 def extract_field(description: str, field_name: str) -> str:
-    pattern = rf"{re.escape(field_name)}:\s*(.+?)(?:\n|$)"
-    match = re.search(pattern, description)
+    pattern = rf"^{re.escape(field_name)}:\s*(.+?)(?:\n|$)"
+    match = re.search(pattern, description, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
 
@@ -75,11 +75,11 @@ def main() -> None:
         return_results(
             CommandResults(
                 readable_output=(
-                    f'### Closed XSIAM Case\n'
-                    f'- **XSOAR Incident ID:** {xsoar_id}\n'
-                    f'- **XSOAR Close Reason:** {close_reason}\n'
-                    f'- **XSIAM Close Reason:** {xsiam_reason}\n'
-                    f'- **Close Notes:** {close_notes or "(none)"}\n'
+                    f"### Closed XSIAM Case\n"
+                    f"- **XSOAR Incident ID:** {xsoar_id}\n"
+                    f"- **XSOAR Close Reason:** {close_reason}\n"
+                    f"- **XSIAM Close Reason:** {xsiam_reason}\n"
+                    f"- **Close Notes:** {close_notes or '(none)'}\n"
                 ),
                 outputs_prefix="XSOARExporter.Close",
                 outputs={
