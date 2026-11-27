@@ -1,0 +1,116 @@
+{
+    "observationId": "A-D-11111111-2222-3333-4444-555555555555-1234567890",
+    "detectedTime": "2026-10-13T16:28:24.255Z",
+    "uiUrl": "https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/A-D-11111111-2222-3333-4444-555555555555-1234567890",
+    "agentVersion": "6.35.1",
+    "application": {
+        "id": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+        "name": "sample-webhook-service"
+    },
+    "applicationId": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+    "attackPayload": {
+        "url": "http://example.com/login",
+        "value": "/bin/sh -c whoami"
+    },
+    "codeLocation": {
+        "file": "java.lang.ProcessImpl"
+    },
+    "dataType": "ATTACK",
+    "environment": "DEVELOPMENT",
+    "httpRoute": "/login",
+    "issueId": "ISS-2026-0001",
+    "language": "JAVA",
+    "mitreTactics": [
+        {
+            "id": "TA0040",
+            "name": "Impact",
+            "url": "https://attack.mitre.org/tactics/TA0040"
+        },
+        {
+            "id": "TA0002",
+            "name": "Execution",
+            "url": "https://attack.mitre.org/tactics/TA0002"
+        }
+    ],
+    "organizationId": "11111111-aaaa-bbbb-cccc-111111111111",
+    "request": {
+        "body": "{\"username\":\"admin\",\"password\":\"password\"}",
+        "headers": {
+            "accept": [
+                "*/*"
+            ],
+            "accept-encoding": [
+                "gzip, deflate"
+            ],
+            "content-length": [
+                "42"
+            ],
+            "content-type": [
+                "application/json"
+            ],
+            "Cookie": [
+                "JSESSIONID=SAMPLESESSIONID"
+            ],
+            "host": [
+                "example.com"
+            ],
+            "user-agent": [
+                "python-requests/2.31.0"
+            ],
+            "x-forwarded-host": [
+                "example.com"
+            ],
+            "x-forwarded-port": [
+                "80"
+            ],
+            "x-forwarded-proto": [
+                "http"
+            ],
+            "x-forwarded-scheme": [
+                "http"
+            ],
+            "x-real-ip": [
+                "192.168.0.10"
+            ],
+            "x-request-id": [
+                "sample-request-id"
+            ],
+            "x-scheme": [
+                "http"
+            ]
+        },
+        "method": "POST",
+        "parameters": {
+            "username": [
+                "admin"
+            ],
+            "password": [
+                "contrast-redacted-authentication-info"
+            ]
+        },
+        "protocol": "http",
+        "protocolVersion": "1.1"
+    },
+    "result": "SUSPICIOUS",
+    "ruleId": "cmd-injection",
+    "ruleName": "Command Injection",
+    "server": {
+        "id": "1001",
+        "name": "sample-server-agent"
+    },
+    "severity": "CRITICAL",
+    "sourceIp": "192.168.0.10",
+    "target": "CODE",
+    "technique": "RUNTIME",
+    "url": "http://example.com/login",
+    "vectorAnalysis": {
+        "callLocation": "org.apache.commons.collections4.functors.InvokerTransformer.transform(InvokerTransformer.java:129)",
+        "vectorFields": {
+            "command": "/bin/sh -c whoami",
+            "ruleUuid": "cmd-injection"
+        }
+    },
+    "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/A-D-11111111-2222-3333-4444-555555555555-1234567890",
+    "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-0001",
+    "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=app-12345678-aaaa-bbbb-cccc-1234567890ab"
+}

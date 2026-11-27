@@ -1,0 +1,9 @@
+{
+    "commentId": "12345678-1234-1234-1234-123456789abc",
+    "userId": "87654321-4321-4321-4321-cba987654321",
+    "userUid": "test.comment@contrastsecurity.com",
+    "commentText": "dummy comment message",
+    "createdTime": "2026-04-13T05:52:13.632697652Z",
+    "updatedTime": null,
+    "incidentId": "incident-123"
+}

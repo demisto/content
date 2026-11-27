@@ -1,0 +1,31 @@
+{
+    "observationId": "C-11111111-2222-3333-4444-555555555555",
+    "detectedTime": "2026-10-06T18:39:11.802Z",
+    "uiUrl": "https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/C-11111111-2222-3333-4444-555555555555",
+    "application": {
+        "id": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+        "name": "sample-webhook-service"
+    },
+    "applicationId": "app-12345678-aaaa-bbbb-cccc-1234567890ab",
+    "attackPayload": {
+        "value": "spring-expression"
+    },
+    "dataType": "BEHAVIOR",
+    "environment": "QA",
+    "issueId": "ISS-2026-0002",
+    "language": "JAVA",
+    "organizationId": "11111111-aaaa-bbbb-cccc-111111111111",
+    "result": "EXPOSED",
+    "ruleId": "cve-shield-v2",
+    "ruleName": "CVE Shield",
+    "server": {
+        "id": "1001",
+        "name": "sample-server-agent"
+    },
+    "severity": "HIGH",
+    "target": "LIBRARY",
+    "technique": "RUNTIME",
+    "observationLink": "https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/C-11111111-2222-3333-4444-555555555555",
+    "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-0002",
+    "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=app-12345678-aaaa-bbbb-cccc-1234567890ab"
+}

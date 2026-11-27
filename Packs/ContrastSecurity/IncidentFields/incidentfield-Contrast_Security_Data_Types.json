@@ -1,0 +1,32 @@
+{
+    "id": "incident_contrastsecuritydatatypes",
+    "version": -1,
+    "name": "Contrast Security Data Types",
+    "ownerOnly": false,
+    "description": "The classifications of what Contrast detected in the issue observations, such as Vulnerability, Attack, and Behavior.",
+    "cliName": "contrastsecuritydatatypes",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Contrast Security Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

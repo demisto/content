@@ -1,0 +1,51 @@
+{
+    "issueId": "ISS-2026-001",
+    "status": "OPEN",
+    "severity": "HIGH",
+    "dataTypes": [
+        "VULNERABILITY"
+    ],
+    "targets": [
+        "LIBRARY"
+    ],
+    "sensors": [
+        "CONTRAST_AGENT"
+    ],
+    "techniques": [
+        "RUNTIME"
+    ],
+    "incidentCount": 0,
+    "observationCount": 40,
+    "createdTime": "2026-07-16T23:42:33.205Z",
+    "updatedTime": "2026-10-22T16:13:04.763Z",
+    "ruleId": "library-vulnerability",
+    "ruleName": "Library CVEs",
+    "attackCount": 0,
+    "exploitedAttackCount": 0,
+    "suspiciousAttackCount": 0,
+    "blockedAttackCount": 0,
+    "applicationId": "12345678-1234-1234-1234-123456789abc",
+    "applicationName": "sample-cargocats-dataservice",
+    "cves": [
+        {
+            "id": "CVE-2026-0001",
+            "url": "https://test.nvd.com/vuln/detail/CVE-2026-0001"
+        },
+        {
+            "id": "CVE-2026-0002",
+            "url": "https://test.nvd.com/vuln/detail/CVE-2026-0002"
+        }
+    ],
+    "description": "We analyzed the full library dependency tree from this root library and discovered 2 vulnerabilities.\n\nCVE-2026-0001 | MEDIUM | Score: 6.6 | tomcat-embed-core 10.1.41\n\nCVE-2026-0002 | HIGH | Score: 7.6 | tomcat-embed-core 10.1.41",
+    "environments": [
+        "QA"
+    ],
+    "httpRoute": "",
+    "lastObservedTime": "2026-10-22T16:13:04.527Z",
+    "recommendation": "Please contact the library owner to fix this vulnerability.",
+    "repositoryId": "",
+    "score": 8.9,
+    "title": "CVEs in tomcat-embed-websocket 10.1.41",
+    "issueLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001",
+    "applicationLink": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc"
+}

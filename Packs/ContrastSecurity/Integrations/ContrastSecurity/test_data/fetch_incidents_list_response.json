@@ -1,0 +1,62 @@
+{
+    "content": [
+        {
+            "incidentId": "INC-2026-1001",
+            "organizationId": "test-org-id",
+            "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-1001",
+            "status": "CLOSED",
+            "observationCount": 2,
+            "createdTime": "2026-10-01T15:05:06.429Z",
+            "closedReason": "TRUE_POSITIVE_BENIGN",
+            "closedTime": "2026-10-22T10:02:53.962Z",
+            "incidentName": "SQL Injection from \"dummyParam\" Parameter on \"/dummy/payments\" page",
+            "score": 10.0,
+            "severity": "CRITICAL",
+            "updatedTime": "2026-10-22T10:02:53.962Z"
+        },
+        {
+            "incidentId": "INC-2026-1002",
+            "organizationId": "test-org-id",
+            "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-1002",
+            "status": "OPEN",
+            "observationCount": 9,
+            "createdTime": "2026-10-13T16:17:54.078Z",
+            "closedReason": null,
+            "closedTime": null,
+            "incidentName": "OS Command Injection from Request Body on \"/dummy/testConnection\" page",
+            "score": 8.5,
+            "severity": "HIGH",
+            "updatedTime": "2026-10-26T11:01:22.393Z"
+        },
+        {
+            "incidentId": "INC-2026-1003",
+            "organizationId": "test-org-id",
+            "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-1003",
+            "status": "OPEN",
+            "observationCount": 4,
+            "createdTime": "2026-10-13T16:18:06.701Z",
+            "closedReason": null,
+            "closedTime": null,
+            "incidentName": "Command Injection on \"/dummy/login\"",
+            "score": 5.5,
+            "severity": "MEDIUM",
+            "updatedTime": "2026-10-26T15:39:57.816Z"
+        },
+        {
+            "incidentId": "INC-2026-1004",
+            "organizationId": "test-org-id",
+            "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-1004",
+            "status": "OPEN",
+            "observationCount": 1,
+            "createdTime": "2026-10-14T09:30:12.512Z",
+            "closedReason": null,
+            "closedTime": null,
+            "incidentName": "Path Traversal on \"/dummy/files\" page",
+            "score": null,
+            "severity": null,
+            "updatedTime": "2026-10-14T09:30:12.512Z"
+        }
+    ],
+    "hasMore": true,
+    "cursor": "dummy-cursor-1"
+}
