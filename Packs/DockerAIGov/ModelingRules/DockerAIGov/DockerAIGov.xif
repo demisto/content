@@ -7,8 +7,7 @@ alter
     net_exec_error = json_extract_scalar(network_egress_execution, "$.error_class"),
     net_exec_status = json_extract_scalar(network_egress_execution, "$.status_code"),
     fs_mount_mode = json_extract_scalar(filesystem_mount, "$.mount_mode"),
-    session_lifecycle = json_extract_scalar(session, "$.lifecycle")
-| alter
+    session_lifecycle = json_extract_scalar(session, "$.lifecycle"),
     activity_class = if(
         action_type in ("tool_invocation", "tool_execution"), "tool",
         action_type in ("resource_read", "resource_read_execution"), "resource",
