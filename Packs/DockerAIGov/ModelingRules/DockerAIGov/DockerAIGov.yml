@@ -5,4 +5,4 @@ rules: ''
 schema: ''
 tags: ''
 supportedModules:
-- xsiam
+  - xsiam
