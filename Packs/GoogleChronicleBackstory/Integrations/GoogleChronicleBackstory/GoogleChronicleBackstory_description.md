@@ -1,3 +1,5 @@
+**Deprecated.** Use the Google SecOps, Google SecOps Streaming API, and Google SecOps Cases integrations instead.
+
 ## Configure an API account on Google Chronicle
 ---
 Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Backstory API.

@@ -30,8 +30,20 @@ DEFAULT_ALERT_ENTITY_SORT_BY = "id"
 DEFAULT_ALERT_ENTITY_SORT_ORDER = "Desc"
 MAX_PAGE_SIZE = 1000
 
-SECOPS_V1_ALPHA_URL = "https://chronicle.{}.rep.googleapis.com/v1alpha"
-OLDER_SECOPS_V1_ALPHA_URL = "https://{}-chronicle.googleapis.com/v1alpha"
+API_VERSION_V1 = "v1"
+API_VERSION_V1_ALPHA = "v1alpha"
+VALID_API_VERSIONS = (API_VERSION_V1, API_VERSION_V1_ALPHA)
+# Commands that call endpoints available only on v1alpha (alert tag, custom field and legacy playbook endpoints).
+# All other commands use v1.
+V1_ALPHA_COMMANDS = {
+    "gcb-case-alert-tag-add",
+    "gcb-case-alert-tag-remove",
+    "gcb-case-alert-customfield-list",
+    "gcb-playbook-list",
+    "gcb-playbook-attach",
+}
+SECOPS_URL = "https://chronicle.{}.rep.googleapis.com/{}"
+OLDER_SECOPS_URL = "https://{}-chronicle.googleapis.com/{}"
 DEFAULT_REGION = "us"
 DEFAULT_FIRST_FETCH = "3 days"
 MAX_FIRST_FETCH_DAYS = 7
@@ -199,13 +211,14 @@ class Client:
     requires service_account_credentials : a json formatted string act as a token access
     """
 
-    def __init__(self, params: dict[str, Any], proxy, disable_ssl):
+    def __init__(self, params: dict[str, Any], proxy, disable_ssl, api_version: str = API_VERSION_V1):
         """
         Initialize HTTP Client.
 
         :param params: parameter returned from demisto.params()
         :param proxy: whether to use environment proxy
         :param disable_ssl: whether to disable ssl
+        :param api_version: Google SecOps API version (v1 or v1alpha) used to build the request URLs
         """
         encoded_service_account = str(params.get("credentials", {}).get("password", ""))
         service_account_credential = json.loads(encoded_service_account, strict=False)
@@ -242,6 +255,7 @@ class Client:
         self.project_number = secops_project_number if secops_project_number else self.project_id
         url_format = params.get("url_format", "<chronicle>.<REGION>.<rep.googleapis.com>").lower()
         self.use_new_url_format = url_format == "<chronicle>.<region>.<rep.googleapis.com>"
+        self.api_version = api_version
 
     def _implement_retry(
         self, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False
@@ -355,19 +369,32 @@ class Client:
             message += f"\nStatus: {status}"
         return message
 
-    def _create_url_path(self) -> str:
+    def _create_url_path(self, api_version: str | None = None) -> str:
         """
         Creates the base URL path for the Google SecOps API.
 
+        The API version (v1 or v1alpha) is taken from the client object, which is set in main based on the command.
+
+        :type api_version: str
+        :param api_version: Overrides the API version of the client for this URL.
+
         :return: Constructed URL path including project, location and instance.
         :rtype: str
+
+        :raises ValueError: If the API version is not supported.
         """
+        api_version = api_version or self.api_version
+        if api_version not in VALID_API_VERSIONS:
+            raise ValueError(
+                f"Unsupported Google SecOps API version: {api_version}. Supported versions are: {', '.join(VALID_API_VERSIONS)}."
+            )
+
         parent = f"projects/{self.project_number}/locations/{self.project_location}/instances/{self.project_instance_id}"
 
         if self.use_new_url_format:
-            url = SECOPS_V1_ALPHA_URL.format(self.project_location)
+            url = SECOPS_URL.format(self.project_location, api_version)
         else:
-            url = OLDER_SECOPS_V1_ALPHA_URL.format(self.project_location)
+            url = OLDER_SECOPS_URL.format(self.project_location, api_version)
 
         return f"{url}/{parent}"
 
@@ -379,6 +406,7 @@ class Client:
         json_data: dict | None = None,
         params=None,
         allow_empty_response: bool = False,
+        api_version: str | None = None,
     ) -> dict:
         """
         Get response from Google SecOps API and validate it.
@@ -401,10 +429,13 @@ class Client:
         :type allow_empty_response: bool
         :param allow_empty_response: Whether to allow an empty response body.
 
+        :type api_version: str
+        :param api_version: Overrides the API version of the client for this request.
+
         :return: Parsed JSON response.
         :rtype: dict
         """
-        url = urljoin(self._create_url_path(), url_suffix)
+        url = urljoin(self._create_url_path(api_version), url_suffix)
         demisto.debug(f"[SECOPS]: Request URL: {url}, params = {params}, data = {body}, json = {json_data}")
         raw_response = self.http_client.request(
             url=url, method=method, data=body, json=json_data, params=params, proxies=self.proxy_info, verify=not self.disable_ssl
@@ -639,7 +670,8 @@ class Client:
         """
         email_filter = "(" + " OR ".join(f"email='{email}'" for email in emails) + ") AND accountState='ACTIVE'"
         params = {"pageSize": len(emails), "filter": email_filter}
-        response = self.validate_response(ENDPOINTS["LEGACY_SOAR_USERS"], params=params)
+        # Users are resolved by gcb-case-list and gcb-case-assign, which run on v1, but this endpoint is v1alpha only.
+        response = self.validate_response(ENDPOINTS["LEGACY_SOAR_USERS"], params=params, api_version=API_VERSION_V1_ALPHA)
         email_to_id: dict[str, str] = {}
         for user in response.get("legacySoarUsers", []):
             email = user.get("email", "").lower()
@@ -2750,9 +2782,9 @@ def validate_positive_integer_list(values: list[str], arg_name: str, display_nam
 
 
 def validate_date_range(
-    start_time: Optional[datetime],
+    start_time: datetime | None,
     start_time_arg: str,
-    end_time: Optional[datetime],
+    end_time: datetime | None,
     end_time_arg: str,
 ) -> None:
     """
@@ -2780,10 +2812,10 @@ def validate_date_range(
 
 
 def validate_case_list_date_args(
-    create_start_time: Optional[datetime],
-    create_end_time: Optional[datetime],
-    update_start_time: Optional[datetime],
-    update_end_time: Optional[datetime],
+    create_start_time: datetime | None,
+    create_end_time: datetime | None,
+    update_start_time: datetime | None,
+    update_end_time: datetime | None,
 ) -> tuple[str, str, str, str]:
     """
     Validate date range arguments for gcb-case-list command and return formatted strings.
@@ -2817,10 +2849,10 @@ def validate_case_list_date_args(
 
 
 def validate_case_alert_list_date_args(
-    create_start_time: Optional[datetime],
-    create_end_time: Optional[datetime],
-    update_start_time: Optional[datetime] = None,
-    update_end_time: Optional[datetime] = None,
+    create_start_time: datetime | None,
+    create_end_time: datetime | None,
+    update_start_time: datetime | None = None,
+    update_end_time: datetime | None = None,
 ) -> tuple[str, str, str, str]:
     """
     Validate date range arguments for gcb-case-alert-list command and return formatted strings.
@@ -5363,6 +5395,19 @@ def gcb_playbook_attach_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
+def get_api_version(command: str) -> str:
+    """
+    Get the Google SecOps API version to use for the given command.
+
+    :type command: str
+    :param command: The command being executed.
+
+    :return: The API version (v1 or v1alpha).
+    :rtype: str
+    """
+    return API_VERSION_V1_ALPHA if command in V1_ALPHA_COMMANDS else API_VERSION_V1
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
 
@@ -5418,7 +5463,7 @@ def main():
         validate_configuration_parameters(params)
 
         # Initializing client Object
-        client = Client(params=params, proxy=proxy, disable_ssl=disable_ssl)
+        client = Client(params=params, proxy=proxy, disable_ssl=disable_ssl, api_version=get_api_version(command))
         if command == "test-module":
             return_results(test_module(client, params))
         elif command == "fetch-incidents":

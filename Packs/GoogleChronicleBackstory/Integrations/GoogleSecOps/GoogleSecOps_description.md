@@ -1,7 +1,7 @@
 ## Configure an API account on Google SecOps
 
 ---
-Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the V1 alpha API or you can use the following steps to create a service account. The Google SecOps Project Instance ID and Google SecOps Project Number can be retrieved from the Settings or Profile page of the Google SecOps platform.
+Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Google SecOps API (v1 and v1alpha) or you can use the following steps to create a service account. The Google SecOps Project Instance ID and Google SecOps Project Number can be retrieved from the Settings or Profile page of the Google SecOps platform.
 
 **Troubleshooting Connection Issues:** If you encounter connection or access denied errors, update the API URL format and provide the Google SecOps Project Number.
 

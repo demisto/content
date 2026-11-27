@@ -2,6 +2,8 @@
 
 ---
 
+**Deprecated.** Use the Google SecOps, Google SecOps Streaming API, and Google SecOps Cases integrations instead.
+
 The "Chronicle" integration currently relies on the Backstory API, which is being deprecated in favor of the more modern and supported Google SecOps v1alpha API.
 
 We have built a new "Google SecOps" (v1alpha API) integration for Cortex XSOAR, and it will be part of the existing pack.
