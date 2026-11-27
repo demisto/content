@@ -67,6 +67,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
+    "software": FeedIndicatorType.Software,
     "report": "Feedly Report",
     "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
@@ -94,6 +95,12 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
     "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
+}
+
+# Cortex rejects "located-at" as it has no reverse relationship name
+STIX_2_TO_CORTEX_RELATIONSHIP_NAMES = {
+    "originates-from": "originated-from",
+    "located-at": "related-to",
 }
 
 STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
@@ -189,6 +196,9 @@ class STIX2Parser:
         "relationship",
         "extension-definition",
         "vulnerability",
+        "identity",
+        "location",
+        "software",
     ]
 
     def __init__(self):
@@ -688,11 +698,110 @@ class STIX2Parser:
             "modified": vulnerability_obj.get("modified"),
             "description": vulnerability_obj.get("description", ""),
             "external_references": vulnerability_obj.get("external_references", []),
-            "tags": list(set(vulnerability_obj.get("labels", []))),
+            "tags": list(set(vulnerability_obj.get("labels", [])) | set(STIX2Parser.get_cwe_ids(vulnerability_obj))),
+            **STIX2Parser.get_cvss_fields(vulnerability_obj),
         }
 
         vulnerability["customFields"] = fields
         return [vulnerability]
+
+    @staticmethod
+    def get_cvss_fields(vulnerability_obj: dict[str, Any]) -> dict[str, Any]:
+        """
+        Builds the CVSS fields of a CVE from Feedly's CVSS v3 custom properties.
+
+        Args:
+            vulnerability_obj (dict): vulnerability object.
+        """
+        vector = vulnerability_obj.get("x_feedly_cvss_v3_vector")
+        score = vulnerability_obj.get("x_feedly_cvss_v3_base_score")
+        fields: dict[str, Any] = {}
+        if score is not None:
+            fields["cvssscore"] = score
+        if vector:
+            version, _, metrics = vector.partition("/")
+            fields["cvssvector"] = vector
+            fields["cvssversion"] = version.removeprefix("CVSS:")
+            fields["cvsstable"] = [
+                {"metrics": metric, "value": value} for metric, _, value in (pair.partition(":") for pair in metrics.split("/"))
+            ]
+        return fields
+
+    @staticmethod
+    def get_cwe_ids(vulnerability_obj: dict[str, Any]) -> list[str]:
+        """
+        Returns the CWE ids referenced by a vulnerability.
+
+        Args:
+            vulnerability_obj (dict): vulnerability object.
+        """
+        return [
+            reference["external_id"]
+            for reference in vulnerability_obj.get("external_references", [])
+            if reference.get("source_name") == "cwe" and reference.get("external_id")
+        ]
+
+    @staticmethod
+    def parse_identity(identity_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses identity indicator type to cortex format.
+
+        Args:
+            identity_obj (dict): identity object, e.g. a targeted organization.
+        """
+        identity = {
+            "value": identity_obj.get("name"),
+            "indicator_type": FeedIndicatorType.Identity,
+            "rawJSON": identity_obj,
+        }
+        identity["customFields"] = {
+            "stixid": identity_obj.get("id"),
+            "firstseenbysource": identity_obj.get("created"),
+            "modified": identity_obj.get("modified"),
+            "description": identity_obj.get("description", ""),
+            "identityclass": identity_obj.get("identity_class", ""),
+            "industrysectors": identity_obj.get("sectors", []),
+            "tags": list(set(identity_obj.get("labels", []))),
+        }
+        return [identity]
+
+    @staticmethod
+    def parse_location(location_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses location indicator type to cortex format.
+
+        Args:
+            location_obj (dict): location object, e.g. a country.
+        """
+        country_code = str(location_obj.get("country", "")).upper()
+        location = {
+            "value": location_obj.get("name") or country_code,
+            "indicator_type": FeedIndicatorType.Location,
+            "rawJSON": location_obj,
+        }
+        location["customFields"] = {
+            "stixid": location_obj.get("id"),
+            "firstseenbysource": location_obj.get("created"),
+            "modified": location_obj.get("modified"),
+            "description": location_obj.get("description", ""),
+            "countrycode": country_code,
+            "tags": list(set(location_obj.get("labels", []))),
+        }
+        return [location]
+
+    @staticmethod
+    def parse_sco_software_indicator(software_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses software indicator type to cortex format.
+
+        Args:
+            software_obj (dict): indicator as an observable object of software type.
+        """
+        software_indicator = STIX2Parser.parse_general_sco_indicator(software_obj, value_mapping="name")
+        software_indicator[0]["customFields"].update(
+            {"cpe": software_obj.get("cpe"), "vendor": software_obj.get("vendor"), "version": software_obj.get("version")}
+        )
+        return software_indicator
 
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
@@ -703,6 +812,7 @@ class STIX2Parser:
         a_value_to_relationship: dict[str, Any] = {}
         for relationships_object in relationships_lst:
             relationship_type: str = relationships_object.get("relationship_type", "")
+            relationship_type = STIX_2_TO_CORTEX_RELATIONSHIP_NAMES.get(relationship_type, relationship_type)
             if not EntityRelationship.Relationships.is_valid(relationship_type):
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
@@ -725,7 +835,7 @@ class STIX2Parser:
             if not (a_value and a_type and b_value and b_type):
                 continue
 
-            if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE}:
+            if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE, ThreatIntel.ObjectsNames.TOOL}:
                 a_object["customFields"].setdefault("tags", []).append(b_value)
             elif b_type in {ThreatIntel.ObjectsNames.ATTACK_PATTERN}:
                 with suppress(StopIteration):
@@ -762,10 +872,33 @@ class STIX2Parser:
         Builds a list of cortex indicators objects from the STIX2 objects
         :return: Cortex indicators list
         """
-        envelopes = STIX2Parser.create_envelopes_by_type(objects)
+        author_ids = {obj["created_by_ref"] for obj in objects if obj.get("created_by_ref")}
+        envelopes = STIX2Parser.create_envelopes_by_type(
+            [obj for obj in objects if obj.get("type") != "identity" or obj.get("id") not in author_ids]
+        )
         indicators = self.load_stix_objects_from_envelope(envelopes)
+        self.add_vulnerable_products(objects)
 
         return indicators
+
+    def add_vulnerable_products(self, objects: list[dict]) -> None:
+        """
+        Fills the vulnerable products of each parsed CVE with the CPEs of the software objects related to it.
+
+        Args:
+            objects (list): all the STIX objects fetched from the feed.
+        """
+        software_id_to_cpe = {obj["id"]: obj["cpe"] for obj in objects if obj.get("type") == "software" and obj.get("cpe")}
+        for obj in objects:
+            if obj.get("type") != "relationship" or obj.get("relationship_type") != "related-to":
+                continue
+            cpe = software_id_to_cpe.get(obj.get("source_ref", ""))
+            cve = self.parsed_object_id_to_object.get(obj.get("target_ref", ""))
+            if not cpe or not cve or cve.get("indicator_type") != FeedIndicatorType.CVE:
+                continue
+            vulnerable_products = cve["customFields"].setdefault("vulnerableproducts", [])
+            if {"CPE": cpe} not in vulnerable_products:
+                vulnerable_products.append({"CPE": cpe})
 
     def load_stix_objects_from_envelope(self, envelopes: dict[str, Any]):
         parse_stix_2_objects = {
@@ -790,6 +923,9 @@ class STIX2Parser:
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "vulnerability": self.parse_vulnerability,
+            "identity": self.parse_identity,
+            "location": self.parse_location,
+            "software": self.parse_sco_software_indicator,
         }
         indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         return indicators
