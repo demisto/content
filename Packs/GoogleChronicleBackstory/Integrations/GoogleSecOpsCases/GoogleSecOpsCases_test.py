@@ -18,6 +18,8 @@ from GoogleSecOpsCases import (
     DEFAULT_CASE_LIST_SORT_BY,
     DEFAULT_CASE_LIST_SORT_ORDER,
     DEFAULT_PAGE_SIZE,
+    API_VERSION_V1,
+    API_VERSION_V1_ALPHA,
     ENDPOINTS,
     ENTITY_ID_DISPLAY,
     MAX_FETCH_LIMIT,
@@ -98,7 +100,8 @@ VALID_PARAMS: dict[str, Any] = {
 TEST_DAY_MS = 24 * 60 * 60 * 1000
 MY_IP = "0.0.0.1"
 
-BASE_URL = "https://chronicle.us.rep.googleapis.com/v1alpha/projects/12345/locations/us/instances/test-instance"
+BASE_URL = "https://chronicle.us.rep.googleapis.com/v1/projects/12345/locations/us/instances/test-instance"
+BASE_URL_V1_ALPHA = "https://chronicle.us.rep.googleapis.com/v1alpha/projects/12345/locations/us/instances/test-instance"
 TEST_DATA_DIR = Path(__file__).parent
 
 
@@ -121,6 +124,13 @@ def mock_client(mocker):
     mocker.patch("GoogleSecOpsCases.skip_proxy")
     mocker.patch("GoogleSecOpsCases.Client._implement_retry")
     return Client(params=VALID_PARAMS, proxy=False, disable_ssl=False)
+
+
+@pytest.fixture
+def mock_v1alpha_client(mock_client):
+    """Fixture for a real Client instance on the v1alpha API, as main creates it for V1_ALPHA_COMMANDS."""
+    mock_client.api_version = API_VERSION_V1_ALPHA
+    return mock_client
 
 
 def test_module_success(mock_client, requests_mock):
@@ -150,6 +160,36 @@ def test_main_test_module(mocker, mock_client):
     main()
 
     mock_return_results.assert_called_once_with("ok")
+
+
+@pytest.mark.parametrize(
+    "command, expected_api_version",
+    [
+        ("gcb-case-alert-tag-add", API_VERSION_V1_ALPHA),
+        ("gcb-case-alert-tag-remove", API_VERSION_V1_ALPHA),
+        ("gcb-case-alert-customfield-list", API_VERSION_V1_ALPHA),
+        ("gcb-playbook-list", API_VERSION_V1_ALPHA),
+        ("gcb-playbook-attach", API_VERSION_V1_ALPHA),
+        ("gcb-case-list", API_VERSION_V1),
+        ("gcb-case-assign", API_VERSION_V1),
+        ("test-module", API_VERSION_V1),
+        ("fetch-incidents", API_VERSION_V1),
+    ],
+)
+def test_main_sets_api_version_on_client(mocker, command, expected_api_version):
+    """Test main() creates the client with the API version for the executed command."""
+
+    mocker.patch.object(demisto, "params", return_value=VALID_PARAMS)
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("GoogleSecOpsCases.validate_configuration_parameters")
+    mock_client_class = mocker.patch("GoogleSecOpsCases.Client")
+    mocker.patch("GoogleSecOpsCases.return_results")
+    mocker.patch("GoogleSecOpsCases.return_error")
+
+    main()
+
+    assert mock_client_class.call_args.kwargs["api_version"] == expected_api_version
 
 
 @pytest.mark.parametrize(
@@ -400,24 +440,79 @@ def test_parse_error_message(error_input, region, expected):
 
 
 @pytest.mark.parametrize(
-    "use_new_url_format, location, expected_url_part",
+    "use_new_url_format, location, api_version, expected_base_url",
     [
-        (True, "us", "chronicle.us.rep.googleapis.com"),
-        (False, "eu", "eu-chronicle.googleapis.com"),
+        (True, "us", None, "https://chronicle.us.rep.googleapis.com/v1"),
+        (False, "eu", None, "https://eu-chronicle.googleapis.com/v1"),
+        (True, "us", API_VERSION_V1, "https://chronicle.us.rep.googleapis.com/v1"),
+        (False, "eu", API_VERSION_V1, "https://eu-chronicle.googleapis.com/v1"),
+        (True, "us", API_VERSION_V1_ALPHA, "https://chronicle.us.rep.googleapis.com/v1alpha"),
+        (False, "eu", API_VERSION_V1_ALPHA, "https://eu-chronicle.googleapis.com/v1alpha"),
     ],
 )
-def test_create_url_path(mock_client, use_new_url_format, location, expected_url_part):
-    """Test _create_url_path uses the correct URL format."""
+def test_create_url_path(mock_client, use_new_url_format, location, api_version, expected_base_url):
+    """Test _create_url_path uses the correct URL format and API version (v1 by default)."""
 
     mock_client.project_number = "12345"
     mock_client.project_location = location
     mock_client.project_instance_id = "test-instance"
     mock_client.use_new_url_format = use_new_url_format
 
-    result = Client._create_url_path(mock_client)
+    kwargs = {"api_version": api_version} if api_version else {}
+    result = Client._create_url_path(mock_client, **kwargs)
 
-    assert expected_url_part in result
-    assert f"projects/12345/locations/{location}/instances/test-instance" in result
+    assert result == f"{expected_base_url}/projects/12345/locations/{location}/instances/test-instance"
+
+
+@pytest.mark.parametrize("api_version", ["v1aplha", "v2", "V1", "", None])
+def test_create_url_path_when_invalid_api_version(mock_client, api_version):
+    """Test _create_url_path fails fast with a clear error for a typo, unknown, wrong-case, empty or missing API version."""
+
+    mock_client.api_version = api_version
+
+    with pytest.raises(ValueError) as error:
+        mock_client._create_url_path()
+
+    assert str(error.value) == f"Unsupported Google SecOps API version: {api_version}. Supported versions are: v1, v1alpha."
+
+
+@pytest.mark.parametrize(
+    "api_version, expected_base_url",
+    [
+        (None, BASE_URL),
+        (API_VERSION_V1, BASE_URL),
+        (API_VERSION_V1_ALPHA, BASE_URL_V1_ALPHA),
+    ],
+)
+def test_validate_response_api_version(mock_client, requests_mock, api_version, expected_base_url):
+    """Test validate_response sends the request to the base URL of the requested API version (v1 by default)."""
+
+    requests_mock.get(f"{expected_base_url}{ENDPOINTS['CASES']}", json={"cases": []})
+
+    kwargs = {"api_version": api_version} if api_version else {}
+    result = mock_client.validate_response(ENDPOINTS["CASES"], **kwargs)
+
+    assert result == {"cases": []}
+    assert requests_mock.last_request.url.startswith(f"{expected_base_url}/")
+
+
+@pytest.mark.parametrize(
+    "use_new_url_format, host",
+    [
+        (True, "https://chronicle.us.rep.googleapis.com"),
+        (False, "https://us-chronicle.googleapis.com"),
+    ],
+)
+@pytest.mark.parametrize("api_version", [API_VERSION_V1, API_VERSION_V1_ALPHA])
+def test_validate_response_api_version_url_formats(mock_client, requests_mock, use_new_url_format, host, api_version):
+    """Test validate_response routes each API version to the correct host for both the new and older URL formats."""
+
+    mock_client.use_new_url_format = use_new_url_format
+    base = f"{host}/{api_version}/projects/12345/locations/us/instances/test-instance"
+    requests_mock.get(f"{base}{ENDPOINTS['CASES']}", json={"cases": []})
+
+    assert mock_client.validate_response(ENDPOINTS["CASES"], api_version=api_version) == {"cases": []}
+    assert requests_mock.last_request.url.startswith(f"{base}/")
 
 
 @pytest.mark.parametrize(
@@ -739,7 +834,7 @@ def test_gcb_case_list_command_success(mock_client, requests_mock):
         }
     )
 
-    requests_mock.get(f"{BASE_URL}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
+    requests_mock.get(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
     requests_mock.get(f"{BASE_URL}{ENDPOINTS['CASES']}?{cases_qs}", json=mock_response)
     args = {
         "page_size": "10",
@@ -1601,7 +1696,7 @@ def test_gcb_case_assign_command_success_email(mock_client, requests_mock):
 
     soar_users_response = util_load_json("test_data/legacy_soar_users_response.json")
     soar_users_qs = urlencode({"pageSize": 1, "filter": f"(email='{user_email}') AND accountState='ACTIVE'"})
-    requests_mock.get(f"{BASE_URL}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
+    requests_mock.get(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
     requests_mock.post(f"{BASE_URL}{ENDPOINTS['CASES_BULK_ASSIGN']}", json={}, status_code=200)
 
     result = gcb_case_assign_command(mock_client, args)
@@ -1637,7 +1732,7 @@ def test_gcb_case_assign_command_unresolved_email(mock_client, requests_mock, as
 
     soar_users_response = util_load_json("test_data/legacy_soar_users_response.json")
     soar_users_qs = urlencode({"pageSize": 1, "filter": f"(email='{assignee}') AND accountState='ACTIVE'"})
-    requests_mock.get(f"{BASE_URL}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
+    requests_mock.get(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json=soar_users_response)
 
     with pytest.raises(ValueError) as error:
         gcb_case_assign_command(mock_client, {"case_ids": "1001", "assignee": assignee})
@@ -1650,7 +1745,7 @@ def test_gcb_case_assign_command_inactive_user(mock_client, requests_mock):
 
     assignee = "inactive.user@example.com"
     soar_users_qs = urlencode({"pageSize": 1, "filter": f"(email='{assignee}') AND accountState='ACTIVE'"})
-    requests_mock.get(f"{BASE_URL}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json={"legacySoarUsers": []})
+    requests_mock.get(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_SOAR_USERS']}?{soar_users_qs}", json={"legacySoarUsers": []})
 
     with pytest.raises(ValueError) as error:
         gcb_case_assign_command(mock_client, {"case_ids": "1001", "assignee": assignee})
@@ -2333,18 +2428,20 @@ def test_gcb_case_alert_update_command_invalid_args(mock_client, args, expected_
     assert str(error.value) == expected_error_message
 
 
-def test_gcb_case_alert_tag_add_command_success(mock_client, requests_mock):
+def test_gcb_case_alert_tag_add_command_success(mock_v1alpha_client, requests_mock):
     """Test gcb_case_alert_tag_add_command with a successful response."""
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_ADD_TAG'].format(case_id='1001', alert_id='1142656')}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_ADD_TAG'].format(case_id='1001', alert_id='1142656')}",
         text="",
         status_code=200,
     )
 
     expected_outputs = {"alertId": "1142656", "caseId": 1001, "recentlyAddedTag": "insider-threat"}
 
-    result = gcb_case_alert_tag_add_command(mock_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"})
+    result = gcb_case_alert_tag_add_command(
+        mock_v1alpha_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"}
+    )
 
     assert result.readable_output == "Tag insider-threat successfully added to alert 1142656."
     assert result.outputs_prefix == SECOPS_OUTPUT_PATHS["CaseAlert"]
@@ -2353,17 +2450,17 @@ def test_gcb_case_alert_tag_add_command_success(mock_client, requests_mock):
     assert result.raw_response == expected_outputs
 
 
-def test_gcb_case_alert_tag_add_command_api_error(mock_client, requests_mock):
+def test_gcb_case_alert_tag_add_command_api_error(mock_v1alpha_client, requests_mock):
     """Test gcb_case_alert_tag_add_command when API returns a permission denied error."""
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_ADD_TAG'].format(case_id='1001', alert_id='1142656')}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_ADD_TAG'].format(case_id='1001', alert_id='1142656')}",
         json={"error": {"message": PERMISSION_DENIED_TEXT}},
         status_code=403,
     )
 
     with pytest.raises(ValueError) as error:
-        gcb_case_alert_tag_add_command(mock_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"})
+        gcb_case_alert_tag_add_command(mock_v1alpha_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"})
 
     assert str(error.value) == MESSAGES["HTTP_ERROR"].format(403, PERMISSION_DENIED_TEXT)
 
@@ -2426,18 +2523,20 @@ def test_main_gcb_case_alert_tag_add_command_success(mocker, mock_client):
     mock_return_results.assert_called_once_with(mock_command.return_value)
 
 
-def test_gcb_case_alert_tag_remove_command_success(mock_client, requests_mock):
+def test_gcb_case_alert_tag_remove_command_success(mock_v1alpha_client, requests_mock):
     """Test gcb_case_alert_tag_remove_command with a successful response."""
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_REMOVE_TAG'].format(case_id='1001', alert_id='1142656')}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_REMOVE_TAG'].format(case_id='1001', alert_id='1142656')}",
         text="",
         status_code=200,
     )
 
     expected_outputs = {"alertId": "1142656", "caseId": 1001, "recentlyRemovedTag": "insider-threat"}
 
-    result = gcb_case_alert_tag_remove_command(mock_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"})
+    result = gcb_case_alert_tag_remove_command(
+        mock_v1alpha_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"}
+    )
 
     assert result.readable_output == "Tag insider-threat successfully removed from alert 1142656."
     assert result.outputs_prefix == SECOPS_OUTPUT_PATHS["CaseAlert"]
@@ -2446,17 +2545,19 @@ def test_gcb_case_alert_tag_remove_command_success(mock_client, requests_mock):
     assert result.raw_response == expected_outputs
 
 
-def test_gcb_case_alert_tag_remove_command_api_error(mock_client, requests_mock):
+def test_gcb_case_alert_tag_remove_command_api_error(mock_v1alpha_client, requests_mock):
     """Test gcb_case_alert_tag_remove_command when API returns a permission denied error."""
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_REMOVE_TAG'].format(case_id='1001', alert_id='1142656')}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_REMOVE_TAG'].format(case_id='1001', alert_id='1142656')}",
         json={"error": {"message": PERMISSION_DENIED_TEXT}},
         status_code=403,
     )
 
     with pytest.raises(ValueError) as error:
-        gcb_case_alert_tag_remove_command(mock_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"})
+        gcb_case_alert_tag_remove_command(
+            mock_v1alpha_client, {"case_id": "1001", "alert_id": "1142656", "tag": "insider-threat"}
+        )
 
     assert str(error.value) == MESSAGES["HTTP_ERROR"].format(403, PERMISSION_DENIED_TEXT)
 
@@ -3244,7 +3345,7 @@ def test_main_gcb_case_alert_recommendation_fetch_command_success(mocker, mock_c
     mock_return_results.assert_called_once_with(mock_command.return_value)
 
 
-def test_gcb_case_alert_customfield_list_command_success(mock_client, requests_mock):
+def test_gcb_case_alert_customfield_list_command_success(mock_v1alpha_client, requests_mock):
     """When a valid response is received, gcb_case_alert_customfield_list_command should return custom field values."""
 
     mock_response = util_load_json("test_data/case_alert_customfield_list_success_response.json")
@@ -3253,26 +3354,29 @@ def test_gcb_case_alert_customfield_list_command_success(mock_client, requests_m
     mock_custom_fields = util_load_json("test_data/case_alert_customfield_list_custom_fields_response.json")
 
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}", json=mock_response
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}",
+        json=mock_response,
     )
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CUSTOM_FIELDS']}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CUSTOM_FIELDS']}",
         json=mock_custom_fields,
     )
 
-    result = gcb_case_alert_customfield_list_command(mock_client, {"case_id": "1001", "alert_id": "2001"})
+    result = gcb_case_alert_customfield_list_command(mock_v1alpha_client, {"case_id": "1001", "alert_id": "2001"})
 
     assert result.outputs == expected_outputs
     assert result.readable_output == expected_hr
     assert result.raw_response == mock_response
 
 
-def test_gcb_case_alert_customfield_list_command_empty_response(mock_client, requests_mock):
+def test_gcb_case_alert_customfield_list_command_empty_response(mock_v1alpha_client, requests_mock):
     """When no custom field values are found, gcb_case_alert_customfield_list_command should return appropriate message."""
 
-    requests_mock.get(f"{BASE_URL}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}", json={})
+    requests_mock.get(
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}", json={}
+    )
 
-    result = gcb_case_alert_customfield_list_command(mock_client, {"case_id": "1001", "alert_id": "2001"})
+    result = gcb_case_alert_customfield_list_command(mock_v1alpha_client, {"case_id": "1001", "alert_id": "2001"})
 
     assert result.outputs is None
     assert result.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("custom field values")
@@ -3337,38 +3441,40 @@ def test_main_gcb_case_alert_customfield_list_command_success(mocker, mock_clien
     mock_return_results.assert_called_once_with(mock_command.return_value)
 
 
-def test_gcb_case_alert_customfield_list_command_list_custom_fields_failure(mock_client, requests_mock):
+def test_gcb_case_alert_customfield_list_command_list_custom_fields_failure(mock_v1alpha_client, requests_mock):
     """When list_custom_fields raises an exception, the command should not hard-fail
     but return results with empty display names."""
 
     mock_response = util_load_json("test_data/case_alert_customfield_list_success_response.json")
 
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}", json=mock_response
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}",
+        json=mock_response,
     )
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CUSTOM_FIELDS']}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CUSTOM_FIELDS']}",
         exc=Exception("network error"),
     )
 
     with pytest.raises(Exception, match="network error"):
-        gcb_case_alert_customfield_list_command(mock_client, {"case_id": "1001", "alert_id": "2001"})
+        gcb_case_alert_customfield_list_command(mock_v1alpha_client, {"case_id": "1001", "alert_id": "2001"})
 
 
-def test_gcb_case_alert_customfield_list_command_empty_display_name_fallback(mock_client, requests_mock):
+def test_gcb_case_alert_customfield_list_command_empty_display_name_fallback(mock_v1alpha_client, requests_mock):
     """When list_custom_fields returns no matching fields, display names should fall back to empty string."""
 
     mock_response = util_load_json("test_data/case_alert_customfield_list_success_response.json")
 
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}", json=mock_response
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CASE_ALERT_CUSTOMFIELD_VALUES'].format(case_id='1001', alert_id='2001')}",
+        json=mock_response,
     )
     requests_mock.get(
-        f"{BASE_URL}{ENDPOINTS['CUSTOM_FIELDS']}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['CUSTOM_FIELDS']}",
         json={"customFields": []},
     )
 
-    result = gcb_case_alert_customfield_list_command(mock_client, {"case_id": "1001", "alert_id": "2001"})
+    result = gcb_case_alert_customfield_list_command(mock_v1alpha_client, {"case_id": "1001", "alert_id": "2001"})
 
     cfv_key = next(k for k in result.outputs if "AlertCustomFieldValue" in k)
     for entry in result.outputs[cfv_key]:
@@ -4315,16 +4421,16 @@ def test_main_gcb_case_alert_entity_property_update_command_success(mocker, mock
         ({"execution_scope": "CASE", "environment": "Production"}),
     ],
 )
-def test_gcb_playbook_list_command_success(mock_client, requests_mock, args):
+def test_gcb_playbook_list_command_success(mock_v1alpha_client, requests_mock, args):
     """When valid response is received, gcb_playbook_list_command should return playbook list."""
 
     mock_response = util_load_json("test_data/playbook_list_success_response.json")
     expected_outputs = util_load_json("test_data/playbook_list_context.json")
     expected_hr = util_load_text_data("test_data/playbook_list_hr.md")
 
-    requests_mock.post(f"{BASE_URL}{ENDPOINTS['LEGACY_PLAYBOOKS']}", json=mock_response)
+    requests_mock.post(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_PLAYBOOKS']}", json=mock_response)
 
-    result = gcb_playbook_list_command(mock_client, args)
+    result = gcb_playbook_list_command(mock_v1alpha_client, args)
 
     assert result.outputs_prefix == SECOPS_OUTPUT_PATHS["Playbook"]
     assert result.outputs_key_field == "workflowDefinitionIdentifier"
@@ -4333,12 +4439,12 @@ def test_gcb_playbook_list_command_success(mock_client, requests_mock, args):
     assert result.readable_output == expected_hr
 
 
-def test_gcb_playbook_list_command_empty_response(mock_client, requests_mock):
+def test_gcb_playbook_list_command_empty_response(mock_v1alpha_client, requests_mock):
     """When empty payload is received, gcb_playbook_list_command should return no records message."""
 
-    requests_mock.post(f"{BASE_URL}{ENDPOINTS['LEGACY_PLAYBOOKS']}", json={})
+    requests_mock.post(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_PLAYBOOKS']}", json={})
 
-    result = gcb_playbook_list_command(mock_client, {})
+    result = gcb_playbook_list_command(mock_v1alpha_client, {})
 
     assert result.outputs is None
     assert result.raw_response == {}
@@ -4363,7 +4469,7 @@ def test_gcb_playbook_list_command_invalid_args(mock_client, args, expected_erro
     assert str(error.value) == expected_error_message
 
 
-def test_gcb_playbook_attach_command_success(mock_client, requests_mock):
+def test_gcb_playbook_attach_command_success(mock_v1alpha_client, requests_mock):
     """When valid response is received, gcb_playbook_attach_command should return confirmation message."""
 
     args = {
@@ -4381,11 +4487,11 @@ def test_gcb_playbook_attach_command_success(mock_client, requests_mock):
     )
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}",
         json=mock_response,
     )
 
-    result = gcb_playbook_attach_command(mock_client, args)
+    result = gcb_playbook_attach_command(mock_v1alpha_client, args)
 
     assert result.outputs_prefix == SECOPS_OUTPUT_PATHS["PlaybookAttach"]
     assert result.outputs_key_field == "alertIdentifier"
@@ -4394,7 +4500,7 @@ def test_gcb_playbook_attach_command_success(mock_client, requests_mock):
     assert result.readable_output == expected_hr
 
 
-def test_gcb_playbook_attach_command_api_failure(mock_client, requests_mock):
+def test_gcb_playbook_attach_command_api_failure(mock_v1alpha_client, requests_mock):
     """When API returns payload false, gcb_playbook_attach_command should return failure HR."""
 
     args = {
@@ -4411,9 +4517,9 @@ def test_gcb_playbook_attach_command_api_failure(mock_client, requests_mock):
         "ACCESS DISABLED ACCOUNTS_00000000-0000-0000-0000-000000000007 in case 1001."
     )
 
-    requests_mock.post(f"{BASE_URL}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}", json=mock_response)
+    requests_mock.post(f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}", json=mock_response)
 
-    result = gcb_playbook_attach_command(mock_client, args)
+    result = gcb_playbook_attach_command(mock_v1alpha_client, args)
 
     assert result.outputs_prefix == SECOPS_OUTPUT_PATHS["PlaybookAttach"]
     assert result.outputs_key_field == "alertIdentifier"
@@ -4422,7 +4528,7 @@ def test_gcb_playbook_attach_command_api_failure(mock_client, requests_mock):
     assert result.readable_output == expected_hr
 
 
-def test_gcb_playbook_attach_command_api_error(mock_client, requests_mock):
+def test_gcb_playbook_attach_command_api_error(mock_v1alpha_client, requests_mock):
     """When API returns 400, gcb_playbook_attach_command should raise ValueError."""
 
     args = {
@@ -4433,13 +4539,13 @@ def test_gcb_playbook_attach_command_api_error(mock_client, requests_mock):
     }
 
     requests_mock.post(
-        f"{BASE_URL}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}",
+        f"{BASE_URL_V1_ALPHA}{ENDPOINTS['LEGACY_PLAYBOOK_ATTACH']}",
         status_code=404,
         json={"error": {"message": "Case not found.", "code": 404}},
     )
 
     with pytest.raises(ValueError, match="Case not found."):
-        gcb_playbook_attach_command(mock_client, args)
+        gcb_playbook_attach_command(mock_v1alpha_client, args)
 
 
 @pytest.mark.parametrize(

@@ -1,14 +1,14 @@
 Use the Google SecOps integration to retrieve IOC Domain matches as Incidents. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
-This integration was integrated and tested with version v1 Alpha of GoogleSecOps.
+This integration was integrated and tested with versions v1 and v1alpha of the Google SecOps API.
 
 **Note:** The commands will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
 
 If you are upgrading from a Google Chronicle Backstory integration, please refer to the [Migration Guide](#migration-guide) for guidance.
 
-## Configure Google SecOps v1 Alpha on Cortex XSOAR
+## Configure Google SecOps on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google SecOps v1 Alpha.
+2. Search for Google SecOps.
 3. Click **Add instance** to create and configure a new integration instance.
 4. To fetch IOC Domain matches, refer to the section ["Configuration for fetching IOC Domain Matches as a Cortex XSOAR Incident"](#configuration-for-fetching-ioc-domain-matches-as-a-cortex-xsoar-incident).
 
@@ -5914,3 +5914,19 @@ Some commands from the previous integration have been deprecated from Google API
 | gcb-list-alerts |
 | gcb-list-useraliases |
 | gcb-list-assetaliases |
+
+## API Version Migration (v1alpha to v1)
+
+The integration has been migrated from the v1alpha to the v1 version of the Google SecOps API. The following commands and fetch incidents have no v1 equivalent and use the v1alpha API:
+
+- Fetching of IoCs as XSOAR Incidents
+- ***gcb-list-iocs***
+- ***gcb-ioc-details***
+- ***ip***
+- ***domain***
+- ***gcb-list-events***
+- ***gcb-list-detections***
+- ***gcb-get-detection***
+- ***gcb-list-curatedrule-detections***
+- ***gcb-list-curatedrules***
+- ***gcb-test-rule-stream***

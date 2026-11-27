@@ -41,8 +41,26 @@ DBOT_SCORE_MAPPING = {0: "Unknown", 1: "Good", 2: "Suspicious", 3: "Malicious"}
 CONFIDENCE_LEVEL_PRIORITY = {"unknown_severity": 0, "informational": 1, "low": 2, "medium": 3, "high": 4}
 VALID_DATA_TABLE_COLUMN_TYPE = ["STRING", "REGEX", "CIDR", "NUMBER"]
 
-SECOPS_V1_ALPHA_URL = "https://chronicle.{}.rep.googleapis.com/v1alpha"
-OLDER_SECOPS_V1_ALPHA_URL = "https://{}-chronicle.googleapis.com/v1alpha"
+API_VERSION_V1 = "v1"
+API_VERSION_V1_ALPHA = "v1alpha"
+VALID_API_VERSIONS = (API_VERSION_V1, API_VERSION_V1_ALPHA)
+# Commands that call endpoints available only on v1alpha (legacy and curated rule endpoints).
+# All other commands use v1.
+V1_ALPHA_COMMANDS = {
+    "fetch-incidents",
+    "ip",
+    "domain",
+    "gcb-list-events",
+    "gcb-list-detections",
+    "gcb-list-curatedrule-detections",
+    "gcb-list-curatedrules",
+    "gcb-test-rule-stream",
+    "gcb-list-iocs",
+    "gcb-ioc-details",
+    "gcb-get-detection",
+}
+SECOPS_URL = "https://chronicle.{}.rep.googleapis.com/{}"
+OLDER_SECOPS_URL = "https://{}-chronicle.googleapis.com/{}"
 
 SECOPS_OUTPUT_PATHS = {
     "Rules": "GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)",
@@ -121,13 +139,14 @@ class Client:
     requires service_account_credentials : a json formatted string act as a token access
     """
 
-    def __init__(self, params: dict[str, Any], proxy, disable_ssl):
+    def __init__(self, params: dict[str, Any], proxy, disable_ssl, api_version: str = API_VERSION_V1):
         """
         Initialize HTTP Client.
 
         :param params: parameter returned from demisto.params()
         :param proxy: whether to use environment proxy
         :param disable_ssl: whether to disable ssl
+        :param api_version: Google SecOps API version (v1 or v1alpha) used to build the request URLs
         """
         encoded_service_account = str(params.get("credentials", {}).get("password", ""))
         service_account_credential = json.loads(encoded_service_account, strict=False)
@@ -164,6 +183,7 @@ class Client:
         self.project_number = secops_project_number if secops_project_number else self.project_id
         url_format = params.get("url_format", "<chronicle>.<REGION>.<rep.googleapis.com>").lower()
         self.use_new_url_format = url_format == "<chronicle>.<region>.<rep.googleapis.com>"
+        self.api_version = api_version
 
     def _implement_retry(
         self, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False
@@ -500,7 +520,7 @@ def validate_single_select(value, name, single_select_choices):
     return value
 
 
-def validate_and_parse_detection_start_end_time(args: dict[str, Any]) -> tuple[Optional[datetime], Optional[datetime]]:
+def validate_and_parse_detection_start_end_time(args: dict[str, Any]) -> tuple[datetime | None, datetime | None]:
     """
     Validate and return detection_start_time and detection_end_time as per Google SecOps or \
     raise a ValueError if the given inputs are invalid.
@@ -576,7 +596,7 @@ def validate_and_parse_list_detections_args(args: dict[str, Any]) -> dict[str, A
 
 def validate_and_parse_curatedrule_detection_start_end_time(
     args: dict[str, Any],
-) -> tuple[Optional[datetime], Optional[datetime]]:
+) -> tuple[datetime | None, datetime | None]:
     """
     Validate and return detection_start_time and detection_end_time as per Google SecOps or \
     raise a ValueError if the given inputs are invalid.
@@ -801,12 +821,22 @@ def create_url_path(client: Client) -> str:
     """
     Creates the URL path for the Google SecOps API.
 
+    The API version (v1 or v1alpha) is taken from the client object, which is set in main based on the command.
+
     :type client: Client
-    :param client: The client object containing project ID, instance ID, and location.
+    :param client: The client object containing project ID, instance ID, location, and API version.
 
     :return: The constructed URL path.
     :rtype: str
+
+    :raises ValueError: If the API version set on the client is not supported.
     """
+    if client.api_version not in VALID_API_VERSIONS:
+        raise ValueError(
+            f"Unsupported Google SecOps API version: {client.api_version}. "
+            f"Supported versions are: {', '.join(VALID_API_VERSIONS)}."
+        )
+
     project_number = client.project_number
     project_instance_id = client.project_instance_id
     project_location = client.project_location
@@ -814,9 +844,9 @@ def create_url_path(client: Client) -> str:
     parent = f"projects/{project_number}/locations/{project_location}/instances/{project_instance_id}"
 
     if client.use_new_url_format:
-        url = SECOPS_V1_ALPHA_URL.format(project_location)
+        url = SECOPS_URL.format(project_location, client.api_version)
     else:
-        url = OLDER_SECOPS_V1_ALPHA_URL.format(project_location)
+        url = OLDER_SECOPS_URL.format(project_location, client.api_version)
 
     return f"{url}/{parent}"
 
@@ -1998,7 +2028,7 @@ def gcb_list_events(
     end_time: str,
     reference_time: str,
     page_size: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Return context data and raw response for gcb-list-events command.
 
@@ -2722,7 +2752,7 @@ def prepare_context_hr_for_gcb_list_curated_rules_command(json_data: dict[str, A
     return ec, hr
 
 
-def gcb_list_curated_rules(client_obj: Client, page_token: str, page_size: Optional[int]) -> dict[str, Any]:
+def gcb_list_curated_rules(client_obj: Client, page_token: str, page_size: int | None) -> dict[str, Any]:
     """
     Return context data and raw response for gcb-list-curatedrules command.
 
@@ -3806,7 +3836,7 @@ def prepare_body_data_for_data_table_rows(rows: list, columns: dict[str, int]) -
                 )
             row_data[columns[column_name]] = value
 
-        rows_data.append({"data_table_row": {"values": row_data}})
+        rows_data.append({"dataTableRow": {"values": row_data}})
 
     return {"requests": rows_data}
 
@@ -5818,6 +5848,27 @@ def gcb_get_detection_command(client_obj, args):
     return hr, remove_empty_elements(ec), json_data
 
 
+def get_api_version(command: str, params: dict[str, Any]) -> str:
+    """
+    Get the Google SecOps API version to use for the given command.
+
+    :type command: str
+    :param command: The command being executed.
+
+    :type params: Dict[str, Any]
+    :param params: Configuration parameters of the integration instance.
+
+    :return: The API version (v1 or v1alpha).
+    :rtype: str
+    """
+    if command in V1_ALPHA_COMMANDS:
+        return API_VERSION_V1_ALPHA
+    # test-module runs fetch-incidents when fetch is enabled, which uses v1alpha endpoints.
+    if command == "test-module" and argToBoolean(params.get("isFetch", False)):
+        return API_VERSION_V1_ALPHA
+    return API_VERSION_V1
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
 
@@ -5872,7 +5923,7 @@ def main():
         validate_configuration_parameters(params)
 
         # Initializing client Object
-        client_obj = Client(params, proxy, disable_ssl)
+        client_obj = Client(params, proxy, disable_ssl, api_version=get_api_version(command, params))
 
         # trigger command based on input
         if command == "test-module":

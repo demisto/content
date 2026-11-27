@@ -2,6 +2,7 @@
 
 import json
 from unittest import mock
+from urllib.parse import urlparse
 
 import demistomock as demisto
 import pytest
@@ -44,6 +45,7 @@ def client():
     mocked_client = mock.Mock()
     mocked_client.project_location = "us"
     mocked_client.project_instance_id = "dummy_instance_id"
+    mocked_client.api_version = "v1"
     return mocked_client
 
 
@@ -3812,6 +3814,18 @@ def test_gcb_data_table_add_row_command_when_valid_args_provided(client, mocker,
 
     assert hr == expected_hr
     assert ec == expected_ec
+    # The bulkCreate body must use the documented v1 camelCase field name "dataTableRow".
+    bulk_create_bodies = [
+        json.loads(c.kwargs["data"]) for c in client.http_client.request.call_args_list if c.kwargs["url"].endswith(":bulkCreate")
+    ]
+    assert bulk_create_bodies == [
+        {
+            "requests": [
+                {"dataTableRow": {"values": ["value1", "value2"]}},
+                {"dataTableRow": {"values": ["value3", "value4"]}},
+            ]
+        }
+    ]
 
 
 @pytest.mark.parametrize(
@@ -4052,3 +4066,344 @@ def test_gcb_get_detection_command_invalid_args(client, args, expected_error_mes
         gcb_get_detection_command(client, args)
 
     assert expected_error_message == str(error.value)
+
+
+class URLCaptured(Exception):
+    """Raised by the validate_response mock to stop a command after its request URL is built."""
+
+
+@pytest.fixture
+def url_client():
+    """Client mock with real URL attributes, used to check which API version each endpoint calls."""
+    mocked_client = mock.Mock()
+    mocked_client.project_location = "us"
+    mocked_client.project_number = "123456"
+    mocked_client.project_instance_id = "dummy_instance_id"
+    mocked_client.use_new_url_format = True
+    mocked_client.api_version = "v1"
+    return mocked_client
+
+
+def test_create_url_path_when_invalid_api_version(url_client):
+    """Test that create_url_path fails fast with a clear error for a typo, unknown, wrong-case, empty or missing API version."""
+    from GoogleSecOps import create_url_path
+
+    for api_version in ["v1aplha", "v2", "V1", "", None]:
+        url_client.api_version = api_version
+        with pytest.raises(ValueError) as e:
+            create_url_path(url_client)
+        assert str(e.value) == f"Unsupported Google SecOps API version: {api_version}. Supported versions are: v1, v1alpha."
+
+
+def test_main_sets_api_version_on_client(mocker):
+    """Test that main creates the client with the API version for the executed command."""
+    import GoogleSecOps
+
+    mocker.patch.object(GoogleSecOps.demisto, "params", return_value={"isFetch": False})
+    mocker.patch.object(GoogleSecOps.demisto, "command", return_value="gcb-list-iocs")
+    mocker.patch.object(GoogleSecOps.demisto, "args", return_value={})
+    mocker.patch.object(GoogleSecOps, "validate_configuration_parameters")
+    mocker.patch.object(GoogleSecOps, "return_outputs")
+    mock_client = mocker.patch.object(GoogleSecOps, "Client")
+    mocker.patch.object(GoogleSecOps, "gcb_list_iocs_command", return_value=("", {}, {}))
+
+    GoogleSecOps.main()
+
+    assert mock_client.call_args.kwargs["api_version"] == "v1alpha"
+
+
+START = "2026-01-01T00:00:00Z"
+END = "2026-01-02T00:00:00Z"
+INSTANCE_PATH = "projects/123456/locations/us/instances/dummy_instance_id"
+BASE_URLS = {
+    True: "https://chronicle.us.rep.googleapis.com",
+    False: "https://us-chronicle.googleapis.com",
+}
+
+
+def assert_endpoint_urls(url_client, mocker, call, expected_version: str, expected_suffix: str, name: str):
+    """
+    Run the call with both the new and the older URL format, and assert each requested URL uses the expected
+    API version, base URL, instance path and path suffix.
+    """
+    captured = {}
+
+    def capture_url(client, url, *args, **kwargs):
+        captured["url"] = url
+        raise URLCaptured
+
+    mocker.patch("GoogleSecOps.validate_response", side_effect=capture_url)
+
+    for use_new_url_format, base_url in BASE_URLS.items():
+        url_client.use_new_url_format = use_new_url_format
+        with pytest.raises(URLCaptured):
+            call(url_client)
+        url = captured.pop("url")
+        actual_version = urlparse(url).path.split("/")[1]
+        assert actual_version == expected_version, f"{name}: expected {expected_version}, got {actual_version}: {url}"
+        assert url.startswith(f"{base_url}/{expected_version}/{INSTANCE_PATH}{expected_suffix}"), f"{name}: {url}"
+
+
+def _endpoint_calls():
+    """Each entry: (description, XSOAR command, callable taking the client, expected API version, expected path suffix)."""
+    import GoogleSecOps as gs
+
+    return [
+        # Endpoints migrated to v1.
+        ("test-module", "test-module", lambda c: gs.test_function(c, {"isFetch": False}), "v1", "/rules?pageSize=1"),
+        ("rules.list", "gcb-list-rules", lambda c: gs.gcb_list_rules(c, {}), "v1", "/rules?view=FULL&pageSize=100"),
+        ("rules.create", "gcb-create-rule", lambda c: gs.create_rule(c, DUMMY_RULE_TEXT), "v1", "/rules"),
+        ("rules.get", "gcb-get-rule", lambda c: gs.gcb_get_rule(c, "ru_1"), "v1", "/rules/ru_1"),
+        ("rules.delete", "gcb-delete-rule", lambda c: gs.delete_rule(c, "ru_1"), "v1", "/rules/ru_1"),
+        (
+            "rules.patch",
+            "gcb-create-rule-version",
+            lambda c: gs.gcb_create_rule_version(c, "ru_1", DUMMY_RULE_TEXT),
+            "v1",
+            "/rules/ru_1",
+        ),
+        (
+            "rules.updateDeployment alerting",
+            "gcb-change-rule-alerting-status",
+            lambda c: gs.gcb_change_rule_alerting_status(c, "ru_1", "enable"),
+            "v1",
+            "/rules/ru_1/deployment?updateMask=alerting",
+        ),
+        (
+            "rules.updateDeployment enabled",
+            "gcb-change-live-rule-status",
+            lambda c: gs.gcb_change_live_rule_status(c, "ru_1", "enable"),
+            "v1",
+            "/rules/ru_1/deployment?updateMask=enabled",
+        ),
+        ("verifyRuleText", "gcb-verify-rule", lambda c: gs.gcb_verify_rule(c, DUMMY_RULE_TEXT), "v1", ":verifyRuleText"),
+        (
+            "rules.retrohunts.list",
+            "gcb-list-retrohunts",
+            lambda c: gs.gcb_list_retrohunts(c, "ru_1", None, 10, None),
+            "v1",
+            "/rules/ru_1/retrohunts?pageSize=10",
+        ),
+        (
+            "rules.retrohunts.list all rules",
+            "gcb-list-retrohunts",
+            lambda c: gs.gcb_list_retrohunts(c, None, None, 10, None),
+            "v1",
+            "/rules/-/retrohunts?pageSize=10",
+        ),
+        (
+            "rules.retrohunts.get",
+            "gcb-get-retrohunt",
+            lambda c: gs.gcb_get_retrohunt(c, "ru_1", "oh_1"),
+            "v1",
+            "/rules/ru_1/retrohunts/oh_1",
+        ),
+        (
+            "rules.retrohunts.create",
+            "gcb-start-retrohunt",
+            lambda c: gs.gcb_start_retrohunt(c, "ru_1", START, END),
+            "v1",
+            "/rules/ru_1/retrohunts",
+        ),
+        (
+            "operations.cancel",
+            "gcb-cancel-retrohunt",
+            lambda c: gs.gcb_cancel_retrohunt(c, "ru_1", "oh_1"),
+            "v1",
+            "/operations/oh_1:cancel",
+        ),
+        ("udmSearch", "gcb-udm-search", lambda c: gs.gcb_udm_search(c, START, END, 10, "q"), "v1", ":udmSearch?"),
+        ("events.get", "gcb-get-event", lambda c: gs.gcb_get_event_command(c, {"event_id": "ev_1"}), "v1", "/events/ev_1"),
+        (
+            "referenceLists.get",
+            "gcb-get-reference-list",
+            lambda c: gs.gcb_get_reference_list(c, "list_1", "FULL"),
+            "v1",
+            "/referenceLists/list_1?",
+        ),
+        (
+            "referenceLists.create",
+            "gcb-create-reference-list",
+            lambda c: gs.gcb_create_reference_list(c, "list_1", "desc", ["a"], "PLAIN_TEXT"),
+            "v1",
+            "/referenceLists?referenceListId=list_1",
+        ),
+        (
+            "referenceLists.patch",
+            "gcb-update-reference-list",
+            lambda c: gs.gcb_update_reference_list(c, "list_1", ["a"], "desc", "PLAIN_TEXT"),
+            "v1",
+            "/referenceLists/list_1",
+        ),
+        (
+            "referenceLists.list",
+            "gcb-list-reference-list",
+            lambda c: gs.gcb_list_reference_list(c, 10, None, "BASIC"),
+            "v1",
+            "/referenceLists?",
+        ),
+        (
+            "verifyReferenceList",
+            "gcb-verify-reference-list",
+            lambda c: gs.gcb_verify_reference_list(c, ["a"], "REFERENCE_LIST_SYNTAX_TYPE_PLAIN_TEXT_STRING"),
+            "v1",
+            ":verifyReferenceList",
+        ),
+        (
+            "dataTables.list",
+            "gcb-list-data-tables",
+            lambda c: gs.gcb_list_data_tables(c, 10, ""),
+            "v1",
+            "/dataTables?pageSize=10",
+        ),
+        (
+            "dataTables.create",
+            "gcb-create-data-table",
+            lambda c: gs.gcb_create_data_table(c, "table_1", "desc", [{"columnIndex": 0, "originalColumn": "col"}]),
+            "v1",
+            "/dataTables?dataTableId=table_1",
+        ),
+        ("dataTables.get", "gcb-get-data-table", lambda c: gs.gcb_get_data_table(c, "table_1"), "v1", "/dataTables/table_1"),
+        (
+            "dataTableRows.list",
+            "gcb-get-data-table",
+            lambda c: gs.gcb_get_data_table_rows(c, "table_1", 10, ""),
+            "v1",
+            "/dataTables/table_1/dataTableRows?pageSize=10",
+        ),
+        (
+            "dataTableRows.bulkCreate",
+            "gcb-data-table-add-row",
+            lambda c: gs.gcb_data_table_add_row(c, "table_1", {"requests": []}),
+            "v1",
+            "/dataTables/table_1/dataTableRows:bulkCreate",
+        ),
+        (
+            "dataTableRows.delete",
+            "gcb-data-table-remove-row",
+            lambda c: gs.gcb_data_table_delete_row(c, "table_1", "row_1"),
+            "v1",
+            "/dataTables/table_1/dataTableRows/row_1",
+        ),
+        # Endpoints that have no v1 equivalent and stay on v1alpha.
+        (
+            "legacySearchEnterpriseWideIoCs (fetch-incidents)",
+            "fetch-incidents",
+            lambda c: gs.get_ioc_domain_matches(c, START, END, 10),
+            "v1alpha",
+            "/legacy:legacySearchEnterpriseWideIoCs?",
+        ),
+        (
+            "legacySearchEnterpriseWideIoCs (gcb-list-iocs)",
+            "gcb-list-iocs",
+            lambda c: gs.gcb_list_iocs(c, START, END, 10),
+            "v1alpha",
+            "/legacy:legacySearchEnterpriseWideIoCs?",
+        ),
+        (
+            "legacySearchArtifactIoCDetails (gcb-ioc-details)",
+            "gcb-ioc-details",
+            lambda c: gs.gcb_ioc_details_command(c, {"artifact_value": "8.8.8.8"}),
+            "v1alpha",
+            "/legacy:legacySearchArtifactIoCDetails?",
+        ),
+        (
+            "legacySearchArtifactIoCDetails (ip)",
+            "ip",
+            lambda c: gs.ip_command(c, "8.8.8.8"),
+            "v1alpha",
+            "/legacy:legacySearchArtifactIoCDetails?",
+        ),
+        (
+            "legacySearchArtifactIoCDetails (domain)",
+            "domain",
+            lambda c: gs.domain_command(c, "example.com"),
+            "v1alpha",
+            "/legacy:legacySearchArtifactIoCDetails?",
+        ),
+        (
+            "legacyFindAssetEvents",
+            "gcb-list-events",
+            lambda c: gs.gcb_list_events(c, "hostname", "host1", START, END, START, 10),
+            "v1alpha",
+            "/legacy:legacyFindAssetEvents?",
+        ),
+        (
+            "legacySearchDetections",
+            "gcb-list-detections",
+            lambda c: gs.get_detections(c, "ru_1", "10", START, END, "", ""),
+            "v1alpha",
+            "/legacy:legacySearchDetections?",
+        ),
+        (
+            "legacyGetDetection",
+            "gcb-get-detection",
+            lambda c: gs.gcb_get_detection(c, "ru_1", "de_1"),
+            "v1alpha",
+            "/legacy:legacyGetDetection?ruleId=ru_1&detectionId=de_1",
+        ),
+        (
+            "legacySearchCuratedDetections",
+            "gcb-list-curatedrule-detections",
+            lambda c: gs.get_curatedrule_detections(c, "ur_1", "10", START, END, "", ""),
+            "v1alpha",
+            "/legacy:legacySearchCuratedDetections?",
+        ),
+        (
+            "curatedRules.list",
+            "gcb-list-curatedrules",
+            lambda c: gs.gcb_list_curated_rules(c, "", 10),
+            "v1alpha",
+            "/curatedRules?pageSize=10",
+        ),
+        (
+            "legacyTestRuleStreaming",
+            "gcb-test-rule-stream",
+            lambda c: gs.gcb_test_rule_stream(c, DUMMY_RULE_TEXT, START, END, 10),
+            "v1alpha",
+            "/legacy:legacyTestRuleStreaming",
+        ),
+    ]
+
+
+@pytest.mark.parametrize("name, command, call, expected_version, expected_suffix", _endpoint_calls())
+def test_endpoint_api_version(url_client, mocker, name, command, call, expected_version, expected_suffix):
+    """
+    Test that every endpoint is called on the expected API version when the client is set up for its command.
+
+    Endpoints available on v1 must use v1. Legacy and curated rule endpoints have no v1 equivalent and must stay on v1alpha.
+    Each endpoint is checked with both the new and the older URL format. The API version is resolved with
+    get_api_version for the endpoint's command, as main does.
+    """
+    from GoogleSecOps import get_api_version
+
+    url_client.api_version = get_api_version(command, {})
+    assert_endpoint_urls(url_client, mocker, call, expected_version, expected_suffix, name)
+
+
+@pytest.mark.parametrize(
+    "params, expected_version, expected_suffix",
+    [
+        ({"isFetch": False}, "v1", "/rules?pageSize=1"),
+        (
+            {"isFetch": True, "first_fetch": "1 day", "max_fetch": "10"},
+            "v1alpha",
+            "/legacy:legacySearchEnterpriseWideIoCs?",
+        ),
+    ],
+)
+def test_test_module_api_version(url_client, mocker, params, expected_version, expected_suffix):
+    """
+    Test that test-module calls the expected endpoint and API version for both branches.
+
+    Without fetch it probes rules.list on v1. With fetch enabled it runs fetch_incidents in test mode,
+    which calls legacySearchEnterpriseWideIoCs on v1alpha. The API version is resolved from the same params,
+    as main does.
+    """
+    import GoogleSecOps as gs
+
+    url_client.api_version = gs.get_api_version("test-module", params)
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    assert_endpoint_urls(
+        url_client, mocker, lambda c: gs.test_function(c, params), expected_version, expected_suffix, "test-module"
+    )

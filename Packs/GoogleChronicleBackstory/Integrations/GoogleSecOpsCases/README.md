@@ -1,5 +1,5 @@
 Use the Google SecOps Cases integration to retrieve Cases as Incidents. This integration also provides commands to manage the Cases lifecycle.
-This integration was integrated and tested with version v1 Alpha of Google SecOps API.
+This integration was integrated and tested with versions v1 and v1alpha of the Google SecOps API.
 
 ## Configure Google SecOps Cases in Cortex
 
@@ -3274,3 +3274,15 @@ Manually attach (trigger) a specific playbook to a case alert.
 #### Human Readable Output
 
 >Playbook 'Phishing Investigation' successfully attached to alert ACCESS DISABLED ACCOUNTS_00000000-0000-0000-0000-000000000002 in case 1001.
+
+## API Version Migration (v1alpha to v1)
+
+The integration has been migrated from the v1alpha to the v1 version of the Google SecOps API. The following commands have no v1 equivalent and use the v1alpha API:
+
+- ***gcb-case-alert-tag-add***
+- ***gcb-case-alert-tag-remove***
+- ***gcb-case-alert-customfield-list***
+- ***gcb-playbook-list***
+- ***gcb-playbook-attach***
+
+Note: The ***gcb-case-list*** and ***gcb-case-assign*** commands use the v1alpha API only to resolve user email addresses to user IDs.

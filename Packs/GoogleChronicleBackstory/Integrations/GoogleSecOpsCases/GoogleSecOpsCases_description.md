@@ -3,14 +3,14 @@
 ## Configure an API account on Google SecOps
 
 ---
-Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the V1 alpha API. Alternatively, you can use the following steps to create a service account. The Google SecOps Project Instance ID and Google SecOps Project Number can be retrieved from the **Settings** or **Profile** page of the Google SecOps platform.
+Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Google SecOps API (v1 and v1alpha). Alternatively, you can use the following steps to create a service account. The Google SecOps Project Instance ID and Google SecOps Project Number can be retrieved from the **Settings** or **Profile** page of the Google SecOps platform.
 
 **Troubleshooting Connection Issues:** If you encounter connection or access denied errors, update the API URL format and provide the Google SecOps Project Number.
 
 ### Create a Service Account JSON
 
 * Log in to [Google Cloud Console](https://console.cloud.google.com/) and select the GCP Project ID shown in the Profile page of the Google SecOps platform.
-* Navigate to **IAM & Admin > Service Accounts**, click **+ CREATE SERVICE ACCOUNT**, and provide a descriptive name (e.g., secops-v1alpha-service-account).
+* Navigate to **IAM & Admin > Service Accounts**, click **+ CREATE SERVICE ACCOUNT**, and provide a descriptive name (e.g., secops-service-account).
 * Grant appropriate Chronicle roles:
   * **Viewer** Permission: If you only need to get or list resources, the Chronicle Viewer role is sufficient. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.viewer)
   * **Editor** Permission: If you need to create or update resources (such as creating or editing case properties), the Chronicle Editor role is required. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.editor)
