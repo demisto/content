@@ -13,15 +13,40 @@ from boto3 import Session
 from xml.sax.saxutils import escape
 import re
 import copy
+import shlex
+import subprocess
+import tempfile
 
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_MAX_WORKERS: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
+AWS_CLI_COMMAND = "aws-cli"
+AWS_CLI_TIMEOUT_SECONDS = 300
+AWS_CLI_UNPRIVILEGED_UID = 4000  # The non-root 'demisto' user that exists in the Docker image.
+AWS_CLI_UNPRIVILEGED_GID = 4000
+AWS_CLI_UMASK = 0o077
+# Read-only AWS CLI config for every run: stops the CLI from fetching http(s):// parameter values.
+AWS_CLI_CONFIG = "[default]\ncli_follow_urlparam = false\n"
+# Parameter prefixes that make the AWS CLI read a local file and use its content as the parameter value.
+AWS_CLI_LOCAL_FILE_PREFIXES = ("file://", "fileb://")
+# CLI command groups that are not AWS services. 'configure' can read or export the credentials (CLI v2.9+).
+AWS_CLI_BLOCKED_COMMANDS = ("configure",)
+# The only container environment variables passed to the AWS CLI subprocess (binary lookup, proxy, and custom CA certificates).
+AWS_CLI_PASSTHROUGH_ENV_VARS = (
+    "PATH",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "no_proxy",
+    "REQUESTS_CA_BUNDLE",
+    "AWS_CA_BUNDLE",
+    "SSL_CERT_FILE",
+)
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
@@ -11406,6 +11431,183 @@ class NetworkFirewall:
         )
 
 
+def build_cli_environment(credentials: dict, region: str) -> dict[str, str]:
+    """
+    Build the environment variables for the AWS CLI subprocess from the Cortex Platform CTS short-lived credentials.
+
+    Args:
+        credentials (dict): Platform-supplied CTS credentials.
+        region (str): The AWS region to run the command against.
+
+    Returns:
+        dict[str, str]: A minimal environment with only the passthrough variables and the AWS credential variables.
+    """
+    access_key_id = credentials.get("key", "")
+    secret_access_key = credentials.get("access_token", "")
+    session_token = credentials.get("session_token", "")
+
+    env = {name: os.environ[name] for name in AWS_CLI_PASSTHROUGH_ENV_VARS if name in os.environ}
+    env.update({"AWS_ACCESS_KEY_ID": access_key_id, "AWS_SECRET_ACCESS_KEY": secret_access_key, "AWS_DEFAULT_REGION": region})
+    env["AWS_PAGER"] = ""
+    if session_token:
+        env["AWS_SESSION_TOKEN"] = session_token
+    return env
+
+
+def get_cli_privilege_kwargs(run_dir: str, home_dir: str) -> dict[str, Any]:
+    """
+    Build the subprocess arguments that drop root privileges for the AWS CLI subprocess.
+
+    When the integration runs as root, the CLI runs as the unprivileged user with no supplementary groups.
+    The run directory stays owned by root, and only the unprivileged group can enter it (no listing, no writing),
+    so the CLI can reach its config and home directory but cannot replace the read-only config.
+    The per-run home directory is handed over to the unprivileged user. Otherwise, the CLI keeps the current user.
+
+    Args:
+        run_dir (str): The per-run temporary directory that holds the CLI config and home directory.
+        home_dir (str): The per-run temporary home directory of the CLI subprocess.
+
+    Returns:
+        dict[str, Any]: The privilege-related keyword arguments for ``subprocess.run``. Empty when not running as root.
+    """
+    if os.geteuid() != 0:
+        return {}
+    os.chown(run_dir, 0, AWS_CLI_UNPRIVILEGED_GID)  # root:4000 - root keeps ownership.
+    os.chmod(run_dir, 0o710)  # The unprivileged group can only enter; others get no access.
+    os.chown(home_dir, AWS_CLI_UNPRIVILEGED_UID, AWS_CLI_UNPRIVILEGED_GID)
+    return {
+        "user": AWS_CLI_UNPRIVILEGED_UID,
+        "group": AWS_CLI_UNPRIVILEGED_GID,
+        "extra_groups": [],
+        "umask": AWS_CLI_UMASK,
+    }
+
+
+def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedProcess:
+    """
+    Run the AWS CLI binary with the given tokens. No shell is invoked.
+
+    The CLI runs as an unprivileged user (as opposed to the integration that runs as root) with a fresh temporary home
+    directory, so it cannot read root-only files or persist AWS CLI configuration between runs.
+    The CLI config is a read-only file outside the home directory, the shared credentials file and the
+    instance metadata service are disabled, so profiles, ``credential_process`` and config changes cannot be used.
+
+    Args:
+        tokens (list[str]): The CLI tokens without the leading ``aws`` token.
+        env (dict[str, str]): The environment variables for the subprocess.
+
+    Returns:
+        subprocess.CompletedProcess: The completed process with captured stdout and stderr.
+    """
+    with tempfile.TemporaryDirectory(prefix="aws-cli-") as run_dir:
+        config_file = os.path.join(run_dir, "config")
+        with open(config_file, "w") as config:
+            config.write(AWS_CLI_CONFIG)
+        os.chmod(config_file, 0o444)
+        home_dir = os.path.join(run_dir, "home")
+        os.mkdir(home_dir, 0o700)
+        privilege_kwargs = get_cli_privilege_kwargs(run_dir, home_dir)
+        cli_env = env | {
+            "HOME": home_dir,
+            "AWS_CONFIG_FILE": config_file,
+            "AWS_SHARED_CREDENTIALS_FILE": os.devnull,
+            "AWS_EC2_METADATA_DISABLED": "true",
+        }
+        try:
+            return subprocess.run(
+                ["aws", *tokens],
+                capture_output=True,
+                text=True,
+                env=cli_env,
+                cwd=home_dir,
+                timeout=AWS_CLI_TIMEOUT_SECONDS,
+                **privilege_kwargs,
+            )
+        except subprocess.TimeoutExpired as e:
+            raise DemistoException(f"The AWS CLI command timed out after {AWS_CLI_TIMEOUT_SECONDS} seconds.") from e
+
+
+def validate_cli_command(cli_command: str) -> list[str]:
+    """
+    Split the AWS CLI command into tokens and validate them.
+
+    Args:
+        cli_command (str): The AWS CLI command, with or without the leading ``aws`` token.
+
+    Returns:
+        list[str]: The CLI tokens without the leading ``aws`` token.
+
+    Raises:
+        DemistoException: If the command is empty, starts with a global option, is a blocked command,
+            or uses a local file parameter.
+    """
+    tokens = shlex.split(cli_command.strip())
+    if tokens and tokens[0] == "aws":
+        tokens = tokens[1:]
+    if not tokens:
+        raise DemistoException("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
+    if tokens[0].startswith("-"):
+        raise DemistoException(
+            "The cli_command argument must start with the service name. Place global options after the operation."
+        )
+    if tokens[0] in AWS_CLI_BLOCKED_COMMANDS:
+        raise DemistoException(f"The '{tokens[0]}' command is not supported.")
+    if any(prefix in token.lower() for token in tokens for prefix in AWS_CLI_LOCAL_FILE_PREFIXES):
+        raise DemistoException("Local file parameters (file:// and fileb://) are not supported. Pass the value inline instead.")
+    return tokens
+
+
+def execute_cli_command(credentials: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Execute an AWS CLI command against the specified account and region.
+
+    Args:
+        credentials (dict): Platform-supplied CTS credentials.
+        args (Dict[str, Any]): Command arguments including cli_command, account_id, and region.
+
+    Returns:
+        CommandResults: The JSON response of the AWS CLI command and a readable summary.
+    """
+    cli_command: str = args.get("cli_command") or ""
+    tokens = validate_cli_command(cli_command)
+    if "--output" not in tokens:
+        tokens += ["--output", "json"]
+
+    account_id = args.get("account_id")
+    region: str = args.get("region") or DEFAULT_REGION
+    env = build_cli_environment(credentials, region)
+
+    demisto.debug(f"[AWS CLI] Running 'aws {' '.join(tokens[:2])}' on {account_id=}, {region=}")
+    result = run_aws_cli(tokens, env)
+
+    if result.returncode != 0:
+        error_details = "\n".join(filter(None, [result.stderr.strip(), result.stdout.strip()]))
+        raise DemistoException(f"AWS CLI command failed with exit code {result.returncode}.\n{error_details}")
+
+    stdout = result.stdout.strip()
+    try:
+        response: Any = json.loads(stdout) if stdout else {}
+    except json.JSONDecodeError:
+        # A non-JSON output format was explicitly requested (e.g. --output text).
+        # The code fence is longer than any backtick run in the output, so the output cannot close it early.
+        longest_backtick_run = max((len(run) for run in re.findall(r"`+", stdout)), default=0)
+        fence = "`" * max(3, longest_backtick_run + 1)
+        return CommandResults(readable_output=f"### AWS CLI Result\n{fence}\n{stdout}\n{fence}", raw_response=stdout)
+
+    outputs = {"Command": cli_command, "AccountId": account_id, "Region": region, "Output": response}
+    readable_output = (
+        tableToMarkdown("AWS CLI Result", response, headerTransform=pascalToSpace, removeNull=True)
+        if response
+        else "The AWS CLI command completed successfully with no output."
+    )
+    return CommandResults(
+        outputs_prefix="AWS.CLI",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -11956,26 +12158,6 @@ def health_check(credentials: dict, account_id: str, connector_id: str) -> list[
         return internal_error
 
 
-def register_proxydome_header(boto_client: BotoClient) -> None:
-    """
-    Register ProxyDome authentication header for all AWS API requests.
-
-    This function adds the ProxyDome caller ID header to every boto3 request
-    by registering an event handler that injects the header before sending requests.
-
-    Args:
-        boto_client (BotoClient): The boto3 client to configure with ProxyDome headers
-    """
-    event_system = boto_client.meta.events
-    proxydome_token: str = get_proxydome_token()
-
-    def _add_proxydome_header(request, **kwargs):
-        request.headers["x-caller-id"] = proxydome_token
-
-    # Register the header injection function to be called before each request
-    event_system.register_last("before-send.*.*", _add_proxydome_header)
-
-
 def _assume_role_credentials(params: dict, access_key_id: str, secret_access_key: str, region: str) -> dict:
     """
     Call AWS STS ``AssumeRole`` using the marketplace-supplied access keys and
@@ -12022,10 +12204,10 @@ def get_service_client(
     Supports two authentication paths:
 
     - **Cortex Cloud platform**: ``credentials`` is populated by ``get_cloud_credentials()``
-      with short-lived CTS tokens. Requests are routed through ProxyDome.
+      with short-lived CTS tokens.
     - **XSOAR / XSIAM marketplace**: ``credentials`` is empty. Access keys are read from
       the paired ``credentials`` integration parameter. When ``role_arn`` is set, STS
-      ``AssumeRole`` is called to obtain temporary credentials. ProxyDome is not used.
+      ``AssumeRole`` is called to obtain temporary credentials.
 
     Args:
         credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
@@ -12097,29 +12279,14 @@ def get_service_client(
         read_timeout=read_timeout,
         retries={"max_attempts": retries},
     )
-    if is_platform_path:
-        base_config = base_config.merge(
-            Config(
-                proxies={"https": DEFAULT_PROXYDOME},
-                proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH},
-            )
-        )
     client_config = base_config.merge(config) if config else base_config
 
-    # On the platform path, verify using the ProxyDome CA bundle (requests go through ProxyDome
-    # which presents a self-signed cert). On the marketplace path, respect the user's insecure param:
     # SSL verification is enabled by default (insecure=False) and disabled only when the user
     # checks the "Trust any certificate (not secure)" box.
-    if is_platform_path:
-        verify_ssl: str | bool = DEFAULT_PROXYDOME_CERTFICATE_PATH
-    else:
-        verify_ssl = not argToBoolean(params.get("insecure", False))
+    verify_ssl: bool = not argToBoolean(params.get("insecure", False))
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)
-
-    if is_platform_path:
-        register_proxydome_header(client)
 
     return client, aws_session
 
@@ -12222,6 +12389,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
+    connector_id = get_connector_id()
 
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
@@ -12231,11 +12399,18 @@ def main():  # pragma: no cover
         if command == "test-module":
             results = (
                 run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
-                if (connector_id := get_connector_id())
+                if connector_id
                 else test_module(params)
             )
             demisto.info(f"[AWS] Health Check Results: {results}")
             return_results(results)
+
+        elif command == AWS_CLI_COMMAND:
+            # aws-cli runs the aws binary directly (no boto3 service client), so it is dispatched outside COMMANDS_MAPPING.
+            if not connector_id:
+                raise DemistoException(f"The {AWS_CLI_COMMAND} command is supported only on Cortex Platform tenants.")
+            cli_credentials = get_cloud_credentials(CloudTypes.AWS.value, args.get("account_id", ""))
+            return_results(execute_cli_command(cli_credentials, args))
 
         elif command in COMMANDS_MAPPING:
             return_results(execute_aws_command(command, args, params))
