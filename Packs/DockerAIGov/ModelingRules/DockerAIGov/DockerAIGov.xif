@@ -28,6 +28,7 @@ alter
         "@element"), ""),
     egress_port = arrayindex(regextract(to_string(resource_id), ":(\d+)$"), 0)
 | alter
+    xdm.event.original_event_type = category,
     xdm.event.type = to_string(action_type),
     xdm.event.id = audit_event_id,
     xdm.event.description = if(
