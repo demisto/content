@@ -1,0 +1,63 @@
+{
+    "GoogleThreatIntelligenceAgentic.FlowExecutionRelationship(val.execution_id && val.execution_id == obj.execution_id && val.relationship && val.relationship == obj.relationship)": {
+        "execution_id": "22222222-2222-2222-2222-222222222222",
+        "relationship": "owner",
+        "type": "user",
+        "data": [
+            {
+                "id": "jdoe",
+                "type": "user",
+                "links": {
+                    "self": "https://www.virustotal.com/api/v3/users/jdoe"
+                },
+                "attributes": {
+                    "is_service_account": false,
+                    "reputation": 1,
+                    "certified": false,
+                    "preferences": {
+                        "ui": {
+                            "last_read_notification_date": 1790070760,
+                            "feed_assistant_unread": false
+                        }
+                    },
+                    "first_name": "John",
+                    "has_offline_2fa_codes": false,
+                    "user_since": 1776848877,
+                    "use_cases": [
+                        "Enrich & triage alerts in your SOC & tech stack"
+                    ],
+                    "has_2fa": false,
+                    "status": "active",
+                    "sso_enforced": false,
+                    "last_name": "Doe",
+                    "collections_count": 0,
+                    "last_login": 1790574889,
+                    "roles": [
+                        "SOC / Security Analyst"
+                    ],
+                    "privileges": {
+                        "agentic-platform": {
+                            "granted": true,
+                            "inherited_from": "acmecorp",
+                            "inherited_via": "active_group"
+                        }
+                    },
+                    "private": false,
+                    "mandiant_uuid": "jdoe",
+                    "quotas": {
+                        "api_requests_daily": {
+                            "allowed": 100000000,
+                            "used": 47
+                        },
+                        "active_flows": {
+                            "allowed": 0,
+                            "used": 0
+                        }
+                    },
+                    "email": "jdoe@example.com",
+                    "offline_2fa_codes_count": 0
+                }
+            }
+        ]
+    }
+}

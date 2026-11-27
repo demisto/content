@@ -1,0 +1,107 @@
+{
+    "data": {
+        "type": "agentic_session",
+        "id": "44444444-4444-4444-4444-000000000004",
+        "attributes": {
+            "title": "Malware analysis of a suspicious file",
+            "creation_date": "2026-10-05T09:00:00.123456Z",
+            "last_modification_date": "2026-10-05T09:05:48.654321Z",
+            "events": [
+                {
+                    "id": "55555555-5555-5555-5555-000000000003",
+                    "message_type": "USER_MESSAGE",
+                    "user_message": {
+                        "timestamp_seconds": 1791190800,
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "Analyze this file."
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000004",
+                    "message_type": "AGENT_FINAL_RESPONSE",
+                    "agent_final_response": {
+                        "agent_id": "malware-analyst",
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "### Verdict\n\nThe file is **malicious**.\n\n- Family: Emotet\n- First seen: 2026-09-30"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000005",
+                    "message_type": "USER_MESSAGE",
+                    "user_message": {
+                        "timestamp_seconds": 1791191100,
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "Which campaigns use it?"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000007",
+                    "message_type": "FUNCTION_CALL",
+                    "function_call": {
+                        "function_id": "search_iocs",
+                        "function_call_id": "call_0000001",
+                        "name": "search_iocs",
+                        "args_json": "{\"query\": \"entity:collection name:emotet\", \"limit\": 10}",
+                        "agent_id": "malware-analyst"
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000008",
+                    "message_type": "FUNCTION_RESPONSE",
+                    "function_response": {
+                        "function_call_id": "call_0000001",
+                        "displayable_ui_messages": [
+                            {
+                                "agent_final_response": {
+                                    "agent_id": "search_iocs",
+                                    "widgets": [
+                                        {
+                                            "widget_type": "MARKDOWN_TEXT",
+                                            "markdown_text_widget": {
+                                                "text": "Found 2 Emotet campaigns."
+                                            }
+                                        }
+                                    ]
+                                },
+                                "message_type": "AGENT_FINAL_RESPONSE"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000006",
+                    "message_type": "AGENT_FINAL_RESPONSE",
+                    "agent_final_response": {
+                        "agent_id": "malware-analyst",
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "The file is linked to the Emotet campaigns of September 2026."
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

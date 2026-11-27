@@ -1,0 +1,15 @@
+{
+    "GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor(val.flow_id && val.flow_id == obj.flow_id && val.type && val.type == obj.type)": {
+        "flow_id": "11111111-1111-1111-1111-111111111111",
+        "type": "group",
+        "data": [
+            {
+                "type": "group",
+                "id": "acmecorp"
+            }
+        ]
+    },
+    "GoogleThreatIntelligenceAgentic.PageToken.FlowRelationshipDescriptor(true)": {
+        "total_count": 1
+    }
+}

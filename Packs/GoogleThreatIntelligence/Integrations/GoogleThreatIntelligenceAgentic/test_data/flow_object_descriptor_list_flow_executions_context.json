@@ -1,0 +1,16 @@
+{
+    "GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor(val.flow_id && val.flow_id == obj.flow_id && val.type && val.type == obj.type)": {
+        "flow_id": "11111111-1111-1111-1111-111111111111",
+        "type": "flow_execution",
+        "data": [
+            {
+                "type": "flow_execution",
+                "id": "8975c8a7-d574-42c0-8a85-3b3f2e07b53e"
+            }
+        ]
+    },
+    "GoogleThreatIntelligenceAgentic.PageToken.FlowRelationshipDescriptor(true)": {
+        "next_cursor": "eyJvZmZzZXQiOjF9",
+        "total_count": 1
+    }
+}
