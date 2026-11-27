@@ -1,0 +1,10 @@
+fromversion: 6.10.0
+toversion: 8.14.0
+id: NetBox_IRM_modeling_rule
+original_pack_id: NetBox
+name: NetBox IRM Modeling Rule
+rules: ''
+schema: ''
+tags: NetBox
+supportedModules:
+- xsiam
