@@ -308,10 +308,14 @@ def fetch_indicators_command(
                 indicators_values_indexes[indicator_value] = len(indicators_values)
                 indicators_values.add(indicator_value)
             else:
-                service = indicators[indicators_values_indexes[indicator_value]].get("rawJSON", {}).get("service", "")
-                if service and service_name not in service.split(","):
-                    service_name += f", {service}"
-                indicators[indicators_values_indexes[indicator_value]]["rawJSON"]["service"] = service_name
+                raw_json = indicators[indicators_values_indexes[indicator_value]]["rawJSON"]
+                existing_services = raw_json.get("service", "")
+                # Build the merged value in a new variable. Mutating `service_name` here would carry the
+                # accumulated string over to every following duplicate and make the field grow quadratically.
+                if not existing_services:
+                    raw_json["service"] = service_name
+                elif service_name not in [name.strip() for name in existing_services.split(",")]:
+                    raw_json["service"] = f"{service_name}, {existing_services}"
                 continue
 
             indicators.extend(
