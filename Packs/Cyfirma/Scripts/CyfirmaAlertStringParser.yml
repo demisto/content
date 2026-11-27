@@ -75,7 +75,7 @@ script: |-
           text = '\n\n'.join(alert_to_text(a) for a in (data or []))
 
           return_results(CommandResults(
-              outputs_prefix='Cyfirma.Alert.Txt',
+              outputs_prefix='Cyfirma.AlStr.Txt',
               outputs={'Description': text},
               readable_output=text))
 
@@ -95,7 +95,7 @@ args:
   required: true
   type: keyValue
 outputs:
-- contextPath: Cyfirma.Alert.Txt.Description
+- contextPath: Cyfirma.AlStr.Txt.Description
   type: string
 scripttarget: 0
 subtype: python3

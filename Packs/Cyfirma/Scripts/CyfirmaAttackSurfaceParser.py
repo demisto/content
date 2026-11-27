@@ -36,7 +36,7 @@ def main():
             result["Vulnerabilities"] = vulnerabilities
 
         return_results(CommandResults(
-            outputs_prefix="Cyfirma.Alert",
+            outputs_prefix="Cyfirma.Al.AS",
             outputs=result,
             readable_output=f"Parsed alert\n```\n{json.dumps(result, indent=2, default=str)}\n```",
         ))

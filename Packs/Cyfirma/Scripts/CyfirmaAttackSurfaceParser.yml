@@ -41,7 +41,7 @@ script: |-
               result["Vulnerabilities"] = vulnerabilities
 
           return_results(CommandResults(
-              outputs_prefix="Cyfirma.Alert",
+              outputs_prefix="Cyfirma.Al.AS",
               outputs=result,
               readable_output=f"Parsed alert\n```\n{json.dumps(result, indent=2, default=str)}\n```",
           ))
@@ -57,52 +57,57 @@ tags: []
 fromversion: 5.0.0
 enabled: true
 outputs:
-- contextPath: Cyfirma.Alert.Alertid
+- contextPath: Cyfirma.Al.AS.Alertid
   description: Alert ID.
   type: string
-- contextPath: Cyfirma.Alert.Severity
+- contextPath: Cyfirma.Al.AS.Severity
   description: Severity.
   type: string
-- contextPath: Cyfirma.Alert.Category
+- contextPath: Cyfirma.Al.AS.Category
   description: Category.
   type: string
-- contextPath: Cyfirma.Alert.Subcategory
+- contextPath: Cyfirma.Al.AS.Subcategory
   description: Subcategory.
   type: string
-- contextPath: Cyfirma.Alert.Description
+- contextPath: Cyfirma.Al.AS.Description
   description: Description.
   type: string
-- contextPath: Cyfirma.Alert.Ip
+- contextPath: Cyfirma.Al.AS.Title
+  description: Title.
+  type: string
+- contextPath: Cyfirma.Al.AS.Ip
   description: IP address.
   type: string
-- contextPath: Cyfirma.Alert.Domain
+- contextPath: Cyfirma.Al.AS.Domain
   description: Domain.
   type: string
-- contextPath: Cyfirma.Alert.Subdomain
+- contextPath: Cyfirma.Al.AS.Subdomain
   description: Subdomain.
   type: string
-- contextPath: Cyfirma.Alert.CVEs
-  type: unknown
-- contextPath: Cyfirma.Alert.NetworkAttributes
-  description: Network Attributes.
-  type: unknown
-- contextPath: Cyfirma.Alert.Vulnerabilities
-  type: unknown
-- contextPath: Cyfirma.Alert.Objectid
+- contextPath: Cyfirma.Al.AS.Objectid
   description: Object ID.
   type: string
-- contextPath: Cyfirma.Alert.Thirdpartyrelated
+- contextPath: Cyfirma.Al.AS.Thirdpartyrelated
   description: Third-party related.
   type: string
-- contextPath: Cyfirma.Alert.Firstseen
+- contextPath: Cyfirma.Al.AS.Firstseen
   description: First seen.
   type: string
-- contextPath: Cyfirma.Alert.Lastseen
+- contextPath: Cyfirma.Al.AS.Lastseen
   description: Last seen.
   type: string
-- contextPath: Cyfirma.Alert.Exposurescore
+- contextPath: Cyfirma.Al.AS.Exposurescore
   description: Exposure score.
   type: string
+- contextPath: Cyfirma.Al.AS.CVEs
+  description: CVE list.
+  type: unknown
+- contextPath: Cyfirma.Al.AS.NetworkAttributes
+  description: Network Attributes.
+  type: unknown
+- contextPath: Cyfirma.Al.AS.Vulnerabilities
+  description: Vulnerabilities Data.
+  type: unknown
 
 scripttarget: 0
 subtype: python3
