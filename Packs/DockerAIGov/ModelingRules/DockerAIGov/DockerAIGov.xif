@@ -23,7 +23,7 @@ alter
         "other"),
     // On network_egress records resource_id is "host:port". IPv6 would break a
     // naive split, so the host is taken as everything before the final colon.
-    egress_host = arraystring(arraymap(
+    egress_host = arrayindex(regextract(to_string(resource_id), "^(.*):\d+$"), 0),
         arraycreate(arrayindex(regextract(to_string(resource_id), "^(.*):\d+$"), 0)),
         "@element"), ""),
     egress_port = arrayindex(regextract(to_string(resource_id), ":(\d+)$"), 0)
