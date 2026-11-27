@@ -965,3 +965,16 @@ def test_create_api_metrics(mocker, response, result):
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get("Contents") == "Metrics reported successfully."
     assert metric_results.get("APIExecutionMetrics") == result
+
+
+def test_convert_dialect_to_module_postgres_pins_psycopg2_driver():
+    """
+    Given:
+        - The PostgreSQL dialect.
+    When:
+        - Converting the dialect to the SQLAlchemy driver name.
+    Then:
+        - The psycopg2 driver is set explicitly, since SQLAlchemy 2.1 defaults "postgresql" to psycopg (v3),
+          which is not installed in the Docker image (XSUP-81404).
+    """
+    assert Client._convert_dialect_to_module("PostgreSQL") == "postgresql+psycopg2"
