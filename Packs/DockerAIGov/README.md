@@ -8,8 +8,6 @@ AI coding agents run with real credentials and real network access. Docker's pol
 
 This pack brings that audit stream into Cortex XSIAM. It models the Docker SBX Policy Enforcement Point `AuditRecord` schema into XDM, detects the governance failures that matter, and provides an operations dashboard over the result.
 
-## What does this pack do?
-
 Data normalization capabilities:
 
 * Rules for parsing and modeling Docker AI Governance audit records that are ingested via the HTTP Event Collector into Cortex XSIAM.
