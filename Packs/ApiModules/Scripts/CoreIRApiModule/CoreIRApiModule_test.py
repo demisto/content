@@ -3888,6 +3888,38 @@ def test_list_risky_users_or_hosts_command(
 
 
 @pytest.mark.parametrize(
+    "command, args",
+    [
+        pytest.param("user", {"user_id": 233691}, id="user_id_int"),
+        pytest.param("user", {"user_id": "233691"}, id="user_id_str"),
+        pytest.param("host", {"host_id": 233691}, id="host_id_int"),
+        pytest.param("host", {"host_id": "233691"}, id="host_id_str"),
+    ],
+)
+def test_list_risky_users_or_host_command_sends_id_as_string(requests_mock, command: str, args: dict[str, Any]):
+    """
+    Given:
+    - A user_id / host_id argument provided either as an int (e.g. from a playbook input) or as a str.
+
+    When:
+    - Executing list_risky_users_or_host_command, which calls CoreClient.risk_score_user_or_host.
+
+    Then:
+    - The request body sent to /get_risk_score/ contains the ID as a string: {"request_data": {"id": "233691"}}.
+    """
+    risk_score_mock = requests_mock.post(
+        f"{Core_URL}/public_api/v1/get_risk_score/",
+        json=load_test_data("./test_data/list_risky_users_hosts.json"),
+    )
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+
+    list_risky_users_or_host_command(client=client, command=command, args=args)
+
+    assert risk_score_mock.call_count == 1
+    assert risk_score_mock.last_request.json() == {"request_data": {"id": "233691"}}
+
+
+@pytest.mark.parametrize(
     "command ,id_",
     [
         ("user", "user_id"),
