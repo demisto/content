@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from typing import Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 urllib3.disable_warnings()
 
@@ -13,6 +13,21 @@ SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
 SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
+MAX_STORED_ALARM_IDS = 10000
+MAX_APPROVED_CHECK_PAGES = 100
+# Safety checks that pick up alarms which become available after the regular fetch window has moved on.
+# The multi-tenant API applies approval filters inside a creation-date window of at most two days,
+# so two tiers are used: a frequent check over recent alarms and a less frequent check over older ones.
+APPROVED_CHECK_OVERLAP_MINUTES = 10
+# Retry alarm searches on rate limiting (the multi-tenant API allows 5 requests per second)
+# and transient server errors. The Retry-After header is honoured.
+SEARCH_RETRIES = 3
+SEARCH_RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
+SEARCH_RETRY_BACKOFF_FACTOR = 2
+APPROVED_CHECK_TIERS: tuple[dict[str, Any], ...] = (
+    {"name": "recent", "checkpoint_key": "last_approved_check_recent", "interval_minutes": 60, "lookback_days": 1},
+    {"name": "extended", "checkpoint_key": "last_approved_check_extended", "interval_minutes": 240, "lookback_days": 5},
+)
 
 STATUS_REASON_MAP = {
     "OPEN": 0,
@@ -82,6 +97,8 @@ class Client(BaseClient):
         # did not accept it, causing a TypeError at runtime.
         # When True the API returns total_pages/total_records in the response.
         include_total_records: bool = True,
+        approved_at_start: str | None = None,
+        approved_at_end: str | None = None,
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar Multi-Tenant API
@@ -103,6 +120,8 @@ class Client(BaseClient):
             limit: Number of results per page (max 100)
             page: Page number for pagination
             include_total_records: Whether to request total record counts from the API
+            approved_at_start: Only return alarms approved at or after this time (ISO datetime, UTC)
+            approved_at_end: Only return alarms approved at or before this time (ISO datetime, UTC)
 
         API Response Structure:
         {
@@ -143,6 +162,10 @@ class Client(BaseClient):
             params["excluded_alarm_main_types"] = excluded_alarm_main_types
         if excluded_alarm_sub_types:
             params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
+        if approved_at_start:
+            params["approved_at_start"] = approved_at_start
+        if approved_at_end:
+            params["approved_at_end"] = approved_at_end
 
         # CHANGED: Multi-tenant endpoint
         url_suffix = f"/v1/multi-tenant/{self.multi_tenant_id}/incidents"
@@ -158,6 +181,9 @@ class Client(BaseClient):
                 headers=self._get_headers(),
                 timeout=60,
                 resp_type="json",
+                retries=SEARCH_RETRIES,
+                status_list_to_retry=SEARCH_RETRY_STATUS_CODES,
+                backoff_factor=SEARCH_RETRY_BACKOFF_FACTOR,
             )
 
             demisto.debug(f"[SOCRadar-MT] Response type: {type(response)}")
@@ -579,6 +605,166 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
     return incident
 
 
+def parse_checkpoint(value: Any) -> datetime | None:
+    """Parse a UTC ISO datetime checkpoint stored in last_run, returning None when missing or invalid."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
+
+
+def format_utc(value: datetime) -> str:
+    """Format a UTC datetime the way the SOCRadar API expects it."""
+    return value.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def sort_alarm_ids_for_storage(alarm_ids: set[Any]) -> list[Any]:
+    """Keep the most recent alarm IDs (alarm IDs grow over time) within the storage cap."""
+
+    def sort_key(alarm_id: Any) -> int:
+        return int(alarm_id) if str(alarm_id).isdigit() else 0
+
+    return sorted(alarm_ids, key=sort_key, reverse=True)[:MAX_STORED_ALARM_IDS]
+
+
+def get_creation_windows(current_time: datetime, lookback_days: int, per_day: bool) -> list[tuple[str, str]]:
+    """
+    Build the creation-date windows (YYYY-MM-DD, UTC) to search.
+
+    The multi-tenant API limits a creation window to two days, so a one-day lookback fits a single
+    window (yesterday..today) and longer lookbacks are searched one day at a time.
+    """
+    today = current_time.astimezone(UTC).date()
+    if not per_day:
+        start_day = today - timedelta(days=lookback_days)
+        return [(start_day.isoformat(), today.isoformat())]
+    days = [(today - timedelta(days=offset)).isoformat() for offset in range(lookback_days + 1)]
+    return [(day, day) for day in days]
+
+
+def fetch_approved_alarms(
+    client: Client,
+    window_start: datetime,
+    window_end: datetime,
+    creation_windows: list[tuple[str, str]],
+    budget: int,
+    seen_alarm_ids: set[Any],
+    search_filters: dict[str, Any],
+    show_content: bool,
+) -> tuple[list[dict[str, Any]], bool]:
+    """
+    Fetch alarms approved within [window_start, window_end] across the given creation windows.
+
+    Returns:
+        A tuple of (new incidents, completed). completed is False when the budget ran out
+        before all pages were processed, so the same window should be checked again.
+    """
+    incidents: list[dict[str, Any]] = []
+    for creation_start, creation_end in creation_windows:
+        for page in range(1, MAX_APPROVED_CHECK_PAGES + 1):
+            response = client.search_incidents(
+                **search_filters,
+                start_date=creation_start,
+                end_date=creation_end,
+                approved_at_start=format_utc(window_start),
+                approved_at_end=format_utc(window_end),
+                limit=MAX_INCIDENTS_PER_PAGE,
+                page=page,
+            )
+            alarms = response.get("data", [])
+            for alarm in alarms:
+                alarm_id = alarm.get("alarm_id")
+                if alarm_id in seen_alarm_ids:
+                    continue
+                if len(incidents) >= budget:
+                    return incidents, False
+                incidents.append(alarm_to_incident(alarm, show_content=show_content))
+                seen_alarm_ids.add(alarm_id)
+            if len(alarms) < MAX_INCIDENTS_PER_PAGE or page >= response.get("total_pages", 0):
+                break
+        else:
+            demisto.info(f"[SOCRadar-MT] Check stopped after {MAX_APPROVED_CHECK_PAGES} pages for {creation_start}")
+    return incidents, True
+
+
+def run_approved_check_tier(
+    client: Client,
+    tier: dict[str, Any],
+    last_run: dict[str, Any],
+    budget: int,
+    seen_alarm_ids: set[Any],
+    search_filters: dict[str, Any],
+    show_content: bool,
+) -> tuple[list[dict[str, Any]], str]:
+    """
+    Run one safety-check tier when it is due.
+
+    Returns:
+        A tuple of (new incidents, checkpoint to store for the next run).
+    """
+    # Uses its own UTC clock so the window is correct regardless of the engine's local timezone.
+    current_time = datetime.now(UTC)
+    last_check = parse_checkpoint(last_run.get(tier["checkpoint_key"]))
+    if not last_check:
+        # First run (or upgrade from an older version): start tracking from now.
+        return [], format_utc(current_time)
+
+    stored_checkpoint = format_utc(last_check)
+    if current_time - last_check < timedelta(minutes=tier["interval_minutes"]) or budget <= 0:
+        return [], stored_checkpoint
+
+    window_start = last_check - timedelta(minutes=APPROVED_CHECK_OVERLAP_MINUTES)
+    creation_windows = get_creation_windows(current_time, tier["lookback_days"], per_day=tier["lookback_days"] > 1)
+    demisto.debug(
+        f"[SOCRadar-MT] {tier['name']} check window: {format_utc(window_start)} to {format_utc(current_time)}, "
+        f"creation windows: {creation_windows}"
+    )
+    # Work on a copy so that a failed check does not mark unsent alarms as already fetched.
+    check_seen_alarm_ids = set(seen_alarm_ids)
+    try:
+        incidents, completed = fetch_approved_alarms(
+            client,
+            window_start,
+            current_time,
+            creation_windows,
+            budget,
+            check_seen_alarm_ids,
+            search_filters,
+            show_content,
+        )
+    except Exception as e:
+        demisto.error(f"[SOCRadar-MT] {tier['name']} check failed, it will be retried on the next run: {str(e)}")
+        demisto.debug(f"[SOCRadar-MT] Traceback: {traceback.format_exc()}")
+        return [], stored_checkpoint
+
+    seen_alarm_ids.update(check_seen_alarm_ids)
+    demisto.debug(f"[SOCRadar-MT] {tier['name']} check created {len(incidents)} incidents (completed: {completed})")
+    return incidents, format_utc(current_time) if completed else stored_checkpoint
+
+
+def run_approved_checks(
+    client: Client,
+    last_run: dict[str, Any],
+    budget: int,
+    seen_alarm_ids: set[Any],
+    search_filters: dict[str, Any],
+    show_content: bool,
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Run every safety-check tier in turn, sharing the remaining budget and the seen alarm IDs."""
+    incidents: list[dict[str, Any]] = []
+    checkpoints: dict[str, str] = {}
+    for tier in APPROVED_CHECK_TIERS:
+        tier_incidents, checkpoint = run_approved_check_tier(
+            client, tier, last_run, budget - len(incidents), seen_alarm_ids, search_filters, show_content
+        )
+        incidents.extend(tier_incidents)
+        checkpoints[tier["checkpoint_key"]] = checkpoint
+    return incidents, checkpoints
+
+
 # FIX: Added show_content parameter to fetch_incidents so it can be passed
 # through to alarm_to_incident from the YAML checkbox configuration.
 def fetch_incidents(
@@ -771,18 +957,39 @@ def fetch_incidents(
 
         # FIX: Use a new variable name 'next_fetch_time' to avoid shadowing
         # the 'last_fetch_str' string from the top of the function.
+        # The safety checks only run once the regular fetch has caught up (max_results not reached).
+        approved_check_budget = 0 if reached_max_results else max_results - total_incidents_created
+        approved_incidents, approved_checkpoints = run_approved_checks(
+            client=client,
+            last_run=last_run,
+            budget=approved_check_budget,
+            seen_alarm_ids=last_alarm_ids,
+            search_filters={
+                "status": status,
+                "severities": severities,
+                "alarm_main_types": alarm_main_types,
+                "alarm_sub_types": alarm_sub_types,
+                "alarm_type_ids": alarm_type_ids,
+                "excluded_alarm_type_ids": excluded_alarm_type_ids,
+                "excluded_alarm_main_types": excluded_alarm_main_types,
+                "excluded_alarm_sub_types": excluded_alarm_sub_types,
+            },
+            show_content=show_content,
+        )
+        all_incidents.extend(approved_incidents)
+
         if reached_max_results:
             next_fetch_time = start_datetime
         else:
             next_fetch_time = current_time + timedelta(seconds=1)
-        combined = list(last_alarm_ids)[:10000]
         next_run = {
             "last_fetch": next_fetch_time.isoformat(),
             "start_date": start_date,
             "end_date": end_date,
             "next_run_incidents_to_skip": next_run_incidents_to_skip,
             "latest_page": current_page if next_run_incidents_to_skip else 1,
-            "last_alarm_ids": combined,
+            "last_alarm_ids": sort_alarm_ids_for_storage(last_alarm_ids),
+            **approved_checkpoints,
         }
         demisto.debug(f"[SOCRadar-MT] Next fetch will use time window: last {fetch_interval_minutes} minutes")
         demisto.debug(f"[SOCRadar-MT] Returning {len(all_incidents)} incidents to XSOAR")
@@ -794,10 +1001,11 @@ def fetch_incidents(
         demisto.error(f"[SOCRadar-MT] Traceback: {traceback.format_exc()}")
 
         return {
-            "last_alarm_ids": list(last_alarm_ids_backup)[:1000],
+            "last_alarm_ids": sort_alarm_ids_for_storage(last_alarm_ids_backup),
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
+            **{tier["checkpoint_key"]: last_run.get(tier["checkpoint_key"]) for tier in APPROVED_CHECK_TIERS},
             "exception": str(e),
         }, []
 

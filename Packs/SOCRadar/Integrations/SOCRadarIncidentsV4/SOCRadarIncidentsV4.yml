@@ -381,7 +381,7 @@ script:
       description: Parsed start date used for the test.
       type: String
 
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.16.14740428
   isfetch: true
   script: "-"
   subtype: python3

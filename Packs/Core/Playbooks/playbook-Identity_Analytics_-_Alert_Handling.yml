@@ -1724,6 +1724,7 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
+toversion: 8.15.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true

@@ -63,8 +63,8 @@ class Client(BaseClient):
         access_token_expiration = integration_context.get("expires_in")
         access_token = integration_context.get("access_token")
         demisto.debug(
-            f"{INTEGRATION_NAME} - Checking if context has valid access token..."
-            + f"expiration: {access_token_expiration}, access_token: {access_token}"
+            f"{INTEGRATION_NAME} - Checking if context has valid access token... "
+            + f"expiration: {access_token_expiration}, access_token exists: {bool(access_token)}"
         )
         if access_token and access_token_expiration:
             access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
@@ -95,16 +95,32 @@ class Client(BaseClient):
         new_token = new_token.get("access_token")
         return new_token
 
+    def _authenticated_request(self, **kwargs: Any) -> Any:
+        """
+        Sends an API request with the current access token. If the server rejects the token with 401
+        (e.g. a cached JWT that was revoked before its expiration time, such as after a password rotation),
+        a new token is generated with the configured credentials and the request is retried once.
+        """
+        try:
+            return self._http_request(**kwargs)
+        except DemistoException as e:
+            if e.res is None or e.res.status_code != 401:
+                raise
+            demisto.debug(f"{INTEGRATION_NAME} - Got 401 with the current access token, generating a new token and retrying.")
+            self._headers = {}  # don't send the rejected token to /authenticate
+            self.generate_new_token()
+            return self._http_request(**kwargs)
+
     def get_assets(self, url_params: dict):
-        data = self._http_request(method="GET", url_suffix="/assets", params=url_params, timeout=GLOBAL_TIMEOUT)
+        data = self._authenticated_request(method="GET", url_suffix="/assets", params=url_params, timeout=GLOBAL_TIMEOUT)
         return data
 
     def get_incident(self, url_params: str):
-        data = self._http_request(method="GET", url_suffix=f"/incidents/{url_params}", timeout=GLOBAL_TIMEOUT)
+        data = self._authenticated_request(method="GET", url_suffix=f"/incidents/{url_params}", timeout=GLOBAL_TIMEOUT)
         return data
 
     def get_incidents(self, url_params: dict):
-        data = self._http_request(method="GET", url_suffix="/incidents", params=url_params, timeout=GLOBAL_TIMEOUT)
+        data = self._authenticated_request(method="GET", url_suffix="/incidents", params=url_params, timeout=GLOBAL_TIMEOUT)
         return data
 
 

@@ -16732,6 +16732,293 @@ def test_documents_list_command_with_filters(mocker):
     assert "self" in call_kwargs["Filters"][0]["Values"]
 
 
+SSM_DESCRIBE_PARAMETERS_RESPONSE = {
+    "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+    "Parameters": [
+        {
+            "Name": "/prod/db/password",
+            "ARN": "arn:aws:ssm:us-east-1:123456789012:parameter/prod/db/password",
+            "Type": "SecureString",
+            "KeyId": "alias/aws/ssm",
+            "LastModifiedDate": "2024-01-15T10:30:00+02:00",
+            "LastModifiedUser": "arn:aws:iam::123456789012:user/admin",
+            "Description": "Production database password",
+            "Version": 3,
+            "Tier": "Standard",
+            "Policies": [],
+            "DataType": "text",
+        },
+        {
+            "Name": "/prod/app/region",
+            "ARN": "arn:aws:ssm:us-east-1:123456789012:parameter/prod/app/region",
+            "Type": "String",
+            "LastModifiedDate": "2024-02-20T08:15:00+02:00",
+            "LastModifiedUser": "arn:aws:iam::123456789012:user/admin",
+            "Description": "Default application region",
+            "AllowedPattern": "^[a-z0-9-]+$",
+            "Version": 1,
+            "Tier": "Standard",
+            "Policies": [],
+            "DataType": "text",
+        },
+    ],
+}
+
+
+@pytest.mark.parametrize(
+    "filter_string, expected",
+    [
+        pytest.param(None, [], id="no filters"),
+        pytest.param(
+            "key=Type,values=SecureString",
+            [{"Key": "Type", "Values": ["SecureString"]}],
+            id="single filter without an option",
+        ),
+        pytest.param(
+            "key=Name,option=Contains,values=prod",
+            [{"Key": "Name", "Option": "Contains", "Values": ["prod"]}],
+            id="single filter with an option",
+        ),
+        pytest.param(
+            "key=Name,option=BeginsWith,values=/prod,/dev",
+            [{"Key": "Name", "Option": "BeginsWith", "Values": ["/prod", "/dev"]}],
+            id="multiple values are split on comma",
+        ),
+        pytest.param(
+            "key=tag:Env,values=Production;key=Tier,values=Standard",
+            [{"Key": "tag:Env", "Values": ["Production"]}, {"Key": "Tier", "Values": ["Standard"]}],
+            id="multiple filters including a tag key",
+        ),
+        pytest.param(
+            "key=Tier,values=Standard;",
+            [{"Key": "Tier", "Values": ["Standard"]}],
+            id="trailing separator is ignored",
+        ),
+        pytest.param(
+            "key=tag:Cost Center,values=123",
+            [{"Key": "tag:Cost Center", "Values": ["123"]}],
+            id="tag key with a space",
+        ),
+        pytest.param(
+            "key=tag:owner@corp,values=x",
+            [{"Key": "tag:owner@corp", "Values": ["x"]}],
+            id="tag key with an at sign",
+        ),
+        pytest.param(
+            "key=tag:Env,values=a=b",
+            [{"Key": "tag:Env", "Values": ["a=b"]}],
+            id="tag value with an equals sign",
+        ),
+        pytest.param(
+            "key=tag:Team,values=dev+ops",
+            [{"Key": "tag:Team", "Values": ["dev+ops"]}],
+            id="tag value with a plus sign",
+        ),
+        pytest.param(
+            "key=Name,values=a,,b",
+            [{"Key": "Name", "Values": ["a", "b"]}],
+            id="empty values between commas are dropped",
+        ),
+    ],
+)
+def test_parse_parameter_filters(filter_string, expected):
+    """
+    Given: A raw SSM parameter filters string.
+    When: parse_parameter_filters is called.
+    Then: It returns the boto3 ParameterFilters structure, omitting Option when not provided.
+    """
+    from AWS import parse_parameter_filters
+
+    assert parse_parameter_filters(filter_string) == expected
+
+
+@pytest.mark.parametrize(
+    "filter_string",
+    [
+        pytest.param("Name=test", id="missing the key= prefix"),
+        pytest.param("key=Name", id="missing the values pair"),
+        pytest.param("key=Name,values=test,option=Contains", id="option after values"),
+        pytest.param("key=Name,values=,,", id="values pair without any value"),
+        pytest.param('key=Name,values=a"}],"MaxResults":1', id="quotes and braces in values"),
+    ],
+)
+def test_parse_parameter_filters_invalid_input(filter_string):
+    """
+    Given: A malformed SSM parameter filters string.
+    When: parse_parameter_filters is called.
+    Then: A ValueError explaining the expected format is raised.
+    """
+    from AWS import parse_parameter_filters
+
+    with pytest.raises(ValueError, match="Could not parse the filter"):
+        parse_parameter_filters(filter_string)
+
+
+def test_parameters_list_command_success(mocker):
+    """
+    Given: A mocked SSM client returning a list of parameters and a NextToken.
+    When: parameters_list_command is called.
+    Then: It returns the parameters under AWS.SSM.Parameters and the ParametersNextToken, with a single API call.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE) | {"NextToken": "param-tok"}
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = SSM.parameters_list_command(mock_client, args)
+
+    assert "AWS SSM Parameters" in result.readable_output
+    assert "/prod/db/password" in result.readable_output
+    assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"][1]["Name"] == "/prod/app/region"
+    assert result.outputs["AWS.SSM(true)"]["ParametersNextToken"] == "param-tok"
+    mock_client.describe_parameters.assert_called_once_with(MaxResults=50)
+    mock_client.list_tags_for_resource.assert_not_called()
+
+
+def test_parameters_list_command_no_parameters(mocker):
+    """
+    Given: A mocked SSM client returning an empty Parameters list without a NextToken.
+    When: parameters_list_command is called.
+    Then: It returns a readable_output indicating no parameters were found and sets ParametersNextToken to None.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": []}
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert result.readable_output == "No SSM parameters found."
+    assert result.outputs == {"AWS.SSM(true)": {"ParametersNextToken": None}}
+
+
+def test_parameters_list_command_empty_page_with_next_token_is_skipped(mocker):
+    """
+    Given: A mocked SSM client whose first page is empty with a NextToken and whose second page has parameters.
+    When: parameters_list_command is called.
+    Then: It automatically follows the NextToken, returns the parameters of the second page and its NextToken.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    empty_page = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": [], "NextToken": "empty-page-tok"}
+    full_page = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE) | {"NextToken": "next-page-tok"}
+    mock_client.describe_parameters.side_effect = [empty_page, full_page]
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert mock_client.describe_parameters.call_count == 2
+    assert mock_client.describe_parameters.call_args_list[0].kwargs == {"MaxResults": 50}
+    assert mock_client.describe_parameters.call_args_list[1].kwargs == {"MaxResults": 50, "NextToken": "empty-page-tok"}
+    assert "/prod/db/password" in result.readable_output
+    assert len(result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"]) == len(
+        SSM_DESCRIBE_PARAMETERS_RESPONSE["Parameters"]
+    )
+    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "next-page-tok"}
+
+
+def test_parameters_list_command_empty_pages_until_end(mocker):
+    """
+    Given: A mocked SSM client whose first page is empty with a NextToken and whose second page is empty without a NextToken.
+    When: parameters_list_command is called.
+    Then: It follows the NextToken once, returns "No SSM parameters found." and sets ParametersNextToken to None.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.side_effect = [
+        {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": [], "NextToken": "empty-page-tok"},
+        {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": []},
+    ]
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert mock_client.describe_parameters.call_count == 2
+    assert result.readable_output == "No SSM parameters found."
+    assert result.outputs == {"AWS.SSM(true)": {"ParametersNextToken": None}}
+
+
+def test_parameters_list_command_empty_pages_limit_reached(mocker):
+    """
+    Given: A mocked SSM client that always returns an empty page with a NextToken.
+    When: parameters_list_command is called.
+    Then: It stops skipping after the maximum number of empty pages and returns the last NextToken so the user can continue.
+    """
+    from AWS import MAX_SSM_EMPTY_PAGES_TO_SKIP, SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Parameters": [],
+        "NextToken": "endless-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert mock_client.describe_parameters.call_count == MAX_SSM_EMPTY_PAGES_TO_SKIP + 1
+    assert result.readable_output != "No SSM parameters found."
+    assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"] == []
+    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "endless-tok"}
+
+
+def test_parameters_list_command_with_filters_and_pagination(mocker):
+    """
+    Given: A mocked SSM client, a filters arg, shared set to true, a limit above the API maximum, and a next_token.
+    When: parameters_list_command is called.
+    Then: describe_parameters is called with the parsed ParameterFilters, Shared, MaxResults capped at 50, and NextToken.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE)
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "filters": "key=tag:Env,values=Production;key=Name,option=BeginsWith,values=/prod",
+        "shared": "true",
+        "limit": "100",
+        "next_token": "tok",
+    }
+
+    SSM.parameters_list_command(mock_client, args)
+
+    mock_client.describe_parameters.assert_called_once_with(
+        ParameterFilters=[
+            {"Key": "tag:Env", "Values": ["Production"]},
+            {"Key": "Name", "Option": "BeginsWith", "Values": ["/prod"]},
+        ],
+        Shared=True,
+        MaxResults=50,
+        NextToken="tok",
+    )
+
+
+def test_parameters_list_command_error_response(mocker):
+    """
+    Given: A mocked SSM client returning a non-OK HTTP status.
+    When: parameters_list_command is called.
+    Then: It calls AWSErrorHandler.handle_response_error.
+    """
+    from AWS import SSM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    mock_handle_error.assert_called_once()
+
+
 def test_document_describe_command_success(mocker):
     """
     Given: A mocked SSM client returning a document description.

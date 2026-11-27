@@ -7,6 +7,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_LIMIT = 50
+OBSERVABLE_ALREADY_EXISTS = "already exists"
 
 
 class Client(BaseClient):
@@ -269,7 +270,8 @@ class Client(BaseClient):
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
-        res = self._http_request("POST", f"case/{case_id}/artifact", ok_codes=[201, 200], data=data)
+        # TheHive returns 207 (Multi-Status) when some or all observables could not be created, e.g. already exist.
+        res = self._http_request("POST", f"case/{case_id}/artifact", ok_codes=[201, 200, 207], data=data)
         return res
 
     def update_observable(self, artifact_id: str = None, data: dict = None):
@@ -290,6 +292,45 @@ def output_results(
     else:
         md = None
     return CommandResults(outputs_prefix=outputs_prefix, outputs_key_field=outputs_key_field, outputs=outputs, readable_output=md)
+
+
+def is_multi_status_response(response: Any) -> bool:
+    """Checks whether a response is a TheHive 207 (Multi-Status) body: {"success": [...], "failure": [...]}."""
+    return isinstance(response, dict) and "failure" in response
+
+
+def is_already_exists_failure(failure: dict) -> bool:
+    return failure.get("type") == "CreateError" and OBSERVABLE_ALREADY_EXISTS in str(failure.get("message", "")).lower()
+
+
+def multi_status_observable_results(case_id: str | None, response: dict) -> CommandResults:
+    """Handles a 207 (Multi-Status) response of observable creation.
+
+    Observables that already exist in the case are not an error (for example, when a playbook task is retried after
+    the observable was already created). Any other failure is raised.
+    """
+    created_observables = response.get("success") or []
+    failures = response.get("failure") or []
+    unexpected_failures = [failure for failure in failures if not is_already_exists_failure(failure)]
+    if unexpected_failures:
+        raise DemistoException(f"Failed to create observable in case {case_id}: {json.dumps(unexpected_failures)}")
+
+    existing_data = [str(data) for failure in failures if (data := (failure.get("object") or {}).get("data"))]
+    readable_parts = []
+    if created_observables:
+        readable_parts.append(tableToMarkdown("New Observable:", created_observables, ["id", "data", "dataType", "message"]))
+    if existing_data:
+        readable_parts.append(f"Observable already exists in case {case_id}: {', '.join(existing_data)}")
+    elif failures:
+        readable_parts.append(f"Observable already exists in case {case_id}.")
+
+    return CommandResults(
+        outputs_prefix="TheHive.Observables",
+        outputs_key_field="id",
+        outputs=created_observables or None,
+        readable_output="\n".join(readable_parts),
+        raw_response=response,
+    )
 
 
 """ COMMAND FUNCTIONS """
@@ -730,6 +771,8 @@ def create_observable_command(client: Client, args: dict):
         }
         data = {k: v for k, v in data.items() if v}
         res = client.create_observable(case_id=case_id, data=data)
+        if is_multi_status_response(res):
+            return multi_status_observable_results(case_id, res)
         if res:
             read = tableToMarkdown("New Observable:", res, ["id", "data", "dataType", "message"])
         else:

@@ -167,7 +167,7 @@ call o365_common_fields
 	xdm.target.file.filename = object_id_file_name,
 	xdm.target.file.path = coalesce(object_id_file_path, Item -> ParentFolder.Path),
 	xdm.target.resource.name = if(ModifiedObjectResolvedName != null, ModifiedObjectResolvedName, ObjectId ~= "\S+", rtrim(ltrim(ObjectId, "<"), ">")),
-    xdm.target.resource.parent_id = Item -> ParentFolder.id;
+	xdm.target.resource.parent_id = Item -> ParentFolder.Id;
 
 	
 [MODEL: dataset="msft_o365_sharepoint_online_raw"]
