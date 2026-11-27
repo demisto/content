@@ -321,6 +321,134 @@ def test_test_module(mock_return, mocker):
     assert mock_return.call_args.args[0] == "ok"
 
 
+@pytest.mark.parametrize(
+    "command, function_name",
+    [
+        ("bitsight-company-details-get", "company_details_get_command"),
+        ("bitsight-company-findings-get", "company_findings_get_command"),
+    ],
+)
+@pytest.mark.parametrize(
+    "instance_params",
+    [
+        {"apikey": "123"},
+        {"apikey": "123", "guid": "param_guid", "user_email": "param@example.com"},
+    ],
+)
+@patch("BitSightForSecurityPerformanceManagement.return_results")
+def test_main_company_commands_use_command_guid(mock_return, mocker, command, function_name, instance_params):
+    """
+    Given:
+    - The guid command argument.
+    - Instance configuration with the Company's GUID blank or populated.
+
+    When:
+    - Executing the bitsight-company-details-get or bitsight-company-findings-get command through main().
+
+    Then:
+    - Verify the guid from the command argument is used.
+    - Verify user_email from the instance configuration is not added to the command arguments.
+    """
+    mocker.patch.object(demisto, "params", return_value=instance_params)
+    mocker.patch.object(demisto, "args", return_value={"guid": "cli_guid"})
+    mocker.patch.object(demisto, "command", return_value=command)
+    mock_command = mocker.patch.object(bitsight, function_name, return_value="result")
+
+    bitsight.main()
+
+    passed_args = mock_command.call_args.args[1]
+    assert passed_args["guid"] == "cli_guid"
+    assert "user_email" not in passed_args
+    assert mock_return.call_args.args[0] == "result"
+
+
+@pytest.mark.parametrize(
+    "command, function_name, expected_user_email",
+    [
+        ("get-remote-data", "get_remote_data_command", None),
+        ("get-modified-remote-data", "get_modified_remote_data_command", None),
+        ("update-remote-system", "update_remote_system_command", "param@example.com"),
+    ],
+)
+@patch("BitSightForSecurityPerformanceManagement.return_results")
+def test_main_mirroring_commands_use_instance_params(mock_return, mocker, command, function_name, expected_user_email):
+    """
+    Given:
+    - Instance configuration with the Company's GUID and user email populated.
+
+    When:
+    - Executing a mirroring command through main().
+
+    Then:
+    - Verify guid from the instance configuration is added to the command arguments.
+    - Verify user_email from the instance configuration is added only for update-remote-system.
+    """
+    mocker.patch.object(
+        demisto, "params", return_value={"apikey": "123", "guid": "param_guid", "user_email": "param@example.com"}
+    )
+    mocker.patch.object(demisto, "args", return_value={"remoteId": "remote-1"})
+    mocker.patch.object(demisto, "command", return_value=command)
+    mock_command = mocker.patch.object(bitsight, function_name, return_value="result")
+
+    bitsight.main()
+
+    passed_args = mock_command.call_args.args[1]
+    assert passed_args["guid"] == "param_guid"
+    assert ("user_email" in passed_args) == (expected_user_email is not None)
+    assert passed_args.get("user_email") == expected_user_email
+    assert mock_return.call_args.args[0] == "result"
+
+
+@pytest.mark.parametrize("command", ["get-remote-data", "get-modified-remote-data", "update-remote-system"])
+@pytest.mark.parametrize("params_guid", [{}, {"guid": ""}, {"guid": "   "}])
+@patch("BitSightForSecurityPerformanceManagement.return_results")
+def test_main_mirroring_commands_blank_instance_guid(mock_return, mocker, requests_mock, command, params_guid):
+    """
+    Given:
+    - Instance configuration with the Company's GUID blank.
+
+    When:
+    - Executing a mirroring command through main().
+
+    Then:
+    - Verify the subscribed company's GUID is used instead of None.
+    """
+    mocker.patch.object(demisto, "params", return_value={"apikey": "123", **params_guid})
+    mocker.patch.object(demisto, "args", return_value={"remoteId": "remote-1"})
+    mocker.patch.object(demisto, "command", return_value=command)
+    requests_mock.get(f"{bitsight.BASE_URL}/v1/companies", json={"my_company": {"guid": "my_company_guid"}})
+    mock_command = mocker.patch.object(bitsight, command.replace("-", "_") + "_command", return_value="result")
+
+    bitsight.main()
+
+    assert mock_command.call_args.args[1]["guid"] == "my_company_guid"
+
+
+@pytest.mark.parametrize("command", ["get-remote-data", "get-modified-remote-data", "update-remote-system"])
+@patch("BitSightForSecurityPerformanceManagement.return_error")
+def test_main_mirroring_commands_guid_not_fetched(mock_error, mocker, requests_mock, command):
+    """
+    Given:
+    - Instance configuration with the Company's GUID blank and no subscribed company GUID in the response.
+
+    When:
+    - Executing a mirroring command through main().
+
+    Then:
+    - Verify an error is returned and the mirroring command is not called.
+    """
+    mocker.patch.object(demisto, "params", return_value={"apikey": "123"})
+    mocker.patch.object(demisto, "args", return_value={"remoteId": "remote-1"})
+    mocker.patch.object(demisto, "command", return_value=command)
+    requests_mock.get(f"{bitsight.BASE_URL}/v1/companies", json={"companies": []})
+    mock_command = mocker.patch.object(bitsight, command.replace("-", "_") + "_command")
+
+    bitsight.main()
+
+    mock_command.assert_not_called()
+    assert bitsight.ERROR_MESSAGES["GUID_NOT_FETCHED"] in mock_error.call_args.args[0]
+
+
 def test_get_modified_remote_command_successful_retrieval(mocker, requests_mock):
     """
     Given:
@@ -1201,6 +1329,41 @@ def test_update_remote_system_command_incident_not_changed(mocker):
 
     # Assertions - should NOT call update_external_status
     client.update_external_status.assert_not_called()
+    assert result == "remote-999"
+
+
+@pytest.mark.parametrize("args_update", [{"user_email": None}, {"user_email": ""}, {"user_email": "   "}, {}])
+def test_update_remote_system_command_with_blank_user_email(mocker, args_update):
+    """
+    Given:
+    - A client object.
+    - The user_email argument is None, empty, whitespace-only or missing (instance configuration
+      "Bitsight User Email Address" left blank).
+
+    When:
+    - Calling update_remote_system_command.
+
+    Then:
+    - Should not raise an error.
+    - Should not call get_current_user_guid.
+    - Should return the remote incident ID.
+    """
+    client = bitsight.Client(base_url=BASE_URL)
+
+    mock_parsed_args = mocker.MagicMock()
+    mock_parsed_args.remote_incident_id = "remote-999"
+    mock_parsed_args.data = {"id": "xsoar-999"}
+    mock_parsed_args.inc_status = bitsight.IncidentStatus.DONE
+    mock_parsed_args.delta = {}
+    mock_parsed_args.incident_changed = False
+    mock_parsed_args.entries = []
+
+    mocker.patch("BitSightForSecurityPerformanceManagement.UpdateRemoteSystemArgs", return_value=mock_parsed_args)
+    mock_get_user_guid = mocker.patch("BitSightForSecurityPerformanceManagement.get_current_user_guid")
+
+    result = bitsight.update_remote_system_command(client, {"guid": "company-guid", **args_update}, "Closed", "Open")
+
+    mock_get_user_guid.assert_not_called()
     assert result == "remote-999"
 
 

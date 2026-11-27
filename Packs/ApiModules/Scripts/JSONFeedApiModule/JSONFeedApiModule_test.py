@@ -93,6 +93,49 @@ def test_json_feed_with_config(config, total_indicators, indicator_with_several_
         assert len([i for i in indicators if "," in i.get("rawJSON").get("service", "")]) == indicator_with_several_tags
 
 
+def test_service_field_has_no_repeated_names_across_many_overlapping_feeds():
+    """
+    Given:
+        - Many feed configs that all read the same url, so that the same indicator is found by several of them.
+    When:
+        - Running fetch_indicators_command.
+    Then:
+        - The service field of every indicator lists each service once, instead of growing with every duplicate
+          (regression test for CIAC-18586).
+    """
+    with open("test_data/amazon_ip_ranges.json") as ip_ranges_json:
+        ip_ranges = json.load(ip_ranges_json)
+
+    services = sorted({prefix["service"] for prefix in ip_ranges["prefixes"]})
+    feed_name_to_config = {
+        f"{service}$$CIDR": {
+            "url": "https://ip-ranges.amazonaws.com/ip-ranges.json",
+            "extractor": f"prefixes[?service=='{service}']",
+            "indicator": "ip_prefix",
+            "indicator_type": FeedIndicatorType.CIDR,
+            "fields": ["region", "service"],
+            "mapping": {"region": "region", "service": "service"},
+        }
+        for service in services
+    }
+
+    with requests_mock.Mocker() as m:
+        m.get("https://ip-ranges.amazonaws.com/ip-ranges.json", json=ip_ranges)
+        client = Client(
+            url="https://ip-ranges.amazonaws.com/ip-ranges.json",
+            credentials={"username": "test", "password": "test"},
+            feed_name_to_config=feed_name_to_config,
+            insecure=True,
+        )
+        indicators, _ = fetch_indicators_command(client=client, indicator_type="CIDR", feedTags=["test"], auto_detect=False)
+
+    assert indicators
+    for indicator in indicators:
+        names = [name.strip() for name in indicator["rawJSON"]["service"].split(",")]
+        assert len(names) == len(set(names)), indicator["rawJSON"]["service"]
+        assert len(names) <= len(services)
+
+
 def test_json_feed_with_config_mapping():
     with open("test_data/amazon_ip_ranges.json") as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)

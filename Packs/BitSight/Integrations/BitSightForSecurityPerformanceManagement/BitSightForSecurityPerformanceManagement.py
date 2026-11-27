@@ -319,6 +319,25 @@ def prepare_and_validate_company_findings_get_filter_args(risk_vector_list, seve
     return risk_vector, severity_gte, asset_category_eq
 
 
+def get_company_guid(client: Client, guid: str | None) -> str:
+    """
+    Return the given company GUID, or the subscribed company's GUID when it is blank.
+
+    :param client: client to use
+    :param guid: company GUID from the instance configuration
+    :return: company GUID
+    :rtype: str
+    """
+    guid = (guid or "").strip()
+    if guid:
+        return guid
+    res_json = client.get_companies_guid()
+    company_guid = demisto.get(res_json, "my_company.guid")
+    if not company_guid:
+        raise DemistoException(ERROR_MESSAGES["GUID_NOT_FETCHED"])
+    return company_guid
+
+
 def prepare_and_validate_fetch_findings_args(client, args):
     """
     Prepare and validate arguments for company_findings_get_command when fetch_incidents is true.
@@ -1029,7 +1048,7 @@ def update_remote_system_command(client: Client, args: Dict, close_status_of_bit
     :rtype: str
     """
     company_guid = args.get("guid", "")
-    user_email = args.get("user_email", "").strip()
+    user_email = (args.get("user_email") or "").strip()
     user_guid = None
     if user_email:
         user_guid = get_current_user_guid(client, user_email)
@@ -1164,8 +1183,6 @@ def main():
     try:
         """EXECUTION CODE"""
         args = demisto.args()
-        args.update({"guid": params.get("guid")})
-        args.update({"user_email": params.get("user_email")})
         close_status_of_bitsight = params.get("close_status_of_bitsight") or DEFAULT_CLOSE_STATUS_OF_BITSIGHT
         open_status_of_bitsight = params.get("open_status_of_bitsight") or DEFAULT_OPEN_STATUS_OF_BITSIGHT
         if demisto.command() == "test-module":
@@ -1178,10 +1195,14 @@ def main():
             demisto.setLastRun(last_run_curr)
             demisto.incidents(events)
         elif command == "get-remote-data":
+            args["guid"] = get_company_guid(client, params.get("guid"))
             return_results(get_remote_data_command(client, args))
         elif command == "get-modified-remote-data":
+            args["guid"] = get_company_guid(client, params.get("guid"))
             return_results(get_modified_remote_data_command(client, args))
         elif command == "update-remote-system":
+            args["guid"] = get_company_guid(client, params.get("guid"))
+            args["user_email"] = params.get("user_email")
             return_results(update_remote_system_command(client, args, close_status_of_bitsight, open_status_of_bitsight))
         else:
             COMMAND_TO_FUNCTION = {
