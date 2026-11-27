@@ -38,7 +38,7 @@ iso_8601 (*`2026-08-21T10:18:50.625005951+00:00`*)
 
 ## Data Collection
 
-### Docker side
+### Docker AI Governance side
 
 Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organization governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
 
