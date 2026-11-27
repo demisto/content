@@ -76,6 +76,10 @@ alter
     xdm.source.process.name = agent,
     xdm.source.host.hostname = hostname,
     xdm.source.host.os_family = if(
+        lowercase(os) = "macos", XDM_CONST.OS_FAMILY_MACOS,
+        lowercase(os) = "linux", XDM_CONST.OS_FAMILY_LINUX,
+        lowercase(os) = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        null),
         os = "macos", XDM_CONST.OS_FAMILY_MACOS,
         os = "linux", XDM_CONST.OS_FAMILY_LINUX,
         os = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
