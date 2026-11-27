@@ -1,7 +1,6 @@
 [MODEL: dataset="nvidia_openshell_raw"]
 alter
     // Extract metadata fields
-    get_metadata_version    = metadata -> version,
     get_product_name        = metadata -> product.name,
     get_product_version     = metadata -> product.version,
     get_event_uid           = metadata -> uid,
@@ -10,7 +9,7 @@ alter
     get_device_os           = device -> os.name,
     get_device_type         = device -> type,
     // Extract sandbox fields
-    get_sandbox_id          = coalesce(device -> container.uid,  unmapped -> sandbox_id,   container -> uid),
+    get_sandbox_id          = coalesce(device -> container.uid,  unmapped -> sandbox_id,   container -> uid, if(user -> type = "Sandbox", user -> uid, null)),
     get_sandbox_name        = coalesce(device -> container.name, unmapped -> sandbox_name, container -> name),
     // Extract endpoint fields
     get_dst_domain          = dst_endpoint -> domain,
@@ -24,6 +23,11 @@ alter
     get_actor_proc_name     = actor -> process.name,
     get_actor_proc_pid      = to_integer(actor -> process.pid),
     get_actor_cmd_line      = actor -> process.cmd_line,
+    get_actor_user_uid      = actor -> user.uid,
+    // Extract user fields
+    get_user_uid            = user -> uid,
+    get_user_name           = user -> name,
+    get_user_type_id        = to_integer(user -> type_id),
     // Extract firewall rule fields
     get_fw_rule_name        = firewall_rule -> name,
     // Extract HTTP request fields
@@ -57,6 +61,7 @@ alter
     // Log level from severity
     get_log_level = if(
         severity = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity = "Low",           XDM_CONST.LOG_LEVEL_NOTICE,
         severity = "Medium",        XDM_CONST.LOG_LEVEL_WARNING,
         severity = "High",          XDM_CONST.LOG_LEVEL_ERROR,
         severity = "Critical",      XDM_CONST.LOG_LEVEL_CRITICAL,
@@ -84,14 +89,14 @@ alter
     xdm.event.type                = class_name,
     xdm.event.original_event_type = type_name,
     xdm.event.operation           = get_operation,
-    xdm.event.operation_sub_type  = activity_name,
+    xdm.event.operation_sub_type  = if(class_name = "API Activity", coalesce(api -> operation, activity_name), activity_name),
     xdm.event.outcome             = get_outcome,
     xdm.event.outcome_reason      = coalesce(status_detail, state),
     xdm.event.description         = message,
     xdm.event.log_level           = get_log_level,
     // --- Observer (product metadata) ---
-    xdm.observer.version          = get_metadata_version,
-    xdm.observer.name             = get_device_hostname,
+    xdm.observer.version          = get_product_version,
+    xdm.observer.name             = coalesce(device -> name, get_device_hostname),
     // --- Source host ---
     xdm.source.host.hostname      = get_device_hostname,
     xdm.source.host.os            = get_device_os,
@@ -100,6 +105,11 @@ alter
     xdm.source.process.name       = get_actor_proc_name,
     xdm.source.process.pid        = get_actor_proc_pid,
     xdm.source.process.command_line = get_actor_cmd_line,
+    // --- Source user (gateway principal) ---
+    xdm.source.user.identifier     = coalesce(get_actor_user_uid, if(get_user_type_id = 0, null, get_user_uid)),
+    xdm.source.identity.identifier = coalesce(get_actor_user_uid, if(get_user_type_id = 0, null, get_user_uid)),
+    xdm.source.user.username       = if(get_user_type_id = 0 or get_user_name = "unknown", null, get_user_name),
+    xdm.source.identity.username   = if(get_user_type_id = 0 or get_user_name = "unknown", null, get_user_name),
     // --- Source IP ---
     xdm.source.ipv4               = if(get_src_ip != null and is_ipv4(get_src_ip), get_src_ip, null),
     xdm.source.ipv6               = if(get_src_ip != null and is_ipv6(get_src_ip), get_src_ip, null),
@@ -113,7 +123,7 @@ alter
     xdm.target.resource.type      = if(get_sandbox_id != null or get_sandbox_name != null, "sandbox", null),
     // --- Target network ---
     xdm.target.domain             = get_eff_target_domain,
-    xdm.target.ipv4               = if(get_dst_ip != null and is_ipv4(get_dst_ip), get_dst_ip, null),
+    xdm.target.ipv4               = if(get_dst_ip != null and is_ipv4(get_dst_ip) and not incidr(get_dst_ip, "198.18.0.0/15"), get_dst_ip, null),
     xdm.target.ipv6               = if(get_dst_ip != null and is_ipv6(get_dst_ip), get_dst_ip, null),
     xdm.target.port               = get_eff_target_port,
     // --- Intermediate (proxy) ---

@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DEFAULT_LOOK_BACK_MINUTES = 15  # keep in sync with the look_back defaultvalue in knowbe4Phisher.yml
 
 ALL_EVENTS_PAYLOAD = """query {{
   phisherMessages(all: false, page: 1, per: {}, query: {}) {{
@@ -331,6 +332,17 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def resolve_look_back(raw_value: Any) -> int:
+    """Returns the look_back in minutes, using DEFAULT_LOOK_BACK_MINUTES when the value is empty, 0 or negative.
+
+    PhishER makes messages searchable asynchronously after reported_at; without overlap the cursor skips them.
+    """
+    look_back = arg_to_number(raw_value)
+    if look_back is None or look_back <= 0:
+        return DEFAULT_LOOK_BACK_MINUTES
+    return look_back
 
 
 def create_gql_request(readable_request: str) -> str:
@@ -667,7 +679,8 @@ def fetch_incidents(
         look_back=look_back,
         date_format=DATE_FORMAT,
     )
-    query = f'" reported_at:{{{start_fetch_time} TO {end_fetch_time}}}"'
+    # inclusive start: a message reported exactly at the previous window's end second would otherwise be excluded by both windows
+    query = f'" reported_at:[{start_fetch_time} TO {end_fetch_time}}}"'
     incidents = []
     # create request
     payload_init = FETCH_WITHOUT_EVENTS.format(limit, query)
@@ -727,7 +740,7 @@ def fetch_incidents_command(client: Client) -> None:
     """
     first_fetch_time = client.first_fetch_time
     fetch_limit = arg_to_number(client.max_fetch)
-    look_back = arg_to_number(demisto.params().get("look_back")) or 0
+    look_back = resolve_look_back(demisto.params().get("look_back"))
     last_run = demisto.getLastRun() or {}
     # migrate legacy lastRun shape {"last_fetch": <iso>} to SDK lookback shape
     if "time" not in last_run and last_run.get("last_fetch"):
