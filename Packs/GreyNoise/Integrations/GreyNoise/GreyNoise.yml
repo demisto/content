@@ -1294,7 +1294,7 @@ script:
     - contextPath: GreyNoise.Timeline.data.user_agents
       description: The user agents observed on that day.
       type: array
-  dockerimage: demisto/greynoise:1.0.0.14788468
+  dockerimage: demisto/greynoise:3.2.1.15090810
   runonce: false
   script: '-'
   subtype: python3
