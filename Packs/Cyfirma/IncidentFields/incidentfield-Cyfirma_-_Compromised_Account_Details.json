@@ -1,0 +1,68 @@
+{
+    "id": "incident_cyfirmacompromisedaccountdetails",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2026-10-23T11:37:47.112264352Z",
+    "name": "CYFIRMA - Compromised Account Details",
+    "ownerOnly": false,
+    "description": "CYFIRMA - Compromised Account Details",
+    "cliName": "cyfirmacompromisedaccountdetails",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CYFIRMA - Compromised Employees",
+        "CYFIRMA - Customer Accounts",
+        "CYFIRMA - Public Accounts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "fields",
+            "displayName": "fields",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "values",
+            "displayName": "values",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

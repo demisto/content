@@ -1,0 +1,71 @@
+{
+    "id": "incident_cyfirmadeepfakedetails",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2026-11-17T12:57:02.736472327Z",
+    "name": "CYFIRMA - Deep Fake Details",
+    "ownerOnly": false,
+    "cliName": "cyfirmadeepfakedetails",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CYFIRMA - Executive People",
+        "CYFIRMA - Social Threat",
+        "CYFIRMA - Social Monitoring",
+        "CYFIRMA - Suspicious Mobile Apps",
+        "CYFIRMA - Product Solution",
+        "CYFIRMA - Domain Impersonation",
+        "CYFIRMA - Confidential Files"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "fields",
+            "displayName": "fields",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "values",
+            "displayName": "values",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

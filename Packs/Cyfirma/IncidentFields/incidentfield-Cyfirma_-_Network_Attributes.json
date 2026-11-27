@@ -1,0 +1,70 @@
+{
+    "id": "incident_cyfirmanetworkattributes",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2026-10-23T15:05:52.278494097Z",
+    "name": "CYFIRMA - Network Attributes",
+    "ownerOnly": false,
+    "cliName": "cyfirmanetworkattributes",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CYFIRMA - OpenPorts",
+        "CYFIRMA - IP Domain Reputation",
+        "CYFIRMA - Domain IP Vulnerabilities",
+        "CYFIRMA - Configurations",
+        "CYFIRMA - Certificates",
+        "CYFIRMA - Certificates"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "fields",
+            "displayName": "fields",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "values",
+            "displayName": "values",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

@@ -1,0 +1,31 @@
+{
+    "id": "CYFIRMA - Source Code",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "CYFIRMA - Source Code",
+    "prevName": "CYFIRMA - Source Code",
+    "color": "#7D3D63",
+    "sla": 672,
+    "playbookId": "",
+    "hours": 0,
+    "days": 0,
+    "weeks": 4,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "CYFIRMA - Common Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

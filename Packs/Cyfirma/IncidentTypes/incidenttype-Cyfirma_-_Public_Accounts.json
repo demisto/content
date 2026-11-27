@@ -1,0 +1,31 @@
+{
+    "id": "CYFIRMA - Public Accounts",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "CYFIRMA - Public Accounts",
+    "prevName": "CYFIRMA - Public Accounts",
+    "color": "#A99E12",
+    "sla": 168,
+    "playbookId": "",
+    "hours": 0,
+    "days": 0,
+    "weeks": 1,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "CYFIRMA - Compromised Accounts Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}
