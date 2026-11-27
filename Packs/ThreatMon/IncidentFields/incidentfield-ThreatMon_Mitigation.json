@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonmitigation",
+    "closeForm": false,
+    "content": true,
+    "description": "The recommended mitigation.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonmitigation",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "ThreatMon Mitigation",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -63,6 +63,19 @@ configuration:
   supportedModules:
   - xsiam
   - exposure_management
+- additionalinfo: Only assets with a completed scan, and vulnerability findings, from the last X days are fetched. A smaller value reduces the load on the Rapid7 Security Console. Default is 100 days.
+  defaultvalue: '100'
+  display: Lookback (days)
+  name: lookback_days
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
@@ -2564,7 +2577,7 @@ script:
   type: python
   subtype: python3
   isfetchassets: true
-  dockerimage: demisto/auth-utils:1.0.0.10133006
+  dockerimage: demisto/auth-utils:1.0.0.13804971
 fromversion: 5.0.0
 tests:
 - nexpose_test

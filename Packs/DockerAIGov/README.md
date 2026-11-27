@@ -2,7 +2,7 @@
 
 <~XSIAM>
 
-## Overview
+## What does this pack do?
 
 AI coding agents run with real credentials and real network access. Docker's policy enforcement point sits in front of that activity and records every governed action it evaluates: which agent asked, which developer owned it, what was requested, and whether policy allowed it.
 
@@ -24,7 +24,7 @@ Detection and monitoring content:
 
 | Category | Category Display Name |
 |:---------|:----------------------|
-| `AUDIT_CATEGORY_MANAGEMENT` | Session lifecycle and policy synchronisation |
+| `AUDIT_CATEGORY_MANAGEMENT` | Session lifecycle and policy synchronization |
 | `AUDIT_CATEGORY_EVALUATION` | Allow or deny policy decision |
 | `AUDIT_CATEGORY_EXECUTION` | Outcome of a performed action |
 
@@ -40,7 +40,7 @@ iso_8601 (*`2026-08-21T10:18:50.625005951+00:00`*)
 
 ### Docker side
 
-Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organisation governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
+Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organization governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
 
 The collector accepts newline-delimited JSON, one `AuditRecord` per line. Send records to:
 

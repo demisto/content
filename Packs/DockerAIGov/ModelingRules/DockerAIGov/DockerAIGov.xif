@@ -28,6 +28,7 @@ alter
         "@element"), ""),
     egress_port = arrayindex(regextract(to_string(resource_id), ":(\d+)$"), 0)
 | alter
+    xdm.event.original_event_type = category,
     xdm.event.type = to_string(action_type),
     xdm.event.id = audit_event_id,
     xdm.event.description = if(
@@ -65,6 +66,11 @@ alter
         action_type in ("policy_action", "policy_mutation"), "MEDIUM",
         "INFORMATIONAL"),
     xdm.source.user.username = username,
+    xdm.source.identity.username = username,
+    xdm.source.user.identifier = user_email,
+    xdm.source.identity.identifier = user_email,
+    xdm.source.user.domain = org_name,
+    xdm.source.identity.domain = org_name,
     xdm.source.user.identifier = user_email,
     xdm.source.user.domain = org_name,
     xdm.source.process.name = agent,

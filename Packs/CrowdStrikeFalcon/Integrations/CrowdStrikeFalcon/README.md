@@ -4,7 +4,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://api.crowdstrike.com) |  | True |
+| Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
@@ -15,7 +15,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Max incidents per fetch | Supported in Cortex XSOAR and Cortex Platform. Input a value between 1-500. Default is 15. | False |
 | Incidents Fetch Interval | Supported in Cortex XSOAR and Cortex Platform. | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
-| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html> | False |
 | IDP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
@@ -40,6 +40,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
 | Long running instance for Spotlight vulnerabilities | Whether to run the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.<br/>Use this when a full Spotlight fetch takes longer than the maximum execution time of a single assets fetch \(up to two hours\) and is therefore terminated before it completes.<br/>When enabled, the assets fetch cannot be enabled as well; only one of the two may be active per instance.<br/>This mode fetches Spotlight vulnerabilities ONLY, regardless of the Asset types to fetch selection.<br/>CNAPP Alerts are not collected in this mode; to collect them, configure a separate integration instance using the regular assets fetch.<br/>A fetch cycle starts every 24 hours. If a cycle runs longer than 24 hours, the next one starts as soon as it finishes. | False |
+| Spotlight vulnerabilities lookback (days) | The number of days to look back for Spotlight vulnerabilities. Only vulnerabilities updated within this window are fetched.<br/>Default and maximum are 100 days; a higher value is capped at 100.<br/>Lower this value for very large tenants: it is the most direct way to reduce the size of a fetch cycle, and therefore its duration and memory use. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -143,6 +144,8 @@ Select the desired method in the Fetch Assets Type parameter:
 
 - Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the Unified Asset Inventory. Only vulnerabilities updated within the last 100 days are retrieved, keeping each collection focused on recent data.
 - CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
+
+**Note:** The *Spotlight vulnerabilities lookback (days)* parameter can only narrow the 100-day window, not widen it. A value above 100 is clamped to 100 and a warning is written to the log, so configuring 200 days fetches 100. Lowering it is the most direct way to shorten a fetch cycle on a large tenant.
 
 ## Commands
 
@@ -277,7 +280,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional |
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. Default is product:'epp'+type:'ldt'. | Optional |
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: <https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch>. Default is product:'epp'+type:'ldt'. | Optional |
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional |
 
 #### Context Output
@@ -975,6 +978,7 @@ Runs a script on the agent host.
 | script_name | The name of the script to run. | Optional |
 | host_ids | A comma-separated list of host agent IDs to run commands. The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command. | Required |
 | raw | The PowerShell script code to run. | Optional |
+| command_line | The command-line arguments passed to the executed script. Use with the argument `script_name` only. | Optional |
 | timeout | Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes). Default is 30. | Optional |
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional |
 
@@ -1716,6 +1720,8 @@ There is no context output for this command.
 
 ***
 The number of hosts that observed the provided IOC.
+When more than one value is provided, a separate result is returned for each value.
+If no devices have observed an indicator, the command returns a *DeviceCount* of 0 for that indicator in the context.
 
 #### Base Command
 
@@ -1725,8 +1731,8 @@ The number of hosts that observed the provided IOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required |
-| value | The string representation of the indicator. | Required |
+| type | The IOC type. Applies to all the provided values. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required |
+| value | A comma-separated list of string representations of indicators. All values must be of the type given in the type argument. | Required |
 
 #### Context Output
 
@@ -1736,6 +1742,7 @@ The number of hosts that observed the provided IOC.
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. |
 | CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). |
 | CrowdStrike.IOC.DeviceCount | number | The number of devices the IOC ran on. |
+| CrowdStrike.IOC.DeviceCountTruncated | boolean | Whether the device count is a lower bound because counting stopped after the maximum number of result pages was reached. When true, the actual number of devices may be higher. |
 
 #### Command Example
 
@@ -1884,6 +1891,8 @@ Retrieves the details of a process, according to the process ID that is running 
 
 ***
 Returns a list of device IDs an indicator ran on.
+The command pages through all the results, so all device IDs are returned (not only the first 100).
+When more than one value is provided, a separate result is returned for each value.
 
 #### Base Command
 
@@ -1893,14 +1902,15 @@ Returns a list of device IDs an indicator ran on.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The type of indicator. Possible values are: domain, ipv4, ipv6, md5, sha1, sha256. | Required |
-| value | The string representation of the indicator. | Required |
+| type | The type of indicator. Applies to all the provided values. Possible values are: domain, ipv4, ipv6, md5, sha1, sha256. | Required |
+| value | A comma-separated list of string representations of indicators. All values must be of the type given in the type argument. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.DeviceID | string | Device IDs an indicator ran on. |
+| CrowdStrike.DeviceIOC.Truncated | boolean | Whether the list of device IDs was truncated because the maximum number of result pages was reached. When true, the indicator may have run on more devices than returned. |
 
 #### Command Example
 
@@ -3999,7 +4009,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | Optional |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: <https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql>. | Optional |
 | value | The value by which the exclusions should be filtered. | Optional |
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional |
 | limit | The maximum number of records to return. [1-500]. Applies only if the ids argument is not supplied. | Optional |
@@ -4317,7 +4327,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional |
 | name | The name by which the exclusions should be filtered. | Optional |
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional |
 | limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the ids argument is not supplied. | Optional |
@@ -6535,7 +6545,7 @@ Lists workflow definitions from CrowdStrike Falcon.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3. | Optional |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html>. For a list of available properties, see Workflow execution FQL filters - <https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3>. | Optional |
 | definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | activity_id | The activity ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | name | The workflow name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
@@ -6593,7 +6603,7 @@ Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execut
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3. | Optional |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: <https://www.falconpy.io/Usage/Falcon-Query-Language.html>. For a list of available properties, see Workflow execution FQL filters - <https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3>. | Optional |
 | definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | definition_name | The workflow definition name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
 | execution_id | The execution ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
