@@ -1,6 +1,6 @@
 id: DockerAIGov_ParsingRule
 name: Docker AI Governance Parsing Rule
-fromversion: 8.4.0 # Will be updated with XSIAM version updates
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''
