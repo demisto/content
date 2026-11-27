@@ -1,0 +1,309 @@
+{
+    "id": "Group-IB TI Threats and Actors",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "fromVersion": "6.10.0",
+    "name": "Group-IB TI Threats and Actors",
+    "description": "Threat reports and threat actor profiles from hi/threat, apt/threat, hi/threat_actor and apt/threat_actor.",
+    "isPredefined": true,
+    "period": {
+        "byFrom": "days",
+        "fromValue": 30
+    },
+    "layout": [
+        {
+            "id": "gib-ti-hi-threats",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "gib-ti-hi-threats",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-hi-threats",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Cybercriminal Threats",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Cybercriminal Threat\") and -type:\"GIB Cybercriminal Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Cybercriminal Threat\") and -type:\"GIB Cybercriminal Threat Actor\"",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Cybercriminal threat reports."
+            }
+        },
+        {
+            "id": "gib-ti-apt-threats",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "gib-ti-apt-threats",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-apt-threats",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Nation-State Threats",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Nation-state threat reports."
+            }
+        },
+        {
+            "id": "gib-ti-actor-profiles",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "gib-ti-actor-profiles",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-actor-profiles",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threat Actor Profiles",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat Actor\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat Actor\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Threat actor profiles received."
+            }
+        },
+        {
+            "id": "gib-ti-tailored-threats",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "gib-ti-tailored-threats",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-tailored-threats",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Tailored Threats",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibfetchedwithhuntingrules:true) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibfetchedwithhuntingrules:true) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Threat reports fetched through your hunting rules (0 while the instance setting Hunting Rules is off, its default)."
+            }
+        },
+        {
+            "id": "gib-ti-threats-by-actor",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "gib-ti-threats-by-actor",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-threats-by-actor",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threats by Actor",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibthreatactorname:*) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibthreatactorname:*) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibthreatactorname"
+                    ]
+                },
+                "size": 3,
+                "description": "Threat reports per attributed actor."
+            }
+        },
+        {
+            "id": "gib-ti-threats-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "gib-ti-threats-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-threats-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threats by Severity",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Severity of threat reports."
+            }
+        },
+        {
+            "id": "gib-ti-threats-by-actor-country",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "gib-ti-threats-by-actor-country",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-threats-by-actor-country",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threats by Actor Country",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibthreatactorcountry:*) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibthreatactorcountry:*) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibthreatactorcountry"
+                    ]
+                },
+                "size": 3,
+                "description": "Origin country of the attributed actors."
+            }
+        },
+        {
+            "id": "gib-ti-threats-by-tlp",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "gib-ti-threats-by-tlp",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-threats-by-tlp",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threats by TLP",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibtlp"
+                    ]
+                },
+                "size": 3,
+                "description": "TLP of the received threat reports."
+            }
+        }
+    ]
+}

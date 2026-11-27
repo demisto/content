@@ -1,0 +1,23 @@
+comment: |-
+  Variant of GIBTIIncidentUpdate for rules you create yourself: updates the incidents of the same type sharing the incoming GIB ID, closed ones included (one page of the 200 most recent; for an open proxy also the same port, for a data breach also the same leak and upload time), and leaves their severity, owner, status, type and playbook as they are, then drops the incoming incident once one of them was updated (or when there was nothing to copy); a phishing group Group-IB flags as a false positive or allow-listed is never kept.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+commonfields:
+  id: GIBTIIncidentUpdateIncludingClosed
+  version: -1
+dockerimage: demisto/python3:3.12.14.13495286
+enabled: true
+name: GIBTIIncidentUpdateIncludingClosed
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- preProcessing
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

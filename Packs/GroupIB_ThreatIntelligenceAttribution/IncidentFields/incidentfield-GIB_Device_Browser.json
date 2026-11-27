@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibdevicebrowser",
+    "closeForm": true,
+    "content": true,
+    "description": "The browser of the compromised device.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibdevicebrowser",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Device Browser",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

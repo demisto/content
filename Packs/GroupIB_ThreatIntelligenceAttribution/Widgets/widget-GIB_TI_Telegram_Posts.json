@@ -1,0 +1,27 @@
+{
+    "id": "gib-ti-telegram-posts",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Telegram Posts",
+    "dataType": "incidents",
+    "widgetType": "number",
+    "query": "(type:\"GIB Darkweb Telegram\")",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Darkweb Telegram\")",
+        "timeFrame": "days",
+        "colors": {},
+        "sort": []
+    },
+    "size": 1,
+    "description": "Telegram posts your hunting rules matched."
+}

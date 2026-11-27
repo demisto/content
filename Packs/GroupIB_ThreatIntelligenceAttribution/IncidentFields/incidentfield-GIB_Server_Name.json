@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Discord"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibservername",
+    "closeForm": true,
+    "content": true,
+    "description": "The Discord server the channel belongs to.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibservername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Server Name",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Discord"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

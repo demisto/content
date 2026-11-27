@@ -1,0 +1,309 @@
+{
+    "id": "Group-IB TI Leaks and Vulnerabilities",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "fromVersion": "6.10.0",
+    "name": "Group-IB TI Leaks and Vulnerabilities",
+    "description": "Data breaches, git and public leaks, and vulnerabilities, with and without known exploits.",
+    "isPredefined": true,
+    "period": {
+        "byFrom": "days",
+        "fromValue": 30
+    },
+    "layout": [
+        {
+            "id": "gib-ti-data-breaches",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "gib-ti-data-breaches",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-data-breaches",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Data Breaches",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Data Breach\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Data Breach\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Breached database incidents."
+            }
+        },
+        {
+            "id": "gib-ti-code-leaks",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "gib-ti-code-leaks",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-code-leaks",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Git Leaks",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB OSI Git Leak\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB OSI Git Leak\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Public code repository leaks."
+            }
+        },
+        {
+            "id": "gib-ti-public-leaks",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "gib-ti-public-leaks",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-public-leaks",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Public Leaks",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB OSI Public Leak\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB OSI Public Leak\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Paste-site and public leaks."
+            }
+        },
+        {
+            "id": "gib-ti-exploitable-cves",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "gib-ti-exploitable-cves",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-exploitable-cves",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Exploitable CVEs",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB OSI Vulnerability\") and gibhasexploit:true",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB OSI Vulnerability\") and gibhasexploit:true",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Vulnerabilities with a known public exploit."
+            }
+        },
+        {
+            "id": "gib-ti-leaks-by-type",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "gib-ti-leaks-by-type",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-leaks-by-type",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Leaks by Type",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "type"
+                    ]
+                },
+                "size": 3,
+                "description": "Share of each leak collection."
+            }
+        },
+        {
+            "id": "gib-ti-leaks-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "gib-ti-leaks-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-leaks-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Leaks by Severity",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Severity of leak incidents."
+            }
+        },
+        {
+            "id": "gib-ti-cves-by-exploit",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "gib-ti-cves-by-exploit",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-cves-by-exploit",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI CVEs by Exploit Availability",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB OSI Vulnerability\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB OSI Vulnerability\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibhasexploit"
+                    ]
+                },
+                "size": 3,
+                "description": "Vulnerabilities with and without a known exploit."
+            }
+        },
+        {
+            "id": "gib-ti-cves-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "gib-ti-cves-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-cves-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI CVEs by Severity",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB OSI Vulnerability\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB OSI Vulnerability\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Severity of vulnerability incidents."
+            }
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibposttext",
+    "closeForm": false,
+    "content": true,
+    "description": "The text of the post. It can quote anything the author wrote, card numbers and credentials included. On a Telegram, Discord or forum post, the Mask dark web post text setting of the instance masks or withholds it, and the Mask passwords and leaked secrets setting masks the quoted passwords and secrets it recognizes. Neither setting masks the text of an open threat post.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibposttext",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Post Text",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

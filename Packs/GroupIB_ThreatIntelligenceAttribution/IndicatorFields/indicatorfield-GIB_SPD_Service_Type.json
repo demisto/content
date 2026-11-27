@@ -1,0 +1,31 @@
+{
+    "associatedTypes": [
+        "GIB Suspicious Payment Detail",
+        "Cryptocurrency Address"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibspdservicetype",
+    "closeForm": false,
+    "content": true,
+    "description": "Service the payment identifier belongs to: the coin family of a crypto wallet (such as BTCLike), else the e-wallet or bank.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibspdservicetype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB SPD Service Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

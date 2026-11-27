@@ -1,0 +1,232 @@
+description: |-
+  Creates a Cortex XSOAR Threat Intel Report from the Group-IB record behind an incident, through the GIBTICreateThreatIntelReport automation. The report type follows the collection: threat reports (GIB Cybercriminal Threat, GIB Nation-State Cybercriminals Threat) become Campaign reports, actor profiles Threat Actor reports, GIB Malware incidents Malware reports and GIB OSI Vulnerability incidents Vulnerability reports. Any other incident type finishes immediately.
+  The playbook ships attached to no incident type: the default playbook of every Group-IB incident type is "Incident Postprocessing - Group-IB Threat Intelligence & Attribution". Attach this playbook to the types above, call it from your own playbook, or run the automation by hand inside one of those incidents.
+id: Group-IB TI - Create Threat Intel Report
+inputs:
+- description: Threat Intel Report type to create (Campaign, Threat Actor, Malware, Vulnerability, Executive Brief). Leave empty to use the type that fits the collection.
+  key: ReportType
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Set to "true" to only show the payload that would be written.
+  key: DryRun
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "false"
+name: Group-IB TI - Create Threat Intel Report
+outputs:
+- contextPath: GIBTI.ThreatIntelReport.id
+  description: ID of the created Threat Intel Report.
+  type: string
+- contextPath: GIBTI.ThreatIntelReport.name
+  description: Name of the report.
+  type: string
+- contextPath: GIBTI.ThreatIntelReport.type
+  description: Report type.
+  type: string
+- contextPath: GIBTI.ThreatIntelReport.created
+  description: Whether a report was created.
+  type: boolean
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4b6f2a10-1c2d-4e3f-8a9b-0c1d2e3f4a50
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4b6f2a10-1c2d-4e3f-8a9b-0c1d2e3f4a50
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Cybercriminal Threat
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Nation-State Cybercriminals Threat
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Cybercriminal Threat Actor
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Nation-State Cybercriminals Threat Actor
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Malware
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB OSI Vulnerability
+      label: "yes"
+    task:
+      brand: ""
+      description: Only threat reports, actor profiles, malware descriptions and vulnerabilities map to a Threat Intel Report type; every other Group-IB incident type finishes here.
+      id: 5c7a3b21-2d3e-4f40-9b0c-1d2e3f4a5b61
+      iscommand: false
+      name: Does this Group-IB incident map to a report type?
+      type: condition
+      version: -1
+    taskid: 5c7a3b21-2d3e-4f40-9b0c-1d2e3f4a5b61
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      report_type:
+        complex:
+          root: inputs.ReportType
+      dry_run:
+        complex:
+          root: inputs.DryRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Reads the Group-IB record behind the incident (collection and GIB ID come from the incident itself) and creates the Threat Intel Report of the matching type.
+      id: 7e9c5d43-4f50-4162-9d2e-3f4a5b6c7d83
+      iscommand: false
+      name: Create the Threat Intel Report
+      script: GIBTICreateThreatIntelReport
+      scriptName: GIBTICreateThreatIntelReport
+      type: regular
+      version: -1
+    taskid: 7e9c5d43-4f50-4162-9d2e-3f4a5b6c7d83
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9abe7f65-6172-4384-9f40-5b6c7d8e9fa5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 9abe7f65-6172-4384-9f40-5b6c7d8e9fa5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_6_#default#": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 600,
+        "width": 400,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

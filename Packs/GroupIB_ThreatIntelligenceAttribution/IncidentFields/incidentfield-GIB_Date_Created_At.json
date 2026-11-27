@@ -5,7 +5,8 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibdatecreatedat",
@@ -30,7 +31,8 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Open Threat"
     ],
     "threshold": 72,
     "type": "date",

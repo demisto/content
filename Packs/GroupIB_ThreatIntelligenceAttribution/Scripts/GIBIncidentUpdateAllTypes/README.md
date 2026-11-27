@@ -1,4 +1,4 @@
-This script prevents duplication of existing incidents.
+Deprecated. Use GIBTIIncidentUpdateAllTypes instead. Kept for the pre-processing rules and playbooks that name it; it matches on the GIB ID alone (not on the incident type, open proxy port, leak or upload time) and ignores Group-IB's phishing flags. The pack's own rules run the GIBTI scripts.
 
 ## Permissions
 
@@ -15,7 +15,7 @@ For more information, see the section about permissions here: For Cortex XSOAR 6
 | --- | --- |
 | Script Type | python3 |
 | Tags | preProcessing |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 

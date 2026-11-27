@@ -1,0 +1,309 @@
+{
+    "id": "Group-IB TI Overview",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "fromVersion": "6.10.0",
+    "name": "Group-IB TI Overview",
+    "description": "Group-IB Threat Intelligence incidents of the collections the integration fetches: volume, open incidents, severity and the collections, actors and malware behind them.",
+    "isPredefined": true,
+    "period": {
+        "byFrom": "days",
+        "fromValue": 30
+    },
+    "layout": [
+        {
+            "id": "gib-ti-incidents-total",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "gib-ti-incidents-total",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-incidents-total",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Group-IB incidents created in the period."
+            }
+        },
+        {
+            "id": "gib-ti-incidents-open",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "gib-ti-incidents-open",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-incidents-open",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Open Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\") and -status:closed",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\") and -status:closed",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Group-IB incidents still open."
+            }
+        },
+        {
+            "id": "gib-ti-incidents-high",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "gib-ti-incidents-high",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-incidents-high",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI High Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\") and (severity:High or severity:Critical)",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\") and (severity:High or severity:Critical)",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Group-IB incidents with High or Critical severity."
+            }
+        },
+        {
+            "id": "gib-ti-threat-reports",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "gib-ti-threat-reports",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-threat-reports",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Threat Reports",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Cybercriminal and nation-state threat reports received."
+            }
+        },
+        {
+            "id": "gib-ti-incidents-by-type",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "gib-ti-incidents-by-type",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-incidents-by-type",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Incidents by Type",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "type"
+                    ]
+                },
+                "size": 3,
+                "description": "Group-IB incidents per collection."
+            }
+        },
+        {
+            "id": "gib-ti-incidents-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "gib-ti-incidents-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-incidents-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Incidents by Severity",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\" or type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Severity breakdown of Group-IB incidents."
+            }
+        },
+        {
+            "id": "gib-ti-top-threat-actors",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "gib-ti-top-threat-actors",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-top-threat-actors",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Top Threat Actors",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Open Threat\") and gibthreatactorname:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Open Threat\") and gibthreatactorname:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibthreatactorname"
+                    ]
+                },
+                "size": 3,
+                "description": "Threat actors named most often on Group-IB incidents (a data breach's publishers and a defacer's handle are not attributions and are not counted)."
+            }
+        },
+        {
+            "id": "gib-ti-top-malware",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "gib-ti-top-malware",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-top-malware",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Top Malware",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Open Threat\") and gibmalwarename:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB Data Breach\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Deface\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Compromised Access\" or type:\"GIB Open Threat\") and gibmalwarename:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibmalwarename"
+                    ]
+                },
+                "size": 3,
+                "description": "Malware families named most often on DDoS, malware profile, masked card, dark web listing and open threat incidents (the incident types that fill GIB Malware Name)."
+            }
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-forum-posts-by-category",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Forum Posts by Category",
+    "dataType": "incidents",
+    "widgetType": "bar",
+    "query": "(type:\"GIB Darkweb Forum\") and gibcategories:*",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Darkweb Forum\") and gibcategories:*",
+        "timeFrame": "days",
+        "groupBy": [
+            "gibcategories"
+        ]
+    },
+    "size": 3,
+    "description": "Categories Group-IB gives the forum posts; your organization's monitoring label can be among them."
+}

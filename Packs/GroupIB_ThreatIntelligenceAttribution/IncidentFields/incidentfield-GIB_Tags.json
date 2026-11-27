@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibtags",
+    "closeForm": true,
+    "content": true,
+    "description": "The descriptive tags Group-IB extracted from the post.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibtags",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Tags",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

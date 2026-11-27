@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Suspicious IP TOR Node"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibtorflags",
+    "closeForm": true,
+    "content": true,
+    "description": "The consensus flags of the relay's newest state, such as Exit, Guard or BadExit.",
+    "editForm": true,
+    "fromVersion": "6.10.0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibtorflags",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Tor Flags",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Suspicious IP TOR Node"
+    ],
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

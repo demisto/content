@@ -7,7 +7,7 @@
     "cliName": "gibsourcelink",
     "closeForm": false,
     "content": true,
-    "description": "Source link of the masked card record in Group-IB",
+    "description": "The address of the shop that offered the card, usually a .onion domain; shop attribution, not an indicator.",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -1,11 +1,14 @@
 {
     "associatedTypes": [
         "IP",
+        "IPv6",
         "File",
         "URL",
         "Domain",
         "GIB Compromised Mule",
-        "GIB Victim IP"
+        "GIB Victim IP",
+        "Threat Actor",
+        "Email"
     ],
     "associatedToAll": false,
     "caseInsensitive": true,

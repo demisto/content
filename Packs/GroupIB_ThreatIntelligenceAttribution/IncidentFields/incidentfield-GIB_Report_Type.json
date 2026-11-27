@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibreporttype",
+    "closeForm": true,
+    "content": true,
+    "description": "The type of the report as Group-IB marks it, threat or event.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibreporttype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Report Type",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

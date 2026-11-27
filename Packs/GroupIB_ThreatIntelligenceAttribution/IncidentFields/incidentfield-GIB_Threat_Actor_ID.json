@@ -1,15 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Card",
-        "GIB Compromised Masked Card",
-        "GIB Targeted Malware",
         "GIB Attacks DDOS",
         "GIB Attacks Deface",
         "GIB Attacks Phishing Group",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Cybercriminal Threat",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Cybercriminal Threat Actor",
+        "GIB Malware",
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Nation-State Cybercriminals Threat Actor",
+        "GIB Targeted Malware",
+        "GIB Open Threat"
     ],
     "caseInsensitive": false,
     "cliName": "gibthreatactorid",
@@ -37,14 +41,18 @@
     "itemVersion": "1.4.2",
     "openEnded": false,
     "systemAssociatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Card",
-        "GIB Compromised Masked Card",
-        "GIB Targeted Malware",
         "GIB Attacks DDOS",
         "GIB Attacks Deface",
         "GIB Attacks Phishing Group",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Cybercriminal Threat",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Cybercriminal Threat Actor",
+        "GIB Malware",
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Nation-State Cybercriminals Threat Actor",
+        "GIB Targeted Malware",
+        "GIB Open Threat"
     ]
 }

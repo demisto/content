@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibcompanytags",
+    "closeForm": true,
+    "content": true,
+    "description": "Your company tags the post matched; empty when none did.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibcompanytags",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Company Tags",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

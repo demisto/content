@@ -7,7 +7,7 @@
     "cliName": "gibtargetdomain",
     "closeForm": false,
     "content": true,
-    "description": "What domain was targeted by phishing",
+    "description": "The domain the phishing page targets.",
     "editForm": true,
     "group": 2,
     "hidden": false,

@@ -12,6 +12,13 @@
                 "extractAsIsIndicatorTypeId": "",
                 "extractIndicatorTypesIDs": [],
                 "isExtractingAllIndicatorTypes": true
+            },
+            "gibrelatedemails": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "Email"
+                ],
+                "isExtractingAllIndicatorTypes": false
             }
         },
         "mode": "Specific"

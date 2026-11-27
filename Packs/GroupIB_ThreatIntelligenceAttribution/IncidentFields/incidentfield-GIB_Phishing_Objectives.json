@@ -7,6 +7,7 @@
     "cliName": "gibphishingobjectives",
     "closeForm": true,
     "content": true,
+    "description": "What the phishing page harvests or serves (Login harvest, Card harvest, PII harvest, Malware drop; Index of for an open directory listing); the set of values is open.",
     "editForm": true,
     "group": 0,
     "hidden": false,

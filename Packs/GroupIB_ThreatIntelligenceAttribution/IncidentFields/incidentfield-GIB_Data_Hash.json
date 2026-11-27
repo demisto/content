@@ -4,7 +4,8 @@
         "GIB OSI Public Leak",
         "GIB Compromised Mule",
         "GIB Attacks Phishing Kit",
-        "GIB Attacks Phishing Group"
+        "GIB Attacks Phishing Group",
+        "GIB Darkweb Forum"
     ],
     "caseInsensitive": false,
     "cliName": "gibdatahash",
@@ -35,6 +36,7 @@
         "GIB OSI Public Leak",
         "GIB Compromised Mule",
         "GIB Attacks Phishing Kit",
-        "GIB Attacks Phishing Group"
+        "GIB Attacks Phishing Group",
+        "GIB Darkweb Forum"
     ]
 }

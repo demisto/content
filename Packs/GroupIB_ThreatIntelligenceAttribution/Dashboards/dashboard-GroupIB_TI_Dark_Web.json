@@ -1,0 +1,493 @@
+{
+    "id": "Group-IB TI Dark Web",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "fromVersion": "6.10.0",
+    "name": "Group-IB TI Dark Web",
+    "description": "Marketplace listings, Telegram, Discord and forum posts your hunting rules matched, and public posts about threats.",
+    "isPredefined": true,
+    "period": {
+        "byFrom": "days",
+        "fromValue": 30
+    },
+    "layout": [
+        {
+            "id": "gib-ti-compromised-access",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "gib-ti-compromised-access",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-compromised-access",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Compromised Access",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Compromised Access\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Access\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Dark web listings of access to your hosts."
+            }
+        },
+        {
+            "id": "gib-ti-telegram-posts",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "gib-ti-telegram-posts",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-telegram-posts",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Telegram Posts",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Darkweb Telegram\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Darkweb Telegram\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Telegram posts your hunting rules matched."
+            }
+        },
+        {
+            "id": "gib-ti-discord-posts",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "gib-ti-discord-posts",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-discord-posts",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Discord Posts",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Darkweb Discord\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Darkweb Discord\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Discord posts your hunting rules matched."
+            }
+        },
+        {
+            "id": "gib-ti-forum-posts",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "gib-ti-forum-posts",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-forum-posts",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Forum Posts",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Darkweb Forum\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Darkweb Forum\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Forum posts your hunting rules matched."
+            }
+        },
+        {
+            "id": "gib-ti-dark-web-by-type",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "gib-ti-dark-web-by-type",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-dark-web-by-type",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Dark Web by Type",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "type"
+                    ]
+                },
+                "size": 3,
+                "description": "Share of each dark web collection."
+            }
+        },
+        {
+            "id": "gib-ti-dark-web-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "gib-ti-dark-web-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-dark-web-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Dark Web by Severity",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Access\" or type:\"GIB Darkweb Telegram\" or type:\"GIB Darkweb Discord\" or type:\"GIB Darkweb Forum\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Dark web incidents by severity."
+            }
+        },
+        {
+            "id": "gib-ti-forum-posts-by-category",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "gib-ti-forum-posts-by-category",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-forum-posts-by-category",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Forum Posts by Category",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Darkweb Forum\") and gibcategories:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Darkweb Forum\") and gibcategories:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibcategories"
+                    ]
+                },
+                "size": 3,
+                "description": "Categories Group-IB gives the forum posts; your organization's monitoring label can be among them."
+            }
+        },
+        {
+            "id": "gib-ti-telegram-posts-by-channel",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "gib-ti-telegram-posts-by-channel",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-telegram-posts-by-channel",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Telegram Posts by Channel",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Darkweb Telegram\") and gibchanneltitle:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Darkweb Telegram\") and gibchanneltitle:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibchanneltitle"
+                    ]
+                },
+                "size": 3,
+                "description": "Channels the Telegram posts come from."
+            }
+        },
+        {
+            "id": "gib-ti-compromised-access-by-malware",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "gib-ti-compromised-access-by-malware",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-compromised-access-by-malware",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Compromised Access by Malware",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Compromised Access\") and gibmalwarename:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Compromised Access\") and gibmalwarename:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibmalwarename"
+                    ]
+                },
+                "size": 3,
+                "description": "Stealer families behind the listed access."
+            }
+        },
+        {
+            "id": "gib-ti-open-threats-by-severity",
+            "forceRange": false,
+            "x": 6,
+            "y": 5,
+            "i": "gib-ti-open-threats-by-severity",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-open-threats-by-severity",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Open Threats by Severity",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "size": 3,
+                "description": "Open threat posts by severity."
+            }
+        },
+        {
+            "id": "gib-ti-open-threats",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "gib-ti-open-threats",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "gib-ti-open-threats",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Open Threats",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "(type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "colors": {},
+                    "sort": []
+                },
+                "size": 1,
+                "description": "Public posts about threats."
+            }
+        },
+        {
+            "id": "gib-ti-open-threats-by-source-type",
+            "forceRange": false,
+            "x": 3,
+            "y": 7,
+            "i": "gib-ti-open-threats-by-source-type",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-open-threats-by-source-type",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Open Threats by Source Type",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "(type:\"GIB Open Threat\")",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Open Threat\")",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibsource"
+                    ]
+                },
+                "size": 3,
+                "description": "Blog articles versus social network posts."
+            }
+        },
+        {
+            "id": "gib-ti-open-threats-by-malware",
+            "forceRange": false,
+            "x": 6,
+            "y": 7,
+            "i": "gib-ti-open-threats-by-malware",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "gib-ti-open-threats-by-malware",
+                "version": -1,
+                "fromVersion": "6.10.0",
+                "name": "GIB TI Open Threats by Malware",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "(type:\"GIB Open Threat\") and gibmalwarename:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "query": "(type:\"GIB Open Threat\") and gibmalwarename:*",
+                    "timeFrame": "days",
+                    "groupBy": [
+                        "gibmalwarename"
+                    ]
+                },
+                "size": 3,
+                "description": "Malware families the open threat posts discuss."
+            }
+        }
+    ]
+}

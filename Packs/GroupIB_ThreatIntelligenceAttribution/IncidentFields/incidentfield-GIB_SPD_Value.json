@@ -7,6 +7,7 @@
     "cliName": "gibspdvalue",
     "closeForm": false,
     "content": true,
+    "description": "The payment identifier (wallet address, mobile number, bank account number, IBAN, e-mail address or QR payment string); on a Bank Card record it is the full card number, unmasked.",
     "editForm": true,
     "group": 0,
     "hidden": false,

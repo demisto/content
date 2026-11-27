@@ -1,8 +1,6 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [
-        "GIB Brand Protection Domain"
-    ],
+    "associatedTypes": [],
     "caseInsensitive": true,
     "cliName": "gibnameservers",
     "closeForm": false,
@@ -28,7 +26,5 @@
     "fromVersion": "6.0.0",
     "itemVersion": "1.4.2",
     "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB Brand Protection Domain"
-    ]
+    "systemAssociatedTypes": []
 }

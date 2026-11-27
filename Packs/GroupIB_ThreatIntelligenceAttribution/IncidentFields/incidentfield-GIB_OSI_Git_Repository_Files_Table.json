@@ -99,7 +99,7 @@
             "width": 150
         },
         {
-            "displayName": "Url",
+            "displayName": "URL",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -122,6 +122,19 @@
             "script": "",
             "selectValues": [],
             "type": "longText",
+            "width": 150
+        },
+        {
+            "displayName": "Severity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "severity",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
             "width": 150
         }
     ],

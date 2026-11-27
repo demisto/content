@@ -1,0 +1,43 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Suspicious IP TOR Node",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Suspicious IP VPN",
+        "GIB Suspicious IP Scanner"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibasn",
+    "closeForm": true,
+    "content": true,
+    "description": "The autonomous system number of the reported IP address.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibasn",
+    "isReadOnly": false,
+    "itemVersion": "1.4.2",
+    "locked": false,
+    "name": "GIB ASN",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Suspicious IP TOR Node",
+        "GIB Suspicious IP Open Proxy",
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Suspicious IP VPN",
+        "GIB Suspicious IP Scanner"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

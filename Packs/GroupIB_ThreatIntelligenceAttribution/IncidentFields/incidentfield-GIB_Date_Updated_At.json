@@ -3,8 +3,8 @@
     "associatedTypes": [
         "GIB Malware",
         "GIB Cybercriminal Threat Actor",
-        "GIB APT Threat Actor",
-        "GIB Nation-State Cybercriminals Threat Actor"
+        "GIB Nation-State Cybercriminals Threat Actor",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibdateupdatedat",
@@ -27,8 +27,8 @@
     "systemAssociatedTypes": [
         "GIB Malware",
         "GIB Cybercriminal Threat Actor",
-        "GIB APT Threat Actor",
-        "GIB Nation-State Cybercriminals Threat Actor"
+        "GIB Nation-State Cybercriminals Threat Actor",
+        "GIB Open Threat"
     ],
     "threshold": 72,
     "type": "date",

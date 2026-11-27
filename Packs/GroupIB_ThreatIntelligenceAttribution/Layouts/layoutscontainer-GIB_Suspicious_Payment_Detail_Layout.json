@@ -1,0 +1,385 @@
+{
+    "description": "Layout for GIB Suspicious Payment Detail",
+    "group": "indicator",
+    "id": "GIB Suspicious Payment Detail Layout",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "default-main-comments",
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "default-main-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 14
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-reputationStatus",
+                        "moved": false,
+                        "name": "Reputation Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-expirationStatus",
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-reputationSources",
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-sources",
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 16
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 10,
+                        "hideName": false,
+                        "i": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibspdtype",
+                                "height": 22,
+                                "id": "eb7c67c5-5ffd-56e1-8bce-928cae1e4a1c",
+                                "index": 0,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibspdservicetype",
+                                "height": 22,
+                                "id": "27370db3-412f-5a1a-a06c-82ca5e301487",
+                                "index": 1,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibspdillegalscore",
+                                "height": 22,
+                                "id": "0f433774-fa3e-5077-90f0-09a0ba11b869",
+                                "index": 2,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibspdcountry",
+                                "height": 22,
+                                "id": "7876f7cb-9298-5bec-82b1-14443c9dc20a",
+                                "index": 3,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibsource",
+                                "height": 22,
+                                "id": "df11b7ff-61aa-5e06-ac9f-77ee4b1c66ad",
+                                "index": 4,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibmalwarename",
+                                "height": 22,
+                                "id": "436311c4-eccc-5ddf-8d59-2e43d6d6bdf1",
+                                "index": 5,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibthreatactorname",
+                                "height": 22,
+                                "id": "1c765727-c867-5a22-9e85-349dadacac61",
+                                "index": 6,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibseverity",
+                                "height": 22,
+                                "id": "95c6d39c-bb75-50de-916d-aa4abb3012c3",
+                                "index": 7,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibreliability",
+                                "height": 22,
+                                "id": "d0868727-8fbe-569d-bf26-4780217d0dff",
+                                "index": 8,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibcredibility",
+                                "height": 22,
+                                "id": "6a35bf31-9873-5142-b8e5-fc640f1ec188",
+                                "index": 9,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibadmiraltycode",
+                                "height": 22,
+                                "id": "8d4fc24a-8db5-502b-b4e6-47a8b1edc4a9",
+                                "index": 10,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibid",
+                                "height": 22,
+                                "id": "3bfe8887-fb27-51ee-a5bf-e2d8638447eb",
+                                "index": 11,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibcollection",
+                                "height": 22,
+                                "id": "210258d7-4759-5cd4-9ed5-fefd0d80ce8d",
+                                "index": 12,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "malwarefamily",
+                                "height": 22,
+                                "id": "53a38855-3d9b-4b38-8c8c-16e847d52c03",
+                                "index": 13,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseenbysource",
+                                "height": 22,
+                                "id": "ca67ba36-961b-43eb-9073-5a16d8946efc",
+                                "index": 14,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseenbysource",
+                                "height": 22,
+                                "id": "0cb3d0ba-03cd-4c5e-a8a6-3d03399cce4e",
+                                "index": 15,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "79308daf-6484-4511-b411-2e9a5b6bb4f2",
+                                "index": 16,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Information from Group-IB",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "GIB Suspicious Payment Detail Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

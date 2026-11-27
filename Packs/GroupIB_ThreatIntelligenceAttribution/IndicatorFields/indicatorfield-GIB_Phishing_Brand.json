@@ -1,0 +1,32 @@
+{
+    "associatedTypes": [
+        "Domain",
+        "URL",
+        "IP"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibphishingbrand",
+    "closeForm": false,
+    "content": true,
+    "description": "Brand targeted by the phishing page (attacks/phishing_group).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibphishingbrand",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Phishing Brand",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

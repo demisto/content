@@ -7,7 +7,7 @@
     "cliName": "gibcardbin",
     "closeForm": false,
     "content": true,
-    "description": "BIN value of the card",
+    "description": "BIN value of the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,
