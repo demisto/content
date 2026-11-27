@@ -84,7 +84,7 @@ alter
         os = "linux", XDM_CONST.OS_FAMILY_LINUX,
         os = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
         null),
-    xdm.network.session_id = audit_session_id,
+    xdm.session_context_id = audit_session_id,
     xdm.target.host.hostname = if(activity_class = "network", egress_host, null),
     xdm.target.port = if(activity_class = "network", to_integer(coalesce(net_dest_port, egress_port)), null),
     xdm.network.ip_protocol = if(
