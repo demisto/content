@@ -8,7 +8,7 @@ AI coding agents run with real credentials and real network access. Docker's pol
 
 This pack brings that audit stream into Cortex XSIAM. It models the Docker SBX Policy Enforcement Point `AuditRecord` schema into XDM, detects the governance failures that matter, and provides an operations dashboard over the result.
 
-## This pack includes
+## What does this pack do?
 
 Data normalization capabilities:
 
@@ -38,27 +38,6 @@ iso_8601 (*`2026-08-21T10:18:50.625005951+00:00`*)
 
 ## Data Collection
 
-### Cortex XSIAM side - Custom - HTTP based Collector
-
-1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
-2. If you have already configured a **Custom - HTTP based Collector**, select the **3 dots**, and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "http" and then select **Connect**.
-3. Set the following values:
-
-    | Parameter | Value |
-    |:----------|:------|
-    | `Name` | Docker AI Governance |
-    | `Compression` | uncompressed |
-    | `Log Format` | json |
-    | `Vendor` | docker |
-    | `Product` | ai_gov |
-
-4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
-5. Click the 3 dots sign next to the newly created instance and copy the API URL, it will also be used later.
-
-The `Vendor` and `Product` values must match exactly, as the parsing rule targets the resulting *`docker_ai_gov_raw`* dataset.
-
-For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-an-HTTP-Log-Collector-to-Receive-Logs).
-
 ### Docker side
 
 Configure the Docker AI Governance audit exporter to forward `AuditRecord` events to the collector endpoint created above. Audit emission requires a supported Docker Sandbox version with organisation governance enabled. Refer to the Docker AI Governance documentation for the exporter configuration applicable to your deployment.
@@ -87,6 +66,27 @@ Where no native exporter is available, any HTTP log shipper can forward the reco
 | `Retry_Limit` | False |
 
 Refer to the [Fluent Bit manual](https://docs.fluentbit.io/manual/data-pipeline/outputs/output_formats) for details on additional output plugins and configurations.
+
+### Cortex XSIAM side - Custom - HTTP based Collector
+
+1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
+2. If you have already configured a **Custom - HTTP based Collector**, select the **3 dots**, and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "http" and then select **Connect**.
+3. Set the following values:
+
+    | Parameter | Value |
+    |:----------|:------|
+    | `Name` | Docker AI Governance |
+    | `Compression` | uncompressed |
+    | `Log Format` | json |
+    | `Vendor` | docker |
+    | `Product` | ai_gov |
+
+4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
+5. Click the 3 dots sign next to the newly created instance and copy the API URL, it will also be used later.
+
+The `Vendor` and `Product` values must match exactly, as the parsing rule targets the resulting *`docker_ai_gov_raw`* dataset.
+
+For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-an-HTTP-Log-Collector-to-Receive-Logs).
 
 ### Verifying ingestion
 

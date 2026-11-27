@@ -86,8 +86,6 @@ alter
     xdm.target.file.path = if(activity_class = "filesystem", to_string(resource_id), null),
     xdm.target.resource.type = to_string(activity_class),
     xdm.target.resource.id = resource_id,
-    xdm.observer.vendor = "Docker",
-    xdm.observer.product = "AI Governance",
     xdm.observer.version = app_version,
     xdm.observer.type = if(
         client_name = "sbx", "Docker Sandbox",
