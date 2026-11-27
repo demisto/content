@@ -23,10 +23,14 @@ alter
         "other"),
     // On network_egress records resource_id is "host:port". IPv6 would break a
     // naive split, so the host is taken as everything before the final colon.
-    egress_host = arrayindex(regextract(to_string(resource_id), "^(.*):\d+$"), 0),
-        arraycreate(arrayindex(regextract(to_string(resource_id), "^(.*):\d+$"), 0)),
-        "@element"), ""),
+    // Brackets around IPv6 literals ("[fd00:ec2::254]:80") are stripped.
+    egress_host = rtrim(ltrim(arrayindex(regextract(to_string(resource_id), "^(.*):\d+$"), 0), "["), "]"),
     egress_port = arrayindex(regextract(to_string(resource_id), ":(\d+)$"), 0)
+| alter
+    // The egress host may be an FQDN or an IP literal (e.g. the cloud metadata
+    // service at 169.254.169.254), so classify it to route it to the right XDM field.
+    egress_host_is_ipv4 = is_ipv4(egress_host),
+    egress_host_is_ipv6 = is_ipv6(egress_host)
 | alter
     xdm.event.original_event_type = category,
     xdm.event.type = to_string(action_type),
@@ -71,8 +75,6 @@ alter
     xdm.source.identity.identifier = user_email,
     xdm.source.user.domain = org_name,
     xdm.source.identity.domain = org_name,
-    xdm.source.user.identifier = user_email,
-    xdm.source.user.domain = org_name,
     xdm.source.process.name = agent,
     xdm.source.host.hostname = hostname,
     xdm.source.host.os_family = if(
@@ -80,12 +82,13 @@ alter
         lowercase(os) = "linux", XDM_CONST.OS_FAMILY_LINUX,
         lowercase(os) = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
         null),
-        os = "macos", XDM_CONST.OS_FAMILY_MACOS,
-        os = "linux", XDM_CONST.OS_FAMILY_LINUX,
-        os = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
-        null),
     xdm.session_context_id = audit_session_id,
-    xdm.target.host.hostname = if(activity_class = "network", egress_host, null),
+    xdm.target.ipv4 = if(activity_class = "network" and egress_host_is_ipv4, egress_host, null),
+    xdm.target.ipv6 = if(activity_class = "network" and egress_host_is_ipv6, egress_host, null),
+    xdm.target.host.hostname = if(
+        activity_class != "network", null,
+        egress_host_is_ipv4 or egress_host_is_ipv6, null,
+        egress_host),
     xdm.target.port = if(activity_class = "network", to_integer(coalesce(net_dest_port, egress_port)), null),
     xdm.network.ip_protocol = if(
         net_protocol = "tcp", XDM_CONST.IP_PROTOCOL_TCP,
