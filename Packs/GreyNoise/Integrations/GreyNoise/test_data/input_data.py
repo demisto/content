@@ -159,7 +159,7 @@ ip_reputation_command_data = [
         "Invalid response from GreyNoise. Response: invalid ip response",
     ),
     ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
-    ({"ip": "71.6.135.131"}, "negative", {}, 429, "Invalid response from GreyNoise. Response: "),
+    ({"ip": "71.6.135.131"}, "negative", {}, 429, "Invalid response from GreyNoise. Response: rate limit exceeded (HTTP 429)"),
     (
         {"ip": "71.6.135.131"},
         "negative",
