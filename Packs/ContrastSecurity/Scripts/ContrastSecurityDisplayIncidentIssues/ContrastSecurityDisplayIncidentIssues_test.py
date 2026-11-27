@@ -1,7 +1,7 @@
 import json
 import os
-from unittest.mock import patch, MagicMock
 import pytest
+from CommonServerPython import DemistoException
 from ContrastSecurityDisplayIncidentIssues import (
     ISSUE_LIST_PAGE_SIZE,
     handle_error,
@@ -33,31 +33,27 @@ def test_get_issues_grid_data_single_issue():
     assert result == SINGLE_ISSUE_GRID_DATA
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.return_error")
-def test_handle_error_with_success_result(mock_return_error):
-    """Test handle_error when command result is success."""
+def test_handle_error_with_success_result():
+    """Test handle_error does not raise when command result is success."""
     command_result = [{"Type": 1, "Contents": {"data": "success"}}]
 
     handle_error(command_result)
-    mock_return_error.assert_not_called()
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.return_error")
-def test_handle_error_with_error_result(mock_return_error):
-    """Test handle_error returns the error message from the command result entries."""
+def test_handle_error_with_error_result():
+    """Test handle_error raises the error message from the command result entries."""
     command_result = [{"Type": 4, "Contents": "Error in API call [404] - Not Found"}]
 
-    handle_error(command_result)
-    mock_return_error.assert_called_once_with("Error in API call [404] - Not Found")
+    with pytest.raises(DemistoException, match=r"Error in API call \[404\] - Not Found"):
+        handle_error(command_result)
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
-def test_main_no_incident_id(mock_cmd_results, mock_return_results, mock_demisto):
+def test_main_no_incident_id(mocker):
     """Test main function when incident_id is not provided."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mock_return_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mock_cmd_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
     mock_demisto.getArg.return_value = None
-    mock_cmd_results.return_value = MagicMock()
 
     main()
     mock_return_results.assert_called_once()
@@ -66,15 +62,14 @@ def test_main_no_incident_id(mock_cmd_results, mock_return_results, mock_demisto
     assert "Contrast Security Incident ID not found" in kwargs.get("readable_output", "")
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
-@patch("ContrastSecurityDisplayIncidentIssues.handle_error")
-def test_main_successful_pagination(_handle_error, _timeout, mock_cmd_results, mock_return_results, mock_demisto):
+def test_main_successful_pagination(mocker):
     """Test main function with successful multi-page pagination."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mock_return_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mock_cmd_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.handle_error")
     mock_demisto.getArg.return_value = "incident-123"
-    mock_cmd_results.return_value = MagicMock()
 
     mock_demisto.executeCommand.side_effect = [PAGE1_RESULT, PAGE2_RESULT, SETINCIDENT_RESULT]
 
@@ -99,11 +94,6 @@ def test_main_successful_pagination(_handle_error, _timeout, mock_cmd_results, m
 # Pagination Tests
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.handle_error")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
 @pytest.mark.parametrize(
     "command_result, expected_call_count",
     [
@@ -112,10 +102,13 @@ def test_main_successful_pagination(_handle_error, _timeout, mock_cmd_results, m
         (LARGE_PAGINATION_RESULT, 3),
     ],
 )
-def test_pagination_break_on_last_page(
-    _cmd_results, _return_results, _timeout, _handle_error, mock_demisto, command_result, expected_call_count
-):
+def test_pagination_break_on_last_page(mocker, command_result, expected_call_count):
     """Test pagination breaks on the last page, on hasMore with an empty cursor, and on a repeated cursor."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.handle_error")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
     mock_demisto.getArg.return_value = "incident-123"
 
     mock_demisto.executeCommand.return_value = command_result
@@ -123,15 +116,14 @@ def test_pagination_break_on_last_page(
     assert mock_demisto.executeCommand.call_count == expected_call_count
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.handle_error")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
-def test_pagination_break_on_empty_issues(mock_cmd_results, mock_return_results, _timeout, _handle_error, mock_demisto):
+def test_pagination_break_on_empty_issues(mocker):
     """Test pagination breaks when no issues returned."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.handle_error")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
+    mock_return_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mock_cmd_results = mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
     mock_demisto.getArg.return_value = "incident-123"
-    mock_cmd_results.return_value = MagicMock()
 
     mock_demisto.executeCommand.return_value = EMPTY_CONTENT_RESULT
     main()
@@ -140,13 +132,13 @@ def test_pagination_break_on_empty_issues(mock_cmd_results, mock_return_results,
     assert "No issues found" in kwargs.get("readable_output", "")
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.handle_error")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=True)
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
-def test_pagination_break_on_timeout(_cmd_results, _return_results, _timeout, _handle_error, mock_demisto):
+def test_pagination_break_on_timeout(mocker):
     """Test pagination breaks when timeout is reached."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.handle_error")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=True)
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
     mock_demisto.getArg.return_value = "incident-123"
 
     mock_demisto.executeCommand.return_value = LARGE_PAGINATION_RESULT
@@ -154,13 +146,13 @@ def test_pagination_break_on_timeout(_cmd_results, _return_results, _timeout, _h
     mock_demisto.debug.assert_called()
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.return_results")
-@patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
-@patch("ContrastSecurityDisplayIncidentIssues.handle_error")
-def test_pagination_continue_to_next_page(_handle_error, _timeout, _cmd_results, _return_results, mock_demisto):
+def test_pagination_continue_to_next_page(mocker):
     """Test pagination continues when more pages are available."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.return_results")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.CommandResults")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.handle_error")
     mock_demisto.getArg.return_value = "incident-123"
 
     mock_demisto.executeCommand.side_effect = [PAGE1_MULTI, PAGE2_MULTI, PAGE3_MULTI, SETINCIDENT_RESULT]
@@ -168,13 +160,16 @@ def test_pagination_continue_to_next_page(_handle_error, _timeout, _cmd_results,
     assert mock_demisto.executeCommand.call_count >= 3
 
 
-@patch("ContrastSecurityDisplayIncidentIssues.demisto")
-@patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
-@patch("ContrastSecurityDisplayIncidentIssues.return_error")
-def test_main_exception(mock_return_error, _timeout, mock_demisto):
+def test_main_exception(mocker):
     """Test main function returns an error when the issue list command raises an exception."""
+    mock_demisto = mocker.patch("ContrastSecurityDisplayIncidentIssues.demisto")
+    mocker.patch("ContrastSecurityDisplayIncidentIssues.has_passed_time_threshold", return_value=False)
+    mock_return_error = mocker.patch("ContrastSecurityDisplayIncidentIssues.return_error")
     mock_demisto.getArg.return_value = "incident-123"
-    mock_demisto.executeCommand.side_effect = Exception("API failure")
+    error = Exception("API failure")
+    mock_demisto.executeCommand.side_effect = error
 
     main()
-    mock_return_error.assert_called_once_with("Failed to execute ContrastSecurityDisplayIncidentIssues. Error: API failure")
+    mock_return_error.assert_called_once_with(
+        "Failed to execute ContrastSecurityDisplayIncidentIssues. Error: API failure", error=error
+    )

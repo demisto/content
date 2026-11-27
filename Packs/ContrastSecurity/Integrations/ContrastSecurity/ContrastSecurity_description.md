@@ -1,4 +1,4 @@
-## Contrast Security Help
+## Contrast Security
 
 ### Authorization
 
@@ -7,9 +7,9 @@ The Contrast Security username, API key, service key, and organization ID can be
 ### Instance Configuration
 
 1. Configure a Contrast Security integration instance with valid credentials.
-2. Click **Test** to validate the connection between XSOAR and the Contrast Security platform.
-3. To fetch Contrast Security Incidents and Issues as XSOAR incidents, select **Fetch incidents**, select the **Event Type**, and configure the fetch parameters.
-4. To keep XSOAR and Contrast Security in sync, configure the **Incident Mirroring Direction** and **Issue Mirroring Direction**.
+2. Click **Test** to validate the connection between Cortex XSOAR and the Contrast Security platform.
+3. To fetch Contrast Security Incidents and Issues as Cortex XSOAR incidents, select **Fetch incidents**, select the **Event Type**, and configure the fetch parameters.
+4. To keep Cortex XSOAR and Contrast Security in sync, configure the **Incident Mirroring Direction** and **Issue Mirroring Direction**.
 
 The following table provides detailed information about each configuration parameter of the integration instance:
 
@@ -29,8 +29,8 @@ The following table provides detailed information about each configuration param
 | Issue Severity Levels | Select Contrast Security Issue severity levels to fetch as incidents. Default is all.<br/>Note: Applies only when Event Type is set to "Contrast Issue". |
 | Incident Mirroring Direction | The mirroring direction in which to mirror the incident details. |
 | Issue Mirroring Direction | The mirroring direction in which to mirror the Issue details. |
-| Mirror Tag for Notes | Tag value used to mirror XSOAR notes back to Contrast Security as issue or incident comments. |
-| Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident | If selected, closed incidents will be reopened in XSOAR when the incident status in Contrast Security incident changes to 'Open'.<br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. |
-| Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident | If selected, active incidents will be closed in XSOAR when the incident status in Contrast Security incident changes to 'Closed'.<br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. |
+| Mirror Tag for Notes | Tag value used to mirror Cortex XSOAR notes back to Contrast Security as issue or incident comments. |
+| Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident | If selected, closed incidents will be reopened in Cortex XSOAR when the incident status in Contrast Security incident changes to 'Open'.<br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. |
+| Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident | If selected, active incidents will be closed in Cortex XSOAR when the incident status in Contrast Security incident changes to 'Closed'.<br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. |
 | Trust any certificate (not secure) | Trust any certificate, including self-signed certificates. Not recommended for production environments. |
 | Use system proxy settings | Use system proxy settings for network communication. |

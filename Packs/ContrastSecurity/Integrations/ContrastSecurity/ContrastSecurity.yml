@@ -44,11 +44,11 @@ configuration:
   section: Connect
 - display: Event Type
   name: event_type
-  defaultvalue: 'Contrast Incident'
   type: 15
   required: false
+  defaultvalue: 'Contrast Incident'
+  additionalinfo: "Select the event type to fetch from Contrast Security platform. Contrast Security recommends selecting \"Contrast Incident\" as the event type to fetch."
   section: Collect
-  additionalinfo: Select the event type to fetch from Contrast Security platform. Contrast Security recommends selecting "Contrast Incident" as the event type to fetch.
   options:
   - Contrast Incident
   - Contrast Issue
@@ -56,26 +56,26 @@ configuration:
   name: first_fetch
   type: 0
   required: false
-  defaultvalue: 3 days
+  defaultvalue: '3 days'
   additionalinfo: "The date or relative timestamp from which to begin fetching Contrast Security Incidents and Issues. Default is 3 days.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Oct 2026, 01 Oct 2026 04:45:33, 2026-10-01T14:05:44Z."
   section: Collect
 - display: Max Fetch
   name: max_fetch
   type: 0
   required: false
-  defaultvalue: '25'
   additionalinfo: "The maximum number of Contrast Security Incidents or Issues to fetch per run. Default is 25.\n\nNote: The maximum value is 200."
   section: Collect
+  defaultvalue: '25'
 - display: Incident Statuses
   name: incident_statuses
   type: 16
   required: false
-  defaultvalue: 'Open'
   additionalinfo: "Select Contrast Security Incident statuses to fetch as incidents. Default is Open.\n\nNote: Applies only when Event Type is set to \"Contrast Incident\"."
-  section: Collect
   options:
   - Open
   - Closed
+  section: Collect
+  defaultvalue: Open
 - display: Incident Severity Levels
   name: incident_severities
   type: 16
@@ -100,9 +100,9 @@ configuration:
   defaultvalue: Open
 - display: Issue Severity Levels
   name: issue_severities
+  additionalinfo: "Select Contrast Security Issue severity levels to fetch as incidents. Default is all.\n\nNote: Applies only when Event Type is set to \"Contrast Issue\"."
   type: 16
   required: false
-  additionalinfo: "Select Contrast Security Issue severity levels to fetch as incidents. Default is all.\n\nNote: Applies only when Event Type is set to \"Contrast Issue\"."
   options:
   - Critical
   - High
@@ -112,53 +112,53 @@ configuration:
   section: Collect
 - display: Incident Mirroring Direction
   name: incident_mirror_direction
+  additionalinfo: "The mirroring direction in which to mirror the incident details."
   type: 15
   required: false
-  additionalinfo: "The mirroring direction in which to mirror the incident details."
+  section: Collect
   options:
   - Outgoing
   - Incoming
   - Incoming And Outgoing
-  section: Collect
 - display: Issue Mirroring Direction
   name: issue_mirror_direction
-  additionalinfo: The mirroring direction in which to mirror the Issue details.
+  additionalinfo: "The mirroring direction in which to mirror the Issue details."
   type: 15
   required: false
+  section: Collect
   options:
   - Outgoing
-  section: Collect
-- display: Mirror Tag for Notes
+- additionalinfo: "Tag value used to mirror Cortex XSOAR notes back to Contrast Security as issue or incident comments."
+  display: Mirror Tag for Notes
   name: note_tag
-  additionalinfo: Tag value used to mirror XSOAR notes back to Contrast Security as issue or incident comments.
   type: 0
+  defaultvalue: 'note'
   required: false
   section: Collect
-  defaultvalue: note
   advanced: true
 - display: Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident
   name: reopen_closed_incident
-  additionalinfo: "If selected, closed incidents will be reopened in XSOAR when the incident status in Contrast Security Incident changes to 'Open'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
   type: 8
-  required: false
   defaultvalue: 'false'
+  required: false
   section: Collect
   advanced: true
-- additionalinfo: "If selected, active incidents will be closed in XSOAR when the incident status in Contrast Security Incident changes to 'Closed'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
-  display: Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident
+  additionalinfo: "If selected, closed incidents will be reopened in Cortex XSOAR when the incident status in Contrast Security Incident changes to 'Open'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+- display: Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident
   name: close_active_incident
   type: 8
-  defaultvalue: 'false'
   required: false
   section: Collect
   advanced: true
+  additionalinfo: "If selected, active incidents will be closed in Cortex XSOAR when the incident status in Contrast Security Incident changes to 'Closed'.\n\nNote: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  defaultvalue: 'false'
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
-  defaultvalue: '1'
   required: false
   section: Collect
   advanced: true
+  defaultvalue: '1'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -188,7 +188,7 @@ script:
       description: Comment text to add to the incident.
       required: true
     outputs:
-    - contextPath: ContrastSecurity.IncidentComment.incident_id
+    - contextPath: ContrastSecurity.IncidentComment.incidentId
       description: The ID of the incident the comment was added to.
       type: String
     - contextPath: ContrastSecurity.IncidentComment.commentId
@@ -662,7 +662,7 @@ script:
       description: Comment text to add to the issue.
       required: true
     outputs:
-    - contextPath: ContrastSecurity.IssueComment.issue_id
+    - contextPath: ContrastSecurity.IssueComment.issueId
       description: The ID of the issue the comment was added to.
       type: String
     - contextPath: ContrastSecurity.IssueComment.commentId
@@ -1000,7 +1000,7 @@ script:
     - contextPath: ContrastSecurity.PageToken.Observation.has_next_page
       description: Whether there is a next page of observations.
       type: Boolean
-  dockerimage: demisto/python3:3.12.16.14740428
+  dockerimage: demisto/python3:3.12.16.14990175
   script: '-'
   subtype: python3
   type: python

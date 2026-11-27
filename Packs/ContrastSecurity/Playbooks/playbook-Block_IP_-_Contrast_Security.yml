@@ -298,6 +298,17 @@ tasks:
                 value:
                   simple: incident.contrastsecurityincidentid
                 iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: XSOAR
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=val + " (" + new Date().toISOString() + ")"'
     continueonerror: true
     separatecontext: false
     continueonerrortype: ""
@@ -481,7 +492,7 @@ inputs:
 - key: incident_id
   value: {}
   required: false
-  description: Specify the ID of the incident. The incident ID is used as the prefix of the IP policy name.
+  description: Specify the ID of the incident. The incident ID is used as the prefix of the IP policy name, followed by a timestamp so that repeated runs do not collide on the policy name.
   playbookInputQuery:
 - key: expiration_date
   value: {}

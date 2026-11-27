@@ -201,8 +201,8 @@ def test_fetch_contrast_incidents_first_run(mocker, mock_client, requests_mock):
 
     assert parse_qs(urlparse(requests_mock.request_history[0].url).query) == {
         "createdAfter": ["2026-10-01T00:00:00Z"],
-        "statuses": ["OPEN", "CLOSED"],
-        "severities": ["CRITICAL", "HIGH", "MEDIUM"],
+        "statuses": ["OPEN,CLOSED"],
+        "severities": ["CRITICAL,HIGH,MEDIUM"],
         "sort": ["createdTime,asc"],
         "size": ["4"],
     }
@@ -517,8 +517,8 @@ def test_fetch_contrast_issues_first_run(mocker, mock_client, requests_mock):
 
     assert parse_qs(urlparse(requests_mock.request_history[0].url).query) == {
         "createdAfter": ["2026-10-01T00:00:00Z"],
-        "statuses": ["OPEN", "CLOSED"],
-        "severities": ["CRITICAL", "HIGH", "MEDIUM"],
+        "statuses": ["OPEN,CLOSED"],
+        "severities": ["CRITICAL,HIGH,MEDIUM"],
         "sort": ["createdTime,asc"],
         "size": ["4"],
     }
@@ -978,7 +978,7 @@ def test_contrast_security_incident_comment_add_command_success(mock_client, req
 
     assert results.readable_output == incident_comment_add_hr
     assert results.outputs == [remove_empty_elements(mock_response)]
-    assert results.outputs[0]["incident_id"] == "incident-123"
+    assert results.outputs[0]["incidentId"] == "incident-123"
 
 
 @pytest.mark.parametrize(
@@ -1458,6 +1458,11 @@ def test_main_ip_block_command_success(mocker, requests_mock):
             False,
         ),
         ({"qa_mode": "Block"}, {"devMode": "MONITOR", "qaMode": "BLOCK", "prodMode": "MONITOR"}, True),
+        (
+            {"dev_mode": "MonITOR At perimeTER", "qa_mode": "oFf", "prod_mode": "bLoCK aT PERimeter"},
+            {"devMode": "MONITOR_AT_PERIMETER", "qaMode": "OFF", "prodMode": "BLOCK_AT_PERIMETER"},
+            False,
+        ),
     ],
 )
 def test_contrast_security_adr_rule_update_command_success(mock_client, requests_mock, modes, expected_payload, get_called):
@@ -1574,14 +1579,14 @@ def test_get_remote_data_command_open_incident_no_flags(mocker, mock_client, req
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-252"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": False})
+    params = {"reopen_closed_incident": False, "close_active_incident": False}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": []})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     expected_mirrored_object = {**SAMPLE_GET_INCIDENT_RESPONSE, "organizationUuid": "test-org-id"}
     remove_nulls_from_dictionary(expected_mirrored_object)
@@ -1600,14 +1605,14 @@ def test_get_remote_data_command_closed_incident_no_flags(mocker, mock_client, r
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-327"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": False})
+    params = {"reopen_closed_incident": False, "close_active_incident": False}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": [incident_id]})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE_CLOSED)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert result.mirrored_object["status"] == "CLOSED"
     assert result.entries == []
@@ -1632,14 +1637,14 @@ def test_get_remote_data_command_closes_xsoar_incident(mocker, mock_client, requ
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-327"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": True})
+    params = {"reopen_closed_incident": False, "close_active_incident": True}
     mock_set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": [incident_id]})
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json={**SAMPLE_GET_INCIDENT_RESPONSE_CLOSED, "closedReason": closed_reason})
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert len(result.entries) == 1
     assert result.entries[0]["Contents"]["dbotIncidentClose"] is True
@@ -1658,14 +1663,14 @@ def test_get_remote_data_command_closed_incident_not_in_processed(mocker, mock_c
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-327"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": True})
+    params = {"reopen_closed_incident": False, "close_active_incident": True}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": []})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE_CLOSED)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert result.entries == []
 
@@ -1679,14 +1684,14 @@ def test_get_remote_data_command_reopens_xsoar_incident(mocker, mock_client, req
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-252"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": True, "close_active_incident": False})
+    params = {"reopen_closed_incident": True, "close_active_incident": False}
     mock_set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": []})
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert len(result.entries) == 1
     assert result.entries[0]["Contents"]["dbotIncidentReopen"] is True
@@ -1703,14 +1708,14 @@ def test_get_remote_data_command_open_incident_already_in_processed(mocker, mock
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-252"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": True, "close_active_incident": False})
+    params = {"reopen_closed_incident": True, "close_active_incident": False}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": [incident_id]})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert result.entries == []
 
@@ -1731,22 +1736,14 @@ def test_get_remote_data_command_incoming_direction_closes_when_not_in_processed
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-327"
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "reopen_closed_incident": False,
-            "close_active_incident": True,
-            "incident_mirror_direction": "Incoming",
-        },
-    )
+    params = {"reopen_closed_incident": False, "close_active_incident": True, "incident_mirror_direction": "Incoming"}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": []})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE_CLOSED)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert len(result.entries) == 1
     assert result.entries[0]["Contents"]["dbotIncidentClose"] is True
@@ -1768,22 +1765,14 @@ def test_get_remote_data_command_incoming_direction_reopens_when_already_in_proc
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-252"
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "reopen_closed_incident": True,
-            "close_active_incident": False,
-            "incident_mirror_direction": "Incoming",
-        },
-    )
+    params = {"reopen_closed_incident": True, "close_active_incident": False, "incident_mirror_direction": "Incoming"}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": [incident_id]})
     mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert len(result.entries) == 1
     assert result.entries[0]["Contents"]["dbotIncidentReopen"] is True
@@ -1798,14 +1787,14 @@ def test_get_remote_data_command_skips_integration_context_write(mocker, mock_cl
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-252"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": False})
+    params = {"reopen_closed_incident": False, "close_active_incident": False}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
     mock_set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
 
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE)
 
-    get_remote_data_command(mock_client, {"id": incident_id})
+    get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     mock_set_ctx.assert_not_called()
 
@@ -1820,7 +1809,7 @@ def test_get_remote_data_command_no_remote_id(mocker, mock_client):
 
     mock_get_incident = mocker.patch.object(mock_client, "get_incident")
 
-    assert get_remote_data_command(mock_client, {}) == "Contrast Security Remote Incident was not found."
+    assert get_remote_data_command(mock_client, {}, {}) == "Contrast Security Remote Incident was not found."
     mock_get_incident.assert_not_called()
 
 
@@ -2965,7 +2954,7 @@ def test_get_remote_data_command_processed_incidents_update_failure_logged(mocke
     from ContrastSecurity import get_remote_data_command
 
     incident_id = "INC-2026-327"
-    mocker.patch.object(demisto, "params", return_value={"reopen_closed_incident": False, "close_active_incident": True})
+    params = {"reopen_closed_incident": False, "close_active_incident": True}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"processed_incidents": [incident_id]})
     mocker.patch(
         "ContrastSecurity.update_integration_context_with_retries",
@@ -2975,7 +2964,7 @@ def test_get_remote_data_command_processed_incidents_update_failure_logged(mocke
     url = f"{DUMMAY_SERVER_URL}{ENDPOINTS['incident_get'].format('test-org-id', incident_id)}"
     requests_mock.get(url, json=SAMPLE_GET_INCIDENT_RESPONSE_CLOSED)
 
-    result = get_remote_data_command(mock_client, {"id": incident_id})
+    result = get_remote_data_command(mock_client, {"id": incident_id}, params)
 
     assert result.entries[0]["Contents"]["dbotIncidentClose"] is True
     assert mock_error.call_args[0][0] == (
@@ -3175,7 +3164,7 @@ def test_contrast_security_issue_list_command_success(mock_client, requests_mock
                 "created_before": "2026-01-31",
                 "modified_after": "2026-01-15T10:20:30Z",
                 "modified_before": "2026-01-15T15:50:30+05:30",
-                "sort_by": "updated_at",
+                "sort_by": "Updated_At",
                 "sort_order": "Desc",
                 "page_size": "10",
                 "next_page_cursor": "test-next-page-cursor",
@@ -3282,9 +3271,9 @@ def test_contrast_security_issue_list_command_without_application_id(mock_client
 
     issues_context = results.outputs["ContrastSecurity.Issue(val.issueId == obj.issueId)"]
     assert "applicationLink" not in issues_context[0]
-    assert "| sample-app |" in results.readable_output
+    assert r"| sample\-app |" in results.readable_output
     assert "applicationLink" not in issues_context[1]
-    assert "| app-id-4 |" in results.readable_output
+    assert r"| app\-id\-4 |" in results.readable_output
     assert "[](" not in results.readable_output
 
 
@@ -3463,7 +3452,7 @@ def test_contrast_security_issue_get_command_without_application_id(mock_client,
     results = contrast_security_issue_get_command(mock_client, test_args)
 
     assert "applicationLink" not in results.outputs
-    assert "| sample-app |" in results.readable_output
+    assert r"| sample\-app |" in results.readable_output
 
 
 @pytest.mark.parametrize(

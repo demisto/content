@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from copy import deepcopy
+import re
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -15,6 +16,8 @@ SEVERITY_MAP: dict[str, float] = {
 
 OK_CODES = (200, 401, 201)
 EVENT_TYPES = ["Contrast Incident", "Contrast Issue"]
+MARKDOWN_LINK_PATTERN = re.compile(r"\[(?:\\.|[^\]\\])*\]\([^)]*\)")
+HR_MARKDOWN_CHARS = r"\*_{}[]()#+-!<>~"
 STATUS_CODE_TO_RETRY = [429, *(code for code in requests.status_codes._codes if code >= 500)]  # type: ignore
 MAX_RETRIES = 3
 BACKOFF_FACTOR = 7.5
@@ -140,6 +143,7 @@ OUTPUT_PREFIX = {
 
 # URL path templates for generating links in human-readable output
 URL_PATHS = {
+    "incident": "/Contrast/cs/index.html#/{}/incidents/{}",
     "issue": "/Contrast/cs/index.html#/{}/issues/{}",
     "observation": "/Contrast/cs/index.html#/{}/observations/{}",
     "application": "/Contrast/cs/index.html#/{}/explorer?applicationId={}",
@@ -455,19 +459,19 @@ def remove_empty_elements_for_fetch(d: Any) -> Any:
     return {k: v for k, v in ((k, remove_empty_elements_for_fetch(v)) for k, v in d.items()) if not check_empty(v)}
 
 
-def get_mirroring(mirror_direction_param: str) -> dict:
+def get_mirroring(params: dict, mirror_direction_param: str) -> dict:
     """
     Get mirroring configuration for the specified event type parameter.
 
     Args:
+        params: Integration configuration parameters.
         mirror_direction_param: The parameter name for mirror direction.
 
     Returns:
         dict: Mirroring configuration with mirror_direction, mirror_tags, and mirror_instance
     """
-    params = demisto.params()
     mirror_direction = params.get(mirror_direction_param, "None").strip()
-    mirror_tags = params.get("note_tag", "").strip()
+    mirror_tags = params.get("note_tag", "note").strip()
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_tags": mirror_tags,
@@ -599,7 +603,7 @@ def build_issue_list_query_params(args: dict) -> dict[str, Any]:
         raise ValueError(ERROR_MESSAGES["INVALID_ARGUMENT"].format(sort_order, "sort_order", SORT_ORDER_VALID_VALUES))
 
     # Validate sort_by
-    if sort_by and sort_by not in SORT_BY_VALID_VALUES:
+    if sort_by and sort_by.lower() not in SORT_BY_VALID_VALUES:
         raise ValueError(ERROR_MESSAGES["INVALID_ARGUMENT"].format(sort_by, "sort_by", SORT_BY_VALID_VALUES))
 
     # Time filters are inclusive on both ends
@@ -633,7 +637,7 @@ def build_issue_list_query_params(args: dict) -> dict[str, Any]:
             query_params[ISSUE_TIME_FILTER_MAPPING[arg_name]] = time_filter.strftime(DATE_TIME_FORMAT)
 
     if sort_by:
-        query_params["sort"] = f"{SORT_BY_MAPPING[sort_by]},{sort_order.lower()}"
+        query_params["sort"] = f"{SORT_BY_MAPPING[sort_by.lower()]},{sort_order.lower()}"
 
     return query_params
 
@@ -725,18 +729,42 @@ def create_markdown_link(text: str, url: str) -> str:
     return f"[{escaped_text}]({url})"
 
 
-def build_incident_comment_add_output(comment_data: dict):
+def escape_markdown_values(hr_content: dict | list[dict]) -> dict | list[dict]:
+    """
+    Escape the markdown characters of the human-readable values, so that values like "--" are displayed as is.
+    Markdown links are kept as is.
+
+    Args:
+        hr_content(dict | list[dict]): Human-readable content.
+
+    Returns:
+        dict | list[dict]: Human-readable content with the string values escaped.
+    """
+    if isinstance(hr_content, list):
+        return [escape_markdown_values(row) for row in hr_content]  # type: ignore[misc]
+    return {
+        key: "".join(f"\\{char}" if char in HR_MARKDOWN_CHARS else char for char in value)
+        if isinstance(value, str) and not MARKDOWN_LINK_PATTERN.fullmatch(value)
+        else value
+        for key, value in hr_content.items()
+    }
+
+
+def build_incident_comment_add_output(comment_data: dict, platform_url: str, organization_id: str):
     """
     Build human-readable output and context for incident comment.
 
     Args:
         comment_data(dict): Comment data from add incident comment API.
+        platform_url(str): Platform URL for generating the incident link.
+        organization_id(str): Organization ID for generating the incident link.
 
     Returns:
         tuple: (context, readable_output)
     """
     context = [remove_empty_elements(comment_data)]
-    incident_id = comment_data.get("incident_id", "")
+    incident_id = comment_data.get("incidentId", "")
+    incident_link = urljoin(platform_url, URL_PATHS["incident"].format(organization_id, incident_id))
     hr_content = [
         {
             "Comment ID": comment_data.get("commentId", ""),
@@ -749,25 +777,34 @@ def build_incident_comment_add_output(comment_data: dict):
     headers = ["Comment ID", "User UID", "Comment Text", "Created At"]
 
     # Create human-readable output using tableToMarkdown
-    readable_output = tableToMarkdown(f"Comment added to Incident {incident_id}", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Comment added to Incident {create_markdown_link(incident_id, incident_link)}",
+        escape_markdown_values(hr_content),
+        headers=headers,
+        removeNull=True,
+    )
 
     return context, readable_output
 
 
-def build_incident_status_update_output(incident_data: dict) -> tuple:
+def build_incident_status_update_output(incident_data: dict, platform_url: str, organization_id: str) -> tuple:
     """
     Build human-readable output and context for incident status update.
     Args:
         incident_data(dict): Incident data obtained from incident status update API.
+        platform_url(str): Platform URL for generating the incident link.
+        organization_id(str): Organization ID for generating the incident link.
     Returns:
         tuple: (context, readable_output)
 
     """
     context = [remove_empty_elements(incident_data)]
+    incident_id = incident_data.get("incidentId", "")
+    incident_link = urljoin(platform_url, URL_PATHS["incident"].format(organization_id, incident_id))
 
     hr_content = [
         {
-            "Incident ID": incident_data.get("incidentId", ""),
+            "Incident ID": create_markdown_link(incident_id, incident_link),
             "Status": (incident_data.get("status") or "").title(),
             "Close Reason": CLOSE_REASON_REVERSE_MAPPING.get(
                 incident_data.get("closedReason") or "", incident_data.get("closedReason") or ""
@@ -778,7 +815,9 @@ def build_incident_status_update_output(incident_data: dict) -> tuple:
     headers = ["Incident ID", "Status", "Close Reason"]
 
     # Create human-readable output using tableToMarkdown
-    readable_output = tableToMarkdown("Incident status updated successfully", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Incident status updated successfully", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return context, readable_output
 
@@ -805,7 +844,9 @@ def build_ip_block_output(raw_response: dict) -> tuple:
     ]
 
     headers = ["Policy ID", "Policy Name", "Blocked IP", "Expiration Date"]
-    readable_output = tableToMarkdown("IP address blocked successfully", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        "IP address blocked successfully", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return context, readable_output
 
@@ -837,7 +878,9 @@ def build_adr_rule_update_output(raw_response: dict, application_id: str) -> tup
     ]
 
     headers = ["Application ID", "Rule ID", "Rule Name", "Rule Description", "Development Mode", "QA Mode", "Production Mode"]
-    readable_output = tableToMarkdown("ADR rule updated successfully", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        "ADR rule updated successfully", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return context, readable_output
 
@@ -898,7 +941,9 @@ def build_issues_list_output(issues: list[dict[str, Any]], platform_url: str, or
         "Environments",
     ]
 
-    readable_output: str = tableToMarkdown("Contrast Security Issues", hr_content, headers=headers, removeNull=True)
+    readable_output: str = tableToMarkdown(
+        "Contrast Security Issues", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return context, readable_output
 
@@ -971,23 +1016,28 @@ def build_issue_get_output(issue: dict[str, Any], platform_url: str, organizatio
 
     headers = list(hr_content.keys())
 
-    readable_output: str = tableToMarkdown("Contrast Security Issue", hr_content, headers=headers, removeNull=True)
+    readable_output: str = tableToMarkdown(
+        "Contrast Security Issue", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return remove_empty_elements(context), readable_output
 
 
-def build_issue_comment_add_output(comment_data: dict):
+def build_issue_comment_add_output(comment_data: dict, platform_url: str, organization_id: str):
     """
     Build human-readable output and context for issue comment.
 
     Args:
         comment_data(dict): Comment data from add issue comment API.
+        platform_url(str): Platform URL for generating the issue link.
+        organization_id(str): Organization ID for generating the issue link.
 
     Returns:
         tuple: (context, readable_output)
     """
     context = [remove_empty_elements(comment_data)]
-    issue_id = comment_data.get("issue_id", "")
+    issue_id = comment_data.get("issueId", "")
+    issue_link = urljoin(platform_url, URL_PATHS["issue"].format(organization_id, issue_id))
     hr_content = [
         {
             "Comment ID": comment_data.get("commentId", ""),
@@ -1000,25 +1050,34 @@ def build_issue_comment_add_output(comment_data: dict):
     headers = ["Comment ID", "User UID", "Comment Text", "Created At"]
 
     # Create human-readable output using tableToMarkdown
-    readable_output = tableToMarkdown(f"Comment added to Issue {issue_id}", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Comment added to Issue {create_markdown_link(issue_id, issue_link)}",
+        escape_markdown_values(hr_content),
+        headers=headers,
+        removeNull=True,
+    )
 
     return context, readable_output
 
 
-def build_issue_status_update_output(issue_data: dict) -> tuple:
+def build_issue_status_update_output(issue_data: dict, platform_url: str, organization_id: str) -> tuple:
     """
     Build human-readable output and context for issue status update.
     Args:
         issue_data(dict): Issue data obtained from issue status update API.
+        platform_url(str): Platform URL for generating the issue link.
+        organization_id(str): Organization ID for generating the issue link.
     Returns:
         tuple: (context, readable_output)
 
     """
     context = [remove_empty_elements(issue_data)]
+    issue_id = issue_data.get("issueId", "")
+    issue_link = urljoin(platform_url, URL_PATHS["issue"].format(organization_id, issue_id))
 
     hr_content = [
         {
-            "Issue ID": issue_data.get("issueId", ""),
+            "Issue ID": create_markdown_link(issue_id, issue_link),
             "Status": (issue_data.get("status") or "").title(),
         }
     ]
@@ -1026,7 +1085,9 @@ def build_issue_status_update_output(issue_data: dict) -> tuple:
     headers = ["Issue ID", "Status"]
 
     # Create human-readable output using tableToMarkdown
-    readable_output = tableToMarkdown("Issue status updated successfully", hr_content, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Issue status updated successfully", escape_markdown_values(hr_content), headers=headers, removeNull=True
+    )
 
     return context, readable_output
 
@@ -1101,7 +1162,10 @@ def build_observation_get_output(
     }
 
     readable_output = tableToMarkdown(
-        "Observation Information", observation_info, headers=list(observation_info.keys()), removeNull=True
+        "Observation Information",
+        escape_markdown_values(observation_info),
+        headers=list(observation_info.keys()),
+        removeNull=True,
     )
 
     if data_type.upper() == "ATTACK":
@@ -1149,7 +1213,9 @@ def build_attack_observation_details(observation: dict[str, Any]) -> str:
     readable_output = ""
     for title, section in sections.items():
         if any(section.values()):
-            readable_output += tableToMarkdown(title, section, headers=list(section.keys()), removeNull=True)
+            readable_output += tableToMarkdown(
+                title, escape_markdown_values(section), headers=list(section.keys()), removeNull=True
+            )
 
     return readable_output
 
@@ -1263,7 +1329,7 @@ def build_observations_list_output(
     ]
 
     readable_output: str = tableToMarkdown(
-        "Contrast Security Incident Observations", hr_content, headers=headers, removeNull=True
+        "Contrast Security Incident Observations", escape_markdown_values(hr_content), headers=headers, removeNull=True
     )
 
     return context, readable_output
@@ -1309,8 +1375,10 @@ def contrast_security_incident_comment_add_command(client: Client, args: dict) -
 
     raw_response = client.incident_comment_add(incident_id=incident_id, payload=payload)
 
-    raw_response["incident_id"] = incident_id
-    context, hr = build_incident_comment_add_output(raw_response)
+    raw_response["incidentId"] = incident_id
+    context, hr = build_incident_comment_add_output(
+        raw_response, platform_url=client._base_url, organization_id=client.organization_id
+    )
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["INCIDENT_COMMENT"],
@@ -1352,7 +1420,9 @@ def contrast_security_incident_status_update_command(client: Client, args: dict)
 
     raw_response = client.incident_status_update(incident_id=incident_id, payload=payload)
 
-    context, hr = build_incident_status_update_output(incident_data=raw_response)
+    context, hr = build_incident_status_update_output(
+        incident_data=raw_response, platform_url=client._base_url, organization_id=client.organization_id
+    )
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["INCIDENT"],
@@ -1437,7 +1507,7 @@ def contrast_security_adr_rule_update_command(client: Client, args: dict) -> Com
         (modes["qaMode"], "qa_mode"),
         (modes["prodMode"], "prod_mode"),
     ]:
-        if mode and mode not in RULE_MODE_HUMAN_READABLE_LIST:
+        if mode and mode.capitalize() not in RULE_MODE_MAPPING:
             raise ValueError(ERROR_MESSAGES["INVALID_ARGUMENT"].format(mode, field_name, RULE_MODE_HUMAN_READABLE_LIST))
 
     if not any(modes.values()):
@@ -1448,7 +1518,7 @@ def contrast_security_adr_rule_update_command(client: Client, args: dict) -> Com
     if not all(modes.values()):
         current_rule = client.adr_rule_get(application_id=application_id, rule_id=rule_id)
 
-    payload = {key: RULE_MODE_MAPPING[mode] if mode else current_rule.get(key) for key, mode in modes.items()}
+    payload = {key: RULE_MODE_MAPPING[mode.capitalize()] if mode else current_rule.get(key) for key, mode in modes.items()}
 
     raw_response = client.adr_rule_update(application_id=application_id, rule_id=rule_id, payload=payload)
 
@@ -1557,8 +1627,10 @@ def contrast_security_issue_comment_add_command(client: Client, args: dict) -> C
 
     raw_response = client.issue_comment_add(issue_id=issue_id, payload=payload)
 
-    raw_response["issue_id"] = issue_id
-    context, hr = build_issue_comment_add_output(raw_response)
+    raw_response["issueId"] = issue_id
+    context, hr = build_issue_comment_add_output(
+        raw_response, platform_url=client._base_url, organization_id=client.organization_id
+    )
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["ISSUE_COMMENT"],
@@ -1590,7 +1662,9 @@ def contrast_security_issue_status_update_command(client: Client, args: dict):
 
     raw_response = client.issue_status_update(issue_id=issue_id, payload=payload)
 
-    context, hr = build_issue_status_update_output(issue_data=raw_response)
+    context, hr = build_issue_status_update_output(
+        issue_data=raw_response, platform_url=client._base_url, organization_id=client.organization_id
+    )
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["ISSUE"],
@@ -1719,8 +1793,8 @@ def fetch_contrast_incidents(
 
     query_params = assign_params(
         createdAfter=created_after,
-        statuses=statuses,
-        severities=severities,
+        statuses=",".join(statuses),
+        severities=",".join(severities),
         sort=FETCH_SORT,
         size=max_fetch,
         cursor=cursor,
@@ -1732,7 +1806,7 @@ def fetch_contrast_incidents(
     if is_test:
         return {}, []
 
-    mirroring_fields = get_mirroring("incident_mirror_direction")
+    mirroring_fields = get_mirroring(params, "incident_mirror_direction")
     incidents: list[dict] = []
     latest_created_time = created_after
     is_time_limit_reached = False
@@ -1832,8 +1906,8 @@ def fetch_contrast_issues(
 
     query_params = assign_params(
         createdAfter=created_after,
-        statuses=statuses,
-        severities=severities,
+        statuses=",".join(statuses),
+        severities=",".join(severities),
         sort=FETCH_SORT,
         size=max_fetch,
         cursor=cursor,
@@ -1845,7 +1919,7 @@ def fetch_contrast_issues(
     if is_test:
         return {}, []
 
-    mirroring_fields = get_mirroring("issue_mirror_direction")
+    mirroring_fields = get_mirroring(params, "issue_mirror_direction")
     incidents: list[dict] = []
     latest_created_time = created_after
     is_time_limit_reached = False
@@ -2028,7 +2102,7 @@ def reopen_in_xsoar(entries: list, incident_id: str, status: str) -> None:
     entries.append({"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON})
 
 
-def get_remote_data_command(client: Client, args: dict):
+def get_remote_data_command(client: Client, args: dict, params: dict):
     """
     Incoming mirroring: fetch the latest state of a single Contrast Security incident
     and push it into the corresponding XSOAR incident.
@@ -2039,6 +2113,7 @@ def get_remote_data_command(client: Client, args: dict):
         client: Contrast Security API client.
         args: Command arguments supplied by the XSOAR mirroring engine.
               Expected keys: remoteId, lastUpdate.
+        params: Integration configuration parameters.
 
     Returns:
         GetRemoteDataResponse with updated incident fields and optional close/reopen entry.
@@ -2051,9 +2126,8 @@ def get_remote_data_command(client: Client, args: dict):
 
     demisto.debug(f"get-remote-data called for incident {dbot_mirror_id}")
 
-    params = demisto.params()
-    reopen_closed_incident = params.get("reopen_closed_incident", False)
-    close_active_incident = params.get("close_active_incident", False)
+    reopen_closed_incident = argToBoolean(params.get("reopen_closed_incident", False))
+    close_active_incident = argToBoolean(params.get("close_active_incident", False))
 
     remote_incident_data = client.get_incident(dbot_mirror_id)
     status = remote_incident_data.get("status") or ""
@@ -2254,7 +2328,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     remote_incident_id = parsed_args.remote_incident_id
-    xsoar_incident_id = parsed_args.data.get("id", "")
+    xsoar_incident_id = (parsed_args.data or {}).get("id", "")
     incident_status = parsed_args.inc_status
     delta = parsed_args.delta or {}
     incident_changed = parsed_args.incident_changed
@@ -2377,7 +2451,7 @@ def main() -> None:
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args))
+            return_results(get_remote_data_command(client, args, params))
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "update-remote-system":
@@ -2389,7 +2463,7 @@ def main() -> None:
             result = commands[command](client, args)
             return_results(result)
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

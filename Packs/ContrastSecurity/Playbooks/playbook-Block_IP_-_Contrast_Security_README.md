@@ -28,7 +28,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | ip_addresses | Specify the IP addresses to block. Supports comma-separated values. If not provided, the IP addresses are retrieved from the Contrast Security Source IP field of the incident. |  | Optional |
-| incident_id | Specify the ID of the incident. The incident ID is used as the prefix of the IP policy name. |  | Optional |
+| incident_id | Specify the ID of the incident. The incident ID is used as the prefix of the IP policy name, followed by a timestamp so that repeated runs do not collide on the policy name. |  | Optional |
 | expiration_date | Specify the expiration duration for the blocked IP addresses. If not provided, the IP addresses are blocked permanently. |  | Optional |
 
 ## Playbook Outputs

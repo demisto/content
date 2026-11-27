@@ -24,49 +24,49 @@ The Contrast Security username, API key, service key, and organization ID can be
 | Issue Severity Levels | Select Contrast Security Issue severity levels to fetch as incidents. Default is all.<br/><br/>Note: Applies only when Event Type is set to "Contrast Issue". | False |
 | Incident Mirroring Direction | The mirroring direction in which to mirror the incident details. | False |
 | Issue Mirroring Direction | The mirroring direction in which to mirror the Issue details. | False |
-| Mirror Tag for Notes | Tag value used to mirror XSOAR notes back to Contrast Security as issue or incident comments. | False |
-| Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident | If selected, closed incidents will be reopened in XSOAR when the incident status in Contrast Security Incident changes to 'Open'.<br/><br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. | False |
-| Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident | If selected, active incidents will be closed in XSOAR when the incident status in Contrast Security Incident changes to 'Closed'.<br/><br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. | False |
+| Mirror Tag for Notes | Tag value used to mirror Cortex XSOAR notes back to Contrast Security as issue or incident comments. | False |
+| Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident | If selected, closed incidents will be reopened in Cortex XSOAR when the incident status in Contrast Security Incident changes to 'Open'.<br/><br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. | False |
+| Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident | If selected, active incidents will be closed in Cortex XSOAR when the incident status in Contrast Security Incident changes to 'Closed'.<br/><br/>Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'. | False |
 | Incidents Fetch Interval |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 **Notes for mirroring:**
 
-- This feature is compliant with XSOAR version 6.0 and above.
-- When an incident status is active in XSOAR, it will be mapped with an open status in the Contrast Security incident. When an XSOAR incident is closed, it will be mapped with a closed status in the Contrast Security incident with provided closing notes.
-- New notes added to XSOAR incidents with the provided mirroring tag will be created as comments in the Contrast Security incident.
-- When mirroring is set to 'Incoming' or 'Incoming and Outgoing', all the Contrast Security incident fields are updated in the XSOAR incident.
-- When a Contrast Security incident is closed, the XSOAR incident is closed with the following close reason mapping:
+- This feature is compliant with Cortex XSOAR version 6.0 and above.
+- When an incident status is active in Cortex XSOAR, it will be mapped with an open status in the Contrast Security incident. When a Cortex XSOAR incident is closed, it will be mapped with a closed status in the Contrast Security incident with provided closing notes.
+- New notes added to Cortex XSOAR incidents with the provided mirroring tag will be created as comments in the Contrast Security incident.
+- When mirroring is set to 'Incoming' or 'Incoming and Outgoing', all the Contrast Security incident fields are updated in the Cortex XSOAR incident.
+- When a Contrast Security incident is closed, the Cortex XSOAR incident is closed with the following close reason mapping:
 
-  | Contrast Security Close Reason | XSOAR Close Reason |
+  | Contrast Security Close Reason | Cortex XSOAR Close Reason |
   | --- | --- |
   | TRUE_POSITIVE | Resolved |
   | TRUE_POSITIVE_BENIGN | Resolved |
   | FALSE_POSITIVE | False Positive |
   | OTHER | Other |
 
-- When an XSOAR incident is closed, the Contrast Security incident is closed with the following close reason mapping:
+- When a Cortex XSOAR incident is closed, the Contrast Security incident is closed with the following close reason mapping:
 
-  | XSOAR Close Reason | Contrast Security Close Reason |
+  | Cortex XSOAR Close Reason | Contrast Security Close Reason |
   | --- | --- |
   | Resolved | TRUE_POSITIVE |
   | False Positive | FALSE_POSITIVE |
   | Duplicate | OTHER |
   | Other or any other value | OTHER |
 
-- Comments added in Contrast Security are not mirrored into XSOAR.
+- Comments added in Contrast Security are not mirrored into Cortex XSOAR.
 - Up to 5000 modified incidents are mirrored in each mirroring run.
-- When an Incident status is changed in XSOAR, the status will be synchronized with the corresponding Contrast Security Issue.
-- New notes added to XSOAR incidents will be created as comments in the Contrast Security Issue with the provided mirroring tag.
-- Incident status changes in XSOAR (Open/Closed) will be reflected in the Contrast Security Issue.
-- **Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident:** If selected, a closed XSOAR incident is reopened when its Contrast Security incident is reopened (status changes to 'Open'). Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'.
-- **Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident:** If selected, an active XSOAR incident is closed when its Contrast Security incident is closed (status changes to 'Closed'). Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'.
+- When an Incident status is changed in Cortex XSOAR, the status will be synchronized with the corresponding Contrast Security Issue.
+- New notes added to Cortex XSOAR incidents will be created as comments in the Contrast Security Issue with the provided mirroring tag.
+- Incident status changes in Cortex XSOAR (Open/Closed) will be reflected in the Contrast Security Issue.
+- **Reopen Incident in XSOAR When Status Changes to 'Open' in Contrast Security Incident:** If selected, a closed Cortex XSOAR incident is reopened when its Contrast Security incident is reopened (status changes to 'Open'). Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'.
+- **Close Incident in XSOAR When Status Changes to 'Closed' in Contrast Security Incident:** If selected, an active Cortex XSOAR incident is closed when its Contrast Security incident is closed (status changes to 'Closed'). Note: This parameter is only used when the incident mirroring direction is set to 'Incoming' or 'Incoming and Outgoing'.
 - Incident mirroring supports multiple directions - 'Incoming', 'Outgoing', and 'Incoming and Outgoing'. However, only 'Outgoing' mirroring is supported for issues. Users can configure only 'Outgoing' mirroring direction for the Issue Mirroring Direction parameter.
 - The following fields are mirroring parameters that need to be configured in the integration instance:
-  - **Incident Mirroring Direction:** This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support. Possible values are "Incoming", "Outgoing", and "Incoming and Outgoing".
-  - **Issue Mirroring Direction:** This field determines the mirroring direction for the issue. It is a required field for XSOAR to enable mirroring support. Possible values are "Outgoing".
-  - **Mirror Tag for Notes:** This field determines the tag for notes. It is a required field for XSOAR to enable mirroring support.
+  - **Incident Mirroring Direction:** This field determines the mirroring direction for the incident. It is a required field for Cortex XSOAR to enable mirroring support. Possible values are "Incoming", "Outgoing", and "Incoming and Outgoing".
+  - **Issue Mirroring Direction:** This field determines the mirroring direction for the issue. It is a required field for Cortex XSOAR to enable mirroring support. Possible values are "Outgoing".
+  - **Mirror Tag for Notes:** This field determines the tag for notes. It is a required field for Cortex XSOAR to enable mirroring support.
 
 ## Commands
 
@@ -93,7 +93,7 @@ Add a comment to a Contrast Security Incident.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ContrastSecurity.IncidentComment.incident_id | String | The ID of the incident the comment was added to. |
+| ContrastSecurity.IncidentComment.incidentId | String | The ID of the incident the comment was added to. |
 | ContrastSecurity.IncidentComment.commentId | String | The unique identifier of the comment. |
 | ContrastSecurity.IncidentComment.userId | String | The unique identifier of the user who made the comment. |
 | ContrastSecurity.IncidentComment.userUid | String | The email address of the user who made the comment. |
@@ -111,7 +111,7 @@ Add a comment to a Contrast Security Incident.
 {
     "ContrastSecurity": {
         "IncidentComment": {
-            "incident_id": "INC-2026-001",
+            "incidentId": "INC-2026-001",
             "commentId": "12345678-1234-1234-1234-123456789abc",
             "userId": "87654321-4321-4321-4321-cba987654321",
             "userUid": "test.comment@contrastsecurity.com",
@@ -124,11 +124,11 @@ Add a comment to a Contrast Security Incident.
 
 #### Human Readable Output
 
->### Comment added to Incident INC-2026-001
+>### Comment added to Incident [INC-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-001)
 >
 >|Comment ID|User UID|Comment Text|Created At|
 >|---|---|---|---|
->| 12345678-1234-1234-1234-123456789abc | test.comment@contrastsecurity.com | this is comment from xsoar | 2026-04-06T05:22:41.602411286Z |
+>| 12345678\-1234\-1234\-1234\-123456789abc | test.comment@contrastsecurity.com | this is comment from xsoar | 2026\-04\-06T05:22:41.602411286Z |
 
 ### contrastsecurity-incident-status-update
 
@@ -184,8 +184,8 @@ Update the status of a Contrast Security Incident.
             "closedTime": "2026-03-20T05:41:36Z",
             "closedReason": "TRUE_POSITIVE",
             "observationCount": 3,
-            "organizationId": "12345678-1234-1234-1234-123456789abc",
-            "url": "https://test.contrast.com/Contrast/cs/index.html#/12345678-1234-1234-1234-123456789abc/incidents/INC-2026-001"
+            "organizationId": "test-org-id",
+            "url": "https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-001"
         }
     }
 }
@@ -197,7 +197,7 @@ Update the status of a Contrast Security Incident.
 >
 >|Incident ID|Status|Close Reason|
 >|---|---|---|
->| INC-2026-001 | Closed | True Positive |
+>| [INC-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/incidents/INC-2026-001) | Closed | True Positive |
 
 ### contrastsecurity-ip-block
 
@@ -231,7 +231,7 @@ Block an IP address by creating an organization-level IP policy in Contrast Secu
 
 #### Command example
 
-```!contrastsecurity-ip-block ip_address=192.168.1.100 policy_name_prefix=INC-2026-80 expiration_date="2 days"```
+```!contrastsecurity-ip-block ip_address=198.51.100.1 policy_name_prefix=INC-2026-80 expiration_date="2 days"```
 
 #### Context Example
 
@@ -240,8 +240,8 @@ Block an IP address by creating an organization-level IP policy in Contrast Secu
     "ContrastSecurity": {
         "IPPolicy": {
             "uuid": "12345678-1234-1234-1234-123456789abc",
-            "ip": "192.168.1.100",
-            "name": "INC-2026-80 - 192.168.1.100",
+            "ip": "198.51.100.1",
+            "name": "INC-2026-80 - 198.51.100.1",
             "trusted": false,
             "expirationTime": "2026-12-31T00:00:00Z",
             "environments": {
@@ -260,7 +260,7 @@ Block an IP address by creating an organization-level IP policy in Contrast Secu
 >
 >|Policy ID|Policy Name|Blocked IP|Expiration Date|
 >|---|---|---|---|
->| 12345678-1234-1234-1234-123456789abc | INC-2026-80 - 192.168.1.100 | 192.168.1.100 | 2026-12-31T00:00:00Z |
+>| 12345678\-1234\-1234\-1234\-123456789abc | INC\-2026\-80 \- 198.51.100.1 | 198.51.100.1 | 2026\-12\-31T00:00:00Z |
 
 ### contrastsecurity-adr-rule-update
 
@@ -329,7 +329,7 @@ Note: At least one of the dev_mode, qa_mode or prod_mode arguments must be provi
 >
 >|Application ID|Rule ID|Rule Name|Rule Description|Development Mode|QA Mode|Production Mode|
 >|---|---|---|---|---|---|---|
->| 12345678-1234-1234-1234-123456789012 | path-traversal | Path Traversal | A vulnerability that allows users to control which files get opened and read by an application. | Monitor | Block at perimeter | Monitor |
+>| 12345678\-1234\-1234\-1234\-123456789012 | path\-traversal | Path Traversal | A vulnerability that allows users to control which files get opened and read by an application. | Monitor | Block at perimeter | Monitor |
 
 ### contrastsecurity-issue-list
 
@@ -486,8 +486,8 @@ List Contrast Security Issues with provided filter parameters.
 >
 >|Severity|Contrast Score|Issue|Issue ID|Status|Application Name|Application ID|Number of Observations|Last Detected|Environments|
 >|---|---|---|---|---|---|---|---|---|---|
->| High | 8.9 | CVEs in tomcat-embed-websocket 10.1.41 | [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | Open | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678-1234-1234-1234-123456789abc | 40 | 2026-10-22T16:13:04.527Z | QA |
->| High | 8.5 | CVEs in log4j-slf4j-impl 2.14.1 | [ISS-2026-002](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-002) | Open | [sample-cargocats-frontgateservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=87654321-4321-4321-4321-cba987654321) | 87654321-4321-4321-4321-cba987654321 | 52 | 2026-10-22T16:11:38.621Z | QA |
+>| High | 8.9 | CVEs in tomcat\-embed\-websocket 10.1.41 | [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | Open | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678\-1234\-1234\-1234\-123456789abc | 40 | 2026\-10\-22T16:13:04.527Z | QA |
+>| High | 8.5 | CVEs in log4j\-slf4j\-impl 2.14.1 | [ISS-2026-002](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-002) | Open | [sample-cargocats-frontgateservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=87654321-4321-4321-4321-cba987654321) | 87654321\-4321\-4321\-4321\-cba987654321 | 52 | 2026\-10\-22T16:11:38.621Z | QA |
 >
 >To retrieve the next set of results, run the command with the same filters and **next_page_cursor** = `test-next-page-cursor`.
 
@@ -620,7 +620,7 @@ Get a specific Contrast Security Issue by ID.
 >
 >|Issue ID|Issue|Description|Recommendation|Status|Severity|Contrast Score|Rule ID|Rule|CVEs|Application Name|Application ID|Environments|Data Types|Targets|Sensors|Techniques|Incident Count|Number of Observations|Attack Count|Blocked Attack Count|Exploited Attack Count|Suspicious Attack Count|Created|Updated|Last Detected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | CVEs in tomcat-embed-websocket 10.1.41 | We analyzed the full library dependency tree from this root library and discovered 2 vulnerabilities.<br><br>CVE-2026-0001 \| MEDIUM \| Score: 6.6 \| tomcat-embed-core 10.1.41<br><br>CVE-2026-0002 \| HIGH \| Score: 7.6 \| tomcat-embed-core 10.1.41 | Please contact the library owner to fix this vulnerability. | Open | High | 8.9 | library-vulnerability | Library CVEs | CVE-2026-0001, CVE-2026-0002 | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678-1234-1234-1234-123456789abc | QA | VULNERABILITY | LIBRARY | CONTRAST_AGENT | RUNTIME | 0 | 40 | 0 | 0 | 0 | 0 | 2026-07-16T23:42:33.205Z | 2026-10-22T16:13:04.763Z | 2026-10-22T16:13:04.527Z |
+>| [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | CVEs in tomcat\-embed\-websocket 10.1.41 | We analyzed the full library dependency tree from this root library and discovered 2 vulnerabilities.<br><br>CVE\-2026\-0001 \| MEDIUM \| Score: 6.6 \| tomcat\-embed\-core 10.1.41<br><br>CVE\-2026\-0002 \| HIGH \| Score: 7.6 \| tomcat\-embed\-core 10.1.41 | Please contact the library owner to fix this vulnerability. | Open | High | 8.9 | library\-vulnerability | Library CVEs | CVE\-2026\-0001, CVE\-2026\-0002 | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678\-1234\-1234\-1234\-123456789abc | QA | VULNERABILITY | LIBRARY | CONTRAST\_AGENT | RUNTIME | 0 | 40 | 0 | 0 | 0 | 0 | 2026\-07\-16T23:42:33.205Z | 2026\-10\-22T16:13:04.763Z | 2026\-10\-22T16:13:04.527Z |
 
 ### contrastsecurity-issue-comment-add
 
@@ -642,7 +642,7 @@ Add a comment to a Contrast Security Issue.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ContrastSecurity.IssueComment.issue_id | String | The ID of the issue the comment was added to. |
+| ContrastSecurity.IssueComment.issueId | String | The ID of the issue the comment was added to. |
 | ContrastSecurity.IssueComment.commentId | String | The unique identifier of the comment. |
 | ContrastSecurity.IssueComment.userId | String | The unique identifier of the user who made the comment. |
 | ContrastSecurity.IssueComment.userUid | String | The email address of the user who made the comment. |
@@ -660,7 +660,7 @@ Add a comment to a Contrast Security Issue.
 {
     "ContrastSecurity": {
         "IssueComment": {
-            "issue_id": "ISS-2026-001",
+            "issueId": "ISS-2026-001",
             "commentId": "12345678-1234-1234-1234-123456789abc",
             "userId": "87654321-4321-4321-4321-cba987654321",
             "userUid": "test.comment@contrastsecurity.com",
@@ -673,11 +673,11 @@ Add a comment to a Contrast Security Issue.
 
 #### Human Readable Output
 
->### Comment added to Issue ISS-2026-001
+>### Comment added to Issue [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001)
 >
 >|Comment ID|User UID|Comment Text|Created At|
 >|---|---|---|---|
->| 12345678-1234-1234-1234-123456789abc | test.comment@contrastsecurity.com | this is test comment for issue  | 2026-04-27T09:23:32.693501406Z |
+>| 12345678\-1234\-1234\-1234\-123456789abc | test.comment@contrastsecurity.com | this is test comment for issue  | 2026\-04\-27T09:23:32.693501406Z |
 
 ### contrastsecurity-issue-status-update
 
@@ -751,7 +751,7 @@ Update the status of a Contrast Security Issue.
 >
 >|Issue ID|Status|
 >|---|---|
->| ISS-2026-001 | Closed |
+>| [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | Closed |
 
 ### contrastsecurity-observation-get
 
@@ -955,25 +955,25 @@ Get a specific Contrast Security Observation by ID.
 >
 >|Observation ID|Issue ID|Type|Severity|Rule Name|Rule ID|Result|Application Name|Application ID|Application Language|Server|Server ID|Environment|HTTP Route|Target|Technique|MITRE Tactics|Agent Version|Detected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| [A-D-11111111-2222-3333-4444-555555555555-1234567890](https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/A-D-11111111-2222-3333-4444-555555555555-1234567890) | [ISS-2026-0001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-0001) | Attack | Critical | Command Injection | cmd-injection | Suspicious | [sample-webhook-service](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=app-12345678-aaaa-bbbb-cccc-1234567890ab) | app-12345678-aaaa-bbbb-cccc-1234567890ab | JAVA | sample-server-agent | 1001 | DEVELOPMENT | /login | Code | Runtime | Impact, Execution | 6.35.1 | 2026-10-13T16:28:24.255Z |
+>| [A-D-11111111-2222-3333-4444-555555555555-1234567890](https://test.contrast.com/Contrast/cs/index.html#/11111111-aaaa-bbbb-cccc-111111111111/observations/A-D-11111111-2222-3333-4444-555555555555-1234567890) | [ISS-2026-0001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-0001) | Attack | Critical | Command Injection | cmd\-injection | Suspicious | [sample-webhook-service](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=app-12345678-aaaa-bbbb-cccc-1234567890ab) | app\-12345678\-aaaa\-bbbb\-cccc\-1234567890ab | JAVA | sample\-server\-agent | 1001 | DEVELOPMENT | /login | Code | Runtime | Impact, Execution | 6.35.1 | 2026\-10\-13T16:28:24.255Z |
 >
 >### Attack Value
 >
 >|Source IP|URL|Attack Payload Value|
 >|---|---|---|
->| 192.168.0.10 | http://example.com/login | /bin/sh -c whoami |
+>| 192.168.0.10 | http://example.com/login | /bin/sh \-c whoami |
 >
 >### Vector Analysis
 >
 >|Vector Fields|Call Location|
 >|---|---|
->| command: /bin/sh -c whoami, ruleUuid: cmd-injection | org.apache.commons.collections4.functors.InvokerTransformer.transform(InvokerTransformer.java:129) |
+>| command: /bin/sh \-c whoami, ruleUuid: cmd\-injection | org.apache.commons.collections4.functors.InvokerTransformer.transform\(InvokerTransformer.java:129\) |
 >
 >### Request Details
 >
 >|Request Details|
 >|---|
->| POST /login HTTP/1.1<br>accept: */*<br>accept-encoding: gzip, deflate<br>content-length: 42<br>content-type: application/json<br>Cookie: JSESSIONID=SAMPLESESSIONID<br>host: example.com<br>user-agent: python-requests/2.31.0<br>x-forwarded-host: example.com<br>x-forwarded-port: 80<br>x-forwarded-proto: http<br>x-forwarded-scheme: http<br>x-real-ip: 192.168.0.10<br>x-request-id: sample-request-id<br>x-scheme: http<br><br>{"username":"admin","password":"password"} |
+>| POST /login HTTP/1.1<br>accept: \*/\*<br>accept\-encoding: gzip, deflate<br>content\-length: 42<br>content\-type: application/json<br>Cookie: JSESSIONID=SAMPLESESSIONID<br>host: example.com<br>user\-agent: python\-requests/2.31.0<br>x\-forwarded\-host: example.com<br>x\-forwarded\-port: 80<br>x\-forwarded\-proto: http<br>x\-forwarded\-scheme: http<br>x\-real\-ip: 192.168.0.10<br>x\-request\-id: sample\-request\-id<br>x\-scheme: http<br><br>\{"username":"admin","password":"password"\} |
 >
 >### Code Location
 >
@@ -1154,7 +1154,7 @@ List Contrast Security incident Observations with provided filters.
 >
 >|Observation ID|Severity|Source IP|Associated Issue ID|Rule|Application Name|Application ID|Server|Environment|Result|Data Type|URL|Attack Value|Detected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| [A-D-11111111-2222-3333-4444-555555555551-1234567890](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555551-1234567890) | Critical | 192.168.0.10 | [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | Command Injection | [sample-cargocats-frontgateservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678-1234-1234-1234-123456789abc | sample-cargocats-frontgateservice-agent | DEVELOPMENT | Suspicious | Attack | /login | /bin/sh -c : 10; id; whoami | 2026-10-13T16:28:24.255Z |
->| [A-D-66666666-7777-8888-9999-000000000000-1234567891](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-66666666-7777-8888-9999-000000000000-1234567891) | High | 192.168.0.20 | [ISS-2026-002](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-002) | SQL Injection | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=87654321-4321-4321-4321-cba987654321) | 87654321-4321-4321-4321-cba987654321 | sample-cargocats-dataservice-agent | PRODUCTION | Exploited | Attack | /payments | ' OR '1'='1 | 2026-10-13T16:17:57.651Z |
+>| [A-D-11111111-2222-3333-4444-555555555551-1234567890](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-11111111-2222-3333-4444-555555555551-1234567890) | Critical | 192.168.0.10 | [ISS-2026-001](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-001) | Command Injection | [sample-cargocats-frontgateservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=12345678-1234-1234-1234-123456789abc) | 12345678\-1234\-1234\-1234\-123456789abc | sample\-cargocats\-frontgateservice\-agent | DEVELOPMENT | Suspicious | Attack | /login | /bin/sh \-c : 10; id; whoami | 2026\-10\-13T16:28:24.255Z |
+>| [A-D-66666666-7777-8888-9999-000000000000-1234567891](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/observations/A-D-66666666-7777-8888-9999-000000000000-1234567891) | High | 192.168.0.20 | [ISS-2026-002](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/issues/ISS-2026-002) | SQL Injection | [sample-cargocats-dataservice](https://test.contrast.com/Contrast/cs/index.html#/test-org-id/explorer?applicationId=87654321-4321-4321-4321-cba987654321) | 87654321\-4321\-4321\-4321\-cba987654321 | sample\-cargocats\-dataservice\-agent | PRODUCTION | Exploited | Attack | /payments | ' OR '1'='1 | 2026\-10\-13T16:17:57.651Z |
 >
 >To retrieve the next set of results, run the command with the same filters and **next_page_cursor** = `test-next-page-cursor`.

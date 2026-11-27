@@ -5,5 +5,5 @@
     "commentText": "dummy comment message",
     "createdTime": "2026-04-13T05:52:13.632697652Z",
     "updatedTime": null,
-    "incident_id": "incident-123"
+    "incidentId": "incident-123"
 }

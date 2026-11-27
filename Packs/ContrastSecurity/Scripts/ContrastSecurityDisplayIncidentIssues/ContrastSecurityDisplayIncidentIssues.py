@@ -12,12 +12,12 @@ PAGINATION_TIMEOUT_SECONDS = 240
 
 
 def handle_error(command_result: list[dict[str, Any]]) -> None:
-    """Handle error in command result and exit."""
+    """Raise an exception when the command result contains an error."""
     if is_error(command_result):
-        return_error(get_error(command_result))
+        raise DemistoException(get_error(command_result))
 
 
-def get_issues_grid_data(issues_data: list) -> list:
+def get_issues_grid_data(issues_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Convert incident issues into grid field format for XSOAR incident layout.
 
@@ -47,7 +47,7 @@ def get_issues_grid_data(issues_data: list) -> list:
     return remove_empty_elements(grid_rows)
 
 
-def main():
+def main() -> None:
     try:
         incident_id = demisto.getArg("incident_id")
 
@@ -96,7 +96,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute ContrastSecurityDisplayIncidentIssues. Error: {str(ex)}")
+        return_error(f"Failed to execute ContrastSecurityDisplayIncidentIssues. Error: {str(ex)}", error=ex)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
