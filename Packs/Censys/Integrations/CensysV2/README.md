@@ -6,11 +6,14 @@ This integration was integrated and tested with version 2.0 of Censys.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The URL of the Censys API server. | True |
-| API Token | Personal Access Token from Censys Platform | True |
+| Authentication Type | Select the authentication type. "API Token" uses a Personal Access Token and "OAuth 2.0" uses the Client ID and Client Secret of a Censys service account. | False |
+| Client ID (Required for OAuth 2.0) | Client ID and Client Secret of the Censys service account. Required when the Authentication Type is "OAuth 2.0". | False |
+| Client Secret (Required for OAuth 2.0) |  | False |
+| API Token | Personal Access Token from Censys Platform. Required when the Authentication Type is "API Token". | False |
 | Organization ID | The unique identifier for your Censys organization. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Determine IP score using Censys Host Reputation data (for Censys Core customers) | Leverages the host.reputation.label data from Censys to score IPs as Malicious, Suspicious or Good. | False |
+| Determine IP score using Censys Host Reputation data (for Censys Core customers) | Leverages the host.reputation.label data from Censys to score IPs as Malicious, Suspicious or Benign. | False |
 | Use Censys Host Enrichment API for ip command | Leverages the Censys Host Enrichment API by default for all IP lookups. | False |
 | Determine IP score using Censys Labels | Leverages the host.labels.value and host.services.labels.value labels provided to all Censys users to score IPs based on customer defined thresholds. | False |
 | IP Malicious labels | Used only when Determine IP score using Censys Labels is set.<br/>Labels to classify IP as Malicious.<br/>Input can be an array or comma-separated values.<br/>Labels that are not listed can be typed in manually. | False |

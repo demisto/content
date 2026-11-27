@@ -1,4 +1,6 @@
 import json
+import time
+from urllib.parse import parse_qsl
 
 import pytest
 from CensysV2 import (
@@ -7,6 +9,10 @@ from CensysV2 import (
     ERRORS,
     IP_REPUTATION_SEARCH_FIELDS,
     IP_SEARCH_FIELDS,
+    OAUTH_DEFAULT_EXPIRES_IN,
+    OAUTH_EARLY_EXPIRY_TIME,
+    OAUTH_SCOPE,
+    OAUTH_TOKEN_URL,
     OUTPUT_PREFIX,
     VALID_RELATED_INFRA_IOC_TYPE,
     VALID_TRANSPORT_PROTOCOL,
@@ -39,6 +45,25 @@ def util_load_json(path):
 @pytest.fixture()
 def client():
     return Client(base_url="https://api.platform.censys.io", api_token="test_token")
+
+
+@pytest.fixture()
+def oauth_client():
+    return Client(
+        base_url="https://api.platform.censys.io",
+        use_oauth=True,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+
+
+@pytest.fixture()
+def integration_context(mocker):
+    """Mocks the integration context with an in-memory dictionary."""
+    context: dict = {}
+    mocker.patch("CensysV2.get_integration_context", side_effect=lambda: context)
+    mocker.patch("CensysV2.set_integration_context", side_effect=context.update)
+    return context
 
 
 def test_censys_view_command_host(client, requests_mock):
@@ -715,6 +740,247 @@ def test_handle_exceptions():
         handle_exceptions(e, results, execution_metrics, "item5")
 
 
+@pytest.fixture()
+def valid_cached_token(oauth_client):
+    """Builds a cached token for the OAuth client, relative to the test run time and never shared between tests."""
+    return {"access_token": "cached_access_token", "expire": time.time() + 1000, "client_id": "test_client_id"}
+
+
+@pytest.mark.parametrize(
+    "token_overrides, use_existing_token",
+    [
+        pytest.param(None, True, id="no cached token"),
+        pytest.param(lambda: {"expire": time.time() - 1}, True, id="expired cached token"),
+        pytest.param(lambda: {"client_id": "other_client_id"}, True, id="cached token of different client ID"),
+        pytest.param(dict, False, id="use_existing_token is False"),
+    ],
+)
+def test_generate_oauth_token_generates_new_token_when_no_valid_cached_token(
+    oauth_client, requests_mock, integration_context, valid_cached_token, token_overrides, use_existing_token
+):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - No valid cached access token for the client, or use_existing_token is False.
+    When:
+        - Calling generate_oauth_token.
+    Then:
+        - Ensure a new access token is requested using the client credentials grant.
+        - Ensure the new access token is returned and stored in the integration context.
+    """
+    # Given
+    if token_overrides:
+        integration_context["oauth_token"] = {**valid_cached_token, **token_overrides()}
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+
+    # When
+    token = oauth_client.generate_oauth_token(use_existing_token=use_existing_token)
+
+    # Then
+    assert token == "new_access_token"
+    assert token_mock.call_count == 1
+    assert token_mock.last_request.headers["Authorization"] == "Basic dGVzdF9jbGllbnRfaWQ6dGVzdF9jbGllbnRfc2VjcmV0"
+    assert dict(parse_qsl(token_mock.last_request.text)) == {
+        "grant_type": "client_credentials",
+        "scope": OAUTH_SCOPE,
+        "audience": CENSYS_API_URL,
+    }
+    assert integration_context["oauth_token"]["access_token"] == "new_access_token"
+    assert integration_context["oauth_token"]["client_id"] == "test_client_id"
+    assert "test_client_secret" not in str(integration_context["oauth_token"])
+
+
+def test_generate_oauth_token_reuses_valid_cached_token(oauth_client, requests_mock, integration_context, valid_cached_token):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - A valid cached access token for the same client ID.
+    When:
+        - Calling generate_oauth_token.
+    Then:
+        - Ensure the cached access token is returned without requesting a new one.
+    """
+    # Given
+    integration_context["oauth_token"] = valid_cached_token
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+
+    # When
+    token = oauth_client.generate_oauth_token()
+
+    # Then
+    assert token == "cached_access_token"
+    assert token_mock.call_count == 0
+
+
+def test_generate_oauth_token_uses_default_expiry_when_expires_in_missing(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - A token response without "expires_in".
+    When:
+        - Calling generate_oauth_token.
+    Then:
+        - Ensure the token expiry is calculated using the default expiry time minus the early expiry buffer.
+    """
+    # Given
+    requests_mock.post(OAUTH_TOKEN_URL, json={"access_token": "new_access_token"})
+    expected_expire = time.time() + OAUTH_DEFAULT_EXPIRES_IN - OAUTH_EARLY_EXPIRY_TIME
+
+    # When
+    oauth_client.generate_oauth_token()
+
+    # Then
+    assert integration_context["oauth_token"]["expire"] == pytest.approx(expected_expire, abs=5)
+
+
+def test_generate_oauth_token_raises_error_when_access_token_missing(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - A token response without "access_token".
+    When:
+        - Calling generate_oauth_token.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    # Given
+    requests_mock.post(OAUTH_TOKEN_URL, json={"token_type": "Bearer"})
+
+    # When / Then
+    with pytest.raises(DemistoException, match=ERRORS["OAUTH_TOKEN_NOT_FOUND"]):
+        oauth_client.generate_oauth_token()
+
+
+def test_http_request_regenerates_oauth_token_and_retries_on_401(
+    oauth_client, requests_mock, integration_context, valid_cached_token
+):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication and a cached access token.
+        - The API returns 401 for the cached access token and 200 for the new access token.
+    When:
+        - Calling http_request.
+    Then:
+        - Ensure a new access token is generated and the request is retried once with it.
+        - Ensure the response of the retried request is returned.
+    """
+    # Given
+    integration_context["oauth_token"] = valid_cached_token
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+    api_mock = requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}",
+        [{"status_code": 401, "json": {}}, {"status_code": 200, "json": {"result": "success"}}],
+    )
+
+    # When
+    result = oauth_client.http_request("GET", ENDPOINTS["HOST_ENRICHMENT"].format("0.0.0.1"))
+
+    # Then
+    assert result == {"result": "success"}
+    assert token_mock.call_count == 1
+    assert api_mock.call_count == 2
+    assert api_mock.request_history[0].headers["Authorization"] == "Bearer cached_access_token"
+    assert api_mock.request_history[1].headers["Authorization"] == "Bearer new_access_token"
+
+
+def test_http_request_raises_error_when_retry_with_new_oauth_token_returns_401(
+    oauth_client, requests_mock, integration_context, valid_cached_token
+):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - The API returns 401 for both the cached and the newly generated access token.
+    When:
+        - Calling http_request.
+    Then:
+        - Ensure the request is retried only once and a DemistoException is raised.
+    """
+    # Given
+    integration_context["oauth_token"] = valid_cached_token
+    requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+    api_mock = requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", status_code=401, json={})
+
+    # When / Then
+    with pytest.raises(DemistoException) as e:
+        oauth_client.http_request("GET", ENDPOINTS["HOST_ENRICHMENT"].format("0.0.0.1"))
+    assert e.value.res.status_code == 401
+    assert api_mock.call_count == 2
+
+
+def test_http_request_does_not_retry_on_401_for_api_token_auth(client, requests_mock):
+    """
+    Given:
+        - A client configured with API Token authentication.
+        - The API returns 401.
+    When:
+        - Calling http_request.
+    Then:
+        - Ensure the request is not retried, no OAuth token is requested and a DemistoException is raised.
+    """
+    # Given
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+    api_mock = requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", status_code=401, json={})
+
+    # When / Then
+    with pytest.raises(DemistoException) as e:
+        client.http_request("GET", ENDPOINTS["HOST_ENRICHMENT"].format("0.0.0.1"))
+    assert e.value.res.status_code == 401
+    assert api_mock.call_count == 1
+    assert api_mock.last_request.headers["Authorization"] == "Bearer test_token"
+    assert token_mock.call_count == 0
+
+
+def test_http_request_does_not_retry_when_oauth_token_generation_fails(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication and invalid client credentials.
+        - The token endpoint returns 401 "invalid_client".
+    When:
+        - Calling http_request.
+    Then:
+        - Ensure the token is requested only once, the API is not called and a DemistoException is raised.
+    """
+    # Given
+    token_mock = requests_mock.post(
+        OAUTH_TOKEN_URL,
+        status_code=401,
+        json={"error": "invalid_client", "error_description": "Client authentication failed."},
+    )
+    api_mock = requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json={})
+
+    # When / Then
+    with pytest.raises(DemistoException) as e:
+        oauth_client.http_request("GET", ENDPOINTS["HOST_ENRICHMENT"].format("0.0.0.1"))
+    assert e.value.res.status_code == 401
+    assert token_mock.call_count == 1
+    assert api_mock.call_count == 0
+
+
+def test_http_request_does_not_retry_on_non_401_error_for_oauth(
+    oauth_client, requests_mock, integration_context, valid_cached_token
+):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication and a cached access token.
+        - The API returns 403.
+    When:
+        - Calling http_request.
+    Then:
+        - Ensure the request is not retried, no new token is requested and a DemistoException is raised.
+    """
+    # Given
+    integration_context["oauth_token"] = valid_cached_token
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+    api_mock = requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", status_code=403, json={})
+
+    # When / Then
+    with pytest.raises(DemistoException) as e:
+        oauth_client.http_request("GET", ENDPOINTS["HOST_ENRICHMENT"].format("0.0.0.1"))
+    assert e.value.res.status_code == 403
+    assert api_mock.call_count == 1
+    assert token_mock.call_count == 0
+
+
 def test_test_module_success(client, requests_mock):
     """
     Given:
@@ -780,23 +1046,103 @@ def test_test_module_premium_permission_error(client, requests_mock):
         censys_test_module(client, params)
 
 
-def test_test_module_unauthorized_error(client, requests_mock):
+@pytest.mark.parametrize(
+    "client_fixture, expected_credentials",
+    [
+        ("client", "'API Token'"),
+        ("oauth_client", "'Client ID' and 'Client Secret'"),
+    ],
+)
+def test_test_module_unauthorized_error(request, requests_mock, integration_context, client_fixture, expected_credentials):
     """
     Given:
+        - A client configured with API Token or OAuth 2.0 authentication.
         - A 401 error during test-module.
     When:
         - Running test-module.
     Then:
-        - Ensure a descriptive DemistoException is raised.
+        - Ensure a descriptive DemistoException is raised that names the credentials of the selected authentication type.
     """
+    test_client = request.getfixturevalue(client_fixture)
     params = {"premium_access": False}
+    requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
     requests_mock.post(
         "https://api.platform.censys.io/v3/global/search/query",
         status_code=401,
         json={"error": {"code": 401, "status": "Unauthorized", "message": "Access credentials are invalid"}},
     )
-    with pytest.raises(DemistoException, match="401 Unauthorized: Access credentials are invalid"):
-        censys_test_module(client, params)
+    with pytest.raises(
+        DemistoException,
+        match=f"401 Unauthorized: Access credentials are invalid. Please verify your {expected_credentials}",
+    ):
+        censys_test_module(test_client, params)
+
+
+def test_test_module_oauth_ignores_cached_token(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication.
+        - A valid cached access token for the same Client ID in the integration context.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure a new access token is generated instead of reusing the cached one.
+        - Ensure the search request uses the new access token.
+    """
+    integration_context["oauth_token"] = {
+        "access_token": "cached_access_token",
+        "expire": time.time() + 3600,
+        "client_id": "test_client_id",
+    }
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, json=util_load_json("oauth_token_response.json"))
+    search_mock = requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
+
+    assert censys_test_module(oauth_client, {"premium_access": False}) == "ok"
+    assert token_mock.call_count == 1
+    assert search_mock.last_request.headers["Authorization"] == "Bearer new_access_token"
+
+
+def test_test_module_oauth_invalid_credentials_with_cached_token(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication and an invalid Client Secret.
+        - A valid cached access token for the same Client ID in the integration context.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure the cached token is not used and a descriptive DemistoException is raised for the invalid credentials.
+    """
+    integration_context["oauth_token"] = {
+        "access_token": "cached_access_token",
+        "expire": time.time() + 3600,
+        "client_id": "test_client_id",
+    }
+    requests_mock.post(OAUTH_TOKEN_URL, status_code=401, json={"error": "invalid_client"})
+    search_mock = requests_mock.post("https://api.platform.censys.io/v3/global/search/query", json={"result": {"hits": []}})
+
+    with pytest.raises(
+        DemistoException,
+        match="401 Unauthorized: Access credentials are invalid. Please verify your 'Client ID' and 'Client Secret'",
+    ):
+        censys_test_module(oauth_client, {"premium_access": False})
+    assert search_mock.call_count == 0
+
+
+def test_test_module_oauth_token_endpoint_unexpected_error(oauth_client, requests_mock, integration_context):
+    """
+    Given:
+        - A client configured with OAuth 2.0 authentication and a token endpoint returning 404.
+    When:
+        - Running test-module.
+    Then:
+        - Ensure the original DemistoException is re-raised.
+    """
+    # Given
+    requests_mock.post(OAUTH_TOKEN_URL, status_code=404, json={"error": "not_found"})
+
+    # When / Then
+    with pytest.raises(DemistoException, match="404"):
+        censys_test_module(oauth_client, {"premium_access": False})
 
 
 def test_test_module_forbidden_error(client, requests_mock):
@@ -1318,6 +1664,90 @@ def test_main_error(mocker):
 
     # Then
     mock_return_error.assert_called()
+
+
+@pytest.mark.parametrize(
+    "params, expected_error",
+    [
+        pytest.param(
+            {"authentication_type": "OAuth 2.0", "oauth_credentials": {"password": "test_client_secret"}},
+            ERRORS["MISSING_OAUTH_CREDENTIALS"],
+            id="OAuth 2.0 without Client ID",
+        ),
+        pytest.param(
+            {"authentication_type": "OAuth 2.0", "oauth_credentials": {"identifier": "test_client_id"}},
+            ERRORS["MISSING_OAUTH_CREDENTIALS"],
+            id="OAuth 2.0 without Client Secret",
+        ),
+        pytest.param(
+            {"authentication_type": "API Token", "oauth_credentials": {"identifier": "id", "password": "secret"}},
+            ERRORS["MISSING_API_TOKEN"],
+            id="API Token without API Token",
+        ),
+    ],
+)
+def test_main_raises_error_when_credentials_missing_for_selected_auth_type(mocker, params, expected_error):
+    """
+    Given:
+        - Integration parameters missing the credentials of the selected authentication type.
+    When:
+        - Running main.
+    Then:
+        - Ensure return_error is called with the missing credentials error.
+    """
+    # Given
+    import demistomock as demisto
+
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value=params)
+    mock_return_error = mocker.patch("CensysV2.return_error")
+    mock_client = mocker.patch("CensysV2.Client")
+
+    # When
+    main()
+
+    # Then
+    mock_return_error.assert_called_once_with(f"Failed to execute test-module command.\nError:\n{expected_error}")
+    mock_client.assert_not_called()
+
+
+def test_main_creates_oauth_client_with_trimmed_credentials(mocker):
+    """
+    Given:
+        - Integration parameters with OAuth 2.0 authentication type and Client ID and Client Secret with surrounding spaces.
+    When:
+        - Running main.
+    Then:
+        - Ensure the client is created for OAuth 2.0 authentication with the trimmed Client ID and Client Secret.
+    """
+    # Given
+    import demistomock as demisto
+
+    params = {
+        "authentication_type": "OAuth 2.0",
+        "oauth_credentials": {"identifier": " test_client_id ", "password": " test_client_secret "},
+        "organization_id": "test_org_id",
+    }
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "results")
+    mocker.patch("CensysV2.test_module", return_value="ok")
+    mock_client = mocker.patch("CensysV2.Client")
+
+    # When
+    main()
+
+    # Then
+    mock_client.assert_called_once_with(
+        base_url=CENSYS_API_URL,
+        api_token="",
+        org_id="test_org_id",
+        verify=True,
+        proxy=False,
+        use_oauth=True,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
 
 
 def test_search_certs_command_with_fields(client, requests_mock):
@@ -2675,7 +3105,7 @@ def test_entry_point(mocker):
     import demistomock as demisto
 
     mocker.patch.object(demisto, "command", return_value="unknown-command")
-    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch.object(demisto, "params", return_value={"api_token": {"password": "test_token"}})
     mock_debug = mocker.patch.object(demisto, "debug")
 
     runpy.run_module("CensysV2", run_name="__main__")

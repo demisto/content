@@ -100,6 +100,12 @@ ERRORS = {
     "INVALID_IP": "Invalid IP address: {}",
     "INVALID_SELECT": "'{}' is an invalid value for '{}'. Value must be in {}.",
     "INVALID_PORT": "{} is an invalid value for the port. The port must be between {} to {}.",
+    "MISSING_API_TOKEN": "Please provide a valid value for the 'API Token'. It is required for API Token authentication.",
+    "MISSING_OAUTH_CREDENTIALS": "Please provide valid values for the 'Client ID' and 'Client Secret'. "
+    "They are required for OAuth 2.0 authentication.",
+    "OAUTH_TOKEN_NOT_FOUND": "Failed to generate the OAuth access token. The response does not contain an access token.",
+    "OAUTH_INVALID_CREDENTIALS": "401 Unauthorized: Access credentials are invalid. "
+    "Please verify your 'Client ID' and 'Client Secret' in the integration configuration.",
 }
 
 HR_SUFFIX = {
@@ -118,6 +124,12 @@ MAX_NUMBER_OF_RECORDS = 1000
 MAX_NUMBER_OF_PAGES = 10
 CENSYS_API_URL = "https://api.platform.censys.io"
 CENSYS_PLATFORM_URL = "https://platform.censys.io"
+AUTH_TYPE_API_TOKEN = "API Token"
+AUTH_TYPE_OAUTH = "OAuth 2.0"
+OAUTH_TOKEN_URL = "https://oauth2.censys.io/oauth2/token"
+OAUTH_SCOPE = "censys.api"
+OAUTH_DEFAULT_EXPIRES_IN = 3600  # 1 hour in seconds
+OAUTH_EARLY_EXPIRY_TIME = 300  # 5 minutes in seconds
 DEFAULT_TIMEOUT_THRESHOLD_SECONDS = 240  # 4 minutes in seconds
 DEFAULT_VALUE_NA = "N/A"
 INTEGRATION_NAME = "Censys"
@@ -141,21 +153,113 @@ REPUTATION_LABEL_TO_DBOT_SCORE = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, api_token: str, org_id: str | None = None, verify: bool = True, proxy: bool = False):
+    def __init__(
+        self,
+        base_url: str,
+        api_token: str | None = None,
+        org_id: str | None = None,
+        verify: bool = True,
+        proxy: bool = False,
+        use_oauth: bool = False,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+    ):
         """
         Initialize the Censys Client.
 
+        Supports both Personal Access Token (API Token) and OAuth 2.0 (client credentials) authentication.
+
         Args:
             base_url: The base URL for the Censys API
-            api_token: The API token for authentication
+            api_token: The API token for authentication. Used when use_oauth is False.
             org_id: Organization ID for multi-org accounts
             verify: Whether to verify SSL certificates
             proxy: Whether to use proxy settings
+            use_oauth: Whether to use OAuth 2.0 authentication (True) or API token (False).
+            client_id: The service account Client ID for OAuth 2.0 authentication.
+            client_secret: The service account Client Secret for OAuth 2.0 authentication.
         """
         self.org_id = org_id
-        # Build headers for v3 API
-        headers = {"Authorization": f"Bearer {api_token}", "User-Agent": CONNECTOR_NAME_VERSION}
+        self.api_token = api_token
+        self.use_oauth = use_oauth
+        self.client_id = client_id
+        self.client_secret = client_secret
+        # Build headers for v3 API. The Authorization header is added per request.
+        headers = {"User-Agent": CONNECTOR_NAME_VERSION}
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
+
+    def get_auth_headers(self, use_existing_token: bool = True) -> dict[str, str]:
+        """
+        Get the Authorization header based on the configured authentication type.
+
+        Args:
+            use_existing_token: Whether to reuse the cached OAuth access token if it is still valid.
+
+        Returns:
+            dict: The headers containing the Authorization value.
+        """
+        token = self.generate_oauth_token(use_existing_token) if self.use_oauth else self.api_token
+        return {**self._headers, "Authorization": f"Bearer {token}"}
+
+    def generate_oauth_token(self, use_existing_token: bool = True) -> str:
+        """
+        Get the OAuth access token stored in the integration context if it is still valid,
+        else generate a new access token using the client credentials grant.
+
+        Args:
+            use_existing_token: Whether to reuse the cached access token if it is still valid.
+
+        Returns:
+            str: The OAuth access token.
+
+        Raises:
+            DemistoException: If the token response does not contain an access token.
+        """
+        previous_token: dict = get_integration_context().get("oauth_token") or {}
+
+        # Reuse the cached token only if it is still valid and was generated for the configured client ID.
+        if (
+            use_existing_token
+            and previous_token.get("access_token")
+            and previous_token.get("client_id") == self.client_id
+            and (previous_token.get("expire") or 0) > datetime.now(timezone.utc).timestamp()
+        ):
+            demisto.debug("Using the OAuth access token from the integration context.")
+            return previous_token["access_token"]
+
+        demisto.debug("Generating a new OAuth access token.")
+        data = {"grant_type": "client_credentials", "scope": OAUTH_SCOPE, "audience": CENSYS_API_URL}
+        headers = {
+            "User-Agent": CONNECTOR_NAME_VERSION,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+        }
+        res = self._http_request(
+            method="POST",
+            full_url=OAUTH_TOKEN_URL,
+            headers=headers,
+            data=data,
+            auth=(self.client_id, self.client_secret),
+            retries=TOTAL_RETRIES,
+            status_list_to_retry=STATUS_CODE_TO_RETRY,
+            ok_codes=OK_CODES,
+            backoff_factor=BACKOFF_FACTOR,
+            raise_on_status=True,
+        )
+
+        access_token = res.get("access_token")
+        if not access_token:
+            raise DemistoException(ERRORS["OAUTH_TOKEN_NOT_FOUND"])
+
+        # Expire the token a little early to avoid using it at the edge of its lifetime.
+        expires_in = arg_to_number(res.get("expires_in")) or OAUTH_DEFAULT_EXPIRES_IN
+        expiry_time = datetime.now(timezone.utc).timestamp() + expires_in - OAUTH_EARLY_EXPIRY_TIME
+        expiry_datetime = datetime.fromtimestamp(expiry_time, timezone.utc).strftime(DATE_FORMAT)
+        demisto.debug(f"Setting the expiry time of the OAuth access token to {expiry_datetime}")
+        integration_context = get_integration_context()
+        integration_context["oauth_token"] = {"access_token": access_token, "expire": expiry_time, "client_id": self.client_id}
+        set_integration_context(integration_context)
+        return access_token
 
     def http_request(
         self,
@@ -166,6 +270,7 @@ class Client(BaseClient):
         json_data: dict[str, Any] = None,
         response_type: str = "json",
         retries: int = TOTAL_RETRIES,
+        use_existing_token: bool = True,
         **kwargs,
     ) -> dict[str, Any]:
         """Makes an HTTP request to the Censys API with automatic retry logic.
@@ -184,6 +289,7 @@ class Client(BaseClient):
                           Defaults to 'json'.
             retries: The number of retries for the statuses in STATUS_CODE_TO_RETRY. Defaults to TOTAL_RETRIES.
                      Set to 0 to disable the retry mechanism.
+            use_existing_token: Whether to reuse the cached OAuth access token. Defaults to True.
             **kwargs: Additional keyword arguments passed to _http_request.
 
         Returns:
@@ -201,23 +307,46 @@ class Client(BaseClient):
             Automatically retries up to TOTAL_RETRIES (4) times for rate limit (429) and
             server errors (5xx) with exponential backoff (BACKOFF_FACTOR=7.5), unless the
             "retries" argument overrides it.
+            For OAuth 2.0 authentication, a 401 response triggers a single retry with a newly generated access token.
         """
         demisto.debug(f"Making API request at {method} {url_suffix} with params: {params} and body: {data or json_data}")
-        # Make the HTTP request using the _http_request method, passing the necessary parameters.
-        res = self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            data=data,
-            json_data=json_data,
-            params=params,
-            retries=retries,
-            status_list_to_retry=STATUS_CODE_TO_RETRY,
-            ok_codes=OK_CODES,
-            backoff_factor=BACKOFF_FACTOR,
-            resp_type="response",
-            raise_on_status=True,
-            **kwargs,
-        )
+
+        # Build the auth headers outside the try block so token generation failures are not retried.
+        headers = self.get_auth_headers(use_existing_token)
+        try:
+            # Make the HTTP request using the _http_request method, passing the necessary parameters.
+            res = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                headers=headers,
+                data=data,
+                json_data=json_data,
+                params=params,
+                retries=retries,
+                status_list_to_retry=STATUS_CODE_TO_RETRY,
+                ok_codes=OK_CODES,
+                backoff_factor=BACKOFF_FACTOR,
+                resp_type="response",
+                raise_on_status=True,
+                **kwargs,
+            )
+        except DemistoException as e:
+            # The cached OAuth access token may have been revoked or expired, so regenerate it and retry once.
+            if not (self.use_oauth and use_existing_token and e.res is not None and e.res.status_code == 401):
+                raise
+            demisto.debug("Received 401 Unauthorized, generating a new OAuth access token and retrying the request.")
+            return self.http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                data=data,
+                json_data=json_data,
+                response_type=response_type,
+                retries=retries,
+                use_existing_token=False,
+                **kwargs,
+            )
+
         try:
             result = None
             if response_type == "json":
@@ -1387,6 +1516,15 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
 
     fields = ["labels"] if params.get("premium_access") else None
 
+    if client.use_oauth:
+        try:
+            # Validate the configured credentials with a new token.
+            client.generate_oauth_token(use_existing_token=False)
+        except DemistoException as e:
+            if getattr(e.res, "status_code", None) == 401:
+                raise DemistoException(ERRORS["OAUTH_INVALID_CREDENTIALS"])
+            raise e
+
     try:
         # Build query for test IP
         query = 'host.ip="8.8.8.8"'
@@ -1395,9 +1533,10 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code == 401:
+                credentials = "'Client ID' and 'Client Secret'" if client.use_oauth else "'API Token'"
                 raise DemistoException(
                     "401 Unauthorized: Access credentials are invalid. "
-                    "Please verify your 'API Token' in the integration configuration."
+                    f"Please verify your {credentials} in the integration configuration."
                 )
             if e.res.status_code == 403:
                 # Handle permission error for non-premium users attempting to access premium features
@@ -2242,7 +2381,11 @@ def run_polling_command(
 
 def main() -> None:
     params = demisto.params()
-    api_token = params.get("api_token", {}).get("password")
+    use_oauth = params.get("authentication_type", AUTH_TYPE_API_TOKEN) == AUTH_TYPE_OAUTH
+    api_token = (params.get("api_token") or {}).get("password", "").strip()
+    oauth_credentials = params.get("oauth_credentials") or {}
+    client_id = oauth_credentials.get("identifier", "").strip()
+    client_secret = oauth_credentials.get("password", "").strip()
     org_id = params.get("organization_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -2261,7 +2404,21 @@ def main() -> None:
 
     try:
         args = demisto.args()
-        client = Client(base_url=base_url, api_token=api_token, org_id=org_id, verify=verify_certificate, proxy=proxy)
+        if use_oauth and not (client_id and client_secret):
+            raise DemistoException(ERRORS["MISSING_OAUTH_CREDENTIALS"])
+        if not use_oauth and not api_token:
+            raise DemistoException(ERRORS["MISSING_API_TOKEN"])
+
+        client = Client(
+            base_url=base_url,
+            api_token=api_token,
+            org_id=org_id,
+            verify=verify_certificate,
+            proxy=proxy,
+            use_oauth=use_oauth,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
 
         if command == "test-module":
             return_results(test_module(client, params))
