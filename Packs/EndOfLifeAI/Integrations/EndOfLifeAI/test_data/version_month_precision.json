@@ -1,0 +1,48 @@
+{
+  "product": "infinispan",
+  "version": "15.2",
+  "latest_release": "15.2.6.Final",
+  "release_date": "2025-03-27",
+  "eol_date": "2026-11-30",
+  "eol_boolean": null,
+  "status": "warn",
+  "is_supported": true,
+  "days_until_eol": 12,
+  "days_past_eol": null,
+  "score": 25,
+  "grade": "B",
+  "grade_label": "Low risk",
+  "band": "Low",
+  "factors": {
+    "eol_recency": 15,
+    "attack_surface": 10,
+    "cisa_kev_exposure": 0,
+    "extended_support": 0
+  },
+  "extended_support_available": true,
+  "extended_support_vendor": null,
+  "extended_support_date": null,
+  "extended_support_ships_fixes": null,
+  "eol_date_precision": "month",
+  "support_date": "2026-05-31",
+  "support_date_precision": "month",
+  "extended_support_date_precision": null,
+  "date_precision_note": "eol_date is the last day of November 2026: the vendor publishes this date to the month only, so show it as November 2026; days_until_eol and days_past_eol count to that last day. support_date is the last day of May 2026: the vendor publishes this date to the month only, so show it as May 2026.",
+  "score_card_url": "https://endoflife.ai/score/infinispan/15.2",
+  "product_url": "https://endoflife.ai/infinispan",
+  "cpe": [
+    "cpe:2.3:a:infinispan:infinispan"
+  ],
+  "purl": [
+    "pkg:maven/org.infinispan/infinispan-core"
+  ],
+  "eol_date_source": "custom",
+  "eol_date_source_url": null,
+  "eol_date_verified_at": null,
+  "eol_date_status": "custom",
+  "eol_date_agreement": 1,
+  "eol_date_confidence": "medium",
+  "methodology_url": "https://endoflife.ai/risk-score",
+  "data_source": "https://endoflife.ai/how-it-works",
+  "generated_at": "2026-11-18T04:37:03.445Z"
+}

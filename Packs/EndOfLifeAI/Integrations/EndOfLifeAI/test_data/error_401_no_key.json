@@ -1,0 +1,8 @@
+{
+  "error": "An API key is required. Keyless access to the endoflife.ai API ended 2026-11-16 at 00:00 UTC; every data request needs an X-API-Key header.",
+  "key_required": true,
+  "get_free_key": "https://endoflife.ai/api#free-key",
+  "how": "POST https://api.endoflife.ai/v1/keys/free with {\"email\": \"you@example.com\"}, or use the form at https://endoflife.ai/api#free-key. The key is emailed at once; send it as the X-API-Key header.",
+  "paid_plans": "https://endoflife.ai/api#get-key",
+  "docs": "https://endoflife.ai/api"
+}

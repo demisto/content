@@ -1,0 +1,42 @@
+{
+    "name": "endoflife.ai",
+    "description": "Check end-of-life dates, EOL risk scores and CISA KEV exposure for your software and hardware. Each date is labeled with its source.",
+    "support": "community",
+    "githubUser": [
+        "endoflife-ai"
+    ],
+    "currentVersion": "1.0.0",
+    "author": "endoflife.ai",
+    "url": "https://endoflife.ai",
+    "email": "partners@endoflife.ai",
+    "created": "2026-11-18T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Security",
+        "IT",
+        "Compliance"
+    ],
+    "useCases": [
+        "Vulnerability Management",
+        "Asset Management",
+        "Compliance"
+    ],
+    "keywords": [
+        "endoflife.ai",
+        "end of life",
+        "EOL",
+        "end of support",
+        "EOS",
+        "lifecycle",
+        "unsupported software",
+        "risk score",
+        "CISA KEV",
+        "software inventory"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
