@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
@@ -854,3 +855,326 @@ def test_update_remote_system_cyberint_alert_already_closed(requests_mock, clien
 
     result = update_remote_system(client, args)
     assert result == "INT-125"
+
+
+def load_employee_credentials_alert() -> dict:
+    return json.loads(load_mock_response("employee_credentials_alert.json"))["alerts"][0]
+
+
+def test_add_login_url_fields_employee_credentials():
+    """
+    Given:
+     - A compromised employee credentials alert with a related asset and no designated_url.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url, related_asset_name and related_asset_id hold the related asset values in full.
+     - designated_url is added to alert_data and to every exposed credential.
+     - alert_data.domain is unchanged.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = load_employee_credentials_alert()
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == "corp.example.com"
+    assert alert["related_asset_name"] == "corp.example.com"
+    assert alert["related_asset_id"] == "/Example/corp.example.com"
+    assert alert["alert_data"]["domain"] == "example.com"
+    assert alert["alert_data"]["designated_url"] == "corp.example.com"
+    assert all(row["designated_url"] == "corp.example.com" for row in alert["alert_data"]["csv"]["content"])
+
+
+def test_add_login_url_fields_customer_credentials_keeps_designated_url():
+    """
+    Given:
+     - A compromised customer credentials alert that already has alert_data.designated_url.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url is the existing designated_url and alert_data is not changed.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = json.loads(load_mock_response("list_alerts.json"))["alerts"][0]
+    alert_data_before = copy.deepcopy(alert["alert_data"])
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == "https://www.barclaycardus.com/servicing/authenticate"
+    assert alert["related_asset_name"] == ""
+    assert alert["related_asset_id"] == ""
+    assert alert["alert_data"] == alert_data_before
+
+
+@pytest.mark.parametrize(
+    "related_assets, alert_data",
+    [
+        (None, None),
+        ([], {}),
+        ([None], {"domain": "example.com"}),
+        ([{"id": None, "name": None}], {"csv": {"content": None}}),
+    ],
+)
+def test_add_login_url_fields_missing_values(related_assets, alert_data):
+    """
+    Given:
+     - An employee credentials alert with missing, empty or null related assets and alert data.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - The new keys are empty strings and no error is raised.
+     - designated_url is not added.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = {"type": "compromised_employee_credentials", "related_assets": related_assets, "alert_data": alert_data}
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == ""
+    assert alert["related_asset_name"] == ""
+    assert alert["related_asset_id"] == ""
+    assert "designated_url" not in (alert["alert_data"] or {})
+
+
+@pytest.mark.parametrize("duplicate_alerts", [True, False])
+def test_fetch_incidents_employee_credentials_login_url(requests_mock, client, duplicate_alerts):
+    """
+    Given:
+     - The API returns a compromised employee credentials alert with a related asset.
+    When:
+     - fetch_incidents is called, with and without splitting the alert per credential.
+    Then:
+     - Every incident rawJSON holds login_url, related_asset_name, related_asset_id and alert_data.domain.
+     - In split mode, attachments.content.designated_url is set, like in customer credentials incidents.
+    """
+    from Cyberint import fetch_incidents
+
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=json.loads(load_mock_response("employee_credentials_alert.json")))
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-10/attachments/19879773", text="Username,Password\r\nuser1,*****")
+
+    _, incidents = fetch_incidents(
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
+    )
+
+    assert len(incidents) == (2 if duplicate_alerts else 1)
+    for incident in incidents:
+        raw_alert = json.loads(incident["rawJSON"])
+        assert raw_alert["login_url"] == "corp.example.com"
+        assert raw_alert["related_asset_name"] == "corp.example.com"
+        assert raw_alert["related_asset_id"] == "/Example/corp.example.com"
+        assert raw_alert["alert_data"]["domain"] == "example.com"
+        if duplicate_alerts:
+            assert raw_alert["attachments"]["content"]["designated_url"] == "corp.example.com"
+
+
+@pytest.mark.parametrize(
+    "related_assets, expected_login_url",
+    [
+        ([{"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"}], ""),
+        (
+            [
+                {"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"},
+                {"id": "subdomain/Example/login.example.com", "name": "login.example.com", "type": "subdomain"},
+            ],
+            "login.example.com",
+        ),
+        (
+            [{"id": "url/Example/https://example.com/login", "name": "https://example.com/login", "type": "url"}],
+            "https://example.com/login",
+        ),
+        ([{"id": "/Example/corp.example.com", "name": "corp.example.com"}], "corp.example.com"),
+        ([{"id": "/Example/", "name": "", "type": ""}], ""),
+        (
+            [
+                {"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"},
+                {"id": "domain/Example/example.com", "name": "example.com", "type": "domain"},
+                {"id": "employee login interface/Example/Login page", "name": "Login page", "type": "employee login interface"},
+            ],
+            "Login page",
+        ),
+    ],
+)
+def test_add_login_url_fields_asset_types(related_assets, expected_login_url):
+    """
+    Given:
+     - An employee credentials alert whose related assets have different types.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url is the first asset that can be a login address. Keyword assets are skipped.
+     - related_asset_name and related_asset_id always hold the first asset, whatever its type.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = {
+        "type": "compromised_employee_credentials",
+        "related_assets": related_assets,
+        "alert_data": {"domain": "example.com"},
+    }
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == expected_login_url
+    assert alert["related_asset_name"] == related_assets[0]["name"]
+    assert alert["related_asset_id"] == related_assets[0]["id"]
+    assert alert["alert_data"].get("designated_url", "") == expected_login_url
+
+
+LOGIN_ASSET = {"id": "employee login interface/Example/Login page", "name": "Login page", "type": "employee login interface"}
+KEYWORD_ASSET = {"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"}
+GROUP = {"id": 1, "name": "Example Group"}
+
+
+@pytest.mark.parametrize(
+    "related_assets, expected_login_url",
+    [
+        ([{"id": "company/Example/Example", "name": "Example", "type": "company"}], ""),
+        ([{"id": "product/Example/Example App", "name": "Example App", "type": "product"}], "Example App"),
+        (
+            [
+                KEYWORD_ASSET,
+                {"id": "Employee Login Interface/Example/Portal", "name": "Portal", "type": "Employee Login Interface"},
+            ],
+            "Portal",
+        ),
+    ],
+)
+def test_add_login_url_fields_skips_keyword_and_company(related_assets, expected_login_url):
+    """
+    Given:
+     - An employee credentials alert with company, product or mixed-case login interface assets.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - Company and keyword assets are never used as the login URL, other types are, and type matching ignores case.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = {"type": "compromised_employee_credentials", "related_assets": related_assets, "alert_data": {}}
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == expected_login_url
+
+
+def test_merge_related_assets():
+    """
+    Given:
+     - Alert related assets, one with an empty name, and fetched related assets with groups and an extra asset.
+    When:
+     - merge_related_assets is called.
+    Then:
+     - Assets are matched by ID, non-empty fetched values win, and the extra fetched asset is appended.
+    """
+    from Cyberint import merge_related_assets
+
+    alert_assets = [{**LOGIN_ASSET, "name": ""}, KEYWORD_ASSET]
+    fetched_assets = [{**LOGIN_ASSET, "asset_groups": [GROUP]}, {"id": "domain/Example/example.com", "name": "example.com"}]
+
+    merged = merge_related_assets(alert_assets, fetched_assets)
+
+    assert merged == [
+        {**LOGIN_ASSET, "asset_groups": [GROUP]},
+        KEYWORD_ASSET,
+        {"id": "domain/Example/example.com", "name": "example.com"},
+    ]
+
+
+def test_format_asset_groups():
+    """
+    Given:
+     - Related assets with and without asset groups.
+    When:
+     - format_asset_groups is called.
+    Then:
+     - Only assets in a group are listed, as "<name> (<type>): <groups>".
+    """
+    from Cyberint import format_asset_groups
+
+    related_assets = [{**LOGIN_ASSET, "asset_groups": [GROUP, {"id": 2, "name": "Other"}]}, {**KEYWORD_ASSET, "asset_groups": []}]
+
+    assert format_asset_groups(related_assets) == "Login page (employee login interface): Example Group, Other"
+    assert format_asset_groups(None) == ""
+
+
+def test_enrich_alerts_with_asset_groups(requests_mock, client):
+    """
+    Given:
+     - Three alerts: the related-assets endpoint answers 200, 404 and 503.
+    When:
+     - enrich_alerts_with_asset_groups is called.
+    Then:
+     - The first alert gets asset groups and a summary, the others are left unchanged.
+    """
+    from Cyberint import enrich_alerts_with_asset_groups
+
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/alerts/ARG-1/related-assets", json={"related_assets": [{**LOGIN_ASSET, "asset_groups": [GROUP]}]}
+    )
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-2/related-assets", status_code=404, json={"error": True})
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/related-assets", status_code=503, json={"error": True})
+    alerts = [{"ref_id": f"ARG-{index}", "related_assets": [LOGIN_ASSET]} for index in (1, 2, 3)]
+
+    enrich_alerts_with_asset_groups(client, alerts)
+
+    assert alerts[0]["related_assets"] == [{**LOGIN_ASSET, "asset_groups": [GROUP]}]
+    assert alerts[0]["asset_groups"] == "Login page (employee login interface): Example Group"
+    for alert in alerts[1:]:
+        assert alert["related_assets"] == [LOGIN_ASSET]
+        assert "asset_groups" not in alert
+
+
+def test_enrich_alerts_with_asset_groups_stops_on_error(requests_mock, client):
+    """
+    Given:
+     - The related-assets endpoint answers 401 for the first alert.
+    When:
+     - enrich_alerts_with_asset_groups is called.
+    Then:
+     - No error is raised and no further requests are sent.
+    """
+    from Cyberint import enrich_alerts_with_asset_groups
+
+    first = requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-1/related-assets", status_code=401, json={"error": True})
+    second = requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-2/related-assets", json={"related_assets": []})
+    alerts = [{"ref_id": "ARG-1"}, {"ref_id": "ARG-2"}]
+
+    enrich_alerts_with_asset_groups(client, alerts)
+
+    assert first.call_count == 1
+    assert second.call_count == 0
+    assert all("asset_groups" not in alert for alert in alerts)
+
+
+@pytest.mark.parametrize("fetch_asset_groups", [True, False])
+def test_fetch_incidents_asset_groups(requests_mock, client, fetch_asset_groups):
+    """
+    Given:
+     - The API returns an employee credentials alert, and its related-assets endpoint returns asset groups.
+    When:
+     - fetch_incidents is called with fetch_asset_groups enabled or disabled.
+    Then:
+     - The endpoint is called only when enabled, and only then the incident rawJSON holds asset_groups.
+    """
+    from Cyberint import fetch_incidents
+
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=json.loads(load_mock_response("employee_credentials_alert.json")))
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-10/attachments/19879773", text="Username,Password\r\nuser1,*****")
+    related_assets_mock = requests_mock.get(
+        f"{BASE_URL}/api/v1/alerts/ARG-10/related-assets",
+        json={
+            "related_assets": [
+                {"id": "/Example/corp.example.com", "name": "corp.example.com", "type": "domain", "asset_groups": [GROUP]}
+            ]
+        },
+    )
+
+    _, incidents = fetch_incidents(
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False, fetch_asset_groups
+    )
+
+    raw_alert = json.loads(incidents[0]["rawJSON"])
+    assert related_assets_mock.called == fetch_asset_groups
+    assert raw_alert["login_url"] == "corp.example.com"
+    if fetch_asset_groups:
+        assert raw_alert["asset_groups"] == "corp.example.com (domain): Example Group"
+    else:
+        assert "asset_groups" not in raw_alert
