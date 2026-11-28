@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "data": {
+    "address": "bc1qtestvictimaddress0000000000000000000000",
+    "building": false,
+    "findings": [
+      {
+        "dust_txid": "1111111111111111111111111111111111111111111111111111111111111111",
+        "amount": "0.00000546",
+        "sender": "bc1qrealpartner00000000000000000000000lookalike",
+        "imitates": "bc1qrealpartner00000000000000000000000realaddress",
+        "real_txid": "2222222222222222222222222222222222222222222222222222222222222222",
+        "real_height": 900000,
+        "real_amount": "0.25000000",
+        "receiver_paid": false,
+        "shared_prefix": 4,
+        "shared_suffix": 4,
+        "sender_kind": "dust_bot",
+        "sender_txs": 812,
+        "height": 900010,
+        "confirmed": true
+      }
+    ]
+  }
+}
