@@ -1,0 +1,103 @@
+category: Case Management
+sectionorder:
+- Connect
+commonfields:
+  id: ReviewExerciseAlerts
+  version: -1
+configuration:
+- defaultvalue: https://api.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: Lists and updates alerts in the Review Exercise Alerts platform.
+display: Review Exercise Alerts
+name: ReviewExerciseAlerts
+script:
+  commands:
+  - name: review-exercise-alert-list
+    description: Lists alerts, optionally filtered by creation time and severity.
+    arguments:
+    - name: limit
+      description: The maximum number of alerts to return.
+      defaultValue: '50'
+    - name: since
+      description: Return only alerts created after this relative time, for example "3 days" or "12 hours".
+    - name: severity
+      description: Return only alerts with this severity.
+      auto: PREDEFINED
+      predefined:
+      - informational
+      - low
+      - medium
+      - high
+      - critical
+    outputs:
+    - contextPath: ReviewExerciseAlerts.Alert.ID
+      description: The ID of the alert.
+      type: String
+    - contextPath: ReviewExerciseAlerts.Alert.Title
+      description: The title of the alert.
+      type: String
+    - contextPath: ReviewExerciseAlerts.Alert.Severity
+      description: The severity of the alert.
+      type: Number
+    - contextPath: ReviewExerciseAlerts.Alert.Status
+      description: The status of the alert.
+      type: String
+    - contextPath: ReviewExerciseAlerts.Alert.CreatedAt
+      description: The time the alert was created.
+      type: Date
+  - name: review-exercise-alert-update
+    description: Updates the status or severity of an alert.
+    arguments:
+    - name: alert_id
+      description: The ID of the alert to update.
+      required: true
+    - name: status
+      description: The new status of the alert.
+      auto: PREDEFINED
+      predefined:
+      - open
+      - in_progress
+      - closed
+    - name: severity
+      description: The new severity of the alert.
+      auto: PREDEFINED
+      predefined:
+      - informational
+      - low
+      - medium
+      - high
+      - critical
+  dockerimage: demisto/python3:3.12.14.13053055
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
