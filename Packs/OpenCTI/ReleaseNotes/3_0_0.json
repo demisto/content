@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The integration now requires OpenCTI 6.9 or later. Upgrade your OpenCTI platform to version 6.9 or later before you update the pack."
+}
