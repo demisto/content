@@ -22,6 +22,7 @@ from Doppel import (
     get_modified_remote_data_command,
     format_datetime,
     _paginated_call_to_get_alerts,
+    _fetch_products_to_modules,
     _get_last_fetch_datetime,
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
@@ -1743,6 +1744,289 @@ def test_fetch_incidents_persists_boundary_ids(mocker):
     assert last_run_data["recently_seen_ids"] == ["TET-2"]
 
 
+# ---------------- Product fetch filter (Select products to fetch) ----------------
+
+V1_ALERTS_URL = "https://api.doppel.com/v1/alerts"
+FETCH_FILTER_PARAMS = {"max_fetch": 50, "fetch_timeout": "30", "mirror_direction": "None"}
+FETCH_FILTER_LAST_RUN = {"last_run": "2025-01-27T07:55:00Z", "recently_seen_ids": []}
+FETCH_FILTER_PAGE = {
+    "alerts": [
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742", "product": "domains"},
+        {"id": "TET-2", "created_at": "2025-01-27T07:55:12.063742", "product": "social_media"},
+    ]
+}
+# The exact query the fetch sends when no product is selected (page 0, cursor from FETCH_FILTER_LAST_RUN).
+UNFILTERED_FETCH_QUERY = {
+    "created_after": ["2025-01-27t07:55:00"],
+    "sort_type": ["date_sourced"],
+    "sort_order": ["asc"],
+    "page": ["0"],
+    "page_size": ["200"],
+}
+
+
+def _v1_client():
+    return Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+
+
+def _mock_alert_pages(requests_mock):
+    """Serve one page of alerts, then an empty page, from the V1 alerts endpoint."""
+    return requests_mock.get(V1_ALERTS_URL, [{"json": FETCH_FILTER_PAGE}, {"json": {"alerts": []}}])
+
+
+@pytest.mark.parametrize(
+    "fetch_products, expected_modules",
+    [
+        (None, None),
+        ("", None),
+        ([], None),
+        ([""], None),
+        (["domains"], "domains"),
+        ("domains", "domains"),
+        (["domains", "social_media", "telco"], "domains,social_media,telco"),
+        ("domains, social_media", "domains,social_media"),
+        ([" Domains ", "SOCIAL_MEDIA", "domains"], "domains,social_media"),
+        (
+            ["domains", "social_media", "mobile_apps", "ecommerce", "crypto", "email", "paid_ads", "telco", "darkweb"],
+            "domains,social_media,mobile_apps,ecommerce,crypto,email,paid_ads,telco,darkweb",
+        ),
+    ],
+)
+def test_fetch_products_to_modules(fetch_products, expected_modules):
+    """The selection becomes one comma-separated string (trimmed, lower-cased, de-duplicated), or None when empty."""
+    assert _fetch_products_to_modules(fetch_products) == expected_modules
+
+
+@pytest.mark.parametrize(
+    "fetch_products, unsupported",
+    [
+        (["not_a_product"], "not_a_product"),
+        (["domains", "not_a_product"], "not_a_product"),
+        ("domains,severity", "severity"),
+    ],
+)
+def test_fetch_products_to_modules_rejects_unsupported_value(fetch_products, unsupported):
+    """An unsupported value raises an error that names it; it is never dropped silently."""
+    with pytest.raises(DemistoException) as error:
+        _fetch_products_to_modules(fetch_products)
+
+    assert f"parameter: {unsupported}." in str(error.value)
+    assert "Supported values are: domains, social_media" in str(error.value)
+
+
+def test_fetch_products_match_integration_yml():
+    """The values the code accepts are exactly the options the fetch_products parameter offers in Doppel.yml."""
+    from pathlib import Path
+
+    from Doppel import FETCH_PRODUCTS
+
+    lines = (Path(__file__).resolve().parent / "Doppel.yml").read_text().splitlines()
+    options_start = lines.index("  options:", lines.index("  name: fetch_products")) + 1
+    options = []
+    for line in lines[options_start:]:
+        if not line.startswith("  - "):
+            break
+        options.append(line[4:].strip())
+
+    assert tuple(options) == FETCH_PRODUCTS
+
+
+def test_paginated_call_to_get_alerts_with_modules():
+    """A modules value is added to the fetch query as given; product is never added."""
+    mock_client = MagicMock()
+    mock_client.get_alerts.return_value = {"alerts": [{"id": "alert1"}]}
+    last_fetch_datetime = datetime(2025, 2, 27, 14, 30, 0)
+
+    _paginated_call_to_get_alerts(mock_client, 0, last_fetch_datetime, "domains,social_media")
+
+    mock_client.get_alerts.assert_called_once_with(
+        params={
+            "created_after": "2025-02-27T14:30:00",
+            "sort_type": "date_sourced",
+            "sort_order": "asc",
+            "page": 0,
+            "page_size": 200,
+            "modules": "domains,social_media",
+        }
+    )
+
+
+@pytest.mark.parametrize("fetch_products", [None, "", []])
+def test_fetch_incidents_without_product_selection_sends_unchanged_request(mocker, requests_mock, fetch_products):
+    """With no product selected, the HTTP request carries exactly the pre-filter query: no modules, no product."""
+    _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {}, fetch_products=fetch_products)
+
+    assert alerts_mock.request_history[0].qs == UNFILTERED_FETCH_QUERY
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-1", "Doppel Alert TET-2"]
+
+
+def test_fetch_incidents_default_argument_sends_unchanged_request(mocker, requests_mock):
+    """Callers that do not pass fetch_products at all get the unfiltered request."""
+    _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert alerts_mock.request_history[0].qs == UNFILTERED_FETCH_QUERY
+
+
+@pytest.mark.parametrize(
+    "fetch_products, expected_modules",
+    [
+        (["domains"], "domains"),
+        (["domains", "social_media", "telco"], "domains,social_media,telco"),
+    ],
+)
+def test_fetch_incidents_with_product_selection_sends_single_modules_value(
+    mocker, requests_mock, fetch_products, expected_modules
+):
+    """A selection adds one comma-separated modules value to every page request and never sends product."""
+    set_last_run = _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {}, fetch_products=fetch_products)
+
+    assert alerts_mock.call_count == 2
+    for page, request in enumerate(alerts_mock.request_history):
+        # One value in the list means the parameter was sent once, not repeated per product.
+        assert request.qs == {**UNFILTERED_FETCH_QUERY, "page": [str(page)], "modules": [expected_modules]}
+        assert "product" not in request.qs
+    # The filter runs in the API; the cursor still advances to the newest fetched alert.
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T07:55:12Z", "recently_seen_ids": ["TET-2"]}
+
+
+def test_fetch_incidents_with_unsupported_product_fails_before_any_request(mocker, requests_mock):
+    """An unsupported value stops the fetch with an error naming it: no request, no incidents, cursor untouched."""
+    set_last_run = _fetch_demisto_mocks(mocker, params=FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN)
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    with pytest.raises(DemistoException, match="not_a_product"):
+        fetch_incidents_command(_v1_client(), {}, fetch_products=["domains", "not_a_product"])
+
+    assert alerts_mock.call_count == 0
+    demisto.incidents.assert_not_called()
+    set_last_run.assert_not_called()
+
+
+def test_test_module_without_product_selection_sends_unchanged_request(requests_mock):
+    """With no product selected, the test request carries only its date window."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    assert test_module(_v1_client()) == "ok"
+
+    assert set(alerts_mock.last_request.qs) == {"created_before", "created_after"}
+
+
+def test_test_module_sends_configured_product_filter(requests_mock):
+    """The test request carries the same single modules value as fetch, and no product."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    assert test_module(_v1_client(), fetch_products=["domains", "darkweb"]) == "ok"
+
+    assert alerts_mock.last_request.qs["modules"] == ["domains,darkweb"]
+    assert set(alerts_mock.last_request.qs) == {"created_before", "created_after", "modules"}
+
+
+def test_test_module_fails_when_api_rejects_product_filter(requests_mock):
+    """A filter the API rejects fails the test with the API's message instead of returning ok."""
+    requests_mock.get(V1_ALERTS_URL, status_code=400, json={"message": "domains is not a valid modules"})
+
+    with pytest.raises(DemistoException, match="not a valid modules"):
+        test_module(_v1_client(), fetch_products=["domains"])
+
+
+def test_test_module_with_unsupported_product_fails_before_any_request(requests_mock):
+    """An unsupported value fails the test with an error naming it, without calling the API."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    with pytest.raises(DemistoException, match="not_a_product"):
+        test_module(_v1_client(), fetch_products=["not_a_product"])
+
+    assert alerts_mock.call_count == 0
+
+
+@pytest.mark.parametrize("command", ["test-module", "fetch-incidents"])
+def test_main_passes_fetch_products_param_to_request(mocker, requests_mock, command):
+    """main() wires the fetch_products instance param into both the test and the fetch request."""
+    from Doppel import main
+
+    _fetch_demisto_mocks(
+        mocker,
+        params={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["domains", "social_media"],
+            **FETCH_FILTER_PARAMS,
+        },
+        last_run=FETCH_FILTER_LAST_RUN,
+    )
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Doppel.return_results")
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    main()
+
+    return_error_mock.assert_not_called()
+    assert alerts_mock.request_history[0].qs["modules"] == ["domains,social_media"]
+    assert "product" not in alerts_mock.request_history[0].qs
+
+
+@pytest.mark.parametrize("command", ["test-module", "fetch-incidents"])
+def test_main_reports_unsupported_fetch_product(mocker, requests_mock, command):
+    """An unsupported fetch_products value surfaces as a command error that names the value."""
+    from Doppel import main
+
+    _fetch_demisto_mocks(
+        mocker,
+        params={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["not_a_product"],
+            **FETCH_FILTER_PARAMS,
+        },
+        last_run=FETCH_FILTER_LAST_RUN,
+    )
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value={})
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    main()
+
+    assert alerts_mock.call_count == 0
+    assert "not_a_product" in return_error_mock.call_args[0][0]
+
+
+def test_main_ignores_fetch_products_for_other_commands(mocker, requests_mock):
+    """Commands other than fetch and test never read the fetch filter, so doppel-get-alerts stays unfiltered."""
+    from Doppel import main
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.doppel.com/",
+            "credentials": {"password": "test-api-key"},
+            "fetch_products": ["domains"],
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="doppel-get-alerts")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Doppel.return_results")
+    return_error_mock = mocker.patch("Doppel.return_error")
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json=FETCH_FILTER_PAGE)
+
+    main()
+
+    return_error_mock.assert_not_called()
+    assert "modules" not in alerts_mock.last_request.qs
+
+
 # ---------------- Revival reopen entries ----------------
 
 
@@ -1943,3 +2227,705 @@ def test_main_v1_requires_api_key(mocker):
     main()
 
     assert "requires an API Key" in return_error_mock.call_args[0][0]
+
+
+# ---------------- Oversized alert searches (HTTP 422 result_window_exceeded) ----------------
+
+RESULT_WINDOW_BODY = {
+    "code": "result_window_exceeded",
+    "message": "Result window exceeds 50000 alerts; narrow the activity time range",
+    "maximum_results": 50000,
+}
+RESULT_WINDOW_REFUSAL = {"status_code": 422, "json": RESULT_WINDOW_BODY}
+EMPTY_PAGE = {"json": {"alerts": []}}
+# FETCH_FILTER_LAST_RUN puts the cursor at 07:55:00; the run starts four hours later.
+REFUSAL_RUN_START = datetime(2025, 1, 27, 11, 55, 0)
+# The exact request URLs sent before this handling existed (same parameters, order and encoding).
+UNREFUSED_FETCH_URL = (
+    "https://api.doppel.com/v1/alerts?created_after=2025-01-27T07%3A55%3A00"
+    "&sort_type=date_sourced&sort_order=asc&page={page}&page_size=200"
+)
+UNREFUSED_MIRROR_URL = (
+    "https://api.doppel.com/v1/alerts?last_activity_timestamp=2025-02-24T14%3A30%3A00&page={page}&page_size=200"
+)
+
+
+def _refusal_fetch_mocks(mocker, last_run=None, params=None):
+    set_last_run = _fetch_demisto_mocks(
+        mocker, params=params or FETCH_FILTER_PARAMS, last_run=FETCH_FILTER_LAST_RUN if last_run is None else last_run
+    )
+    mocker.patch("Doppel._utc_now", return_value=REFUSAL_RUN_START)
+    return set_last_run
+
+
+def _error_with_response(status_code, body):
+    response = MagicMock()
+    response.status_code = status_code
+    if isinstance(body, Exception):
+        response.json.side_effect = body
+    else:
+        response.json.return_value = body
+    return DemistoException("Error in API call", res=response)
+
+
+class FakeAlertsApi:
+    """A stand-in for GET /alerts that applies Doppel's result-window rules with a lowered limit.
+
+    Like the real API it refuses a request whose offset reaches the limit, and a time-filtered
+    request that matches more alerts than the limit (counted after the modules filter), with
+    HTTP 422 and code result_window_exceeded. Both ends of a time range are inclusive.
+    """
+
+    TIME_FILTERS = ("created_after", "created_before", "last_activity_timestamp", "last_activity_before")
+
+    def __init__(self, alerts, limit):
+        self.alerts = sorted(alerts, key=lambda alert: alert["created_at"])
+        self.limit = limit
+        self.queries = []
+        self.statuses = []
+
+    @staticmethod
+    def _time(value):
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f" if "." in value else "%Y-%m-%dT%H:%M:%S")
+
+    def _matches(self, alert, query):
+        created = self._time(alert["created_at"])
+        activity = self._time(alert.get("last_activity_timestamp") or alert["created_at"])
+        if "modules" in query and alert.get("product") not in query["modules"].split(","):
+            return False
+        if "created_after" in query and created < self._time(query["created_after"]):
+            return False
+        if "created_before" in query and created > self._time(query["created_before"]):
+            return False
+        if "last_activity_timestamp" in query and activity < self._time(query["last_activity_timestamp"]):
+            return False
+        return not ("last_activity_before" in query and activity > self._time(query["last_activity_before"]))
+
+    def __call__(self, request, context):
+        from urllib.parse import parse_qs, urlsplit
+
+        query = {key: values[0] for key, values in parse_qs(urlsplit(request.url).query).items()}
+        self.queries.append(query)
+        page, page_size = int(query["page"]), int(query["page_size"])
+        matches = [alert for alert in self.alerts if self._matches(alert, query)]
+        time_filtered = any(name in query for name in self.TIME_FILTERS)
+        if page * page_size >= self.limit or (time_filtered and len(matches) > self.limit):
+            self.statuses.append(422)
+            context.status_code = 422
+            return {**RESULT_WINDOW_BODY, "maximum_results": self.limit}
+        self.statuses.append(200)
+        return {"alerts": [dict(alert) for alert in matches[page * page_size : (page + 1) * page_size]]}
+
+
+def _fake_alerts_api(mocker, requests_mock, alerts, limit=6, page_size=2):
+    """Serve the fake API. The page size is lowered with the limit, so that ranges still span several pages."""
+    mocker.patch("Doppel.DOPPEL_MAX_PAGE_SIZE", page_size)
+    api = FakeAlertsApi(alerts, limit)
+    requests_mock.get(V1_ALERTS_URL, json=api)
+    return api
+
+
+def _run_fetch_until_idle(mocker, fetch_products=None, max_fetch=3, last_run=None, max_runs=100):
+    """Run fetch-incidents repeatedly with real lastRun hand-over until a run changes nothing.
+
+    Returns the created incidents, the last lastRun, and for every run the lastRun it started with.
+    """
+    state = {"last_run": dict(last_run or {"last_run": "2025-01-27T00:00:00Z", "recently_seen_ids": []})}
+    created: list = []
+    started_with: list = []
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": max_fetch, "fetch_timeout": "", "mirror_direction": "None"})
+    mocker.patch.object(demisto, "getLastRun", side_effect=lambda: state["last_run"])
+    mocker.patch.object(demisto, "setLastRun", side_effect=lambda value: state.update(last_run=value))
+    mocker.patch.object(demisto, "incidents", side_effect=created.extend)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "integrationInstance", return_value="inst")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 1, 28, 0, 0, 0))
+    client = _v1_client()
+    for _ in range(max_runs):
+        before = (dict(state["last_run"]), len(created))
+        started_with.append(before[0])
+        fetch_incidents_command(client, {}, fetch_products=fetch_products)
+        if (state["last_run"], len(created)) == before:
+            return created, state["last_run"], started_with
+    raise AssertionError("fetch did not settle")
+
+
+def _backlog():
+    """36 alerts over one day: an early burst, a gap, alerts on and around the midday midpoint, and a late burst."""
+    times = [f"2025-01-27T00:00:{second:02d}.{second:02d}0000" for second in range(1, 13)]
+    times += ["2025-01-27T00:00:12.900000", "2025-01-27T00:00:12.950000"]  # share a second with the alert before
+    times += ["2025-01-27T12:00:00.000000", "2025-01-27T12:00:00.500000", "2025-01-27T12:00:01.000000"]
+    times += [f"2025-01-27T18:{minute:02d}:30.250000" for minute in range(10)]
+    times += [f"2025-01-27T23:59:{second:02d}.750000" for second in range(50, 59)]
+    products = ("domains", "social_media", "telco")
+    return [
+        {"id": f"TET-{index}", "created_at": created_at, "product": products[index % 3]}
+        for index, created_at in enumerate(times, start=1)
+    ]
+
+
+@pytest.mark.parametrize(
+    "status_code, body, expected",
+    [
+        (422, RESULT_WINDOW_BODY, True),
+        (422, {"code": "result_window_exceeded"}, True),
+        (422, {"code": "something_else", "message": "Unprocessable"}, False),
+        (422, {"message": "Result window exceeds 50000 alerts; narrow the activity time range"}, False),
+        (422, ["result_window_exceeded"], False),
+        (422, ValueError("not JSON"), False),
+        (400, RESULT_WINDOW_BODY, False),
+        (500, RESULT_WINDOW_BODY, False),
+    ],
+)
+def test_is_result_window_exceeded(status_code, body, expected):
+    """Only HTTP 422 with code result_window_exceeded in a JSON object body is a refusal."""
+    from Doppel import _is_result_window_exceeded
+
+    assert _is_result_window_exceeded(_error_with_response(status_code, body)) is expected
+
+
+@pytest.mark.parametrize("error", [DemistoException("Error in API call [422]"), Exception("API failure"), ValueError("boom")])
+def test_is_result_window_exceeded_without_response(error):
+    """An error that carries no HTTP response is never a refusal, whatever its text says."""
+    from Doppel import _is_result_window_exceeded
+
+    assert _is_result_window_exceeded(error) is False
+
+
+@pytest.mark.parametrize(
+    "start, end, expected",
+    [
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 11, 55, 0), datetime(2025, 1, 27, 9, 55, 0)),
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 7, 55, 5), datetime(2025, 1, 27, 7, 55, 2)),
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 7, 55, 2), datetime(2025, 1, 27, 7, 55, 1)),
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 7, 55, 1), None),
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 7, 55, 0), None),
+        (datetime(2025, 1, 27, 7, 55, 0), datetime(2025, 1, 27, 7, 54, 0), None),
+    ],
+)
+def test_narrowed_window_end(start, end, expected):
+    """A refused range is cut at its midpoint in whole seconds; a range under two seconds cannot be cut."""
+    from Doppel import _narrowed_window_end
+
+    assert _narrowed_window_end(start, end) == expected
+
+
+def test_paginated_call_to_get_alerts_with_created_before():
+    """The upper limit is added to the fetch query only when given, after the unchanged parameters."""
+    mock_client = MagicMock()
+    mock_client.get_alerts.return_value = {"alerts": []}
+    last_fetch_datetime = datetime(2025, 2, 27, 14, 30, 0)
+
+    _paginated_call_to_get_alerts(mock_client, 3, last_fetch_datetime, "domains", datetime(2025, 2, 27, 16, 30, 0))
+    _paginated_call_to_get_alerts(mock_client, 3, last_fetch_datetime, "domains", None)
+
+    unchanged = {
+        "created_after": "2025-02-27T14:30:00",
+        "sort_type": "date_sourced",
+        "sort_order": "asc",
+        "page": 3,
+        "page_size": 200,
+        "modules": "domains",
+    }
+    assert mock_client.get_alerts.call_args_list[0][1]["params"] == {**unchanged, "created_before": "2025-02-27T16:30:00"}
+    assert mock_client.get_alerts.call_args_list[1][1]["params"] == unchanged
+
+
+def test_fetch_incidents_not_refused_sends_unchanged_requests(mocker, requests_mock):
+    """A fetch that Doppel does not refuse sends the same URLs as before and writes only the two lastRun keys."""
+    set_last_run = _refusal_fetch_mocks(mocker)
+    full_page = {"alerts": [{"id": f"OLD-{i}", "created_at": "2025-01-27T07:55:10.063742"} for i in range(200)]}
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [{"json": full_page}, {"json": FETCH_FILTER_PAGE}, EMPTY_PAGE])
+    params = {**FETCH_FILTER_PARAMS, "max_fetch": 500}
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [request.url for request in alerts_mock.request_history] == [
+        UNREFUSED_FETCH_URL.format(page=0),
+        UNREFUSED_FETCH_URL.format(page=1),
+        UNREFUSED_FETCH_URL.format(page=2),
+    ]
+    assert len(demisto.incidents.call_args[0][0]) == 202
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T07:55:12Z", "recently_seen_ids": ["TET-2"]}
+
+
+def test_fetch_incidents_not_refused_ignores_other_422(mocker, requests_mock):
+    """A 422 that is not the refusal, and a 500, fail the run as before: one request, no narrowing, cursor untouched."""
+    for failure in ({"status_code": 422, "json": {"code": "invalid", "message": "Unprocessable"}}, {"status_code": 500}):
+        set_last_run = _refusal_fetch_mocks(mocker)
+        alerts_mock = requests_mock.get(V1_ALERTS_URL, [failure, {"json": FETCH_FILTER_PAGE}])
+
+        with pytest.raises(DemistoException, match=f"\\[{failure['status_code']}\\]"):
+            fetch_incidents_command(_v1_client(), {})
+
+        assert [request.url for request in alerts_mock.request_history] == [UNREFUSED_FETCH_URL.format(page=0)]
+        set_last_run.assert_not_called()
+        demisto.incidents.assert_not_called()
+
+
+def test_fetch_incidents_refusal_halves_range_until_accepted(mocker, requests_mock):
+    """A refusal is retried with created_before at the midpoint, and again at the next midpoint when refused again."""
+    set_last_run = _refusal_fetch_mocks(mocker)
+    alerts_mock = requests_mock.get(
+        V1_ALERTS_URL,
+        [RESULT_WINDOW_REFUSAL, RESULT_WINDOW_REFUSAL, {"json": FETCH_FILTER_PAGE}, EMPTY_PAGE, EMPTY_PAGE],
+    )
+
+    fetch_incidents_command(_v1_client(), {})
+
+    history = alerts_mock.request_history
+    # The first request of the run is the unchanged one.
+    assert history[0].url == UNREFUSED_FETCH_URL.format(page=0)
+    assert history[1].qs == {**UNFILTERED_FETCH_QUERY, "created_before": ["2025-01-27t09:55:00"]}
+    assert history[2].qs == {**UNFILTERED_FETCH_QUERY, "created_before": ["2025-01-27t08:55:00"]}
+    assert history[3].qs == {**UNFILTERED_FETCH_QUERY, "created_before": ["2025-01-27t08:55:00"], "page": ["1"]}
+    # The accepted range is read to its end, so the rest is requested from its end with no upper limit.
+    assert history[4].qs == {**UNFILTERED_FETCH_QUERY, "created_after": ["2025-01-27t08:55:00"]}
+    assert len(history) == 5
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-1", "Doppel Alert TET-2"]
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T08:55:00Z", "recently_seen_ids": []}
+
+
+def test_fetch_incidents_refusal_keeps_product_filter(mocker, requests_mock):
+    """Narrowed requests keep the sort, the page size and the selected products."""
+    _refusal_fetch_mocks(mocker)
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, {"json": FETCH_FILTER_PAGE}, EMPTY_PAGE, EMPTY_PAGE])
+
+    fetch_incidents_command(_v1_client(), {}, fetch_products=["domains", "telco"])
+
+    filtered = {**UNFILTERED_FETCH_QUERY, "modules": ["domains,telco"]}
+    assert [request.qs for request in alerts_mock.request_history] == [
+        filtered,
+        {**filtered, "created_before": ["2025-01-27t09:55:00"]},
+        {**filtered, "created_before": ["2025-01-27t09:55:00"], "page": ["1"]},
+        {**filtered, "created_after": ["2025-01-27t09:55:00"]},
+    ]
+
+
+def test_fetch_incidents_limit_inside_range_saves_upper_limit(mocker, requests_mock):
+    """When the incident limit is reached inside a narrowed range, the cursor is saved as before, with the upper limit."""
+    set_last_run = _refusal_fetch_mocks(mocker, params={**FETCH_FILTER_PARAMS, "max_fetch": 1})
+    requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, {"json": FETCH_FILTER_PAGE}])
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-1"]
+    assert set_last_run.call_args[0][0] == {
+        "last_run": "2025-01-27T07:55:10Z",
+        "recently_seen_ids": ["TET-1"],
+        "fetch_window_end": "2025-01-27T09:55:00Z",
+    }
+
+
+def test_fetch_incidents_continues_saved_range_without_refused_request(mocker, requests_mock):
+    """A run that starts with a saved upper limit sends it on its first request, so nothing is refused again."""
+    last_run = {"last_run": "2025-01-27T07:55:10Z", "recently_seen_ids": ["TET-1"], "fetch_window_end": "2025-01-27T09:55:00Z"}
+    set_last_run = _refusal_fetch_mocks(mocker, last_run=last_run, params={**FETCH_FILTER_PARAMS, "max_fetch": 1})
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [{"json": FETCH_FILTER_PAGE}])
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [request.qs for request in alerts_mock.request_history] == [
+        {**UNFILTERED_FETCH_QUERY, "created_after": ["2025-01-27t07:55:10"], "created_before": ["2025-01-27t09:55:00"]}
+    ]
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-2"]
+    assert set_last_run.call_args[0][0] == {
+        "last_run": "2025-01-27T07:55:12Z",
+        "recently_seen_ids": ["TET-2"],
+        "fetch_window_end": "2025-01-27T09:55:00Z",
+    }
+
+
+def test_fetch_incidents_range_read_to_end_moves_cursor_and_removes_upper_limit(mocker, requests_mock):
+    """When a saved range is read to its end, the cursor moves to its end, the saved limit goes, and the run continues."""
+    last_run = {"last_run": "2025-01-27T07:55:12Z", "recently_seen_ids": ["TET-2"], "fetch_window_end": "2025-01-27T09:55:00Z"}
+    set_last_run = _refusal_fetch_mocks(mocker, last_run=last_run)
+    later_page = {"alerts": [{"id": "TET-3", "created_at": "2025-01-27T10:15:00.500000"}]}
+    alerts_mock = requests_mock.get(
+        V1_ALERTS_URL, [{"json": {"alerts": FETCH_FILTER_PAGE["alerts"][1:]}}, EMPTY_PAGE, {"json": later_page}, EMPTY_PAGE]
+    )
+
+    fetch_incidents_command(_v1_client(), {})
+
+    bounded = {**UNFILTERED_FETCH_QUERY, "created_after": ["2025-01-27t07:55:12"], "created_before": ["2025-01-27t09:55:00"]}
+    unbounded = {**UNFILTERED_FETCH_QUERY, "created_after": ["2025-01-27t09:55:00"]}
+    assert [request.qs for request in alerts_mock.request_history] == [
+        bounded,
+        {**bounded, "page": ["1"]},
+        unbounded,
+        {**unbounded, "page": ["1"]},
+    ]
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-3"]
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T10:15:00Z", "recently_seen_ids": ["TET-3"]}
+
+
+def test_fetch_incidents_empty_range_moves_cursor(mocker, requests_mock):
+    """A narrowed range that holds no alert still moves the cursor to its end, so the fetch cannot stall on it."""
+    set_last_run = _refusal_fetch_mocks(mocker)
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, EMPTY_PAGE, EMPTY_PAGE])
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert alerts_mock.request_history[2].qs == {**UNFILTERED_FETCH_QUERY, "created_after": ["2025-01-27t09:55:00"]}
+    demisto.incidents.assert_called_once_with([])
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T09:55:00Z", "recently_seen_ids": []}
+
+
+def test_fetch_incidents_alert_on_upper_limit_is_created_once(mocker, requests_mock):
+    """An alert created exactly on an upper limit is in two ranges; it becomes one incident, within a run and across runs."""
+    on_limit = {"id": "TET-9", "created_at": "2025-01-27T09:55:00.000000"}
+    set_last_run = _refusal_fetch_mocks(mocker)
+    requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, {"json": {"alerts": [on_limit]}}, EMPTY_PAGE, EMPTY_PAGE])
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-9"]
+    saved = set_last_run.call_args[0][0]
+    assert saved == {"last_run": "2025-01-27T09:55:00Z", "recently_seen_ids": ["TET-9"]}
+
+    # Next run: the cursor is the upper limit, and the inclusive request returns the same alert again.
+    set_last_run = _refusal_fetch_mocks(mocker, last_run=saved)
+    requests_mock.get(V1_ALERTS_URL, [{"json": {"alerts": [on_limit]}}, EMPTY_PAGE])
+
+    fetch_incidents_command(_v1_client(), {})
+
+    demisto.incidents.assert_called_once_with([])
+    assert set_last_run.call_args[0][0] == saved
+
+
+def test_fetch_incidents_refusal_on_later_page_restarts_without_duplicates(mocker, requests_mock):
+    """A refusal on a later page reads the narrowed range again from page 0 and creates no incident twice."""
+    set_last_run = _refusal_fetch_mocks(mocker)
+    alerts_mock = requests_mock.get(
+        V1_ALERTS_URL,
+        [{"json": FETCH_FILTER_PAGE}, RESULT_WINDOW_REFUSAL, {"json": FETCH_FILTER_PAGE}, EMPTY_PAGE, EMPTY_PAGE],
+    )
+
+    fetch_incidents_command(_v1_client(), {})
+
+    history = alerts_mock.request_history
+    assert history[1].url == UNREFUSED_FETCH_URL.format(page=1)
+    assert history[2].qs == {**UNFILTERED_FETCH_QUERY, "created_before": ["2025-01-27t09:55:00"]}
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-1", "Doppel Alert TET-2"]
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T09:55:00Z", "recently_seen_ids": []}
+
+
+def test_fetch_incidents_timeout_while_narrowing_saves_progress(mocker, requests_mock):
+    """When the time budget ends while a refused range is narrowed, the upper limit reached so far is saved."""
+    set_last_run = _refusal_fetch_mocks(mocker)
+    clock = {"now": 1000.0}
+
+    def refuse_slowly(request, context):
+        clock["now"] += 20  # every refused request takes 20 of the 30 seconds
+        context.status_code = 422
+        return RESULT_WINDOW_BODY
+
+    mocker.patch("Doppel.time.time", side_effect=lambda: clock["now"])
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json=refuse_slowly)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert alerts_mock.call_count == 2
+    demisto.incidents.assert_called_once_with([])
+    assert set_last_run.call_args[0][0] == {
+        "last_run": "2025-01-27T07:55:00Z",
+        "recently_seen_ids": [],
+        "fetch_window_end": "2025-01-27T08:55:00Z",
+    }
+
+
+@pytest.mark.parametrize("saved_end", ["2025-01-27T07:55:00Z", "2025-01-27T07:00:00Z", "not-a-time", "", None, 0], ids=str)
+def test_fetch_incidents_ignores_unusable_saved_upper_limit(mocker, requests_mock, saved_end):
+    """A saved upper limit at or before the cursor, or one that cannot be read, is dropped: the request is the unchanged one."""
+    set_last_run = _refusal_fetch_mocks(mocker, last_run={**FETCH_FILTER_LAST_RUN, "fetch_window_end": saved_end})
+    alerts_mock = _mock_alert_pages(requests_mock)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [request.url for request in alerts_mock.request_history] == [
+        UNREFUSED_FETCH_URL.format(page=0),
+        UNREFUSED_FETCH_URL.format(page=1),
+    ]
+    assert set_last_run.call_args[0][0] == {"last_run": "2025-01-27T07:55:12Z", "recently_seen_ids": ["TET-2"]}
+
+
+def test_fetch_incidents_range_under_two_seconds_fails_clearly(mocker, requests_mock):
+    """More alerts than Doppel can page in under two seconds: the run fails with a clear message, lastRun untouched."""
+    same_second = [{"id": f"TET-{i}", "created_at": f"2025-01-27T07:55:00.{i}00000"} for i in range(1, 8)]
+    set_last_run = _refusal_fetch_mocks(mocker)
+    api = _fake_alerts_api(mocker, requests_mock, same_second)
+
+    with pytest.raises(DemistoException) as error:
+        fetch_incidents_command(_v1_client(), {})
+
+    assert "result_window_exceeded" in str(error.value)
+    assert "2025-01-27 07:55:00 to 2025-01-27 07:55:01 (UTC) is under two seconds" in str(error.value)
+    assert set(api.statuses) == {422}
+    assert api.queries[-1]["created_before"] == "2025-01-27T07:55:01"
+    set_last_run.assert_not_called()
+    demisto.incidents.assert_not_called()
+
+
+def test_fetch_incidents_range_under_two_seconds_keeps_earlier_progress(mocker, requests_mock):
+    """Alerts read before a range that cannot be narrowed are still created; the next run reports the failure."""
+    alerts = [
+        {"id": "TET-A", "created_at": "2025-01-27T07:55:10.000000"},
+        {"id": "TET-B", "created_at": "2025-01-27T07:55:20.000000"},
+    ] + [{"id": f"TET-{i}", "created_at": f"2025-01-27T09:00:00.{i}00000"} for i in range(1, 8)]
+    set_last_run = _refusal_fetch_mocks(mocker)
+    _fake_alerts_api(mocker, requests_mock, alerts)
+
+    fetch_incidents_command(_v1_client(), {})
+
+    assert [i["name"] for i in demisto.incidents.call_args[0][0]] == ["Doppel Alert TET-A", "Doppel Alert TET-B"]
+    saved = set_last_run.call_args[0][0]
+    assert saved["last_run"] == "2025-01-27T09:00:00Z"
+
+    set_last_run = _refusal_fetch_mocks(mocker, last_run=saved)
+    with pytest.raises(DemistoException, match="under two seconds"):
+        fetch_incidents_command(_v1_client(), {})
+    set_last_run.assert_not_called()
+
+
+@pytest.mark.parametrize("max_fetch", [1, 3, 50])
+def test_fetch_incidents_reads_refused_backlog_exactly_once(mocker, requests_mock, max_fetch):
+    """Over many runs against the stand-in API, every alert of a refused backlog becomes one incident, oldest first."""
+    backlog = _backlog()
+    api = _fake_alerts_api(mocker, requests_mock, backlog)
+
+    created, last_run, started_with = _run_fetch_until_idle(mocker, max_fetch=max_fetch)
+
+    assert 422 in api.statuses
+    assert [incident["dbotMirrorId"] for incident in created] == [alert["id"] for alert in backlog]
+    assert last_run == {"last_run": "2025-01-27T23:59:58Z", "recently_seen_ids": ["TET-36"]}
+    # A run that starts inside a saved range sends its upper limit on the first request.
+    assert any("fetch_window_end" in run for run in started_with) is (max_fetch < 50)
+
+
+def test_fetch_incidents_reads_refused_backlog_with_product_filter(mocker, requests_mock):
+    """With products selected, every narrowed request carries them and only their alerts become incidents."""
+    backlog = _backlog()
+    api = _fake_alerts_api(mocker, requests_mock, backlog, limit=4)
+
+    created, last_run, _ = _run_fetch_until_idle(mocker, fetch_products=["domains", "telco"])
+
+    expected = [alert["id"] for alert in backlog if alert["product"] in ("domains", "telco")]
+    assert 422 in api.statuses
+    assert all(query["modules"] == "domains,telco" for query in api.queries)
+    assert [incident["dbotMirrorId"] for incident in created] == expected
+    assert "fetch_window_end" not in last_run
+
+
+def test_fetch_incidents_backlog_below_limit_is_never_narrowed(mocker, requests_mock):
+    """Against the stand-in API with a limit the backlog does not reach, no request carries created_before."""
+    backlog = _backlog()
+    api = _fake_alerts_api(mocker, requests_mock, backlog, limit=200)
+
+    created, last_run, started_with = _run_fetch_until_idle(mocker)
+
+    assert set(api.statuses) == {200}
+    assert not any("created_before" in query for query in api.queries)
+    assert not any("fetch_window_end" in run for run in started_with)
+    assert [incident["dbotMirrorId"] for incident in created] == [alert["id"] for alert in backlog]
+    assert last_run == {"last_run": "2025-01-27T23:59:58Z", "recently_seen_ids": ["TET-36"]}
+
+
+def test_doppel_get_alerts_command_without_new_argument_sends_unchanged_request(requests_mock):
+    """Without last_activity_before, the command sends the same URL as before."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json=FETCH_FILTER_PAGE)
+    args = {
+        "created_after": "2025-01-01T00:00:00Z",
+        "last_activity_timestamp": "2025-01-02T00:00:00Z",
+        "sort_type": "date_sourced",
+        "sort_order": "desc",
+        "page": "0",
+        "page_size": "200",
+    }
+
+    doppel_get_alerts_command(_v1_client(), args)
+
+    assert alerts_mock.last_request.url == (
+        "https://api.doppel.com/v1/alerts?created_after=2025-01-01T00%3A00%3A00%2B00%3A00"
+        "&last_activity_timestamp=2025-01-02T00%3A00%3A00%2B00%3A00&sort_type=date_sourced&sort_order=desc&page=0&page_size=200"
+    )
+
+
+def test_doppel_get_alerts_command_sends_last_activity_before(requests_mock):
+    """last_activity_before is sent under the same name, and a date far in the past is passed on as given."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, json={"alerts": []})
+
+    result = doppel_get_alerts_command(_v1_client(), {"last_activity_before": "2000-01-01T00:00:00Z", "page_size": "1"})
+
+    assert alerts_mock.last_request.qs == {"last_activity_before": ["2000-01-01t00:00:00+00:00"], "page_size": ["1"]}
+    assert result.outputs == {"alerts": []}
+
+
+def test_doppel_get_alerts_command_refusal_has_clear_message(requests_mock):
+    """A refused search is reported as too large, with the literal code that callers look for, and is not narrowed."""
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, {"json": FETCH_FILTER_PAGE}])
+
+    with pytest.raises(DemistoException) as error:
+        doppel_get_alerts_command(_v1_client(), {"last_activity_timestamp": "2020-01-01T00:00:00Z"})
+
+    assert "result_window_exceeded" in str(error.value)
+    assert "too large" in str(error.value)
+    assert "last_activity_before" in str(error.value)
+    assert "No alerts were found" not in str(error.value)
+    assert alerts_mock.call_count == 1
+
+
+def test_doppel_get_alerts_command_other_422_keeps_previous_message(requests_mock):
+    """A 422 that is not the refusal keeps the previous error wording."""
+    requests_mock.get(V1_ALERTS_URL, status_code=422, json={"code": "invalid", "message": "Unprocessable"})
+
+    with pytest.raises(Exception, match="No alerts were found with the given parameters :- Error in API call \\[422\\]"):
+        doppel_get_alerts_command(_v1_client(), {"page": "0"})
+
+
+def test_main_reports_refused_get_alerts_search(mocker, requests_mock):
+    """Through main(), the command error of a refused search still contains the literal code."""
+    from Doppel import main
+
+    mocker.patch.object(
+        demisto, "params", return_value={"url": "https://api.doppel.com/", "credentials": {"password": "test-api-key"}}
+    )
+    mocker.patch.object(demisto, "command", return_value="doppel-get-alerts")
+    mocker.patch.object(demisto, "args", return_value={"page": "250", "page_size": "200"})
+    return_error_mock = mocker.patch("Doppel.return_error")
+    requests_mock.get(V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL])
+
+    main()
+
+    message = return_error_mock.call_args[0][0]
+    assert message.startswith("Failed to execute doppel-get-alerts command.")
+    assert "result_window_exceeded" in message
+
+
+def test_get_modified_remote_data_not_refused_sends_unchanged_requests(mocker, requests_mock):
+    """A mirroring cycle that Doppel does not refuse sends the same URLs as before."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 2, 24, 18, 30, 0))
+    full_page = {"alerts": [{"id": f"alert-{i:03d}"} for i in range(200)]}
+    short_page = {"alerts": [{"id": "alert-200"}, {"id": "alert-001"}]}
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [{"json": full_page}, {"json": short_page}])
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    assert [request.url for request in alerts_mock.request_history] == [
+        UNREFUSED_MIRROR_URL.format(page=0),
+        UNREFUSED_MIRROR_URL.format(page=1),
+    ]
+    assert len(result.modified_incident_ids) == 201
+    assert result.modified_incident_ids[-1] == "alert-200"
+
+
+def test_get_modified_remote_data_not_refused_stops_on_empty_page(mocker, requests_mock):
+    """As before, an empty first page (or a response without an alert list) ends the cycle after one request."""
+    mocker.patch.object(demisto, "debug")
+    error_log = mocker.patch.object(demisto, "error")
+    for empty_response in (EMPTY_PAGE, {"json": {"alerts": None}}, {"json": {}}):
+        alerts_mock = requests_mock.get(V1_ALERTS_URL, [empty_response])
+
+        result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+        assert [request.url for request in alerts_mock.request_history] == [UNREFUSED_MIRROR_URL.format(page=0)]
+        assert result.modified_incident_ids == []
+    error_log.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "failure", [{"status_code": 422, "json": {"code": "invalid", "message": "Unprocessable"}}, {"status_code": 500}], ids=str
+)
+def test_get_modified_remote_data_other_errors_return_empty_list(mocker, requests_mock, failure):
+    """A 422 that is not the refusal, and a 500, are logged and return an empty list as before, after one request."""
+    mocker.patch.object(demisto, "debug")
+    error_log = mocker.patch.object(demisto, "error")
+    alerts_mock = requests_mock.get(V1_ALERTS_URL, [failure, {"json": FETCH_FILTER_PAGE}])
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    assert [request.url for request in alerts_mock.request_history] == [UNREFUSED_MIRROR_URL.format(page=0)]
+    assert result.modified_incident_ids == []
+    assert error_log.call_args[0][0].startswith("Error in get-modified-remote-data:")
+
+
+def test_get_modified_remote_data_refusal_splits_range(mocker, requests_mock):
+    """A refused search is split: the older part gets last_activity_before, the newest part keeps no upper limit."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 2, 24, 18, 30, 0))
+    older = {"alerts": [{"id": "alert-1"}, {"id": "alert-2"}]}
+    newer = {"alerts": [{"id": "alert-2"}, {"id": "alert-3"}]}
+    alerts_mock = requests_mock.get(
+        V1_ALERTS_URL, [RESULT_WINDOW_REFUSAL, RESULT_WINDOW_REFUSAL, {"json": older}, {"json": newer}]
+    )
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    start = {"last_activity_timestamp": ["2025-02-24t14:30:00"], "page": ["0"], "page_size": ["200"]}
+    assert alerts_mock.request_history[0].url == UNREFUSED_MIRROR_URL.format(page=0)
+    assert [request.qs for request in alerts_mock.request_history[1:]] == [
+        {**start, "last_activity_before": ["2025-02-24t16:30:00"]},
+        {**start, "last_activity_before": ["2025-02-24t15:30:00"]},
+        {**start, "last_activity_timestamp": ["2025-02-24t15:30:00"]},
+    ]
+    assert result.modified_incident_ids == ["alert-1", "alert-2", "alert-3"]
+
+
+def test_get_modified_remote_data_reads_refused_search_in_one_call(mocker, requests_mock):
+    """Against the stand-in API, one call returns every modified alert of a refused search, each id once."""
+    mocker.patch.object(demisto, "debug")
+    error_log = mocker.patch.object(demisto, "error")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 1, 28, 0, 0, 0))
+    backlog = [
+        {**alert, "last_activity_timestamp": alert["created_at"], "created_at": "2024-06-01T00:00:00.000000"}
+        for alert in _backlog()
+    ]
+    unchanged = {
+        "id": "TET-OLD",
+        "created_at": "2024-06-01T00:00:00.000000",
+        "last_activity_timestamp": "2025-01-26T23:59:59.000000",
+    }
+    api = _fake_alerts_api(mocker, requests_mock, backlog + [unchanged])
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-01-27T00:00:00Z"})
+
+    assert 422 in api.statuses
+    assert "last_activity_before" not in api.queries[0]
+    assert sorted(result.modified_incident_ids) == sorted(alert["id"] for alert in backlog)
+    error_log.assert_not_called()
+
+
+def test_get_modified_remote_data_unreadable_range_returns_ids_read(mocker, requests_mock):
+    """A range under two seconds that is still refused: the ids read so far are returned and the range is logged."""
+    mocker.patch.object(demisto, "debug")
+    error_log = mocker.patch.object(demisto, "error")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 1, 28, 0, 0, 0))
+    readable = [
+        {"id": "TET-A", "created_at": "2025-01-27T00:10:00.000000"},
+        {"id": "TET-B", "created_at": "2025-01-27T00:20:00.000000"},
+    ]
+    same_second = [{"id": f"TET-{i}", "created_at": f"2025-01-27T09:00:00.{i}00000"} for i in range(1, 8)]
+    _fake_alerts_api(mocker, requests_mock, readable + same_second)
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-01-27T00:00:00Z"})
+
+    assert result.modified_incident_ids == ["TET-A", "TET-B"]
+    message = error_log.call_args[0][0]
+    assert "result_window_exceeded" in message
+    assert "2025-01-27 09:00:00 to 2025-01-27 09:00:01 (UTC), which is under two seconds" in message
+
+
+def test_get_modified_remote_data_request_limit_after_refusal_is_logged(mocker, requests_mock):
+    """When the request limit is reached after a refusal, the ids read are returned and the unread range is logged."""
+    mocker.patch.object(demisto, "debug")
+    error_log = mocker.patch.object(demisto, "error")
+    mocker.patch("Doppel._utc_now", return_value=datetime(2025, 1, 28, 0, 0, 0))
+    mocker.patch("Doppel.MAX_FETCH_PAGES_PER_RUN", 40)
+    api = _fake_alerts_api(mocker, requests_mock, _backlog())
+
+    result = get_modified_remote_data_command(_v1_client(), {"lastUpdate": "2025-01-27T00:00:00Z"})
+
+    assert len(api.queries) == 40
+    assert 0 < len(result.modified_incident_ids) < 36
+    assert "the limit of 40 requests was reached" in error_log.call_args[0][0]

@@ -117,6 +117,22 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- additionalinfo: The products to fetch alerts for. If none is selected, alerts for all products are fetched.
+  display: Select products to fetch
+  name: fetch_products
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - domains
+  - social_media
+  - mobile_apps
+  - ecommerce
+  - crypto
+  - email
+  - paid_ads
+  - telco
+  - darkweb
 - additionalinfo: Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance. The doppel-get-alert-screenshot command works regardless of this setting.
   display: Attach alert screenshots to incidents
   name: attach_screenshots
@@ -383,6 +399,8 @@ script:
       name: created_after
     - description: The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: last_activity_timestamp
+    - description: The filter for alerts whose last activity (creation or any update) occurred at or before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+      name: last_activity_before
     - auto: PREDEFINED
       description: The field to sort the reports by.
       defaultValue: date_sourced

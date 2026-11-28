@@ -32,11 +32,31 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Select products to fetch | The products to fetch alerts for. If none is selected, alerts for all products are fetched. | False |
 | Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Fetch alerts for selected products
+
+By default, the integration fetches alerts for all Doppel products. To limit the fetch, select one or more products in the **Select products to fetch** parameter: *domains*, *social_media*, *mobile_apps*, *ecommerce*, *crypto*, *email*, *paid_ads*, *telco*, or *darkweb*. The parameter works the same way with API Version V1 and V2.
+
+- When no product is selected, alerts for all products are fetched, including alerts for Doppel products that are not in the list.
+- When one or more products are selected, only alerts for those products are fetched. Doppel applies the filter, so the *Number of incidents for each fetch* limit applies to the selected products only.
+- The filter applies to alerts created after the last fetch. Changing the selection does not remove incidents that were already created, and does not fetch older alerts for a newly selected product.
+- The filter applies to ***fetch-incidents*** only. Mirroring of existing incidents and the ***doppel-get-alerts*** command are not filtered.
+- **Test** checks the selected products against Doppel, so a selection that Doppel rejects fails the test.
+
+## Large alert backlogs
+
+The Doppel API returns up to 50,000 results for one alert search. When a fetch matches more than that (for example, a first fetch with a long *First fetch* value on a large organization, or an instance that was disabled for a long time), Doppel refuses the search with HTTP 422 and the code *result_window_exceeded*.
+
+- The integration then fetches the backlog in smaller time ranges, oldest alerts first, until it has caught up. No alert is skipped and no incident is created twice.
+- The *Number of incidents for each fetch* limit applies to every run, so a large backlog takes several runs. To shorten it, reduce *First fetch* or select products in **Select products to fetch**.
+- Fetch requests are unchanged when Doppel does not refuse the search.
+- The ***doppel-get-alerts*** command does not narrow a search. It returns an error that contains *result_window_exceeded*. Narrow the search with *created_after* and *created_before*, or with *last_activity_timestamp* and *last_activity_before*.
 
 ## Commands
 
@@ -389,6 +409,7 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | last_activity_timestamp | The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| last_activity_before | The filter for alerts whose last activity (creation or any update) occurred at or before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
@@ -580,6 +601,7 @@ When incidents are mirrored into Cortex XSOAR from Doppel:
 
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
 2. When Doppel revives an alert — moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online — a closed Cortex incident is automatically reopened so the revival is not missed. The reopening process only occurs on a queue transition that occurred after the incident's last sync, so incidents closed by an analyst are not reopened by unrelated alert activity.
+3. If Doppel refuses the search for modified alerts as too large (HTTP 422 *result_window_exceeded*, for example after mirroring was paused for a long time), the integration reads the changes in smaller time ranges within the same mirroring cycle.
 
 **Supported Fields**
 
