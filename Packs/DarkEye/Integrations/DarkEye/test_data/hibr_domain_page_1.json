@@ -1,0 +1,47 @@
+{
+    "count": 3,
+    "field_searched": ["domain"],
+    "has_next": true,
+    "has_previous": false,
+    "page": 1,
+    "page_size": 20,
+    "search_term": "example.com",
+    "total_pages": 2,
+    "total_sources": 4,
+    "sources": [
+        {
+            "Identities Found": 120,
+            "country": "US",
+            "description": "Not kept by the integration.",
+            "discovered": "2026-01-15 10:20:30.000000",
+            "group_name": "examplegroup",
+            "id": "1001",
+            "id_source": "1001",
+            "indexed": "2026-01-20T00:00:00.000000",
+            "leak_type": "ransomware_leak",
+            "post_title": "Example Corp",
+            "post_url": "http://exampleleaksite.onion/post/1001",
+            "website": "example.com"
+        },
+        {
+            "Identities Found": 45,
+            "country": "DE",
+            "description": "Not kept by the integration.",
+            "discovered": "2025-11-02 08:00:00.000000",
+            "group_name": "",
+            "id": "1002",
+            "id_source": "1002",
+            "indexed": "2025-11-05T00:00:00.000000",
+            "leak_type": "traditional_breach",
+            "post_title": "Example Shop customer database",
+            "post_url": "",
+            "website": "shop.example.com"
+        },
+        {
+            "id": "",
+            "id_source": "",
+            "leak_type": "traditional_breach",
+            "post_title": "Record without an ID is skipped"
+        }
+    ]
+}

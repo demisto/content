@@ -1,0 +1,107 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: DarkEye
+  version: -1
+configuration:
+- displaypassword: HaveIBeenRansom API Key
+  additionalinfo: API token from your HaveIBeenRansom profile. Leave empty to skip HaveIBeenRansom.
+  name: haveibeenransom_credentials
+  type: 9
+  hiddenusername: true
+  required: false
+- displaypassword: Breach House API Key
+  additionalinfo: API token from the Breach House customer panel. Leave empty to skip Breach House.
+  name: breachhouse_credentials
+  type: 9
+  hiddenusername: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: 'Search DarkEye for a domain: ransomware leaks and data breaches in HaveIBeenRansom, and ransomware, breach, lead and stealer listings in Breach House. Each product has its own optional API key; at least one is required.'
+display: DarkEye
+name: DarkEye
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The domain to search, for example example.com. Accepts a comma-separated list.
+      isArray: true
+      name: domain
+      required: true
+    - defaultValue: '5'
+      description: Maximum number of HaveIBeenRansom result pages to read (20 sources per page, at most 20 pages). Each page is one request.
+      name: max_pages
+    - defaultValue: '25'
+      description: Maximum number of Breach House results per section (ransomware, breaches, leads, stealers), at most 200.
+      name: limit
+    - defaultValue: '100'
+      description: Maximum number of records kept per product, at most 500.
+      name: max_records
+    description: 'Searches every configured DarkEye product for a domain. A record means the domain appears in a ransomware leak, a data breach, a lead or a stealer listing, usually as a victim. It does not mean the domain is malicious, and no record does not mean the domain is clean. When one product fails, the records of the other are kept and the failure is listed in DarkEye.Domain.Errors.'
+    name: darkeye-domain-search
+    outputs:
+    - contextPath: DarkEye.Domain.Name
+      description: The domain that was searched.
+      type: String
+    - contextPath: DarkEye.Domain.Found
+      description: Whether any product returned a record for the domain.
+      type: Boolean
+    - contextPath: DarkEye.Domain.Count
+      description: The number of records returned.
+      type: Number
+    - contextPath: DarkEye.Domain.Products
+      description: The products that answered the search.
+      type: String
+    - contextPath: DarkEye.Domain.CountsByProduct
+      description: The number of records per product.
+      type: Unknown
+    - contextPath: DarkEye.Domain.CountsByCategory
+      description: The number of records per category.
+      type: Unknown
+    - contextPath: DarkEye.Domain.Truncated
+      description: Whether more records exist than the limits allowed.
+      type: Boolean
+    - contextPath: DarkEye.Domain.Errors.Product
+      description: A product whose search failed.
+      type: String
+    - contextPath: DarkEye.Domain.Errors.Error
+      description: Why the search of that product failed.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Product
+      description: The product that returned the record (HaveIBeenRansom or Breach House).
+      type: String
+    - contextPath: DarkEye.Domain.Records.Category
+      description: 'The record category: ransomware, breach, leads or stealer. Other HaveIBeenRansom leak types keep their own name.'
+      type: String
+    - contextPath: DarkEye.Domain.Records.ID
+      description: The record ID in the product.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Title
+      description: The listing title, usually the affected organization.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Website
+      description: The website of the affected organization.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Group
+      description: The ransomware group, when known.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Country
+      description: The country of the affected organization, when known.
+      type: String
+    - contextPath: DarkEye.Domain.Records.Discovered
+      description: The date the listing was discovered (YYYY-MM-DD).
+      type: Date
+  dockerimage: demisto/python3:3.12.13.10116658
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

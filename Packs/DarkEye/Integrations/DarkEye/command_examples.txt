@@ -1,0 +1,2 @@
+!darkeye-domain-search domain=example.com
+!darkeye-domain-search domain=example.com max_pages=1 limit=10 max_records=20
