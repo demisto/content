@@ -14,10 +14,27 @@ This integration was integrated and tested with Reco External API v1.
 | Fetch incidents | Enable automatic incident fetching | False |
 | Max fetch | Maximum incidents to fetch per run (up to 500) | False |
 | Source | Filter fetched incidents by SaaS source | False |
-| Before | Fetch incidents created before this timestamp | False |
+| Before | Fetch incidents created before this timestamp. A date-only value (e.g. `2026-10-31`) includes that whole day. | False |
 | After | Fetch incidents created after this timestamp | False |
 | Minimum risk level (e.g. MEDIUM fetches medium and higher) | The minimum severity threshold for fetched incidents. Accepts a single value: LOW, MEDIUM, HIGH, or CRITICAL (or numeric equivalents 10, 20, 30, 40). Alerts at or above this severity are fetched. | False |
+| SaaS application/platform | Only fetch alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. `Microsoft 365, Okta`) | False |
+| Alert status | Only fetch alerts in these statuses (New, In Progress, Closed). Empty means any status. Preview-state alerts are never fetched. | False |
+| Include labels | Only fetch alerts carrying at least one of these labels (comma-separated) | False |
+| Exclude labels | Do not fetch alerts carrying any of these labels (comma-separated). Alerts without labels are still fetched. | False |
+| Advanced filter (SCIM) | A Reco SCIM v2 filter expression, combined with all other filters using AND. Use it for OR / NOT logic and any other alert field the Reco API can filter on. | False |
 | First fetch timestamp | How far back to fetch on first run (e.g. `7 days`, `12 hours`) | False |
+
+### Filtering alerts before ingestion
+
+The *SaaS application/platform*, *Alert status*, *Include labels*, *Exclude labels*, *Source*, *Minimum risk level*, and *Advanced filter (SCIM)* parameters are all evaluated by the Reco API, so alerts you do not want are never returned to Cortex (as opposed to a classifier or mapper, which runs after retrieval). Filters are combined with AND; values inside one list parameter are combined with OR, except *Exclude labels*, where an alert carrying any listed label is excluded.
+
+Use *Advanced filter (SCIM)* for anything else, for example `actors co "@example.com" or description co "Former Employees"`. The Test button sends exactly the query that fetch-incidents sends, so an invalid filter fails at configuration time.
+
+**Limitations:** the Reco alerts API does not currently expose a policy ID, policy type, or issue type field on alerts, so alerts cannot be filtered on those at the source. To approximate, use *Include labels* (labels are assigned to policies in Reco) or an *Advanced filter* on `description`, which holds the policy name for policy-based alerts. Some older Reco versions reject the SCIM `in` operator on severity and status; if you get an error, use `eq` clauses joined with `or`.
+
+### Retrieving alerts on demand
+
+***reco-list-alerts***, ***reco-fetch-alerts***, and ***reco-get-alert*** retrieve alerts for investigations, mapping tests, and backfills. They never read or change the fetch-incidents last-run timestamp or configuration, so they are safe to run against a production instance.
 
 ## SCIM v2 Filters
 
@@ -362,7 +379,7 @@ List files shared with a specific third-party domain.
 ### reco-change-alert-status
 
 ***
-Update the status of a Reco alert.
+Update the status of a Reco alert. The `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, and `ALERT_STATUS_CLOSED` statuses on threat alerts use the Reco External API, falling back to the previous endpoint for posture issues and for tokens without the alert write permission.
 
 #### Base Command
 
@@ -562,6 +579,7 @@ Update the authorization status of an application.
 | --- | --- | --- |
 | app_id | Application ID. | Required |
 | authorization_status | Authorization status. Possible values: `AUTH_STATUS_SANCTIONED`, `AUTH_STATUS_UNSANCTIONED`, `AUTH_STATUS_TO_REVIEW`, `AUTH_STATUS_ACCEPTED_RISK`, `AUTH_STATUS_EVALUATING`, `AUTH_STATUS_UNDER_INVESTIGATION`, `AUTH_STATUS_INVESTIGATED`, `AUTH_STATUS_CLOUD_INVENTORY`, `AUTH_STATUS_SYSTEM_SANCTIONED`. | Required |
+| app_type | The app inventory the application belongs to: `APP_ENTITY_TYPE_APP_DISCOVERY` (default), `APP_ENTITY_TYPE_SAAS_TO_SAAS`, or `APP_ENTITY_TYPE_APP_PORTFOLIO`. | Optional |
 
 #### Context Output
 
@@ -599,6 +617,375 @@ Add values to a Reco classifier exclusion list.
 ## List Commands (External API)
 
 All commands below accept `filters` (SCIM v2 expression) and `limit` (default 1000).
+
+### reco-list-alerts
+
+***
+List alerts for a specified time range and filters, without using or changing the fetch-incidents configuration or last-run timestamp. All filters are applied by the Reco API. Returns alert summaries; use `reco-get-alert` or `reco-fetch-alerts` for full details.
+
+#### Base Command
+
+`reco-list-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| after | Only alerts created after this time. ISO 8601 (e.g. "2026-11-01T00:00:00Z") or relative (e.g. "7 days ago"). UTC is assumed when no time zone is given. | Optional |
+| before | Only alerts created before this time. ISO 8601 (e.g. "2026-11-08T23:59:59Z") or relative. UTC is assumed when no time zone is given. A date-only value (e.g. "2026-10-31") includes that whole day. | Optional |
+| saas_platform | Only alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. "Microsoft 365"). | Optional |
+| risk_level | Only alerts with one of these risk levels (comma-separated): LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40). An explicit list, not a minimum. | Optional |
+| labels | Only alerts carrying at least one of these labels (comma-separated, e.g. "Identity,Privileged Access"). | Optional |
+| exclude_labels | Exclude alerts carrying any of these labels (comma-separated). | Optional |
+| status | Only alerts in these statuses (comma-separated): New, In Progress, Closed. | Optional |
+| source | Only alerts whose source application contains this value (e.g. "GOOGLE_DRIVE"). | Optional |
+| filters | An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com". | Optional |
+| limit | The maximum number of alerts to return. Default is 50. | Optional |
+| sort_order | The order of the results by creation time: descending or ascending. Default is descending. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Alerts.id | String | The alert ID. |
+| Reco.Alerts.description | String | The alert description. |
+| Reco.Alerts.severity | String | The alert severity (LOW, MEDIUM, HIGH, CRITICAL). |
+| Reco.Alerts.status | String | The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED). |
+| Reco.Alerts.createdAt | Date | The alert creation time. |
+| Reco.Alerts.updatedAt | Date | The alert last update time. |
+| Reco.Alerts.apps | Unknown | The source applications that triggered the alert. |
+| Reco.Alerts.actors | Unknown | The actor emails involved in the alert. |
+| Reco.Alerts.customLabels | Unknown | The custom labels of the policy that triggered the alert. |
+| Reco.Alerts.instance.id | String | The ID of the app instance the alert belongs to. |
+| Reco.Alerts.instance.appName | String | The name of the app instance the alert belongs to. |
+| Reco.Alerts.ticketId | String | The linked ticket ID, if any. |
+| Reco.Alerts.ticketUrl | String | The linked ticket URL, if any. |
+
+#### Command example
+
+`!reco-list-alerts after="2026-11-01T00:00:00Z" before="2026-11-08T23:59:59Z" saas_platform="Salesforce" risk_level="HIGH,CRITICAL" labels="Identity,Privileged Access" limit=500`
+
+#### Context Example
+
+```json
+{
+    "Reco": {
+        "Alerts": [
+            {
+                "id": "0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40",
+                "description": "Reco - Former Employees with Active Access to Salesforce",
+                "severity": "HIGH",
+                "status": "ALERT_STATUS_NEW",
+                "createdAt": "2026-11-05T09:14:22.512340Z",
+                "updatedAt": "2026-11-05T09:14:22.512340Z",
+                "apps": [
+                    "SALESFORCE_SOQL_API_EVENT_API"
+                ],
+                "actors": [
+                    "jane.doe@example.com"
+                ],
+                "customLabels": [
+                    "Privileged Access"
+                ],
+                "instance": {
+                    "id": "0191f2aa-1c4b-7d33-9a10-5e6f7a8b9c0d",
+                    "appName": "Salesforce Production",
+                    "instanceType": ""
+                },
+                "ticketId": "",
+                "ticketUrl": "",
+                "businessUnits": [],
+                "businessLines": [],
+                "businessLineIds": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+>
+> ### Reco Alerts
+>
+>|id|description|severity|status|createdAt|apps|instanceName|customLabels|
+>|---|---|---|---|---|---|---|---|
+>| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
+
+### reco-fetch-alerts
+
+***
+Retrieve full alert details (including policy violations, the same data fetch-incidents ingests) for a historical time range and filters, for investigations, mapping tests, and controlled backfills. It returns the alerts to the context only: it does not create incidents and does not use or change the fetch-incidents last-run timestamp.
+
+#### Base Command
+
+`reco-fetch-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| after | Only alerts created after this time. ISO 8601 (e.g. "2026-11-01T00:00:00Z") or relative (e.g. "7 days ago"). UTC is assumed when no time zone is given. | Optional |
+| before | Only alerts created before this time. ISO 8601 (e.g. "2026-11-08T23:59:59Z") or relative. UTC is assumed when no time zone is given. A date-only value (e.g. "2026-10-31") includes that whole day. | Optional |
+| saas_platform | Only alerts from these SaaS applications/platforms (comma-separated, matched against the app instance name, e.g. "Microsoft 365"). | Optional |
+| risk_level | Only alerts with one of these risk levels (comma-separated): LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40). An explicit list, not a minimum. | Optional |
+| labels | Only alerts carrying at least one of these labels (comma-separated, e.g. "Identity,Privileged Access"). | Optional |
+| exclude_labels | Exclude alerts carrying any of these labels (comma-separated). | Optional |
+| status | Only alerts in these statuses (comma-separated): New, In Progress, Closed. | Optional |
+| source | Only alerts whose source application contains this value (e.g. "GOOGLE_DRIVE"). | Optional |
+| filters | An advanced Reco SCIM v2 filter expression, combined with the other arguments using AND. Use it for OR / NOT logic and other alert fields, e.g. actors co "@example.com". | Optional |
+| limit | The maximum number of alerts to return. Every alert is enriched with one detail API call, so large values are slow and may reach the command timeout. Default is 50. | Optional |
+| sort_order | The order of the results by creation time: ascending or descending. Default is ascending. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Alerts.id | String | The alert ID. |
+| Reco.Alerts.policyId | String | The ID of the policy that triggered the alert. |
+| Reco.Alerts.description | String | The alert description. |
+| Reco.Alerts.status | String | The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED). |
+| Reco.Alerts.riskLevel | String | The alert severity (LOW, MEDIUM, HIGH, CRITICAL). |
+| Reco.Alerts.policyViolations | Unknown | The policy violations of the alert. |
+| Reco.Alerts.createdAt | Date | The alert creation time. |
+| Reco.Alerts.updatedAt | Date | The alert last update time. |
+| Reco.Alerts.instanceId | String | The ID of the app instance the alert belongs to. |
+| Reco.Alerts.extractionSources | Unknown | The source applications that contributed to the alert. |
+| Reco.Alerts.riskType | String | The risk type of the alert. |
+| Reco.Alerts.alertType | String | The alert type. |
+| Reco.Alerts.customLabels | Unknown | The custom labels of the policy that triggered the alert. |
+
+#### Command example
+
+`!reco-fetch-alerts after="2026-10-01" before="2026-10-31" labels="Privileged Access" limit=10`
+
+#### Context Example
+
+```json
+{
+    "Reco": {
+        "Alerts": [
+            {
+                "id": "0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40",
+                "policyId": "0190d8b4-2a5c-7e61-b3f7-4c1d9e0a8b52",
+                "description": "Reco - Former Employees with Active Access to Salesforce",
+                "status": "ALERT_STATUS_NEW",
+                "riskLevel": "HIGH",
+                "policyViolations": [
+                    {
+                        "id": "0192a4c1-6d30-7a8e-b1c4-9d2e3f405a61",
+                        "policyId": "0190d8b4-2a5c-7e61-b3f7-4c1d9e0a8b52",
+                        "jsonData": {
+                            "policy_title": "Reco - Former Employees with Active Access to Salesforce"
+                        }
+                    }
+                ],
+                "createdAt": "2026-11-05T09:14:22.512340Z",
+                "updatedAt": "2026-11-05T09:14:22.512340Z",
+                "instanceId": "0191f2aa-1c4b-7d33-9a10-5e6f7a8b9c0d",
+                "extractionSources": [
+                    "SALESFORCE_SOQL_API_EVENT_API"
+                ],
+                "riskType": "RISK_TYPE_USER",
+                "alertType": "ALERT_TYPE_UNSPECIFIED",
+                "customLabels": [
+                    "Privileged Access"
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+>
+> ### Reco Alerts (detailed)
+>
+>|id|description|severity|status|createdAt|apps|instanceName|customLabels|
+>|---|---|---|---|---|---|---|---|
+>| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
+
+### reco-get-alert
+
+***
+Retrieve a single alert, including its policy violations, by ID. Does not use or change the fetch-incidents last-run timestamp.
+
+#### Base Command
+
+`reco-get-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of the alert to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Alerts.id | String | The alert ID. |
+| Reco.Alerts.policyId | String | The ID of the policy that triggered the alert. |
+| Reco.Alerts.description | String | The alert description. |
+| Reco.Alerts.status | String | The alert status (ALERT_STATUS_NEW, ALERT_STATUS_IN_PROGRESS, ALERT_STATUS_CLOSED). |
+| Reco.Alerts.riskLevel | String | The alert severity (LOW, MEDIUM, HIGH, CRITICAL). |
+| Reco.Alerts.policyViolations | Unknown | The policy violations of the alert. |
+| Reco.Alerts.createdAt | Date | The alert creation time. |
+| Reco.Alerts.updatedAt | Date | The alert last update time. |
+| Reco.Alerts.instanceId | String | The ID of the app instance the alert belongs to. |
+| Reco.Alerts.extractionSources | Unknown | The source applications that contributed to the alert. |
+| Reco.Alerts.riskType | String | The risk type of the alert. |
+| Reco.Alerts.alertType | String | The alert type. |
+| Reco.Alerts.customLabels | Unknown | The custom labels of the policy that triggered the alert. |
+
+#### Command example
+
+`!reco-get-alert alert_id="0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40"`
+
+#### Context Example
+
+```json
+{
+    "Reco": {
+        "Alerts": {
+            "id": "0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40",
+            "policyId": "0190d8b4-2a5c-7e61-b3f7-4c1d9e0a8b52",
+            "description": "Reco - Former Employees with Active Access to Salesforce",
+            "status": "ALERT_STATUS_NEW",
+            "riskLevel": "HIGH",
+            "policyViolations": [
+                {
+                    "id": "0192a4c1-6d30-7a8e-b1c4-9d2e3f405a61",
+                    "policyId": "0190d8b4-2a5c-7e61-b3f7-4c1d9e0a8b52",
+                    "jsonData": {
+                        "policy_title": "Reco - Former Employees with Active Access to Salesforce"
+                    }
+                }
+            ],
+            "createdAt": "2026-11-05T09:14:22.512340Z",
+            "updatedAt": "2026-11-05T09:14:22.512340Z",
+            "instanceId": "0191f2aa-1c4b-7d33-9a10-5e6f7a8b9c0d",
+            "extractionSources": [
+                "SALESFORCE_SOQL_API_EVENT_API"
+            ],
+            "riskType": "RISK_TYPE_USER",
+            "alertType": "ALERT_TYPE_UNSPECIFIED",
+            "customLabels": [
+                "Privileged Access"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>
+> ### Reco Alert 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40
+>
+>|id|description|severity|status|createdAt|apps|instanceName|customLabels|
+>|---|---|---|---|---|---|---|---|
+>| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
+
+### reco-update-alert-severity
+
+***
+Set the severity of a Reco threat alert. The change is recorded in the Reco audit log.
+
+#### Base Command
+
+`reco-update-alert-severity`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID (UUID) of the alert, as returned in `id` by `reco-list-alerts`. | Required |
+| severity | The new severity: `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Alerts.id | String | The alert ID. |
+| Reco.Alerts.description | String | The alert description. |
+| Reco.Alerts.riskLevel | String | The alert severity after the update. |
+| Reco.Alerts.status | String | The alert status. |
+| Reco.Alerts.updatedAt | Date | The alert last update time. |
+
+#### Command example
+
+`!reco-update-alert-severity alert_id="0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40" severity="CRITICAL"`
+
+#### Context Example
+
+```json
+{
+    "Reco": {
+        "Alerts": {
+            "id": "0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40",
+            "description": "Reco - Former Employees with Active Access to Salesforce",
+            "riskLevel": "CRITICAL",
+            "status": "ALERT_STATUS_NEW",
+            "updatedAt": "2026-11-05T09:14:22.512340Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>
+>Alert 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 severity updated to CRITICAL
+
+### reco-add-entity-label
+
+***
+Add an existing label from the label catalog to a Reco entity.
+
+#### Base Command
+
+`reco-add-entity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | The ID (UUID) of the entity to add the label. | Required |
+| entity_type | The entity type: `account`, `app`, `identity`, `posture`, `saas-to-saas`, `ip-address`, `ai-agent`, or `device`. | Required |
+| label_name | The name of the label. It must already exist in the label catalog of your Reco tenant. | Required |
+| instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
+
+#### Command example
+
+`!reco-add-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"`
+
+#### Human Readable Output
+>
+>Label 'Privileged Access' added to identity 0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c
+
+### reco-remove-entity-label
+
+***
+Remove a label from a Reco entity.
+
+#### Base Command
+
+`reco-remove-entity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | The ID (UUID) of the entity to remove the label. | Required |
+| entity_type | The entity type: `account`, `app`, `identity`, `posture`, `saas-to-saas`, `ip-address`, `ai-agent`, or `device`. | Required |
+| label_name | The name of the label. | Required |
+| instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
+
+#### Command example
+
+`!reco-remove-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"`
+
+#### Human Readable Output
+>
+>Label 'Privileged Access' removed from identity 0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c
 
 ### reco-list-events
 

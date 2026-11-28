@@ -2,10 +2,14 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import json
+import re
 import time
-from datetime import datetime, timedelta
+import traceback
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, UTC
 import dateutil.parser
 
+from collections.abc import Callable
 from typing import Any
 
 ENTRY_TYPE_USER = "ENTRY_TYPE_USER"
@@ -76,6 +80,155 @@ def parse_minimum_risk_level(risk_level_param: str | None) -> list[str] | None:
         return [value.upper()]
     min_index = SEVERITY_ORDER.index(severity_name)
     return SEVERITY_ORDER[min_index:]
+
+
+# Alert statuses an analyst can filter on (short name -> API enum). ALERT_STATUS_PREVIEW is never
+# offered: Preview-state alerts are always excluded from every alert query in this pack.
+ALERT_STATUS_PREFIX = "ALERT_STATUS_"
+ALERT_STATUSES: list[str] = ["NEW", "IN_PROGRESS", "CLOSED"]
+
+# Caps for the on-demand alert commands.
+# Statuses the External API accepts on a threat alert (POST /external-api/alerts/{id}/status).
+THREAT_ALERT_STATUSES: list[str] = [f"{ALERT_STATUS_PREFIX}{name}" for name in ALERT_STATUSES]
+# HTTP codes on which change_alert_status retries on the internal endpoint: 404 (not a threat alert) and
+# 403 (the External API needs PERM_ALERTS_WRITE; the internal one also accepts PERM_POSTURES_UPDATE).
+EXTERNAL_STATUS_FALLBACK_CODES = (403, 404)
+
+# Entity types the External API accepts on labels/add and labels/remove.
+ENTITY_LABEL_TYPES: list[str] = ["account", "app", "identity", "posture", "saas-to-saas", "ip-address", "ai-agent", "device"]
+
+LIST_ALERTS_DEFAULT_LIMIT = 50
+FETCH_ALERTS_PAGE_SIZE = 500  # reco-fetch-alerts enriches every alert with one detail call each, so it works in pages
+
+
+@dataclass
+class AlertFilterOptions:
+    """Source-side alert filters, sent to the Reco API as part of the SCIM `filters` query.
+
+    All lists are OR-ed within themselves and AND-ed with every other filter.
+    """
+
+    saas_platforms: list[str] = field(default_factory=list)  # matched against the app instance name
+    statuses: list[str] = field(default_factory=list)  # ALERT_STATUS_* enum names
+    include_labels: list[str] = field(default_factory=list)  # alert must carry at least one of these labels
+    exclude_labels: list[str] = field(default_factory=list)  # alert must carry none of these labels
+    custom_filter: str = ""  # raw SCIM expression, for AND / OR / NOT combinations not covered above
+
+
+def _scim_quote(value: str) -> str:
+    """Quote a value as a SCIM string literal, escaping backslashes and double quotes."""
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def _scim_or_group(clauses: list[str]) -> str:
+    """Join clauses with `or`, parenthesized when there is more than one."""
+    return f"({' or '.join(clauses)})" if len(clauses) > 1 else clauses[0]
+
+
+def build_alerts_scim_filter(
+    risk_levels: list[str] | None = None,
+    source: str | None = None,
+    before: datetime | None = None,
+    after: datetime | None = None,
+    filter_options: AlertFilterOptions | None = None,
+) -> str:
+    """Build the SCIM filter for `alerts/list`. Single source of truth for fetch-incidents,
+    the Test button and the on-demand alert commands, so they always send the same query.
+
+    Every OR group (and the raw user expression) is parenthesized before being AND-ed, so a
+    value can never change the meaning of a neighbouring clause. Preview-state alerts are
+    always excluded.
+    """
+    options = filter_options or AlertFilterOptions()
+    filter_parts: list[str] = [f'status ne "{ALERT_STATUS_PREFIX}PREVIEW"']
+
+    if risk_levels:
+        # `eq` clauses joined with `or` work on every Reco version; older ones reject the SCIM `in` operator (HTTP 500).
+        filter_parts.append(_scim_or_group([f"severity eq {_scim_quote(r)}" for r in risk_levels]))
+    if options.statuses:
+        filter_parts.append(_scim_or_group([f"status eq {_scim_quote(s)}" for s in options.statuses]))
+    if source:
+        filter_parts.append(f"apps co {_scim_quote(source)}")
+    if options.saas_platforms:
+        filter_parts.append(_scim_or_group([f"instance.appName co {_scim_quote(p)}" for p in options.saas_platforms]))
+    if options.include_labels:
+        filter_parts.append(_scim_or_group([f"customLabels eq {_scim_quote(label)}" for label in options.include_labels]))
+    if options.exclude_labels:
+        excluded = " or ".join(f"customLabels eq {_scim_quote(label)}" for label in options.exclude_labels)
+        filter_parts.append(f"not ({excluded})")
+    if after:
+        filter_parts.append(f'createdAt gt "{after.strftime(DEMISTO_OCCURRED_FORMAT)}"')
+    if before:
+        filter_parts.append(f'createdAt lt "{before.strftime(DEMISTO_OCCURRED_FORMAT)}"')
+    if options.custom_filter.strip():
+        filter_parts.append(f"({options.custom_filter.strip()})")
+
+    return " and ".join(filter_parts)
+
+
+def parse_risk_levels(value: str | list[str] | None) -> list[str] | None:
+    """Parse an explicit list of risk levels (e.g. "HIGH,CRITICAL" or "30,40") into severity names.
+
+    Unlike parse_minimum_risk_level this does not expand to "and above", and unknown values raise.
+    """
+    names: list[str] = []
+    for item in argToList(value):
+        name = RISK_LEVEL_TO_SEVERITY_NAME.get(item.strip()) or RISK_LEVEL_TO_SEVERITY_NAME.get(item.strip().upper())
+        if not name:
+            raise ValueError(f"Unknown risk level '{item}'. Valid values: LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40).")
+        if name not in names:
+            names.append(name)
+    return names or None
+
+
+def parse_alert_statuses(value: str | list[str] | None) -> list[str]:
+    """Parse alert statuses ("new", "In Progress", "ALERT_STATUS_CLOSED") into ALERT_STATUS_* enum names."""
+    statuses: list[str] = []
+    for item in argToList(value):
+        short = item.strip().upper().replace(" ", "_").replace("-", "_").removeprefix(ALERT_STATUS_PREFIX)
+        if short not in ALERT_STATUSES:
+            raise ValueError(f"Unknown alert status '{item}'. Valid values: {', '.join(ALERT_STATUSES)}.")
+        if ALERT_STATUS_PREFIX + short not in statuses:
+            statuses.append(ALERT_STATUS_PREFIX + short)
+    return statuses
+
+
+DATE_ONLY_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def parse_date_param(value: str | None, name: str, include_whole_day: bool = False) -> datetime | None:
+    """Parse a user-supplied date (ISO 8601 or relative like "3 days ago") into a UTC datetime.
+
+    Values with a UTC offset are converted to UTC. With include_whole_day, a date-only value
+    (e.g. "2026-10-31") is moved to the start of the next day, so that using it as an exclusive
+    upper bound includes the whole day. Raises if the value can't be parsed.
+    """
+    if not value:
+        return None
+    parsed = dateparser.parse(str(value), settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+    if not parsed:
+        raise ValueError(f"Could not parse '{name}' value '{value}' as a date.")
+    parsed = parsed.astimezone(UTC)
+    if include_whole_day and DATE_ONLY_PATTERN.match(str(value).strip()):
+        parsed += timedelta(days=1)
+    return parsed
+
+
+def build_filter_options(
+    saas_platform: str | list[str] | None = None,
+    status: str | list[str] | None = None,
+    include_labels: str | list[str] | None = None,
+    exclude_labels: str | list[str] | None = None,
+    custom_filter: str | None = None,
+) -> AlertFilterOptions:
+    """Build AlertFilterOptions from comma-separated integration parameters / command arguments."""
+    return AlertFilterOptions(
+        saas_platforms=argToList(saas_platform),
+        statuses=parse_alert_statuses(status),
+        include_labels=argToList(include_labels),
+        exclude_labels=argToList(exclude_labels),
+        custom_filter=custom_filter or "",
+    )
 
 
 def extract_response(response: Any) -> list[dict[str, Any]]:
@@ -187,8 +340,13 @@ class RecoClient(BaseClient):
         totalResults being stale or the server having fewer items than reported).
         Capped at MAX_PAGES to guard against an unbounded loop if the server
         never reports totalResults or an empty page.
+
+        The External API treats `startIndex` as 1-based although its docs say 0-based, so with
+        0-based offsets each page repeats the previous page's last item. Items are therefore
+        de-duplicated by `id`, which keeps this correct whichever way the API counts.
         """
         all_items: list[dict[str, Any]] = []
+        seen_ids: set[Any] = set()
         start_index = 0
         for _page in range(MAX_PAGES):
             response = self._external_api_list(
@@ -200,7 +358,13 @@ class RecoClient(BaseClient):
             page_items = response.get(item_key, [])
             if not page_items:
                 break
-            all_items.extend(page_items)
+            for item in page_items:
+                item_id = item.get("id")
+                if item_id is not None:
+                    if item_id in seen_ids:
+                        continue
+                    seen_ids.add(item_id)
+                all_items.append(item)
             total = int(response.get("totalResults", 0) or response.get("total_results", 0) or 0)
             demisto.debug(f"_paginate_all {endpoint}: fetched {len(all_items)}/{total}")
             if total and len(all_items) >= total:
@@ -220,38 +384,29 @@ class RecoClient(BaseClient):
         after: datetime | None = None,
         limit: int = PAGE_SIZE,
         start_index: int = 0,
+        filter_options: AlertFilterOptions | None = None,
+        sort_order: str = "ascending",
     ) -> list[dict[str, Any]]:
-        """List threat alerts via the external API, oldest first.
+        """List threat alerts via the external API (oldest first by default).
 
         risk_levels: list of severity names, e.g. ["HIGH", "CRITICAL"].  Multiple
         values are combined with OR so a single call fetches all matching severities.
+        filter_options: further source-side filters (platform, status, labels, raw SCIM);
+        see build_alerts_scim_filter. They are all evaluated by the Reco API, not after retrieval.
 
         API errors are raised rather than swallowed, so a failed call is never mistaken
         for "no new alerts" and shows up as a failure in XSOAR.
 
         Sorted ascending by createdAt (rather than the API's default descending order) so
         that fetch_incidents can page through a burst via `start_index` without ever
-        skipping alerts, regardless of how many share the same fetch window.
+        skipping alerts, regardless of how many share the same fetch window. Only the
+        on-demand commands pass sort_order="descending".
 
         Preview-state alerts are always excluded: a Policy in Preview state is explicitly
         meant to stay out of the customer's SOAR/ticketing systems while it's being
         evaluated (the webhook and share-service paths already enforce this upstream).
         """
-        filter_parts: list[str] = ['status ne "ALERT_STATUS_PREVIEW"']
-
-        if risk_levels:
-            # `eq` clauses joined with `or` - the External API rejects the SCIM `in` operator (HTTP 500).
-            severity_clauses = " or ".join(f'severity eq "{r}"' for r in risk_levels)
-            filter_parts.append(f"({severity_clauses})" if len(risk_levels) > 1 else severity_clauses)
-
-        if source:
-            filter_parts.append(f'apps co "{source}"')
-        if after:
-            filter_parts.append(f'createdAt gt "{after.strftime(DEMISTO_OCCURRED_FORMAT)}"')
-        if before:
-            filter_parts.append(f'createdAt lt "{before.strftime(DEMISTO_OCCURRED_FORMAT)}"')
-
-        scim_filter = " and ".join(filter_parts)
+        scim_filter = build_alerts_scim_filter(risk_levels, source, before, after, filter_options)
         demisto.debug(f"get_alerts SCIM filter: {scim_filter!r}")
 
         response = self._external_api_list(
@@ -260,7 +415,7 @@ class RecoClient(BaseClient):
             count=limit,
             start_index=start_index,
             sort_by="createdAt",
-            sort_order="ascending",
+            sort_order=sort_order,
         )
         alerts = response.get("alerts", [])
         demisto.info(f"get_alerts: fetched {len(alerts)} alerts (total={response.get('totalResults', '?')})")
@@ -292,8 +447,25 @@ class RecoClient(BaseClient):
             raise
 
     def change_alert_status(self, alert_id: str, status: str) -> Any:
-        """Change alert status (internal API - no external equivalent yet)."""
+        """Change an alert's status.
+
+        Threat-alert statuses (new / in progress / closed) go through the External API, which also
+        records the change in the audit log and emits the webhook event. The previous internal
+        endpoint is kept as a fallback for what the External API cannot do: posture statuses, posture
+        issue IDs (404), and tokens that hold PERM_POSTURES_UPDATE but not PERM_ALERTS_WRITE (403),
+        both of which the internal endpoint accepts.
+        """
         try:
+            if status in THREAT_ALERT_STATUSES:
+                try:
+                    return self._external_api_post(f"alerts/{alert_id}/status", {"status": status})
+                except DemistoException as exc:
+                    if getattr(exc.res, "status_code", None) not in EXTERNAL_STATUS_FALLBACK_CODES:
+                        raise
+                    demisto.debug(
+                        f"External status update for {alert_id} returned {exc.res.status_code}; "  # type: ignore[union-attr]
+                        "falling back to the internal status endpoint"
+                    )
             return self._http_request(
                 method="PUT",
                 url_suffix=f"/policy-subsystem/alert-inbox/{alert_id}/status/{status}",
@@ -301,9 +473,8 @@ class RecoClient(BaseClient):
             )
         except Exception as e:
             demisto.error(f"change_alert_status error: {str(e)}")
+            demisto.debug(traceback.format_exc())
             raise
-
-    # --- Comments (external API) ---
 
     def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
         """Add a comment to an alert entity via the external API."""
@@ -320,6 +491,28 @@ class RecoClient(BaseClient):
 
     # --- Labels (external API) ---
 
+    def _entity_label_request(
+        self,
+        endpoint: str,
+        entity_id: str,
+        entity_type: str,
+        label_name: str,
+        instance_id: str = "",
+    ) -> Any:
+        body: dict[str, Any] = {
+            "entityId": entity_id,
+            "entityType": entity_type,
+            "labelName": label_name,
+        }
+        if instance_id:
+            body["instanceId"] = instance_id
+        try:
+            return self._external_api_post(endpoint, body)
+        except Exception as e:
+            demisto.error(f"{endpoint} error: {str(e)}")
+            demisto.debug(traceback.format_exc())
+            raise
+
     def add_entity_label(
         self,
         entity_id: str,
@@ -331,18 +524,28 @@ class RecoClient(BaseClient):
 
         entity_type: "account", "identity", "app", "posture", "saas-to-saas",
                      "ip-address", "ai-agent", "device"
+        The label must already exist in the tenant's label catalog.
         """
-        body: dict[str, Any] = {
-            "entityId": entity_id,
-            "entityType": entity_type,
-            "labelName": label_name,
-        }
-        if instance_id:
-            body["instanceId"] = instance_id
+        return self._entity_label_request("labels/add", entity_id, entity_type, label_name, instance_id)
+
+    def remove_entity_label(
+        self,
+        entity_id: str,
+        entity_type: str,
+        label_name: str,
+        instance_id: str = "",
+    ) -> Any:
+        """Remove a label from any Reco entity via the external API (same entity types as add_entity_label)."""
+        return self._entity_label_request("labels/remove", entity_id, entity_type, label_name, instance_id)
+
+    def update_alert_severity(self, alert_id: str, severity: str) -> dict[str, Any]:
+        """Set a threat alert's severity (LOW, MEDIUM, HIGH, CRITICAL) via the external API; returns the updated alert."""
         try:
-            return self._external_api_post("labels/add", body)
+            response = self._external_api_post(f"alerts/{alert_id}/severity", {"severity": severity})
+            return response.get("alert", {})
         except Exception as e:
-            demisto.error(f"add_entity_label error: {str(e)}")
+            demisto.error(f"update_alert_severity error: {str(e)}")
+            demisto.debug(traceback.format_exc())
             raise
 
     def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
@@ -377,7 +580,7 @@ class RecoClient(BaseClient):
         """List identities from the external API, optionally filtered by email."""
         filter_parts: list[str] = []
         if email_address:
-            filter_parts.append(f'email co "{email_address}"')
+            filter_parts.append(f"email co {_scim_quote(email_address)}")
         # label filter is handled separately via get_risky_users (ListAccounts)
         scim_filter = " and ".join(filter_parts)
         try:
@@ -400,7 +603,7 @@ class RecoClient(BaseClient):
         try:
             response = self._external_api_list(
                 "users/list",
-                filters=f'email co "{email_address}"',
+                filters=f"email co {_scim_quote(email_address)}",
                 count=10,
             )
             return response.get("users", [])
@@ -432,13 +635,16 @@ class RecoClient(BaseClient):
             demisto.error(f"get_app_discovery error: {str(e)}")
             raise
 
-    def set_app_authorization_status(self, app_id: str, authorization_status: str) -> Any:
-        """Update app authorization status via the external API."""
+    def set_app_authorization_status(self, app_id: str, authorization_status: str, app_type: str = "") -> Any:
+        """Update app authorization status via the external API.
+
+        app_type (APP_ENTITY_TYPE_*) selects the app inventory; the API defaults to app discovery.
+        """
+        body: dict[str, Any] = {"authorizationStatus": authorization_status}
+        if app_type:
+            body["appType"] = app_type
         try:
-            return self._external_api_put(
-                f"{EXTERNAL_API_BASE}/apps/{app_id}/auth-status",
-                {"authorizationStatus": authorization_status},
-            )
+            return self._external_api_put(f"{EXTERNAL_API_BASE}/apps/{app_id}/auth-status", body)
         except Exception as e:
             demisto.error(f"set_app_authorization_status error: {str(e)}")
             raise
@@ -452,9 +658,9 @@ class RecoClient(BaseClient):
         filter_parts: list[str] = []
         if asset_name:
             op = "co" if regex_search else "eq"
-            filter_parts.append(f'name {op} "{asset_name}"')
+            filter_parts.append(f"name {op} {_scim_quote(asset_name)}")
         elif asset_id:
-            filter_parts.append(f'id eq "{asset_id}"')
+            filter_parts.append(f"id eq {_scim_quote(asset_id)}")
         if sensitive_only:
             filter_parts.append('sensitivityLevel in ["30","40"]')
         scim_filter = " and ".join(filter_parts)
@@ -841,14 +1047,21 @@ class RecoClient(BaseClient):
 
     # --- API key validation ---
 
-    def validate_api_key(self, risk_levels: list[str] | None = None) -> str:
+    def validate_api_key(
+        self,
+        risk_levels: list[str] | None = None,
+        source: str | None = None,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        filter_options: AlertFilterOptions | None = None,
+    ) -> str:
         """Validate the API token with the same alerts query fetch-incidents sends.
 
         Going through get_alerts (rather than an unfiltered call) means a filter the API
         rejects fails the Test button instead of only surfacing later during fetch.
         """
         try:
-            self.get_alerts(risk_levels=risk_levels, limit=1)
+            self.get_alerts(risk_levels, source, before, after, limit=1, filter_options=filter_options)
             return "ok"
         except Exception as e:
             demisto.error(f"validate_api_key error: {str(e)}")
@@ -908,6 +1121,20 @@ def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
 # --- Alert fetching ---
 
 
+def normalize_policy_violations(detail: dict[str, Any]) -> dict[str, Any]:
+    """Parse each policy violation's `jsonData` (a JSON string, not base64, in the external API) in place."""
+    for violation in detail.get("policyViolations", []):
+        json_data = violation.get("jsonData", "{}")
+        if isinstance(json_data, str):
+            try:
+                parsed = json.loads(json_data)
+                parsed.pop("violation", None)
+                violation["jsonData"] = parsed
+            except json.JSONDecodeError:
+                pass
+    return detail
+
+
 def get_alerts(
     reco_client: RecoClient,
     risk_levels: list[str] | None = None,
@@ -916,13 +1143,17 @@ def get_alerts(
     after: datetime | None = None,
     limit: int = PAGE_SIZE,
     start_index: int = 0,
+    filter_options: AlertFilterOptions | None = None,
+    sort_order: str = "ascending",
 ) -> tuple[list[Any], int]:
     """Fetch alert summaries then enrich each with full detail (policy violations).
 
     Returns the enriched ThreatAlertDetail dicts alongside the raw page size, so callers
     can tell whether the page was truncated by `limit` (more alerts may remain).
     """
-    raw_alerts = reco_client.get_alerts(risk_levels, source, before, after, limit, start_index)
+    raw_alerts = reco_client.get_alerts(
+        risk_levels, source, before, after, limit, start_index, filter_options=filter_options, sort_order=sort_order
+    )
     alerts_data: list[Any] = []
 
     for raw in raw_alerts:
@@ -934,17 +1165,7 @@ def get_alerts(
             detail = reco_client.get_single_alert(alert_id)
             if not detail:
                 continue
-            # policy violations arrive as JSON strings (not base64) from the external API
-            for violation in detail.get("policyViolations", []):
-                json_data = violation.get("jsonData", "{}")
-                if isinstance(json_data, str):
-                    try:
-                        parsed = json.loads(json_data)
-                        parsed.pop("violation", None)
-                        violation["jsonData"] = parsed
-                    except json.JSONDecodeError:
-                        pass
-            alerts_data.append(detail)
+            alerts_data.append(normalize_policy_violations(detail))
         except Exception as e:
             demisto.error(f"Failed to enrich alert {alert_id}: {str(e)}")
 
@@ -1034,6 +1255,7 @@ def fetch_incidents(
     source: str | None = None,
     before: datetime | None = None,
     after: datetime | None = None,
+    filter_options: AlertFilterOptions | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run: dict[str, Any] = {}
@@ -1043,7 +1265,9 @@ def fetch_incidents(
         after = dateutil.parser.parse(last_run_time)
     start_index = last_run.get("startIndex", 0)
 
-    alerts, raw_page_size = get_alerts(reco_client, risk_levels, source, before, after, max_fetch, start_index)
+    alerts, raw_page_size = get_alerts(
+        reco_client, risk_levels, source, before, after, max_fetch, start_index, filter_options=filter_options
+    )
     incidents = parse_alerts_to_incidents(alerts)
 
     existing_incidents = last_run.get("incident_ids", [])
@@ -1073,6 +1297,32 @@ def fetch_incidents(
     next_run["incident_ids"] = existing_incidents + [inc["dbotMirrorId"] for inc in incidents]
 
     return next_run, incidents
+
+
+# --- Fetch filters shared by fetch-incidents and the Test button ---
+
+
+def get_fetch_filters(params: dict[str, Any]) -> dict[str, Any]:
+    """Translate integration parameters into the alert-query keyword arguments.
+
+    fetch-incidents and test-module both call this and pass the result straight through, so the
+    Test button always exercises exactly the query that fetch will send.
+    """
+    after = parse_date_param(params.get("after"), "after") or parse_date_param(params.get("first_fetch"), "first_fetch")
+    return {
+        # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
+        "risk_levels": parse_minimum_risk_level(params.get("risk_level")),
+        "source": params.get("source") or None,
+        "before": parse_date_param(params.get("before"), "before", include_whole_day=True),
+        "after": after,
+        "filter_options": build_filter_options(
+            saas_platform=params.get("saas_platform"),
+            status=params.get("alert_status"),
+            include_labels=params.get("include_labels"),
+            exclude_labels=params.get("exclude_labels"),
+            custom_filter=params.get("custom_filter"),
+        ),
+    }
 
 
 # --- Command functions ---
@@ -1379,13 +1629,174 @@ def get_apps_command(
     )
 
 
-def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, authorization_status: str) -> CommandResults:
+def set_app_authorization_status_command(
+    reco_client: RecoClient, app_id: str, authorization_status: str, app_type: str = ""
+) -> CommandResults:
     """Update app authorization status via the external API."""
-    reco_client.set_app_authorization_status(app_id, authorization_status)
+    reco_client.set_app_authorization_status(app_id, authorization_status, app_type)
     return CommandResults(
         readable_output=f"App {app_id} authorization status updated to {authorization_status}",
         outputs_prefix="Reco.AppAuthorization",
         outputs={"app_id": app_id, "authorization_status": authorization_status, "updated": True},
+    )
+
+
+# --- On-demand alert commands (never read or write the fetch-incidents last-run) ---
+
+ALERT_TABLE_HEADERS = ["id", "description", "severity", "status", "createdAt", "apps", "instanceName", "customLabels"]
+
+
+def _alert_query_from_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Parse the shared alert filter arguments of reco-list-alerts / reco-fetch-alerts."""
+    return {
+        "risk_levels": parse_risk_levels(args.get("risk_level")),
+        "source": args.get("source") or None,
+        "after": parse_date_param(args.get("after"), "after"),
+        "before": parse_date_param(args.get("before"), "before", include_whole_day=True),
+        "filter_options": build_filter_options(
+            saas_platform=args.get("saas_platform"),
+            status=args.get("status"),
+            include_labels=args.get("labels"),
+            exclude_labels=args.get("exclude_labels"),
+            custom_filter=args.get("filters"),
+        ),
+    }
+
+
+def _parse_limit(args: dict[str, Any]) -> int:
+    raw_limit = arg_to_number(args.get("limit"), arg_name="limit")
+    limit = LIST_ALERTS_DEFAULT_LIMIT if raw_limit is None else int(raw_limit)
+    if limit < 1:
+        raise ValueError("limit must be a positive number.")
+    return limit
+
+
+def _parse_sort_order(args: dict[str, Any], default: str) -> str:
+    sort_order = str(args.get("sort_order") or default).lower()
+    if sort_order not in ("ascending", "descending"):
+        raise ValueError("sort_order must be 'ascending' or 'descending'.")
+    return sort_order
+
+
+def _alerts_to_command_results(title: str, alerts: list[dict[str, Any]]) -> CommandResults:
+    rows = [{**alert, "instanceName": (alert.get("instance") or {}).get("appName", "")} for alert in alerts]
+    return CommandResults(
+        readable_output=tableToMarkdown(title, rows, headers=ALERT_TABLE_HEADERS, removeNull=True),
+        outputs_prefix="Reco.Alerts",
+        outputs_key_field="id",
+        outputs=alerts,
+    )
+
+
+def _collect_alert_pages(
+    fetch_page: Callable[[int, int], tuple[list[dict[str, Any]], int]], limit: int, max_page_size: int
+) -> list[dict[str, Any]]:
+    """Collect up to `limit` alerts by paging. fetch_page(page_size, offset) returns (alerts, raw page size).
+
+    A new alert arriving between pages shifts the offsets, so an alert is never returned twice, and paging
+    stops on a short page or a page with nothing new.
+    """
+    alerts: list[dict[str, Any]] = []
+    seen_ids: set[str | None] = set()
+    offset = 0
+    while len(alerts) < limit:
+        page_size = min(max_page_size, limit - len(alerts))
+        page, raw_page_size = fetch_page(page_size, offset)
+        offset += raw_page_size
+        new_alerts = [alert for alert in page if alert.get("id") not in seen_ids]
+        seen_ids.update(alert.get("id") for alert in new_alerts)
+        alerts.extend(new_alerts)
+        if raw_page_size < page_size or not new_alerts:
+            break
+    return alerts
+
+
+def list_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """List alert summaries for an analyst-defined window and filters. One list call per page, no per-alert detail calls.
+
+    Deliberately independent of fetch-incidents: it never reads or writes the last-run, so it
+    cannot move the production fetch cursor.
+    """
+    query = _alert_query_from_args(args)
+    limit = _parse_limit(args)
+    sort_order = _parse_sort_order(args, default="descending")
+
+    def fetch_page(page_size: int, offset: int) -> tuple[list[dict[str, Any]], int]:
+        page = reco_client.get_alerts(**query, limit=page_size, start_index=offset, sort_order=sort_order)
+        return page, len(page)
+
+    alerts = _collect_alert_pages(fetch_page, limit, PAGE_SIZE)
+    return _alerts_to_command_results("Reco Alerts", alerts)
+
+
+def fetch_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Retrieve enriched alerts (full detail incl. policy violations - the same shape fetch-incidents
+    ingests) for a historical window, for investigations, mapping tests and controlled backfills.
+
+    It returns the alerts to the war room / context only: it does not create incidents, and it never
+    reads or writes the fetch-incidents last-run.
+    """
+    query = _alert_query_from_args(args)
+    limit = _parse_limit(args)
+    sort_order = _parse_sort_order(args, default="ascending")
+
+    def fetch_page(page_size: int, offset: int) -> tuple[list[dict[str, Any]], int]:
+        return get_alerts(reco_client, limit=page_size, start_index=offset, sort_order=sort_order, **query)
+
+    alerts = _collect_alert_pages(fetch_page, limit, FETCH_ALERTS_PAGE_SIZE)
+    return _alerts_to_command_results("Reco Alerts (detailed)", alerts)
+
+
+def get_alert_command(reco_client: RecoClient, alert_id: str) -> CommandResults:
+    """Retrieve one alert, with its policy violations, by ID."""
+    detail = reco_client.get_single_alert(alert_id)
+    if not detail:
+        raise DemistoException(f"Alert {alert_id} was not found.")
+    return _alerts_to_command_results(f"Reco Alert {alert_id}", [normalize_policy_violations(detail)])
+
+
+# --- Alert severity and entity label commands (external API) ---
+
+
+def update_alert_severity_command(reco_client: RecoClient, alert_id: str, severity: str) -> CommandResults:
+    """Set the severity of a threat alert."""
+    severities = parse_risk_levels(severity) or []
+    if len(severities) != 1:
+        raise ValueError("severity must be exactly one of LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40).")
+    alert = reco_client.update_alert_severity(alert_id, severities[0])
+    return CommandResults(
+        readable_output=f"Alert {alert_id} severity updated to {severities[0]}",
+        outputs_prefix="Reco.Alerts",
+        outputs_key_field="id",
+        outputs=normalize_policy_violations(alert),
+        raw_response=alert,
+    )
+
+
+def _validated_entity_type(entity_type: str) -> str:
+    normalized = entity_type.strip().lower()
+    if normalized not in ENTITY_LABEL_TYPES:
+        raise ValueError(f"Unknown entity_type '{entity_type}'. Valid values: {', '.join(ENTITY_LABEL_TYPES)}.")
+    return normalized
+
+
+def add_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Add an existing catalog label to an entity."""
+    entity_type = _validated_entity_type(args["entity_type"])
+    response = reco_client.add_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(
+        readable_output=f"Label '{args['label_name']}' added to {entity_type} {args['entity_id']}",
+        raw_response=response,
+    )
+
+
+def remove_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Remove a label from an entity."""
+    entity_type = _validated_entity_type(args["entity_type"])
+    response = reco_client.remove_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(
+        readable_output=f"Label '{args['label_name']}' removed from {entity_type} {args['entity_id']}",
+        raw_response=response,
     )
 
 
@@ -1666,25 +2077,11 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "fetch-incidents":
-            # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
-            risk_levels = parse_minimum_risk_level(params.get("risk_level"))
-            source = params.get("source")
-            before = params.get("before")
-            after: datetime | None = None
-
-            if arg := params.get("first_fetch"):
-                first_fetch_ts = dateparser.parse(arg)
-                if first_fetch_ts:
-                    after = first_fetch_ts
-
             next_run, incidents = fetch_incidents(
                 reco_client,
                 last_run=demisto.getLastRun(),
                 max_fetch=max_fetch,
-                risk_levels=risk_levels,
-                source=source,
-                before=before,
-                after=after,
+                **get_fetch_filters(params),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -1712,7 +2109,25 @@ def main() -> None:  # pragma: no cover
             return_results(CommandResults(raw_response=response, readable_output=f"Visibility event {entity_id} resolved"))
 
         elif command == "test-module":
-            return_results(reco_client.validate_api_key(parse_minimum_risk_level(params.get("risk_level"))))
+            return_results(reco_client.validate_api_key(**get_fetch_filters(params)))
+
+        elif command == "reco-list-alerts":
+            return_results(list_alerts_command(reco_client, args))
+
+        elif command == "reco-fetch-alerts":
+            return_results(fetch_alerts_command(reco_client, args))
+
+        elif command == "reco-get-alert":
+            return_results(get_alert_command(reco_client, args["alert_id"]))
+
+        elif command == "reco-update-alert-severity":
+            return_results(update_alert_severity_command(reco_client, args["alert_id"], args["severity"]))
+
+        elif command == "reco-add-entity-label":
+            return_results(add_entity_label_command(reco_client, args))
+
+        elif command == "reco-remove-entity-label":
+            return_results(remove_entity_label_command(reco_client, args))
 
         elif command == "reco-get-risky-users":
             return_results(get_risky_users_from_reco(reco_client))
@@ -1794,7 +2209,11 @@ def main() -> None:  # pragma: no cover
             )
 
         elif command == "reco-set-app-authorization-status":
-            return_results(set_app_authorization_status_command(reco_client, args["app_id"], args["authorization_status"]))
+            return_results(
+                set_app_authorization_status_command(
+                    reco_client, args["app_id"], args["authorization_status"], args.get("app_type", "")
+                )
+            )
 
         elif command == "reco-list-events":
             return_results(
